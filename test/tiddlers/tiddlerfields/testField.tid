@@ -1,0 +1,8 @@
+module-type: tiddlerfield
+title: tiddlerfields/testField
+type: application/json
+
+{
+	"name": "testField",
+	"relinkable": true
+}
