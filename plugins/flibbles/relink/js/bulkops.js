@@ -31,7 +31,8 @@ function relinkTiddler(fromTitle, toTitle, options) {
 	toTitle = (toTitle || "").trim();
 	options = options || {};
 	if(fromTitle && toTitle && fromTitle !== toTitle) {
-		var fields = getTrackedFields();
+		var fields = getConfiguredFields();
+		var installed = getInstalledFields();
 		this.each(function(tiddler,title) {
 			var type = tiddler.fields.type || "";
 			// Don't touch plugins or JavaScript modules
@@ -41,6 +42,9 @@ function relinkTiddler(fromTitle, toTitle, options) {
 				relinkBuiltinList(tiddler, fromTitle, toTitle, changes, options);
 				for (var field in fields) {
 					relinkField(tiddler, field, fromTitle, toTitle, changes);
+				}
+				for (var field in installed) {
+					relinkListOrField(tiddler, field, fromTitle, toTitle, changes);
 				}
 				if(Object.keys(changes).length > 0) {
 					var newTiddler = new $tw.Tiddler(tiddler,changes,self.getModificationFields())
@@ -88,15 +92,38 @@ console.log("Renaming " + descriptor + " '" + list[index] + "' to '" + toTitle +
 	}
 };
 
+function relinkListOrField(tiddler, field, fromTitle, toTitle, changes) {
+	var value = tiddler.fields[field];
+	if (value) {
+		if (typeof value === 'string') {
+			relinkField(tiddler,field, fromTitle, toTitle, changes);
+		} else {
+			relinkList(tiddler, field, fromTitle, toTitle, changes);
+		}
+	}
+};
+
 var prefix = "$:/config/flibbles/relink/fields/";
 
-function getTrackedFields() {
+function getConfiguredFields() {
 	var fields = Object.create(null);
 	$tw.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
 		if (title.startsWith(prefix)) {
 			fields[title.substr(prefix.length)] = tiddler.fields.text;
 		}
 	});
+	return fields;
+};
+
+function getInstalledFields() {
+	var modules = $tw.Tiddler.fieldModules;
+	var fields = Object.create(null);
+	for (var i in modules) {
+		var module = modules[i];
+		if (module.relinkable) {
+			fields[module.name] = true;
+		}
+	}
 	return fields;
 };
 
