@@ -31,13 +31,17 @@ function relinkTiddler(fromTitle, toTitle, options) {
 	toTitle = (toTitle || "").trim();
 	options = options || {};
 	if(fromTitle && toTitle && fromTitle !== toTitle) {
+		var fields = getTrackedFields();
 		this.each(function(tiddler,title) {
 			var type = tiddler.fields.type || "";
 			// Don't touch plugins or JavaScript modules
 			if(!tiddler.fields["plugin-type"] && type !== "application/javascript") {
 				var changes = {};
 				relinkTags(tiddler, fromTitle, toTitle, changes, options);
-				relinkList(tiddler, fromTitle, toTitle, changes, options);
+				relinkBuiltinList(tiddler, fromTitle, toTitle, changes, options);
+				for (var field in fields) {
+					relinkField(tiddler, field, fromTitle, toTitle, changes);
+				}
 				if(Object.keys(changes).length > 0) {
 					var newTiddler = new $tw.Tiddler(tiddler,changes,self.getModificationFields())
 					newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
@@ -50,37 +54,50 @@ function relinkTiddler(fromTitle, toTitle, options) {
 
 function relinkTags(tiddler, fromTitle, toTitle, changes, options) {
 	if(!options.dontRenameInTags) {
-		var tags = (tiddler.fields.tags || []).slice(0),
-			isModified = false;
-		// Rename tags
-		$tw.utils.each(tags,function (title,index) {
-			if(title === fromTitle) {
-console.log("Renaming tag '" + tags[index] + "' to '" + toTitle + "' of tiddler '" + tiddler.fields.title + "'");
-				tags[index] = toTitle;
-				isModified = true;
-			}
-		});
-		if (isModified) {
-			changes.tags = tags;
-		}
+		relinkList(tiddler, "tags", fromTitle, toTitle, changes);
 	}
 };
 
-function relinkList(tiddler, fromTitle, toTitle, changes, options) {
+function relinkBuiltinList(tiddler, fromTitle, toTitle, changes, options) {
 	if(!options.dontRenameInLists) { // Rename lists
-		var list = (tiddler.fields.list || []).slice(0),
-			isModified = false;
-		$tw.utils.each(list,function (title,index) {
-			if(title === fromTitle) {
-console.log("Renaming list item '" + list[index] + "' to '" + toTitle + "' of tiddler '" + tiddler.fields.title + "'");
-				list[index] = toTitle;
-				isModified = true;
-			}
-		});
-		if (isModified) {
-			changes.list = list;
-		}
+		relinkList(tiddler, "list", fromTitle, toTitle, changes);
 	}
+};
+
+function relinkField(tiddler, field, fromTitle, toTitle, changes) {
+	var fieldValue = (tiddler.fields[field] || "");
+	if (fieldValue === fromTitle) {
+console.log("Renaming " + field + " field '" + fieldValue + "' to '" + toTitle + "' of tiddler '" + tiddler.fields.title + "'");
+		changes[field] = toTitle;
+	}
+};
+
+function relinkList(tiddler, field, fromTitle, toTitle, changes) {
+	var list = (tiddler.fields[field] || []).slice(0),
+		isModified = false,
+		descriptor = (field === "tags")? "tag": (field + " item");
+	$tw.utils.each(list,function (title,index) {
+		if(title === fromTitle) {
+console.log("Renaming " + descriptor + " '" + list[index] + "' to '" + toTitle + "' of tiddler '" + tiddler.fields.title + "'");
+			list[index] = toTitle;
+			isModified = true;
+		}
+	});
+	if (isModified) {
+		changes[field] = list;
+	}
+};
+
+var prefix = "$:/config/flibbles/relink/fields/";
+
+function getTrackedFields() {
+	var fields = Object.create(null);
+	$tw.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
+		if (title.startsWith(prefix)) {
+			fields[title.substr(prefix.length)] = tiddler.fields.text;
+		}
+	});
+	return fields;
 };
 
 })();
