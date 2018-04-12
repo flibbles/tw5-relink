@@ -30,6 +30,16 @@ function relink(fields, options) {
 	return relinkedTiddler;
 };
 
+it("doesn't touch ineligible tiddlers", function() {
+	var t = relink({tags: "nothing here", list: "other stuff"});
+	expect(t.fields).to.not.include.key('modified');
+});
+
+it("touches eligible tiddlers", function() {
+	var t = relink({tags: "from"});
+	expect(t.fields).to.include.key('modified');
+});
+
 it('still relinks tags', function() {
 	var t = relink({"tags": "from another"});
 	expect(t.fields.tags).to.eql(['to', 'another']);
