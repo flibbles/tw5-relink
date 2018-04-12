@@ -1,0 +1,6 @@
+title: $:/plugins/flibbles/notimestamp/Readme
+type: text/vnd.tiddlywiki
+
+This mod allows for customizability when relinking tiddlers that are renamed.
+
+More than just ``tags`` and ``list`` fields, but ``list-after``, ``list-before`` and any other field specific to your tiddlywiki can be set to be retouched in all tiddlers when one tiddler is renamed.

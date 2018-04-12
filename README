@@ -1,0 +1,2 @@
+Type: `npm test` to run the tests
+Type: `npm run build` to make this available to local tiddlywiki servers

@@ -1,0 +1,10 @@
+{
+	"title": "$:/plugins/flibbles/relink",
+	"description": "Relink - flexibility when relinking renamed tiddlers",
+	"author": "Flibbles",
+	"version": "0.1.0",
+	"source": "https://github.com/flibbles/NotTheSource",
+	"list": "readme",
+	"dependents": "",
+	"plugin-type": "plugin"
+}
