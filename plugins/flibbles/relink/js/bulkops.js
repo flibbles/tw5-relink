@@ -66,7 +66,7 @@ console.log("Renaming tag '" + tags[index] + "' to '" + toTitle + "' of tiddler 
 	}
 };
 
-function relinkList(tiddler, fromTitle, toTitle, options) {
+function relinkList(tiddler, fromTitle, toTitle, changes, options) {
 	if(!options.dontRenameInLists) { // Rename lists
 		var list = (tiddler.fields.list || []).slice(0),
 			isModified = false;
