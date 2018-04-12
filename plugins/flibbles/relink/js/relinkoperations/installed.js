@@ -19,9 +19,9 @@ var installed;
 
 exports['installed'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var installed = getInstalledFields();
-	for (var field in installed) {
+	$tw.utils.each(installed, function(field) {
 		relinkListOrField(tiddler, field, fromTitle, toTitle, changes);
-	}
+	});
 };
 
 function relinkListOrField(tiddler, field, fromTitle, toTitle, changes) {
@@ -36,15 +36,13 @@ function relinkListOrField(tiddler, field, fromTitle, toTitle, changes) {
 };
 
 function getInstalledFields() {
-	if (!installed) {
-		installed = Object.create(null);
-		var modules = $tw.Tiddler.fieldModules;
-		for (var i in modules) {
-			var module = modules[i];
+	if (installed === undefined) {
+		installed = []
+		$tw.utils.each($tw.Tiddler.fieldModules, function(module) {
 			if (module.relinkable) {
-				installed[module.name] = true;
+				installed.push(module.name);
 			}
-		}
+		});
 	}
 	return installed;
 };
