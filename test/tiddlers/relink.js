@@ -78,13 +78,22 @@ it('still respects dontRenameInLists', function() {
 	expect(t.fields.list).to.eql(['from here', 'another']);
 });
 
-it('relinks custom undefined field', function() {
+it('relinks custom field', function() {
 	var title =  "$:/config/flibbles/relink/fields/testUndef";
-	$tw.wiki.addTiddler({"title": title});
+	$tw.wiki.addTiddler({"title": title, "text": "field"});
 	var t = relink({"testUndef": "from here"});
 	$tw.wiki.deleteTiddler(title);
 	expect(t.fields.testUndef).to.equal('to there');
 	expect(logs).to.eql(["Renaming testUndef field 'from here' to 'to there' of tiddler 'test'"]);
+});
+
+it('relinks custom list', function() {
+	var title =  "$:/config/flibbles/relink/fields/customList";
+	$tw.wiki.addTiddler({"title": title, "text": "list"});
+	var t = relink({"customList": "A [[from here]] B"});
+	$tw.wiki.deleteTiddler(title);
+	expect(t.fields.customList).to.equal('A [[to there]] B');
+	expect(logs).to.eql(["Renaming customList item 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('relinks installed tiddlerfield field', function() {

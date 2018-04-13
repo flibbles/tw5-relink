@@ -3,6 +3,7 @@ title: $:/plugins/flibbles/relink/configuration
 <table><tbody><$list filter="[all[shadows+tiddlers]prefix[$:/config/flibbles/relink/fields/]!has[draft.of]]" variable="listItem">
 <tr>
 <td><$list filter="[<listItem>removeprefix[$:/config/flibbles/relink/fields/]]"><<currentTiddler>></$list></td>
+<td><$checkbox tiddler=<<listItem>> field="text" checked="list" unchecked="field"> Is a list</$checkbox></td>
 <td><$button class="tc-btn-invisible"><$list filter="[<listItem>is[tiddler]]">
 <$action-deletetiddler $tiddler=<<listItem>> />
 <$list filter="[<tv-config-toolbar-icons>prefix[yes]]">{{$:/core/images/delete-button}}</$list>
@@ -19,7 +20,7 @@ title: $:/plugins/flibbles/relink/configuration
 <$button tooltip={{$:/plugins/flibbles/relink/language/Buttons/NewField/Hint}} aria-label={{$:/plugins/flibbles/relink/language/Buttons/NewField/Caption}}>
 <$set name="fieldName" filter="[[$:/state/flibbles/relink/field-name]get[text]]">
 <$set name="tiddlerName" filter="[<fieldName>addprefix[$:/config/flibbles/relink/fields/]]">
-<$action-createtiddler $basetitle=<<tiddlerName>> />
+<$action-createtiddler $basetitle=<<tiddlerName>> text="field" />
 </$set>
 </$set>
 <$action-deletetiddler $tiddler="$:/state/flibbles/relink/field-name" />

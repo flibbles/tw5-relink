@@ -19,8 +19,9 @@ var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 
 exports['custom'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = getConfiguredFields(options);
-	$tw.utils.each(fields, function(field) {
-		utils.relinkField(tiddler, field, fromTitle, toTitle, changes);
+	$tw.utils.each(fields, function(type, field) {
+		var relink=(type==="list")? utils.relinkStringList: utils.relinkField;
+		relink(tiddler, field, fromTitle, toTitle, changes);
 	});
 };
 
@@ -35,10 +36,11 @@ exports['custom'] = function(tiddler, fromTitle, toTitle, changes, options) {
 function getConfiguredFields(options) {
 	var fields = options[secretCache];
 	if (fields === undefined) {
-		fields = [];
+		fields = {};
 		$tw.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
 			if (title.startsWith(prefix)) {
-				fields.push(title.substr(prefix.length));
+				var name = title.substr(prefix.length);
+				fields[name] = tiddler.fields.text;
 			}
 		});
 		options[secretCache] = fields;

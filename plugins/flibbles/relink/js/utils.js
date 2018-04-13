@@ -12,6 +12,21 @@ parts.
 /*global $tw: false */
 "use strict";
 
+exports.relinkStringList = function(tiddler, field, fromTitle, toTitle, changes) {
+	var list = $tw.utils.parseStringArray(tiddler.fields[field] || ""),
+		isModified = false;
+	$tw.utils.each(list,function (title,index) {
+		if(title === fromTitle) {
+console.log("Renaming " + field + " item '" + list[index] + "' to '" + toTitle + "' of tiddler '" + tiddler.fields.title + "'");
+			list[index] = toTitle;
+			isModified = true;
+		}
+	});
+	if (isModified) {
+		changes[field] = $tw.utils.stringifyList(list);
+	}
+};
+
 exports.relinkList = function(tiddler, field, fromTitle, toTitle, changes) {
 	var list = (tiddler.fields[field] || []).slice(0),
 		isModified = false,

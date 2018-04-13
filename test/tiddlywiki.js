@@ -13,10 +13,15 @@ function loadDirectory(path) {
 	});
 }
 
+function loadPlugin(path) {
+	var plugin = $tw.loadPluginFolder(path);
+	$tw.wiki.addTiddler(plugin);
+};
+
 var oldLoader = $tw.loadTiddlersNode;
 $tw.loadTiddlersNode = function() {
 	oldLoader.call($tw);
-	loadDirectory("./plugins/flibbles/relink");
+	loadPlugin("./plugins/flibbles/relink");
 	loadDirectory("./test/tiddlers");
 };
 
