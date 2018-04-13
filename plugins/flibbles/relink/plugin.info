@@ -4,7 +4,7 @@
 	"author": "Flibbles",
 	"version": "0.1.0",
 	"source": "https://github.com/flibbles/NotTheSource",
-	"list": "readme",
+	"list": "readme configuration",
 	"dependents": "",
 	"plugin-type": "plugin"
 }
