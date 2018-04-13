@@ -3,7 +3,7 @@ title: $:/plugins/flibbles/relink/configuration
 <table><tbody><$list filter="[all[shadows+tiddlers]prefix[$:/config/flibbles/relink/fields/]!has[draft.of]]" variable="listItem">
 <tr>
 <td><$list filter="[<listItem>removeprefix[$:/config/flibbles/relink/fields/]]"><<currentTiddler>></$list></td>
-<td><$checkbox tiddler=<<listItem>> field="text" checked="list" unchecked="field"> Is a list</$checkbox></td>
+<td><$checkbox tiddler=<<listItem>> field="text" checked="list" unchecked="field" default="field"> Is a list</$checkbox></td>
 <td><$button class="tc-btn-invisible"><$list filter="[<listItem>is[tiddler]]">
 <$action-deletetiddler $tiddler=<<listItem>> />
 <$list filter="[<tv-config-toolbar-icons>prefix[yes]]">{{$:/core/images/delete-button}}</$list>
