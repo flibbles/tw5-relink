@@ -97,15 +97,21 @@ it('relinks custom list', function() {
 });
 
 it('relinks installed tiddlerfield field', function() {
-	var t = relink({"testField": "from here"});
-	expect(t.fields.testField).to.equal('to there');
-	expect(logs).to.eql(["Renaming testField field 'from here' to 'to there' of tiddler 'test'"]);
+	var t = relink({"testfield": "from here"});
+	expect(t.fields.testfield).to.equal('to there');
+	expect(logs).to.eql(["Renaming testfield field 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('relinks installed tiddlerfield list', function() {
-	var t = relink({"testList": "[[from here]] another"});
-	expect(t.fields.testList).to.eql(['to there', 'another']);
-	expect(logs).to.eql(["Renaming testList item 'from here' to 'to there' of tiddler 'test'"]);
+	var t = relink({"testlist": "[[from here]] another"});
+	expect(t.fields.testlist).to.eql(['to there', 'another']);
+	expect(logs).to.eql(["Renaming testlist item 'from here' to 'to there' of tiddler 'test'"]);
+});
+
+it('relinks installed tiddlerfield stringlist', function() {
+	var t = relink({"teststringlist": "[[from here]] another"});
+	expect(t.fields.teststringlist).to.equal('[[to there]] another');
+	expect(logs).to.eql(["Renaming teststringlist item 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 });

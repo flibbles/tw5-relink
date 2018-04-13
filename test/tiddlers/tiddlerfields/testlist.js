@@ -1,5 +1,5 @@
 /*\
-title: tiddlerfields/testList.js
+title: tiddlerfields/testlist.js
 type: application/javascript
 module-type: tiddlerfield
 
@@ -8,7 +8,7 @@ Tiddlerfield module for testList
 \*/
 
 module.exports = {
-	name: "testList",
+	name: "testlist",
 	parse: $tw.utils.parseStringArray,
 	stringify: $tw.utils.stringifyList,
 	relinkable: true
