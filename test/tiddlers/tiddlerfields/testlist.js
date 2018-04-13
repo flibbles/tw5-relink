@@ -11,5 +11,6 @@ module.exports = {
 	name: "testlist",
 	parse: $tw.utils.parseStringArray,
 	stringify: $tw.utils.stringifyList,
+	type: "list",
 	relinkable: true
 };
