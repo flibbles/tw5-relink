@@ -10,6 +10,7 @@ $tw.describe('relink', function() {
 var it = $tw.it;
 
 var expect = require('chai').expect;
+var wiki;
 var logs;
 
 function collectLogs(scope) {
@@ -25,11 +26,8 @@ function collectLogs(scope) {
 };
 
 $tw.beforeEach("creates from", function() {
-	$tw.wiki.addTiddler({"title": "from here"});
-});
-
-$tw.afterEach('remove to', function() {
-	$tw.wiki.deleteTiddler('to there');
+	wiki = new $tw.Wiki();
+	wiki.addTiddler({"title": "from here"});
 });
 
 function relink(fields, options) {
@@ -38,10 +36,9 @@ function relink(fields, options) {
 		options = options || {};
 		var tiddler = new $tw.Tiddler({"title": "test"}, fields);
 		var title = tiddler.fields.title;
-		$tw.wiki.addTiddler(tiddler);
-		$tw.wiki.renameTiddler("from here", "to there", options);
-		relinkedTiddler = $tw.wiki.getTiddler(title);
-		$tw.wiki.deleteTiddler(title);
+		wiki.addTiddler(tiddler);
+		wiki.renameTiddler("from here", "to there", options);
+		relinkedTiddler = wiki.getTiddler(title);
 	});
 	return relinkedTiddler;
 };
@@ -80,18 +77,16 @@ it('still respects dontRenameInLists', function() {
 
 it('relinks custom field', function() {
 	var title =  "$:/config/flibbles/relink/fields/testUndef";
-	$tw.wiki.addTiddler({"title": title, "text": "field"});
+	wiki.addTiddler({"title": title, "text": "field"});
 	var t = relink({"testUndef": "from here"});
-	$tw.wiki.deleteTiddler(title);
 	expect(t.fields.testUndef).to.equal('to there');
 	expect(logs).to.eql(["Renaming testUndef field 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('relinks custom list', function() {
 	var title =  "$:/config/flibbles/relink/fields/customList";
-	$tw.wiki.addTiddler({"title": title, "text": "list"});
+	wiki.addTiddler({"title": title, "text": "list"});
 	var t = relink({"customList": "A [[from here]] B"});
-	$tw.wiki.deleteTiddler(title);
 	expect(t.fields.customList).to.equal('A [[to there]] B');
 	expect(logs).to.eql(["Renaming customList item 'from here' to 'to there' of tiddler 'test'"]);
 });

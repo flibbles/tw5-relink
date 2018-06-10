@@ -29,12 +29,12 @@ var relinkOperations = {};
 $tw.modules.applyMethods('relinkoperation', relinkOperations);
 
 function relinkTiddler(fromTitle, toTitle, options) {
-	var self = this;
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	options = options || {};
+	options.wiki = this;
 	if(fromTitle && toTitle && fromTitle !== toTitle) {
-		this.each(function(tiddler,title) {
+		this.each((tiddler,title) => {
 			var type = tiddler.fields.type || "";
 			// Don't touch plugins or JavaScript modules
 			if(!tiddler.fields["plugin-type"] && type !== "application/javascript") {
@@ -43,9 +43,9 @@ function relinkTiddler(fromTitle, toTitle, options) {
 					relinkOperations[operation](tiddler, fromTitle, toTitle, changes, options);
 				}
 				if(Object.keys(changes).length > 0) {
-					var newTiddler = new $tw.Tiddler(tiddler,changes,self.getModificationFields())
+					var newTiddler = new $tw.Tiddler(tiddler,changes,this.getModificationFields())
 					newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
-					self.addTiddler(newTiddler);
+					this.addTiddler(newTiddler);
 				}
 			}
 		});

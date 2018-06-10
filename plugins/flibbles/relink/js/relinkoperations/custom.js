@@ -37,7 +37,7 @@ function getConfiguredFields(options) {
 	var fields = options[secretCache];
 	if (fields === undefined) {
 		fields = {};
-		$tw.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
+		options.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
 			if (title.startsWith(prefix)) {
 				var name = title.substr(prefix.length);
 				fields[name] = tiddler.fields.text;
