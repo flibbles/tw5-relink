@@ -26,6 +26,8 @@ exports['installed'] = function(tiddler, fromTitle, toTitle, changes, options) {
 				relink = utils.relinkList;
 			} else if (module.type === 'list') {
 				relink = utils.relinkStringList;
+			} else if (module.type === 'filter') {
+				relink = utils.relinkFilter;
 			} else {
 				relink = utils.relinkField;
 			}
