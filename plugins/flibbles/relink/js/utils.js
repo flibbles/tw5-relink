@@ -196,9 +196,9 @@ function parseFilterOperation(indexes, title, filterString, p) {
 			throw "Missing closing bracket in filter expression";
 		}
 		if (!operator.skip) {
-			operator.operand = filterString.substring(p,nextBracketPos);
+			var operand = filterString.substring(p,nextBracketPos);
 			// Check if this is a relevant operator
-			if (operator.operand === title
+			if (operand === title
 			&& (operator.operator === "title" || (operator.operator === "field" && operator.suffix === "title"))) {
 				indexes.push(p);
 			}

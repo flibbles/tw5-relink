@@ -141,6 +141,7 @@ it('keeps brackets', function() {
 
 it('added spaces', function() {
 	testFilter("A from B", "A [[to there]] B",{from: 'from'});
+	testFilter("from", "[[to there]]",{from: 'from'});
 });
 
 it('removed spaces', function() {
@@ -149,6 +150,7 @@ it('removed spaces', function() {
 	testFilter("A[[from here]] B", "A[[to]] B",{to: 'to'});
 	testFilter("[[from here]] B", "to B",{to: 'to'});
 	testFilter("A [[from here]]", "A to",{to: 'to'});
+	testFilter("[[from here]]", "to",{to: 'to'});
 });
 
 it('multiples', function() {
