@@ -1,4 +1,5 @@
 /*\
+tags: $:/tags/test-spec
 title: relink.js
 type: application/javascript
 module-type: test.relink
@@ -6,10 +7,8 @@ module-type: test.relink
 Tests the new relinking wiki methods.
 
 \*/
-$tw.describe('relink', function() {
-var it = $tw.it;
+describe('relink', function() {
 
-var expect = require('chai').expect;
 var logs;
 
 function collectLogs(scope) {
@@ -41,36 +40,40 @@ function relink(fields, options) {
 	return relinkedTiddler;
 };
 
+function testLog(messages) {
+	expect(logs).toEqual(messages);
+};
+
 it("doesn't touch ineligible tiddlers", function() {
 	var t = relink({tags: "nothing here", list: "other stuff"});
-	expect(t.fields).to.not.include.key('modified');
+	expect($tw.utils.hop(t.fields, 'modified')).toBe(false);
 });
 
 it("touches eligible tiddlers", function() {
 	var t = relink({tags: "[[from here]]"});
-	expect(t.fields).to.include.key('modified');
+	expect($tw.utils.hop(t.fields, 'modified')).toBe(true);
 });
 
 it('still relinks tags', function() {
 	var t = relink({"tags": "[[from here]] another"});
-	expect(t.fields.tags).to.eql(['to there', 'another']);
-	expect(logs).to.eql(["Renaming tag 'from here' to 'to there' of tiddler 'test'"]);
+	expect(t.fields.tags.slice()).toEqual(['to there', 'another']);
+	testLog(["Renaming tag 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('still respects dontRenameInTags', function() {
 	var t = relink({"tags": "[[from here]] another"}, {dontRenameInTags: true});
-	expect(t.fields.tags).to.eql(['from here', 'another']);
+	expect(t.fields.tags.slice()).toEqual(['from here', 'another']);
 });
 
 it('still relinks lists', function() {
 	var t = relink({"list": "[[from here]] another"});
-	expect(t.fields.list).to.eql(['to there', 'another']);
-	expect(logs).to.eql(["Renaming list item 'from here' to 'to there' of tiddler 'test'"]);
+	expect(t.fields.list.slice()).toEqual(['to there', 'another']);
+	testLog(["Renaming list item 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('still respects dontRenameInLists', function() {
 	var t = relink({"list": "[[from here]] another"}, {dontRenameInLists: true});
-	expect(t.fields.list).to.eql(['from here', 'another']);
+	expect(t.fields.list.slice()).toEqual(['from here', 'another']);
 });
 
 it('relinks custom field', function() {
@@ -78,8 +81,8 @@ it('relinks custom field', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({"title": title, "text": "field"});
 	var t = relink({"testUndef": "from here"}, {wiki: wiki});
-	expect(t.fields.testUndef).to.equal('to there');
-	expect(logs).to.eql(["Renaming testUndef field 'from here' to 'to there' of tiddler 'test'"]);
+	expect(t.fields.testUndef).toBe('to there');
+	testLog(["Renaming testUndef field 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('relinks custom list', function() {
@@ -87,29 +90,29 @@ it('relinks custom list', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({"title": title, "text": "list"});
 	var t = relink({"customList": "A [[from here]] B"}, {wiki: wiki});
-	expect(t.fields.customList).to.equal('A [[to there]] B');
-	expect(logs).to.eql(["Renaming customList item 'from here' to 'to there' of tiddler 'test'"]);
+	expect(t.fields.customList).toBe('A [[to there]] B');
+	testLog(["Renaming customList item 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('relinks installed tiddlerfield field', function() {
 	var t = relink({"testfield": "from here"});
-	expect(t.fields.testfield).to.equal('to there');
-	expect(logs).to.eql(["Renaming testfield field 'from here' to 'to there' of tiddler 'test'"]);
+	expect(t.fields.testfield).toBe('to there');
+	testLog(["Renaming testfield field 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('relinks installed tiddlerfield list', function() {
 	var t = relink({"testlist": "[[from here]] another"});
-	expect(t.fields.testlist).to.eql(['to there', 'another']);
-	expect(logs).to.eql(["Renaming testlist item 'from here' to 'to there' of tiddler 'test'"]);
+	expect(t.fields.testlist.slice(0)).toEqual(['to there', 'another']);
+	testLog(["Renaming testlist item 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('relinks installed tiddlerfield stringlist', function() {
 	var t = relink({"teststringlist": "[[from here]] another"});
-	expect(t.fields.teststringlist).to.equal('[[to there]] another');
-	expect(logs).to.eql(["Renaming teststringlist item 'from here' to 'to there' of tiddler 'test'"]);
+	expect(t.fields.teststringlist).toBe('[[to there]] another');
+	testLog(["Renaming teststringlist item 'from here' to 'to there' of tiddler 'test'"]);
 });
 
-$tw.describe("filter fields", function() {
+describe("filter fields", function() {
 
 function testFilter(filter, expected, options) {
 	var title = "$:/config/flibbles/relink/fields/customFilter";
@@ -118,12 +121,12 @@ function testFilter(filter, expected, options) {
 	options = options || {};
 	options.wiki = wiki;
 	var t = relink({customFilter: filter}, options);
-	expect(t.fields.customFilter).to.equal(expected);
+	expect(t.fields.customFilter).toBe(expected);
 };
 
 it('relinks and logs', function() {
 	testFilter("A [[from here]] B", 'A [[to there]] B');
-	expect(logs).to.eql(["Renaming customFilter operand 'from here' to 'to there'"]);
+	testLog(["Renaming customFilter operand 'from here' to 'to there'"]);
 });
 
 it('quotes', function() {

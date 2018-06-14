@@ -1,0 +1,17 @@
+{
+	"description": "Relink testing suite",
+	"config": {
+		"wikiTiddlersSubDir": "./test"
+	},
+	"plugins": [
+		"tiddlywiki/jasmine"
+	],
+	"themes": [
+		"tiddlywiki/vanilla",
+		"tiddlywiki/snowwhite"
+	],
+	"build": {
+		"index": [
+			"--rendertiddler","$:/core/save/all","test.html","text/plain"]
+	}
+}

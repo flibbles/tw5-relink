@@ -6,8 +6,8 @@
     "plugin_dir": "/usr/local/lib/node_modules/tiddlywiki/plugins/flibbles"
   },
   "scripts": {
-    "test": "mocha --reporter spec",
-    "build": "mkdir -p ${npm_package_config_plugin_dir} && cp -R ./plugins/flibbles/relink ${npm_package_config_plugin_dir}",
+    "test": "tiddlywiki --version",
+    "build": "mkdir -p ${npm_package_config_plugin_dir} && cp -R ./plugins/relink ${npm_package_config_plugin_dir}",
     "prebuild": "npm run clean",
     "clean": "rm -Rf ${npm_package_config_plugin_dir}/relink"
   },
@@ -15,11 +15,5 @@
     "type": "git"
   },
   "author": "Flibbles",
-  "license": "ISC",
-  "devDependencies": {
-    "tiddlywiki": "~5.1.15",
-    "mocha": "^5.0.5",
-    "chai": "^4.1.2",
-    "chai-helpers": "^0.4"
-  }
+  "license": "ISC"
 }
