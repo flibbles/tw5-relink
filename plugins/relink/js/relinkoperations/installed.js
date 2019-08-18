@@ -1,7 +1,4 @@
 /*\
-title: $:/plugins/flibbles/relink/js/relinkoperations/installed.js
-type: application/javascript
-module-type: relinkoperation
 
 Handles all fields registered as tiddlerfield modules, that //also// specify
 that they're 'relinkable': true.

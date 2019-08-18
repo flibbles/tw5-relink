@@ -25,7 +25,7 @@ exports.startup = function() {
 	$tw.Wiki.prototype.relinkTiddler = relinkTiddler;
 };
 
-var relinkOperations = {};
+var relinkOperations = Object.create(null);
 $tw.modules.applyMethods('relinkoperation', relinkOperations);
 
 function relinkTiddler(fromTitle, toTitle, options) {
@@ -42,6 +42,7 @@ function relinkTiddler(fromTitle, toTitle, options) {
 				for (var operation in relinkOperations) {
 					relinkOperations[operation](tiddler, fromTitle, toTitle, changes, options);
 				}
+				// If any fields changed, update tiddler
 				if(Object.keys(changes).length > 0) {
 					var newTiddler = new $tw.Tiddler(tiddler,changes,this.getModificationFields())
 					newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);

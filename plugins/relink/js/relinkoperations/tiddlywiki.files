@@ -1,0 +1,30 @@
+{
+	"directories": [
+		{
+			"path": ".",
+			"filesRegExp": "^.*\\.js$",
+			"isTiddlerFile": true,
+			"fields": {
+				"module-type": "relinkoperation",
+				"title": {
+					"source": "filename",
+					"prefix": "$:/plugins/flibbles/relink/js/relinkoperations/"
+				},
+				"type": "application/javascript"
+			}
+		},
+		{
+			"path": "./text",
+			"filesRegExp": "^.*\\.js$",
+			"isTiddlerFile": true,
+			"fields": {
+				"module-type": "relinktextoperation",
+				"title": {
+					"source": "filename",
+					"prefix": "$:/plugins/flibbles/relink/js/relinkoperations/text/"
+				},
+				"type": "application/javascript"
+			}
+		}
+	]
+}

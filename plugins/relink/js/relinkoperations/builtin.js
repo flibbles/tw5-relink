@@ -1,7 +1,4 @@
 /*\
-title: $:/plugins/flibbles/relink/js/relinkoperations/builtin.js
-type: application/javascript
-module-type: relinkoperation
 
 Explicitly handles 'list' and 'tags' so as to maintain vanilla behavior.
 

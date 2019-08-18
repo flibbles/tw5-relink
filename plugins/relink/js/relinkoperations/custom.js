@@ -1,7 +1,4 @@
 /*\
-title: $:/plugins/flibbles/relink/js/relinkoperations/custom.js
-type: application/javascript
-module-type: relinkoperation
 
 Handles all fields specified in the plugin configuration. Currently, this
 only supports single-value fields.
