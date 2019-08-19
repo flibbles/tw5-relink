@@ -119,11 +119,12 @@ describe("text filtering", function() {
 
 function testText(text, expected, options) {
 	if (typeof expected !== "string") {
-		options = expected;
+		options = expected || {};
 		if (options && options.ignored) {
 			expected = text;
 		} else {
-			expected = text.replace(/from here/g, "to there");
+			var from = options.from || "from here";
+			expected = text.replace(new RegExp(from, "g"), "to there");
 		}
 	}
 	options = options || {};
@@ -164,6 +165,15 @@ it('field attributes', function() {
 	testText(`<$link to="from here"`, {ignored: true});
 	testText(`<$LINK to="from here" />`, {ignored: true});
 	testText(`<$link TO="from here" />`, {ignored: true});
+});
+
+it('field attributes fun with quotes', function() {
+	function testQuote(from, to, options) {
+		testText(`<$link to=${from}/>`, `<$link to=${to}/>`, options);
+	};
+	testQuote(`from`, `'to there'`, {from: "from"});
+	testQuote(`from`, `"Jenny's"`, {from: "from", to: "Jenny's"});
+	testQuote(`'"good" boy'`, `"cat's"`, {from: '"good" boy', to: "cat's"});
 });
 
 });

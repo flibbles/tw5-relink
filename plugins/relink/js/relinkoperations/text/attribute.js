@@ -31,10 +31,13 @@ exports['attribute'] = function(tiddler, text, fromTitle, toTitle, options) {
 				var handler = new AttributeHandler(tiddler, attr.value);
 				var value = relink(handler, fromTitle, toTitle);
 				if (value != undefined) {
-					var valueStart = attr.end - 1 - attr.value.length;
+					var quote = determineQuote(text, attr);
+					// account for the quote if it's there.
+					var valueStart = attr.end - (quote.length*2) - attr.value.length;
 					builder.push(text.substring(buildIndex, valueStart));
-					builder.push(value);
-					buildIndex = valueStart + attr.value.length;
+					// If it wasn't quoted, quote it now to be safe.
+					builder.push(wrapValue(value, quote));
+					buildIndex = valueStart + attr.value.length + (quote.length*2);
 					isModified = true;
 				}
 			}
@@ -47,6 +50,44 @@ exports['attribute'] = function(tiddler, text, fromTitle, toTitle, options) {
 	}
 	return undefined;
 	//while ((ptr = text.indexOf('<', ptr)) > 0) {
+};
+
+/**Givin some text, and an attribute within that text, this returns
+ * what type of quotation that attribute is using.
+ */
+function determineQuote(text, attr) {
+	var pos = attr.end-1;
+	if (text.startsWith("'", pos)) {
+		return "'";
+	}
+	if (text.startsWith('"', pos)) {
+		if (text.startsWith('"""', pos-2)) {
+			return '"""';
+		} else {
+			return '"';
+		}
+	}
+	return '';
+};
+
+/**Tiddlywiki doesn't have escape characters for attribute values. Instead,
+ * we just have to find the type of quotes that'll work for the given title.
+ * There exist titles that simply can't be quoted.
+ * If it can stick with the preference, it will.
+ */
+function wrapValue(value, preference) {
+	var choices = ["'", '"', '"""'];
+	if (preference) {
+		if (value.indexOf(preference) < 0) {
+			return preference + value + preference;
+		}
+	}
+	for (var i = 0; i < choices.length; i++) {
+		if (value.indexOf(choices[i]) < 0) {
+			return choices[i] + value + choices[i];
+		}
+	}
+	throw new RuntimeError("Relink does not know how to relink to such a bizarre title: " + value);
 };
 
 function AttributeHandler(tiddler, value) {
