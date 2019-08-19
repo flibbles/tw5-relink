@@ -21,7 +21,7 @@ exports['text'] = function(tiddler, fromTitle, toTitle, changes, options) {
 		for (var operation in textOperations) {
 			// If the operation returns undefined, it means no
 			// changes were made.
-			var newText = textOperations[operation](text, fromTitle, toTitle, options);
+			var newText = textOperations[operation](tiddler, text, fromTitle, toTitle, options);
 			if (newText !== undefined) {
 				text = newText;
 				isModified = true;

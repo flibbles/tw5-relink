@@ -10,7 +10,7 @@ Handles replacement in wiki text inline rules, like:
 
 var regExp = /\[\[(.*?)(?:\|(.*?))?\]\]/mg;
 
-exports['prettylink'] = function(text, fromTitle, toTitle, options) {
+exports['prettylink'] = function(tiddler, text, fromTitle, toTitle, options) {
 	var modified = false;
 	var rtn = text.replace(regExp, function(match, desc, link) {
 		if (link === undefined && desc === fromTitle) {
