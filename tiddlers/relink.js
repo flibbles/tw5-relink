@@ -11,10 +11,13 @@ describe('relink', function() {
 
 var logs;
 
-function collectLogs(scope) {
+function collectLogs(scope, options) {
 	var oldLog = console.log,
 		logMessages = [];
 	console.log = function (message) { logMessages.push(message); };
+	if (options.debug) {
+		console.log = oldLog;
+	}
 	try {
 		scope.call();
 	} finally {
@@ -36,7 +39,7 @@ function relink(fields, options) {
 		wiki.addTiddler(tiddler);
 		wiki.renameTiddler(from, to, options);
 		relinkedTiddler = wiki.getTiddler(title);
-	});
+	}, options);
 	return relinkedTiddler;
 };
 
@@ -119,6 +122,9 @@ function testText(text, expected, options) {
 		options = expected;
 		expected = text.replace(/from here/g, "to there");
 	}
+	options = options || {};
+	options.wiki = new $tw.Wiki();
+	options.wiki.addTiddler({title: "$:/config/flibbles/relink/attributes/$link/to", text: "field"});
 	var t = relink({text: text}, options);
 	expect(t.fields.text).toEqual(expected);
 };
@@ -132,6 +138,10 @@ it('prettylinks', function() {
 	testText("Link to [[elsewhere]].");
 	testText("Link to [[desc|elsewhere]].");
 	testText("Multiple [[from here]] links [[description|from here]].");
+});
+
+it('attributes', function() {
+	testText(`<$link to="from here">caption</$link>`);
 });
 
 });
