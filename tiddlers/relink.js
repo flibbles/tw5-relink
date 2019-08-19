@@ -124,7 +124,8 @@ function testText(text, expected, options) {
 			expected = text;
 		} else {
 			var from = options.from || "from here";
-			expected = text.replace(new RegExp(from, "g"), "to there");
+			var to = options.to || "to there";
+			expected = text.replace(new RegExp(from, "g"), to);
 		}
 	}
 	options = options || {};
@@ -171,9 +172,18 @@ it('field attributes fun with quotes', function() {
 	function testQuote(from, to, options) {
 		testText(`<$link to=${from}/>`, `<$link to=${to}/>`, options);
 	};
+	testQuote(`"""from here"""`, `"""to there"""`);
 	testQuote(`from`, `'to there'`, {from: "from"});
 	testQuote(`from`, `"Jenny's"`, {from: "from", to: "Jenny's"});
 	testQuote(`'"good" boy'`, `"cat's"`, {from: '"good" boy', to: "cat's"});
+	testQuote(`"""from here"""`, `'love """ hate'`, {to: 'love """ hate'});
+
+	// It prefers quoteless when given quoteless, but only when possible.
+	testQuote(`love`, `hate`, {from: "love", to: "hate"});
+	testQuote(`love`, `"lover's"`, {from: "love", to: "lover's"});
+	$tw.utils.each('= <>/"\n\t', function(ch) {
+		testQuote(`A`, `'te${ch}st'`, {from: "A", to: `te${ch}st`});
+	});
 });
 
 });

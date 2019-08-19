@@ -81,6 +81,10 @@ function wrapValue(value, preference) {
 		if (value.indexOf(preference) < 0) {
 			return preference + value + preference;
 		}
+	} else if (preference === '') {
+		if (!/([\/\s<>"'=])/.test(value)) {
+			return value;
+		}
 	}
 	for (var i = 0; i < choices.length; i++) {
 		if (value.indexOf(choices[i]) < 0) {
