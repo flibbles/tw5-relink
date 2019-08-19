@@ -115,19 +115,23 @@ it('relinks installed tiddlerfield stringlist', function() {
 describe("text filtering", function() {
 
 function testText(text, expected, options) {
+	if (typeof expected !== "string") {
+		options = expected;
+		expected = text.replace(/from here/g, "to there");
+	}
 	var t = relink({text: text}, options);
 	expect(t.fields.text).toEqual(expected);
 };
 
 it('prettylinks', function() {
-	testText("Link to [[from here]].", "Link to [[to there]].");
-	testText("Link to [[description|from here]].", "Link to [[description|to there]].");
-	testText("Link to [[weird]desc|from here]].", "Link to [[weird]desc|to there]].");
+	testText("Link to [[from here]].");
+	testText("Link to [[description|from here]].");
+	testText("Link to [[weird]desc|from here]].");
 	testText("Link to [[it is from here|from here]].", "Link to [[it is from here|to there]].");
 	testText("Link [[new\nline|from here]].", "Link [[new\nline|from here]].");
-	testText("Link to [[elsewhere]].", "Link to [[elsewhere]].");
-	testText("Link to [[desc|elsewhere]].", "Link to [[desc|elsewhere]].");
-	testText("Multiple [[from here]] links [[description|from here]].", "Multiple [[to there]] links [[description|to there]].");
+	testText("Link to [[elsewhere]].");
+	testText("Link to [[desc|elsewhere]].");
+	testText("Multiple [[from here]] links [[description|from here]].");
 });
 
 });
