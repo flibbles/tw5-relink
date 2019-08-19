@@ -10,7 +10,7 @@ only supports single-value fields.
 "use strict";
 
 var prefix = "$:/config/flibbles/relink/fields/";
-var secretCache = "__relink_custom_cache";
+var secretCache = "__relink_custom";
 
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 
