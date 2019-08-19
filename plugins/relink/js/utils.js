@@ -12,12 +12,34 @@ parts.
 /*global $tw: false */
 "use strict";
 
-exports.relinkStringList = function(tiddler, field, fromTitle, toTitle) {
-	var list = $tw.utils.parseStringArray(tiddler.fields[field] || ""),
+exports.FieldHandler = function(tiddler, field) {
+	this.tiddler = tiddler;
+	this.field = field;
+};
+
+exports.FieldHandler.prototype.value = function() {
+	return this.tiddler.fields[this.field];
+};
+
+exports.FieldHandler.prototype.descriptor = function(adjective) {
+	if (this.field === "tags") {
+		return "tag";
+	} else if (adjective) {
+		return this.field + " " + adjective;
+	} else {
+		return this.field;
+	}
+};
+
+exports.AttributeHandler = function(tiddler) {
+};
+
+exports.relinkStringList = function(handler, fromTitle, toTitle) {
+	var list = $tw.utils.parseStringArray(handler.value() || ""),
 		isModified = false;
 	$tw.utils.each(list,function (title,index) {
 		if(title === fromTitle) {
-console.log(`Renaming ${field} item '${list[index]}' to '${toTitle}' of tiddler '${tiddler.fields.title}'`);
+console.log(`Renaming ${handler.descriptor('item')} '${list[index]}' to '${toTitle}' of tiddler '${handler.tiddler.fields.title}'`);
 			list[index] = toTitle;
 			isModified = true;
 		}
@@ -28,13 +50,13 @@ console.log(`Renaming ${field} item '${list[index]}' to '${toTitle}' of tiddler 
 	return undefined;
 };
 
-exports.relinkList = function(tiddler, field, fromTitle, toTitle) {
-	var list = (tiddler.fields[field] || []).slice(0),
-		isModified = false,
-		descriptor = (field === "tags")? "tag": (field + " item");
+// This expects the handler to return a list, not a string.
+exports.relinkList = function(handler, fromTitle, toTitle) {
+	var list = (handler.value() || []).slice(0),
+		isModified = false;
 	$tw.utils.each(list,function (title,index) {
 		if(title === fromTitle) {
-console.log(`Renaming ${descriptor} '${list[index]}' to '${toTitle}' of tiddler '${tiddler.fields.title}'`);
+console.log(`Renaming ${handler.descriptor('item')} '${list[index]}' to '${toTitle}' of tiddler '${handler.tiddler.fields.title}'`);
 			list[index] = toTitle;
 			isModified = true;
 		}
@@ -45,17 +67,17 @@ console.log(`Renaming ${descriptor} '${list[index]}' to '${toTitle}' of tiddler 
 	return undefined;
 };
 
-exports.relinkField = function(tiddler, field, fromTitle, toTitle) {
-	var fieldValue = (tiddler.fields[field] || "");
+exports.relinkField = function(handler, fromTitle, toTitle) {
+	var fieldValue = (handler.value() || "");
 	if (fieldValue === fromTitle) {
-		console.log(`Renaming ${field} field '${fieldValue}' to '${toTitle}' of tiddler '${tiddler.fields.title}'`);
+		console.log(`Renaming ${handler.descriptor('field')} '${fieldValue}' to '${toTitle}' of tiddler '${handler.tiddler.fields.title}'`);
 		return toTitle;
 	}
 	return undefined;
 };
 
-exports.relinkFilter = function(tiddler, field, fromTitle, toTitle) {
-	var filter = tiddler.fields[field],
+exports.relinkFilter = function(handler, fromTitle, toTitle) {
+	var filter = handler.value(),
 		indices;
 	if (filter && filter.indexOf(fromTitle) >= 0) {
 		try {
@@ -87,7 +109,7 @@ exports.relinkFilter = function(tiddler, field, fromTitle, toTitle) {
 					}
 				}
 				filter = filter.slice(0, index) + to + filter.slice(index + fromLength);
-				console.log(`Renaming ${field} operand '${fromTitle}' to '${toTitle}'`);
+				console.log(`Renaming ${handler.descriptor('operand')} '${fromTitle}' to '${toTitle}'`);
 			}
 			return filter;
 		}

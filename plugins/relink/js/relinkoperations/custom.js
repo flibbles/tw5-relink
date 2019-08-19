@@ -29,7 +29,8 @@ exports['custom'] = function(tiddler, fromTitle, toTitle, changes, options) {
 			relink = utils.relinkField;
 			break;
 		}
-		var value = relink(tiddler, field, fromTitle, toTitle);
+		var handler = new utils.FieldHandler(tiddler, field);
+		var value = relink(handler, fromTitle, toTitle);
 		if (value !== undefined) {
 			changes[field] = value;
 		}

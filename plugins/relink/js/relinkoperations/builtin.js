@@ -12,7 +12,8 @@ var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 
 exports['builtin'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	function relink(field) {
-		var val = utils.relinkList(tiddler, field, fromTitle, toTitle);
+		var handler = new utils.FieldHandler(tiddler, field);
+		var val = utils.relinkList(handler, fromTitle, toTitle);
 		if (val !== undefined) {
 			changes[field] = val;
 		}
