@@ -9,7 +9,7 @@ Handles replacement in attributes of widgets and html elements
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 var prefix = "$:/config/flibbles/relink/attributes/";
 var secretCache = "__relink_text_attributes";
-var elemRegExp = /<([^\/ ][^ ]*)(\s+[^>]+)\/?>/g;
+var elemRegExp = /<([^\/ ][\S]*)([\s]+[^>]+)\/?>/g;
 var attrRegExp = /([\S=]+)(\s*=\s*['"])(.*?)['"]/g;
 
 //newlines in element
@@ -39,7 +39,7 @@ exports['attribute'] = function(tiddler, text, fromTitle, toTitle, options) {
 			var value = relink(handler, fromTitle, toTitle);
 			if (value != undefined) {
 				var valueStart = match.index + match[1].length + 1 + attr.index + attr[1].length + attr[2].length;
-				builder.push(text.substr(buildIndex, valueStart));
+				builder.push(text.substring(buildIndex, valueStart));
 				builder.push(value);
 				buildIndex = valueStart + attr[3].length;
 

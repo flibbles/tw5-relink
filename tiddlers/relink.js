@@ -142,6 +142,14 @@ it('prettylinks', function() {
 
 it('attributes', function() {
 	testText(`<$link to="from here">caption</$link>`);
+	testText(`<$link to='from here'>caption</$link>`);
+	testText(`<$link tag="div" to="from here">caption</$link>`);
+	testText(`<$link to='from here'>caption</$link><$link to="from here">another</$link>`);
+	testText(`<$link to    =   "from here">caption</$link>`);
+	testText("<$link\nto='from here'>caption</$link>");
+	testText("<$link\ntag='div'\nto='from here'>caption</$link>");
+	testText("<$link\n\ttag='div'\n\tto='from here'>caption</$link>");
+	testText(`Beginning text <$link to="from here">caption</$link> ending`);
 });
 
 });
