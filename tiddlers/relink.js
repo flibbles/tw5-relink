@@ -146,7 +146,7 @@ function testFilter(filter, expected, options) {
 
 it('relinks and logs', function() {
 	testFilter("A [[from here]] B", 'A [[to there]] B');
-	testLog(["Renaming customFilter operand 'from here' to 'to there'"]);
+	testLog(["Renaming customFilter operand 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('quotes', function() {
