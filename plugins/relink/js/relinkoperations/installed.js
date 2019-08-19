@@ -18,18 +18,9 @@ exports['installed'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	$tw.utils.each(installed, function(module, field) {
 		var value = tiddler.fields[field];
 		if (value) {
-			var relink;
-			if (typeof value !== 'string') {
-				relink = utils.relinkList;
-			} else if (module.type === 'list') {
-				relink = utils.relinkStringList;
-			} else if (module.type === 'filter') {
-				relink = utils.relinkFilter;
-			} else {
-				relink = utils.relinkField;
-			}
+			var relink = utils.selectRelinker(module.type, value);
 			var handler = new utils.FieldHandler(tiddler, field);
-			var value = relink(handler, fromTitle, toTitle);
+			value = relink(handler, fromTitle, toTitle);
 			if (value != undefined) {
 				changes[field] = value;
 			}

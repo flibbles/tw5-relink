@@ -35,7 +35,15 @@ exports.FieldHandler.prototype.log = function(adjective, from, to) {
 	console.log(`Renaming ${this.descriptor(adjective)} '${from}' to '${to}' of tiddler '${this.tiddler.fields.title}'`);
 };
 
-exports.AttributeHandler = function(tiddler) {
+exports.selectRelinker = function(type, value) {
+	if (value !== undefined && typeof value !== 'string') {
+		return exports.relinkList;
+	} if (type === 'list') {
+		return exports.relinkStringList;
+	} if (type === 'filter') {
+		return exports.relinkFilter;
+	}
+	return exports.relinkField;
 };
 
 exports.relinkStringList = function(handler, fromTitle, toTitle) {

@@ -17,18 +17,7 @@ var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 exports['custom'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = getConfiguredFields(options);
 	$tw.utils.each(fields, function(type, field) {
-		var relink;
-		switch (type) {
-		case 'list':
-			relink = utils.relinkStringList;
-			break;
-		case 'filter':
-			relink = utils.relinkFilter;
-			break;
-		default:
-			relink = utils.relinkField;
-			break;
-		}
+		var relink = utils.selectRelinker(type);
 		var handler = new utils.FieldHandler(tiddler, field);
 		var value = relink(handler, fromTitle, toTitle);
 		if (value !== undefined) {
