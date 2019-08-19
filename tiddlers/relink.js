@@ -166,6 +166,16 @@ it('field attributes', function() {
 	testText(`<$link to="from here"`, {ignored: true});
 	testText(`<$LINK to="from here" />`, {ignored: true});
 	testText(`<$link TO="from here" />`, {ignored: true});
+	testText(`<$link to=<<from>> />`, {from: "from", ignored: true});
+});
+
+it('field attributes with true', function() {
+	testText(`<$link trueAttr to="from here">caption</$link>`);
+	testText(`<$link to />`);
+	testText(`<$link to />`, `<$link to='to there' />`, {from: "true"});
+	testText(`<$link to/> <$link to=true/>`, `<$link to='to there'/> <$link to='to there'/>`, {from: "true"});
+	testText(`<$link to /> <$link to=true />`, `<$link to='to there' /> <$link to='to there' />`, {from: "true"});
+	testText(`<$link to       /> <$link to=true />`, `<$link to='to there'       /> <$link to='to there' />`, {from: "true"});
 });
 
 it('field attributes fun with quotes', function() {

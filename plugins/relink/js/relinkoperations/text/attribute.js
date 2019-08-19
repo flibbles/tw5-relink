@@ -31,13 +31,25 @@ exports['attribute'] = function(tiddler, text, fromTitle, toTitle, options) {
 				var handler = new AttributeHandler(tiddler, attr.value);
 				var value = relink(handler, fromTitle, toTitle);
 				if (value != undefined) {
-					var quote = determineQuote(text, attr);
-					// account for the quote if it's there.
-					var valueStart = attr.end - (quote.length*2) - attr.value.length;
-					builder.push(text.substring(buildIndex, valueStart));
-					// If it wasn't quoted, quote it now to be safe.
-					builder.push(wrapValue(value, quote));
-					buildIndex = valueStart + attr.value.length + (quote.length*2);
+					// This is the rare case of changing
+					// title "true" to something else when
+					// "true" is implicit, like <$link to />
+					var nextEql = text.indexOf('=', attr.start);
+					if (nextEql < 0 || nextEql > attr.end) {
+						var realEnd = attr.start + attributeName.length+1;
+						builder.push(text.substring(buildIndex, realEnd));
+						builder.push('=');
+						builder.push(wrapValue(value, ''));
+						buildIndex = realEnd;
+					} else {
+						var quote = determineQuote(text, attr);
+						// account for the quote if it's there.
+						var valueStart = attr.end - (quote.length*2) - attr.value.length;
+						builder.push(text.substring(buildIndex, valueStart));
+						// If it wasn't quoted, quote it now to be safe.
+						builder.push(wrapValue(value, quote));
+						buildIndex = valueStart + attr.value.length + (quote.length*2);
+					}
 					isModified = true;
 				}
 			}
