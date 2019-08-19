@@ -12,7 +12,7 @@ parts.
 /*global $tw: false */
 "use strict";
 
-exports.relinkStringList = function(tiddler, field, fromTitle, toTitle, changes) {
+exports.relinkStringList = function(tiddler, field, fromTitle, toTitle) {
 	var list = $tw.utils.parseStringArray(tiddler.fields[field] || ""),
 		isModified = false;
 	$tw.utils.each(list,function (title,index) {
@@ -23,11 +23,12 @@ console.log(`Renaming ${field} item '${list[index]}' to '${toTitle}' of tiddler 
 		}
 	});
 	if (isModified) {
-		changes[field] = $tw.utils.stringifyList(list);
+		return $tw.utils.stringifyList(list);
 	}
+	return undefined;
 };
 
-exports.relinkList = function(tiddler, field, fromTitle, toTitle, changes) {
+exports.relinkList = function(tiddler, field, fromTitle, toTitle) {
 	var list = (tiddler.fields[field] || []).slice(0),
 		isModified = false,
 		descriptor = (field === "tags")? "tag": (field + " item");
@@ -39,19 +40,21 @@ console.log(`Renaming ${descriptor} '${list[index]}' to '${toTitle}' of tiddler 
 		}
 	});
 	if (isModified) {
-		changes[field] = list;
+		return list;
 	}
+	return undefined;
 };
 
-exports.relinkField = function(tiddler, field, fromTitle, toTitle, changes) {
+exports.relinkField = function(tiddler, field, fromTitle, toTitle) {
 	var fieldValue = (tiddler.fields[field] || "");
 	if (fieldValue === fromTitle) {
-console.log(`Renaming ${field} field '${fieldValue}' to '${toTitle}' of tiddler '${tiddler.fields.title}'`);
-		changes[field] = toTitle;
+		console.log(`Renaming ${field} field '${fieldValue}' to '${toTitle}' of tiddler '${tiddler.fields.title}'`);
+		return toTitle;
 	}
+	return undefined;
 };
 
-exports.relinkFilter = function(tiddler, field, fromTitle, toTitle, changes) {
+exports.relinkFilter = function(tiddler, field, fromTitle, toTitle) {
 	var filter = tiddler.fields[field],
 		indices;
 	if (filter && filter.indexOf(fromTitle) >= 0) {
@@ -86,9 +89,10 @@ exports.relinkFilter = function(tiddler, field, fromTitle, toTitle, changes) {
 				filter = filter.slice(0, index) + to + filter.slice(index + fromLength);
 				console.log(`Renaming ${field} operand '${fromTitle}' to '${toTitle}'`);
 			}
-			changes[field] = filter;
+			return filter;
 		}
 	}
+	return undefined;
 };
 
 // Returns an array of indices to replace

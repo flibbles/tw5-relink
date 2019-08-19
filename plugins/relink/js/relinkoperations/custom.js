@@ -29,7 +29,10 @@ exports['custom'] = function(tiddler, fromTitle, toTitle, changes, options) {
 			relink = utils.relinkField;
 			break;
 		}
-		relink(tiddler, field, fromTitle, toTitle, changes);
+		var value = relink(tiddler, field, fromTitle, toTitle);
+		if (value !== undefined) {
+			changes[field] = value;
+		}
 	});
 };
 

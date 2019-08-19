@@ -28,7 +28,10 @@ exports['installed'] = function(tiddler, fromTitle, toTitle, changes, options) {
 			} else {
 				relink = utils.relinkField;
 			}
-			relink(tiddler, field, fromTitle, toTitle, changes);
+			var value = relink(tiddler, field, fromTitle, toTitle);
+			if (value != undefined) {
+				changes[field] = value;
+			}
 		}
 	});
 };

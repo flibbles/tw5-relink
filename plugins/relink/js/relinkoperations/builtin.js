@@ -11,10 +11,16 @@ Explicitly handles 'list' and 'tags' so as to maintain vanilla behavior.
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 
 exports['builtin'] = function(tiddler, fromTitle, toTitle, changes, options) {
+	function relink(field) {
+		var val = utils.relinkList(tiddler, field, fromTitle, toTitle);
+		if (val !== undefined) {
+			changes[field] = val;
+		}
+	};
 	if(!options.dontRenameInTags) {
-		utils.relinkList(tiddler, "tags", fromTitle, toTitle, changes);
+		relink("tags");
 	}
 	if(!options.dontRenameInLists) { // Rename lists
-		utils.relinkList(tiddler, "list", fromTitle, toTitle, changes);
+		relink("list");
 	}
 };
