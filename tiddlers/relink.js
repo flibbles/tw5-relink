@@ -120,7 +120,11 @@ describe("text filtering", function() {
 function testText(text, expected, options) {
 	if (typeof expected !== "string") {
 		options = expected;
-		expected = text.replace(/from here/g, "to there");
+		if (options && options.ignored) {
+			expected = text;
+		} else {
+			expected = text.replace(/from here/g, "to there");
+		}
 	}
 	options = options || {};
 	options.wiki = new $tw.Wiki();
@@ -140,16 +144,26 @@ it('prettylinks', function() {
 	testText("Multiple [[from here]] links [[description|from here]].");
 });
 
-it('attributes', function() {
+it('field attributes', function() {
 	testText(`<$link to="from here">caption</$link>`);
 	testText(`<$link to='from here'>caption</$link>`);
+	testText(`<$link to='from here' />`);
 	testText(`<$link tag="div" to="from here">caption</$link>`);
+	testText(`<$link aria-label="true" to="from here">caption</$link>`);
 	testText(`<$link to='from here'>caption</$link><$link to="from here">another</$link>`);
 	testText(`<$link to    =   "from here">caption</$link>`);
 	testText("<$link\nto='from here'>caption</$link>");
+	testText("<$link to='from here'\n/>");
 	testText("<$link\ntag='div'\nto='from here'>caption</$link>");
 	testText("<$link\n\ttag='div'\n\tto='from here'>caption</$link>");
 	testText(`Beginning text <$link to="from here">caption</$link> ending`);
+	// extra tricky
+	testText(`<$link tooltip="link -> dest" to="from here" />`);
+	// ignores
+	testText(`<$link >to="from here"</$link>`, {ignored: true});
+	testText(`<$link to="from here"`, {ignored: true});
+	testText(`<$LINK to="from here" />`, {ignored: true});
+	testText(`<$link TO="from here" />`, {ignored: true});
 });
 
 });

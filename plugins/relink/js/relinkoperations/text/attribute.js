@@ -7,45 +7,39 @@ Handles replacement in attributes of widgets and html elements
 \*/
 
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var prefix = "$:/config/flibbles/relink/attributes/";
 var secretCache = "__relink_text_attributes";
-var elemRegExp = /<([^\/ ][\S]*)([\s]+[^>]+)\/?>/g;
-var attrRegExp = /([\S=]+)(\s*=\s*['"])(.*?)['"]/g;
-
-//newlines in element
-// "<elem> attr="from here""
 
 exports['attribute'] = function(tiddler, text, fromTitle, toTitle, options) {
-	var attributes = getManagedAttributes(options),
+	var managedElements = getManagedAttributes(options),
 		isModified = false,
 		builder = [],
 		buildIndex = 0,
-		match,
-		attr;
-	elemRegExp.lastIndex = 0;
-	while (match = elemRegExp.exec(text)) {
-		var element = attributes[match[1]];
-		if (!element) {
-			continue;
-		}
-		attrRegExp.lastIndex = 0;
-		while(attr = attrRegExp.exec(match[2])) {
-			var attribute = element[attr[1]];
-			if (!attribute) {
-				continue;
-			}
-			var relink = utils.selectRelinker(attribute);
-			var handler = new AttributeHandler(tiddler, attr[3]);
-			var value = relink(handler, fromTitle, toTitle);
-			if (value != undefined) {
-				var valueStart = match.index + match[1].length + 1 + attr.index + attr[1].length + attr[2].length;
-				builder.push(text.substring(buildIndex, valueStart));
-				builder.push(value);
-				buildIndex = valueStart + attr[3].length;
-
-				isModified = true;
+		index = 0,
+		match;
+	while (match = html.findNextTag(text, index, options)) {
+		var managedElement = managedElements[match.tag];
+		if (managedElement) {
+			for (var attributeName in match.attributes) {
+				var expectedType = managedElement[attributeName];
+				if (!expectedType) {
+					continue;
+				}
+				var attr = match.attributes[attributeName];
+				var relink = utils.selectRelinker(expectedType);
+				var handler = new AttributeHandler(tiddler, attr.value);
+				var value = relink(handler, fromTitle, toTitle);
+				if (value != undefined) {
+					var valueStart = attr.end - 1 - attr.value.length;
+					builder.push(text.substring(buildIndex, valueStart));
+					builder.push(value);
+					buildIndex = valueStart + attr.value.length;
+					isModified = true;
+				}
 			}
 		}
+		index = match.end;
 	}
 	if (isModified) {
 		builder.push(text.substr(buildIndex));
