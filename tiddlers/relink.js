@@ -130,13 +130,17 @@ function testText(text, expected, options) {
 	}
 	options = options || {};
 	options.wiki = new $tw.Wiki();
-	options.wiki.addTiddler({title: "$:/config/flibbles/relink/attributes/$link/to", text: "field"});
+	var prefix = "$:/config/flibbles/relink/attributes/";
+	options.wiki.addTiddlers([
+		{title: prefix + "$link/to", text: "field"},
+		{title: prefix + "$list/filter", text: "filter"}
+	]);
 	var t = relink({text: text}, options);
 	expect(t.fields.text).toEqual(expected);
 };
 
 it('prettylinks', function() {
-	testText("Link to [[from here]].");
+	testText("Link to [[from here]].", {debug: true});
 	testText("Link to [[description|from here]].");
 	testText("Link to [[weird]desc|from here]].");
 	testText("Link to [[it is from here|from here]].", "Link to [[it is from here|to there]].");
@@ -147,9 +151,10 @@ it('prettylinks', function() {
 });
 
 it('field attributes', function() {
-	testText(`<$link to="from here">caption</$link>`);
+	testText('<$link to="from here">caption</$link>');
 	testText(`<$link to='from here'>caption</$link>`);
 	testText(`<$link to='from here' />`);
+	testText('Before <$link to="from here">caption</$link> After');
 	testText(`<$link tag="div" to="from here">caption</$link>`);
 	testText(`<$link aria-label="true" to="from here">caption</$link>`);
 	testText(`<$link to='from here'>caption</$link><$link to="from here">another</$link>`);
@@ -194,6 +199,11 @@ it('field attributes fun with quotes', function() {
 	$tw.utils.each('= <>/"\n\t', function(ch) {
 		testQuote(`A`, `'te${ch}st'`, {from: "A", to: `te${ch}st`});
 	});
+});
+
+it('filter attributes', function() {
+	testText(`<$list filter="A [[from here]] B" />`);
+	testText(`<$list nothing="A [[from here]] B" />`, {ignored: true});
 });
 
 });

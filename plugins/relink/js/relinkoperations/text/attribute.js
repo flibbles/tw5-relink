@@ -11,54 +11,44 @@ var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var prefix = "$:/config/flibbles/relink/attributes/";
 var secretCache = "__relink_text_attributes";
 
-exports['attribute'] = function(tiddler, text, fromTitle, toTitle, options) {
-	var managedElements = getManagedAttributes(options),
-		isModified = false,
+exports['html'] = function(tiddler, text, fromTitle, toTitle, parser, pos, options) {
+	var managedElement = getManagedAttributes(options)[this.nextTag.tag],
 		builder = [],
-		buildIndex = 0,
-		index = 0,
-		match;
-	while (match = html.findNextTag(text, index, options)) {
-		var managedElement = managedElements[match.tag];
-		if (managedElement) {
-			for (var attributeName in match.attributes) {
-				var expectedType = managedElement[attributeName];
-				if (!expectedType) {
+		buildIndex = pos;
+	if (managedElement) {
+		for (var attributeName in this.nextTag.attributes) {
+			var expectedType = managedElement[attributeName];
+			if (!expectedType) {
+				continue;
+			}
+			var attr = this.nextTag.attributes[attributeName];
+			var relink = utils.selectRelinker(expectedType);
+			var handler = new AttributeHandler(tiddler, attr.value);
+			var value = relink(handler, fromTitle, toTitle);
+			if (value != undefined) {
+				var nextEql = text.indexOf('=', attr.start);
+				// This is the rare case of changing title "true"
+				// to something else when "true" is implicit,
+				// like <$link to /> We ignore those.
+				if (nextEql < 0 || nextEql > attr.end) {
 					continue;
 				}
-				var attr = match.attributes[attributeName];
-				var relink = utils.selectRelinker(expectedType);
-				var handler = new AttributeHandler(tiddler, attr.value);
-				var value = relink(handler, fromTitle, toTitle);
-				if (value != undefined) {
-					var nextEql = text.indexOf('=', attr.start);
-					// This is the rare case of changing
-					// title "true" to something else when
-					// "true" is implicit, like <$link to />
-					// We ignore those.
-					if (nextEql < 0 || nextEql > attr.end) {
-						continue;
-					}
-					var quote = determineQuote(text, attr);
-					console.log("QUOTE:", quote);
-					// account for the quote if it's there.
-					var valueStart = attr.end - (quote.length*2) - attr.value.length;
-					builder.push(text.substring(buildIndex, valueStart));
-					// If it wasn't quoted, quote it now to be safe.
-					builder.push(wrapValue(value, quote));
-					buildIndex = valueStart + attr.value.length + (quote.length*2);
-					isModified = true;
-				}
+				var quote = determineQuote(text, attr);
+				// account for the quote if it's there.
+				var valueStart = attr.end - (quote.length*2) - attr.value.length;
+				builder.push(text.substring(buildIndex, valueStart));
+				// If it wasn't quoted, quote it now to be safe.
+				builder.push(wrapValue(value, quote));
+				buildIndex = valueStart + attr.value.length + (quote.length*2);
 			}
 		}
-		index = match.end;
 	}
-	if (isModified) {
-		builder.push(text.substr(buildIndex));
+	parser.pos = this.nextTag.end;
+	if (builder.length > 0) {
+		builder.push(text.substring(buildIndex, this.nextTag.end));
 		return builder.join('');
 	}
 	return undefined;
-	//while ((ptr = text.indexOf('<', ptr)) > 0) {
 };
 
 /**Givin some text, and an attribute within that text, this returns

@@ -8,19 +8,14 @@ Handles replacement in wiki text inline rules, like:
 
 \*/
 
-var regExp = /\[\[(.*?)(?:\|(.*?))?\]\]/mg;
-
-exports['prettylink'] = function(tiddler, text, fromTitle, toTitle, options) {
-	var modified = false;
-	var rtn = text.replace(regExp, function(match, desc, link) {
-		if (link === undefined && desc === fromTitle) {
-			modified = true;
-			return "[[" + toTitle + "]]";
-		}
-		if (link === fromTitle) {
-			modified = true;
-			return "[[" + desc + "|" + toTitle + "]]";
-		}
-	});
-	return modified ? rtn : undefined;
+exports['prettylink'] = function(tiddler, text, fromTitle, toTitle, parser, pos, options) {
+	parser.pos = this.matchRegExp.lastIndex;
+	var m = this.match;
+	if (m[2] === undefined && m[1] === fromTitle) {
+		return "[[" + toTitle + "]]";
+	}
+	if (m[2] === fromTitle) {
+		return "[[" + m[1] + "|" + toTitle + "]]";
+	}
+	return undefined;
 };
