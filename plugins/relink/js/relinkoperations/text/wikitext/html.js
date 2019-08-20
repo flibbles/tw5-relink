@@ -1,6 +1,8 @@
 /*\
 
 Handles replacement in attributes of widgets and html elements
+This is configurable to select exactly which attributes of which elements
+should be changed.
 
 <$link to="TiddlerTitle" />
 
@@ -22,25 +24,30 @@ exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
 				continue;
 			}
 			var attr = this.nextTag.attributes[attributeName];
+			var nextEql = text.indexOf('=', attr.start);
+			// This is the rare case of changing tiddler
+			// "true" to something else when "true" is
+			// implicit, like <$link to /> We ignore those.
+			if (nextEql < 0 || nextEql > attr.end) {
+				continue;
+			}
 			var relink = utils.selectRelinker(expectedType);
 			var handler = new AttributeHandler(tiddler, attr.value);
 			var value = relink(handler, fromTitle, toTitle);
-			if (value != undefined) {
-				var nextEql = text.indexOf('=', attr.start);
-				// This is the rare case of changing title "true"
-				// to something else when "true" is implicit,
-				// like <$link to /> We ignore those.
-				if (nextEql < 0 || nextEql > attr.end) {
-					continue;
-				}
-				var quote = determineQuote(text, attr);
-				// account for the quote if it's there.
-				var valueStart = attr.end - (quote.length*2) - attr.value.length;
-				builder.push(text.substring(buildIndex, valueStart));
-				// If it wasn't quoted, quote it now to be safe.
-				builder.push(wrapValue(value, quote));
-				buildIndex = valueStart + attr.value.length + (quote.length*2);
+			if (value === undefined) {
+				continue;
 			}
+			var quote = determineQuote(text, attr);
+			// account for the quote if it's there.
+			var valueStart = attr.end
+			               - (quote.length*2)
+			               - attr.value.length;
+			builder.push(text.substring(buildIndex, valueStart));
+			// If it wasn't quoted, quote it now to be safe.
+			builder.push(wrapValue(value, quote));
+			buildIndex = valueStart
+			           + attr.value.length
+			           + (quote.length*2);
 		}
 	}
 	this.parser.pos = this.nextTag.end;
