@@ -3,10 +3,17 @@ tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 
 \define prefix-attr() $:/config/flibbles/relink/attributes/
+\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
+\define state-base() $:/state/flibbles/relink/
 
-<table><tbody><$list filter="[all[shadows+tiddlers]prefix<prefix-attr>!has[draft.of]]" variable="listItem">
-<$set name="element" filter="[<listItem>removeprefix<prefix-attr>splitbefore[/]removesuffix[/]]">
-<$set name="attribute" filter="[<listItem>removeprefix<prefix-attr>removeprefix<element>removeprefix[/]]">
+\define body()
+<table><tbody>
+<$list variable="listItem"
+       filter="[all[shadows+tiddlers]prefix<prefix-attr>!has[draft.of]]">
+<$set name="element"
+      filter="[<listItem>removeprefix<prefix-attr>splitbefore[/]removesuffix[/]]">
+<$set name="attribute"
+      filter="[<listItem>removeprefix<prefix-attr>removeprefix<element>removeprefix[/]]">
 <tr>
 <td><$text text=<<element>> /></td>
 <td><$text text=<<attribute>> /></td>
@@ -21,7 +28,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 <$action-deletetiddler $tiddler=<<listItem>> />
 <$list filter="[<tv-config-toolbar-icons>prefix[yes]]">{{$:/core/images/delete-button}}</$list>
 <$list filter="[<tv-config-toolbar-text>prefix[yes]]">
-<span class="tc-btn-text"><$text text={{$:/language/Buttons/Delete/Caption}}/></span>
+<span class="tc-btn-text"><$text text={{$(ling-base)$Delete/Caption}}/></span>
 </$list>
 </$list></$button></td>
 </tr>
@@ -29,13 +36,20 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 </tbody></table>
 
 <em class="tc-edit">Add a new attribute:</em>
-<$edit-text tiddler="$:/state/flibbles/relink/element-name" tag="input" default="" placeholder="widget/element" />
-<$edit-text tiddler="$:/state/flibbles/relink/attribute-name" tag="input" default="" placeholder="attribute" />
-<$button tooltip={{$:/plugins/flibbles/relink/language/Buttons/NewAttribute/Hint}} aria-label={{$:/plugins/flibbles/relink/language/Buttons/NewAttribute/Caption}}>
-<$set name="tiddlerName" filter="[<prefix-attr>addsuffix{$:/state/flibbles/relink/element-name}addsuffix[/]addsuffix{$:/state/flibbles/relink/attribute-name}]">
+<$edit-text tiddler="$(state-base)$element-name"
+            tag="input" default="" placeholder="widget/element" />
+<$edit-text tiddler="$(state-base)$attribute-name"
+            tag="input" default="" placeholder="attribute" />
+<$button tooltip={{$(lingo-base)$NewAttribute/Hint}}
+         aria-label={{$(lingo-base)$NewAttribute/Caption}}>
+<$set name="tiddlerName"
+      filter="[<prefix-attr>addsuffix{$(state-base)$element-name}addsuffix[/]addsuffix{$(state-base)$attribute-name}]">
 <$action-createtiddler $basetitle=<<tiddlerName>> text="field" />
 </$set>
-<$action-deletetiddler $tiddler="$:/state/flibbles/relink/attribute-name" />
-<$action-deletetiddler $tiddler="$:/state/flibbles/relink/element-name" />
-<$text text={{$:/plugins/flibbles/relink/language/Buttons/NewAttribute/Caption}}/>
+<$action-deletetiddler $tiddler="$(state-base)$attribute-name" />
+<$action-deletetiddler $tiddler="$(state-base)$element-name" />
+<$text text={{$(lingo-base)$NewAttribute/Caption}}/>
 </$button>
+\end
+
+<<body>>

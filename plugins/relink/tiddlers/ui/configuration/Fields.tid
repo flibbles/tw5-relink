@@ -3,8 +3,13 @@ tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink/ui/configuration/Fields
 
 \define prefix-fields() $:/config/flibbles/relink/fields/
+\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
+\define state-base() $:/state/flibbles/relink/
 
-<table><tbody><$list filter="[all[shadows+tiddlers]prefix<prefix-fields>!has[draft.of]]" variable="listItem">
+\define body()
+<table><tbody>
+<$list variable="listItem"
+       filter="[all[shadows+tiddlers]prefix<prefix-fields>!has[draft.of]]">
 <tr>
 <td><$list filter="[<listItem>removeprefix<prefix-fields>]"><<currentTiddler>></$list></td>
 <td>
@@ -18,7 +23,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 <$action-deletetiddler $tiddler=<<listItem>> />
 <$list filter="[<tv-config-toolbar-icons>prefix[yes]]">{{$:/core/images/delete-button}}</$list>
 <$list filter="[<tv-config-toolbar-text>prefix[yes]]">
-<span class="tc-btn-text"><$text text={{$:/language/Buttons/Delete/Caption}}/></span>
+<span class="tc-btn-text"><$text text={{$(lingo-base)$Delete/Caption}}/></span>
 </$list>
 </$list></$button></td>
 </tr>
@@ -26,12 +31,17 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 </tbody></table>
 
 <em class="tc-edit">Add a new field:</em>
-<$edit-text tiddler="$:/state/flibbles/relink/field-name" tag="input" default="" placeholder="field name" />
-<$button tooltip={{$:/plugins/flibbles/relink/language/Buttons/NewField/Hint}} aria-label={{$:/plugins/flibbles/relink/language/Buttons/NewField/Caption}}>
-<$set name="tiddlerName" filter="[{$:/state/flibbles/relink/field-name}addprefix<prefix-fields>]">
+<$edit-text tiddler="$(state-base)$field-name"
+            tag="input" default="" placeholder="field name" />
+<$button tooltip={{$(lingo-base)$NewField/Hint}}
+         aria-label={{$(lingo-base)$NewField/Caption}}>
+<$set name="tiddlerName"
+      filter="[{$(state-base)$field-name}addprefix<prefix-fields>]">
 <$action-createtiddler $basetitle=<<tiddlerName>> text="field" />
 </$set>
-<$action-deletetiddler $tiddler="$:/state/flibbles/relink/field-name" />
-<$text text={{$:/plugins/flibbles/relink/language/Buttons/NewField/Caption}}/>
+<$action-deletetiddler $tiddler="$(state-base)$field-name" />
+<$text text={{(lingo-base)$NewField/Caption}}/>
 </$button>
+\end
 
+<<body>>
