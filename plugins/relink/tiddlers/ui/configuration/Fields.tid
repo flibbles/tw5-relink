@@ -1,0 +1,37 @@
+caption: {{$:/plugins/flibbles/relink/language/ui/Fields/Caption}}
+tags: $:/tags/flibbles/relink/Configuration
+title: $:/plugins/flibbles/relink/ui/configuration/Fields
+
+\define prefix-fields() $:/config/flibbles/relink/fields/
+
+<table><tbody><$list filter="[all[shadows+tiddlers]prefix<prefix-fields>!has[draft.of]]" variable="listItem">
+<tr>
+<td><$list filter="[<listItem>removeprefix<prefix-fields>]"><<currentTiddler>></$list></td>
+<td>
+<$select tiddler=<<listItem>> default="field">
+<option>field</option>
+<option>list</option>
+<option>filter</option>
+</$select>
+</td>
+<td><$button class="tc-btn-invisible"><$list filter="[<listItem>is[tiddler]]">
+<$action-deletetiddler $tiddler=<<listItem>> />
+<$list filter="[<tv-config-toolbar-icons>prefix[yes]]">{{$:/core/images/delete-button}}</$list>
+<$list filter="[<tv-config-toolbar-text>prefix[yes]]">
+<span class="tc-btn-text"><$text text={{$:/language/Buttons/Delete/Caption}}/></span>
+</$list>
+</$list></$button></td>
+</tr>
+</$list>
+</tbody></table>
+
+<em class="tc-edit">Add a new field:</em>
+<$edit-text tiddler="$:/state/flibbles/relink/field-name" tag="input" default="" placeholder="field name" />
+<$button tooltip={{$:/plugins/flibbles/relink/language/Buttons/NewField/Hint}} aria-label={{$:/plugins/flibbles/relink/language/Buttons/NewField/Caption}}>
+<$set name="tiddlerName" filter="[{$:/state/flibbles/relink/field-name}addprefix<prefix-fields>]">
+<$action-createtiddler $basetitle=<<tiddlerName>> text="field" />
+</$set>
+<$action-deletetiddler $tiddler="$:/state/flibbles/relink/field-name" />
+<$text text={{$:/plugins/flibbles/relink/language/Buttons/NewField/Caption}}/>
+</$button>
+

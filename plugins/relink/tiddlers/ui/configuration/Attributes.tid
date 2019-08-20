@@ -1,0 +1,41 @@
+caption: {{$:/plugins/flibbles/relink/language/ui/Attributes/Caption}}
+tags: $:/tags/flibbles/relink/Configuration
+title: $:/plugins/flibbles/relink/ui/configuration/Attributes
+
+\define prefix-attr() $:/config/flibbles/relink/attributes/
+
+<table><tbody><$list filter="[all[shadows+tiddlers]prefix<prefix-attr>!has[draft.of]]" variable="listItem">
+<$set name="element" filter="[<listItem>removeprefix<prefix-attr>splitbefore[/]removesuffix[/]]">
+<$set name="attribute" filter="[<listItem>removeprefix<prefix-attr>removeprefix<element>removeprefix[/]]">
+<tr>
+<td><$text text=<<element>> /></td>
+<td><$text text=<<attribute>> /></td>
+<td>
+<$select tiddler=<<listItem>> default="field">
+<option>field</option>
+<option>list</option>
+<option>filter</option>
+</$select>
+</td>
+<td><$button class="tc-btn-invisible"><$list filter="[<listItem>is[tiddler]]">
+<$action-deletetiddler $tiddler=<<listItem>> />
+<$list filter="[<tv-config-toolbar-icons>prefix[yes]]">{{$:/core/images/delete-button}}</$list>
+<$list filter="[<tv-config-toolbar-text>prefix[yes]]">
+<span class="tc-btn-text"><$text text={{$:/language/Buttons/Delete/Caption}}/></span>
+</$list>
+</$list></$button></td>
+</tr>
+</$set></$set></$list>
+</tbody></table>
+
+<em class="tc-edit">Add a new attribute:</em>
+<$edit-text tiddler="$:/state/flibbles/relink/element-name" tag="input" default="" placeholder="widget/element" />
+<$edit-text tiddler="$:/state/flibbles/relink/attribute-name" tag="input" default="" placeholder="attribute" />
+<$button tooltip={{$:/plugins/flibbles/relink/language/Buttons/NewAttribute/Hint}} aria-label={{$:/plugins/flibbles/relink/language/Buttons/NewAttribute/Caption}}>
+<$set name="tiddlerName" filter="[<prefix-attr>addsuffix{$:/state/flibbles/relink/element-name}addsuffix[/]addsuffix{$:/state/flibbles/relink/attribute-name}]">
+<$action-createtiddler $basetitle=<<tiddlerName>> text="field" />
+</$set>
+<$action-deletetiddler $tiddler="$:/state/flibbles/relink/attribute-name" />
+<$action-deletetiddler $tiddler="$:/state/flibbles/relink/element-name" />
+<$text text={{$:/plugins/flibbles/relink/language/Buttons/NewAttribute/Caption}}/>
+</$button>
