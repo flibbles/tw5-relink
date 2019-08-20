@@ -146,8 +146,8 @@ it('allows all other unmanaged wikitext rules', function() {
 	fine("This \n*is\n*a\n*list");
 	fine("Image: [img[https://google.com]] and [img[Title]] here");
 	fine("External links: [ext[https://google.com]] and [ext[Tooltip|https://google.com]] here");
-	fine("Comments <!-- Look like this [[from here]] -->");
-	fine("Block Comments\n\n<!--\n\nLook like this? [[from here]] -->\n\n");
+	fine("Comments <!-- Look like this -->");
+	fine("Block Comments\n\n<!--\n\nLook like this? -->\n\n");
 });
 
 it('prettylinks ignore plaintext files', function() {
@@ -155,6 +155,12 @@ it('prettylinks ignore plaintext files', function() {
 	var text = "This is [[from here]] to there.";
 	var t = relink({text: text, type: "text/plain"}, {wiki: wiki});
 	expect(t.fields.text).toEqual(text);
+});
+
+it('handles managed rules inside unmanaged rules', function() {
+	testText("List\n\n* [[from here]]\n* Item\n");
+	testText("<div>\n\n[[from here]]</div>");
+	testText("<!--\n\n[[from here]]-->", {ignored: true});
 });
 
 it('prettylinks', function() {
