@@ -17,11 +17,7 @@ $tw.modules.applyMethods('relinktextoperation', textOperations);
 exports['text'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var text = tiddler.fields.text,
 		isModified = false;
-	// There's a special case when the fromTitle === true, because it
-	// can sneakily be in a tiddler in cases like:
-	//   <$link to>True Tiddler</$link>
-	// "to" attribute without a value === true
-	if (text && (text.indexOf(fromTitle) >= 0 || fromTitle === "true")) {
+	if (text && text.indexOf(fromTitle) >= 0) {
 		for (var operation in textOperations) {
 			// If the operation returns undefined, it means no
 			// changes were made.
