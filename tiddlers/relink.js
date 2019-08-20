@@ -139,6 +139,17 @@ function testText(text, expected, options) {
 	expect(t.fields.text).toEqual(expected);
 };
 
+it('allows all other unmanaged wikitext rules', function() {
+	function fine(text) { testText(text + " [[from here]]", {ignore: true}); };
+	fine("This is ordinary text");
+	fine("This is a WikiLink here");
+	fine("This \n*is\n*a\n*list");
+	fine("Image: [img[https://google.com]] and [img[Title]] here");
+	fine("External links: [ext[https://google.com]] and [ext[Tooltip|https://google.com]] here");
+	fine("Comments <!-- Look like this [[from here]] -->");
+	fine("Block Comments\n\n<!--\n\nLook like this? [[from here]] -->\n\n");
+});
+
 it('prettylinks ignore plaintext files', function() {
 	var wiki = new $tw.Wiki();
 	var text = "This is [[from here]] to there.";
@@ -147,7 +158,7 @@ it('prettylinks ignore plaintext files', function() {
 });
 
 it('prettylinks', function() {
-	testText("Link to [[from here]].", {debug: true});
+	testText("Link to [[from here]].");
 	testText("Link to [[description|from here]].");
 	testText("Link to [[weird]desc|from here]].");
 	testText("Link to [[it is from here|from here]].", "Link to [[it is from here|to there]].");
@@ -159,6 +170,7 @@ it('prettylinks', function() {
 
 it('field attributes', function() {
 	testText('<$link to="from here">caption</$link>');
+	testText('<$link to="from here">\n\ncaption</$link>\n\n');
 	testText(`<$link to='from here'>caption</$link>`);
 	testText(`<$link to='from here' />`);
 	testText('Before <$link to="from here">caption</$link> After');

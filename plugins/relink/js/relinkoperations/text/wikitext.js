@@ -39,7 +39,15 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 				buildIndex = parser.pos;
 			}
 		} else {
-			parser.pos = matchingRule.rule.matchRegExp.lastIndex;
+			if (matchingRule.rule.matchRegExp !== undefined) {
+				parser.pos = matchingRule.rule.matchRegExp.lastIndex;
+			} else {
+				// We can't easily determine the end of this
+				// rule match. We'll "parse" it so that
+				// parser.pos gets updated, but we throw away
+				// the results.
+				matchingRule.rule.parse();
+			}
 		}
 	}
 	if (builder.length > 0) {
