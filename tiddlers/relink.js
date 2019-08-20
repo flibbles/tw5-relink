@@ -165,6 +165,7 @@ it('field attributes', function() {
 	testText(`<$link tag="div" to="from here">caption</$link>`);
 	testText(`<$link aria-label="true" to="from here">caption</$link>`);
 	testText(`<$link to='from here'>caption</$link><$link to="from here">another</$link>`);
+	testText(`<$link to='from here'>caption</$link>In between content<$link to="from here">another</$link>`);
 	testText(`<$link to    =   "from here">caption</$link>`);
 	testText("<$link\nto='from here'>caption</$link>");
 	testText("<$link to='from here'\n/>");

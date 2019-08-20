@@ -11,10 +11,10 @@ var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var prefix = "$:/config/flibbles/relink/attributes/";
 var secretCache = "__relink_text_attributes";
 
-exports['html'] = function(tiddler, text, fromTitle, toTitle, parser, pos, options) {
+exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
 	var managedElement = getManagedAttributes(options)[this.nextTag.tag],
 		builder = [],
-		buildIndex = pos;
+		buildIndex = this.nextTag.start;
 	if (managedElement) {
 		for (var attributeName in this.nextTag.attributes) {
 			var expectedType = managedElement[attributeName];
@@ -43,7 +43,7 @@ exports['html'] = function(tiddler, text, fromTitle, toTitle, parser, pos, optio
 			}
 		}
 	}
-	parser.pos = this.nextTag.end;
+	this.parser.pos = this.nextTag.end;
 	if (builder.length > 0) {
 		builder.push(text.substring(buildIndex, this.nextTag.end));
 		return builder.join('');

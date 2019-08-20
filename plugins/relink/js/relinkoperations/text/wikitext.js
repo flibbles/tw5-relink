@@ -32,7 +32,7 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 	while (matchingRule = parser.findNextMatch(parser.inlineRules, parser.pos)) {
 		var name = matchingRule.rule.name;
 		if (rules[name]) {
-			var newSegment = rules[name].call(matchingRule.rule, tiddler, text, fromTitle, toTitle, parser, matchingRule.matchIndex, options);
+			var newSegment = rules[name].call(matchingRule.rule, tiddler, text, fromTitle, toTitle, options);
 			if (newSegment !== undefined) {
 				builder.push(text.substring(buildIndex, matchingRule.matchIndex));
 				builder.push(newSegment);
