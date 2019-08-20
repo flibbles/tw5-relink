@@ -26,7 +26,7 @@ exports.startup = function() {
 };
 
 var relinkOperations = Object.create(null);
-$tw.modules.applyMethods('relinkoperation', relinkOperations);
+$tw.modules.applyMethods('relinkoperator', relinkOperations);
 
 function relinkTiddler(fromTitle, toTitle, options) {
 	fromTitle = (fromTitle || "").trim();

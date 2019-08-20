@@ -5,7 +5,7 @@
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,
 			"fields": {
-				"module-type": "relinkoperation",
+				"module-type": "relinkoperator",
 				"title": {
 					"source": "filename",
 					"prefix": "$:/plugins/flibbles/relink/js/relinkoperations/"
@@ -18,10 +18,23 @@
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,
 			"fields": {
-				"module-type": "relinkwikitextrule",
+				"module-type": "relinktextoperator",
 				"title": {
 					"source": "filename",
 					"prefix": "$:/plugins/flibbles/relink/js/relinkoperations/text/"
+				},
+				"type": "application/javascript"
+			}
+		},
+		{
+			"path": "./text/wikitext",
+			"filesRegExp": "^.*\\.js$",
+			"isTiddlerFile": true,
+			"fields": {
+				"module-type": "relinkwikitextrule",
+				"title": {
+					"source": "filename",
+					"prefix": "$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/"
 				},
 				"type": "application/javascript"
 			}

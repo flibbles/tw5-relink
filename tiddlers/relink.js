@@ -139,6 +139,13 @@ function testText(text, expected, options) {
 	expect(t.fields.text).toEqual(expected);
 };
 
+it('prettylinks ignore plaintext files', function() {
+	var wiki = new $tw.Wiki();
+	var text = "This is [[from here]] to there.";
+	var t = relink({text: text, type: "text/plain"}, {wiki: wiki});
+	expect(t.fields.text).toEqual(text);
+});
+
 it('prettylinks', function() {
 	testText("Link to [[from here]].", {debug: true});
 	testText("Link to [[description|from here]].");
