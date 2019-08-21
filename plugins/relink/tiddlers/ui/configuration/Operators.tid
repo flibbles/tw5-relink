@@ -1,0 +1,40 @@
+caption: {{$:/plugins/flibbles/relink/language/ui/Operators/Caption}}
+tags: $:/tags/flibbles/relink/Configuration
+title: $:/plugins/flibbles/relink/ui/configuration/Operators
+
+\define prefix-ops() $:/config/flibbles/relink/operators/
+\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
+\define state-base() $:/state/flibbles/relink/
+
+\define body()
+<table><tbody>
+<$list variable="listItem"
+       filter="[all[shadows+tiddlers]prefix<prefix-ops>!has[draft.of]]">
+<tr>
+<td><$list filter="[<listItem>removeprefix<prefix-ops>]"><<currentTiddler>></$list></td>
+<td><$button class="tc-btn-invisible"><$list filter="[<listItem>is[tiddler]]">
+<$action-deletetiddler $tiddler=<<listItem>> />
+<$list filter="[<tv-config-toolbar-icons>prefix[yes]]">{{$:/core/images/delete-button}}</$list>
+<$list filter="[<tv-config-toolbar-text>prefix[yes]]">
+<span class="tc-btn-text"><$text text={{$(lingo-base)$Delete/Caption}}/></span>
+</$list>
+</$list></$button></td>
+</tr>
+</$list>
+</tbody></table>
+
+<em class="tc-edit">Add a new filter operator:</em>
+<$edit-text tiddler="$(state-base)$operator-name"
+            tag="input" default="" placeholder="operator name" />
+<$button tooltip={{$(lingo-base)$NewOperator/Hint}}
+         aria-label={{$(lingo-base)$NewOperator/Caption}}>
+<$set name="tiddlerName"
+      filter="[<prefix-ops>addsuffix{$(state-base)$operator-name}]">
+<$action-createtiddler $basetitle=<<tiddlerName>> text="yes" />
+</$set>
+<$action-deletetiddler $tiddler="$(state-base)$operator-name" />
+<$text text={{$(lingo-base)$NewOperator/Caption}}/>
+</$button>
+\end
+
+<<body>>

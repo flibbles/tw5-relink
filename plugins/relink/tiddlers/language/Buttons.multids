@@ -5,3 +5,5 @@ NewAttribute/Hint: Specify a new widget/element attribute to be updated whenever
 NewAttribute/Caption: add
 NewField/Hint: Specify a new field to be updated whenever a tiddler is renamed
 NewField/Caption: add
+NewOperator/Hint: Specify a new filter operator to be considered whenever a tiddler is renamed
+NewOperator/Caption: add
