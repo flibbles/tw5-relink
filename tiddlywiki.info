@@ -1,5 +1,5 @@
 {
-	"description": "Relink testing suite",
+	"description": "Testing framework for tw5-relink",
 	"config": {
 		"wikiTiddlersSubDir": "./test"
 	},
