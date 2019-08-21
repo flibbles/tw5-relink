@@ -8,33 +8,37 @@ Tests the new relinking wiki methods.
 
 \*/
 
-var relink = require("test/utils").relink;
+var utils = require("test/utils");
+var relink = utils.relink;
 
 describe("filter fields", function() {
 
-function testFilter(filter, expected, options) {
-	var title = "$:/config/flibbles/relink/fields/customFilter";
-	var wiki = new $tw.Wiki();
+function manageOperator(operator) {
 	var prefix = "$:/config/flibbles/relink/operators/";
-	wiki.addTiddlers([
+	return {title: prefix + operator, text: "yes"};
+}
+
+function testFilter(filter, expected, options) {
+	[filter, expected, options] = utils.prepArgs(filter, expected, options);
+	var title = "$:/config/flibbles/relink/fields/customFilter";
+	options.wiki.addTiddlers([
 		{title: title, text: "filter"},
-		{title: prefix + "title", text: "yes"}
+		manageOperator("title"),
+		manageOperator("tag")
 	]);
-	options = options || {};
-	options.wiki = wiki;
 	var t = relink({customFilter: filter}, options);
 	expect(t.fields.customFilter).toBe(expected);
 };
 
 it('relinks and logs', function() {
 	var log = [];
-	testFilter("A [[from here]] B", 'A [[to there]] B', {log: log});
+	testFilter("A [[from here]] B", {log: log});
 	expect(log).toEqual(["Renaming customFilter operand 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('quotes', function() {
-	testFilter("A 'from here' B", "A 'to there' B");
-	testFilter('A "from here" B', 'A "to there" B');
+	testFilter("A 'from here' B");
+	testFilter('A "from here" B');
 });
 
 it('nonquotes', function() {
@@ -64,37 +68,38 @@ it('multiples', function() {
 });
 
 it('runs', function() {
-	testFilter("[tag[a][a]has[a]]", '[tag[a][to there]has[a]]', {from: "a"});
+	testFilter("[get[a][a]has[a]]", '[get[a][to there]has[a]]',
+	           {from: "a"});
 });
 
 it('title operator', function() {
-	testFilter("A [title[from here]] B", 'A [title[to there]] B');
-	testFilter("A [title[from]] B", 'A [title[to there]] B',{from: 'from'});
+	testFilter("A [title[from here]] B");
+	testFilter("A [title[from]] B", {from: 'from'});
 });
 
 it('ignores other operators', function() {
-	testFilter("A [has[from here]] B", 'A [has[from here]] B');
-	testFilter("A [field:other[from here]] B", 'A [field:other[from here]] B');
+	testFilter("A [has[from here]] B", {ignored: true});
+	testFilter("A [field:other[from here]] B", {ignored: true});
 });
 
 it('ignores variables', function() {
-	testFilter("A [title<from>] B", 'A [title<from>] B', {from: "from"});
-	testFilter("A [<from>] B", 'A [<from>] B', {from: "from"});
+	testFilter("A [title<from>] B", {ignored: true, from: "from"});
+	testFilter("A [<from>] B", {ignored: true, from: "from"});
 });
 
 it('ignores regular expressions', function() {
-	testFilter("A [title/from/] B", 'A [title/from/] B', {from: "from"});
-	testFilter("[regexp/rxp/] [[from here]] B", '[regexp/rxp/] [[to there]] B');
+	testFilter("[regexp/rxp/] [[from here]] B");
+	testFilter("A [title/from/] B", {ignored: true, from: "from"});
 });
 
 // In theory, we could have support for this, but not now.
 it('ignores transclusion', function() {
-	testFilter("A [title{from}] B", 'A [title{from}] B', {from: "from"});
-	testFilter("A [{from}] B", 'A [{from}] B', {from: "from"});
+	testFilter("A [title{from}] B", {ignored: true, from: "from"});
+	testFilter("A [{from}] B", {ignored: true, from: "from"});
 });
 
 it('field:title operator', function() {
-	testFilter("A [field:title[from here]] B", 'A [field:title[to there]] B');
+	testFilter("A [field:title[from here]] B");
 });
 
 });

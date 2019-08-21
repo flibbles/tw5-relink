@@ -8,23 +8,13 @@ Tests the new relinking wiki methods.
 
 \*/
 
-var relink = require("test/utils").relink;
+var utils = require("test/utils");
+var relink = utils.relink;
 
 describe("text", function() {
 
 function testText(text, expected, options) {
-	if (typeof expected !== "string") {
-		options = expected || {};
-		if (options && options.ignored) {
-			expected = text;
-		} else {
-			var from = options.from || "from here";
-			var to = options.to || "to there";
-			expected = text.replace(new RegExp(from, "g"), to);
-		}
-	}
-	options = options || {};
-	options.wiki = options.wiki || new $tw.Wiki();
+	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var prefix = "$:/config/flibbles/relink/attributes/";
 	options.wiki.addTiddlers([
 		{title: prefix + "$link/to", text: "field"},

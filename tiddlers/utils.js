@@ -37,6 +37,29 @@ exports.relink = function(fields, options) {
 	return relinkedTiddler;
 };
 
+/**Prepares arguments for a common testing pattern.
+ * If a helper method takes an input string, an expected string,
+ * and some options, this prepares the arguments so that the expecte string
+ * and the options is optional.
+ * Options:
+ *   ignored: If the expected string is not given, assume input === expected
+ */
+exports.prepArgs = function(input, expected, options) {
+	if (typeof expected !== "string") {
+		options = expected || {};
+		if (options && options.ignored) {
+			expected = input;
+		} else {
+			var from = options.from || "from here";
+			var to = options.to || "to there";
+			expected = input.replace(new RegExp(from, "g"), to);
+		}
+	}
+	options = options || {};
+	options.wiki = options.wiki || new $tw.Wiki();
+	return [input, expected, options];
+};
+
 /**Runs the given scope while swallowing any log messages.
  * Options:
  *   debug: if true, then this function doesn't divert messages.
