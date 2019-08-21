@@ -1,6 +1,4 @@
 /*\
-title: $:/plugins/flibbles/relink/js/bulkops.js
-type: application/javascript
 module-type: startup
 
 Replaces the relinkTiddler defined in $:/core/modules/wiki-bulkops.js

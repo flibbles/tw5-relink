@@ -1,6 +1,4 @@
 /*\
-title: $:/plugins/flibbles/relink/js/utils.js
-type: application/javascript
 module-type: library
 
 Contains methods for relinking fields which are used by the different module

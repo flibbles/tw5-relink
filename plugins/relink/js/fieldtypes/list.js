@@ -1,12 +1,7 @@
 /*\
-title: $:/plugins/flibbles/relink/js/fieldtypes/list.js
-type: application/javascript
-module-type: relinkfield
-
 This manages replacing titles that occur within stringLists, like,
 
 TiddlerA [[Tiddler with spaces]] [[Another Title]]
-
 \*/
 
 /**Returns undefined if no change was made.

@@ -1,10 +1,5 @@
 /*\
-title: $:/plugins/flibbles/relink/js/fieldtypes/filter.js
-type: application/javascript
-module-type: relinkfield
-
 This specifies logic for updating filters to reflect title changes.
-
 \*/
 
 /**Returns undefined if no change was made.
