@@ -40,7 +40,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 <$action-createtiddler $basetitle=<<tiddlerName>> text="field" />
 </$set>
 <$action-deletetiddler $tiddler="$(state-base)$field-name" />
-<$text text={{(lingo-base)$NewField/Caption}}/>
+<$text text={{$(lingo-base)$NewField/Caption}}/>
 </$button>
 \end
 
