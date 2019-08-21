@@ -15,7 +15,11 @@ describe("filter fields", function() {
 function testFilter(filter, expected, options) {
 	var title = "$:/config/flibbles/relink/fields/customFilter";
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: title, text: "filter"});
+	var prefix = "$:/config/flibbles/relink/operators/";
+	wiki.addTiddlers([
+		{title: title, text: "filter"},
+		{title: prefix + "title", text: "yes"}
+	]);
 	options = options || {};
 	options.wiki = wiki;
 	var t = relink({customFilter: filter}, options);

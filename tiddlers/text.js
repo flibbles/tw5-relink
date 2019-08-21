@@ -24,11 +24,11 @@ function testText(text, expected, options) {
 		}
 	}
 	options = options || {};
-	options.wiki = new $tw.Wiki();
+	options.wiki = options.wiki || new $tw.Wiki();
 	var prefix = "$:/config/flibbles/relink/attributes/";
 	options.wiki.addTiddlers([
 		{title: prefix + "$link/to", text: "field"},
-		{title: prefix + "$list/filter", text: "filter"}
+		{title: prefix + "$list/filter", text: "filter"},
 	]);
 	var t = relink({text: text}, options);
 	expect(t.fields.text).toEqual(expected);
@@ -123,8 +123,14 @@ it('field attributes fun with quotes', function() {
 });
 
 it('filter attributes', function() {
-	testText(`<$list filter="A [[from here]] B" />`);
-	testText(`<$list nothing="A [[from here]] B" />`, {ignored: true});
+	var prefix = "$:/config/flibbles/relink/";
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: prefix + "attributes/$list/filter", text: "filter"},
+		{title: prefix + "operators/title", text: "yes"}
+	]);
+	testText(`<$list filter="A [[from here]] B" />`, {wiki: wiki});
+	testText(`<$list nothing="A [[from here]] B" />`, {wiki: wiki, ignored: true});
 });
 
 });

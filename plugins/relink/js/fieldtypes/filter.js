@@ -5,12 +5,16 @@ This specifies logic for updating filters to reflect title changes.
 /**Returns undefined if no change was made.
  */
 
+var prefix = "$:/config/flibbles/relink/operators/";
+var secretCache = "__relink_operators";
+
 exports.filter = function(handler, fromTitle, toTitle, options) {
 	var filter = handler.value(),
 		indices;
 	if (filter && filter.indexOf(fromTitle) >= 0) {
 		try {
-			var indices = scanFilter(filter,fromTitle,toTitle);
+			var managedOperators = getManagedOperators(options);
+			var indices = scanFilter(filter,fromTitle,managedOperators);
 		} catch (err) {
 			// Not really anything to do. It's a bad filter.
 			// Move on.
@@ -47,7 +51,7 @@ exports.filter = function(handler, fromTitle, toTitle, options) {
 };
 
 // Returns an array of indices to replace
-function scanFilter(filterString, title) {
+function scanFilter(filterString, title, whitelist) {
 	var results = [], // Array of indexes on where to splice
 		p = 0, // Current position in the filter string
 		match;
@@ -71,10 +75,10 @@ function scanFilter(filterString, title) {
 				p++;
 			}
 			if(match[2]) { // Opening square bracket
-				p =parseFilterOperation(results,title,filterString,p);
+				p =parseFilterOperation(results,title,filterString,p,whitelist);
 			} else if(match[3] || match[4] || match[5]) { // Double quoted string, single quoted string, or noquote
 				var val = match[3] || match[4] || match[5];
-				if (val === title) {
+				if (whitelist.title && val === title) {
 					if (match[5]) {
 						results.push(p);
 					} else {
@@ -88,7 +92,7 @@ function scanFilter(filterString, title) {
 	return results;
 };
 
-function parseFilterOperation(indexes, title, filterString, p) {
+function parseFilterOperation(indexes, title, filterString, p, whitelist) {
 	var nextBracketPos, operator;
 	// Skip the starting square bracket
 	if(filterString.charAt(p++) !== "[") {
@@ -153,9 +157,11 @@ function parseFilterOperation(indexes, title, filterString, p) {
 		if (!operator.skip) {
 			var operand = filterString.substring(p,nextBracketPos);
 			// Check if this is a relevant operator
-			if (operand === title
-			&& (operator.operator === "title" || (operator.operator === "field" && operator.suffix === "title"))) {
-				indexes.push(p);
+			if (operand === title) {
+				if (whitelist[operator.operator]
+				|| (whitelist.title && (operator.operator === "field" && operator.suffix === "title"))) {
+					indexes.push(p);
+				}
 			}
 		}
 		p = nextBracketPos + 1;
@@ -168,3 +174,26 @@ function parseFilterOperation(indexes, title, filterString, p) {
 	// Return the parsing position
 	return p;
 }
+
+/**We're caching the list of custom fields inside options.
+ * See `relinkoperations/custom.js` for why,
+ *
+ * The configuration tiddlers require "yes" as text. This is so shadow
+ * tiddlers can be overridden with blank, or "no" to disable them.
+ */
+function getManagedOperators(options) {
+	var fields = options[secretCache];
+	if (fields === undefined) {
+		fields = {};
+		options.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
+			if (title.startsWith(prefix)) {
+				var name = title.substr(prefix.length);
+				if (tiddler.fields.text === "yes") {
+					fields[name] = true;
+				}
+			}
+		});
+		options[secretCache] = fields;
+	}
+	return fields;
+};
