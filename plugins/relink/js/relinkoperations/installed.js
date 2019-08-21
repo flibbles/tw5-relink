@@ -20,7 +20,7 @@ exports['installed'] = function(tiddler, fromTitle, toTitle, changes, options) {
 		if (value) {
 			var relink = utils.selectRelinker(module.type, value);
 			var handler = new utils.FieldHandler(tiddler, field);
-			value = relink(handler, fromTitle, toTitle);
+			value = relink(handler, fromTitle, toTitle, options);
 			if (value != undefined) {
 				changes[field] = value;
 			}

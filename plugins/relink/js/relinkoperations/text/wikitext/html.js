@@ -33,7 +33,7 @@ exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
 			}
 			var relink = utils.selectRelinker(expectedType);
 			var handler = new AttributeHandler(tiddler, attr.value);
-			var value = relink(handler, fromTitle, toTitle);
+			var value = relink(handler, fromTitle, toTitle, options);
 			if (value === undefined) {
 				continue;
 			}

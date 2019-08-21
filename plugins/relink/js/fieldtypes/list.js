@@ -6,7 +6,7 @@ TiddlerA [[Tiddler with spaces]] [[Another Title]]
 
 /**Returns undefined if no change was made.
  */
-exports.list = function(handler, fromTitle, toTitle) {
+exports.list = function(handler, fromTitle, toTitle, options) {
 	var list = $tw.utils.parseStringArray(handler.value() || ""),
 		isModified = false;
 	$tw.utils.each(list,function (title,index) {

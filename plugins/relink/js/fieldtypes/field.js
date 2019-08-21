@@ -5,7 +5,7 @@ simplest kind of field type.
 
 /**Returns undefined if no change was made.
  */
-exports.field = function(handler, fromTitle, toTitle) {
+exports.field = function(handler, fromTitle, toTitle, options) {
 	var fieldValue = handler.value();
 	if (fieldValue === fromTitle) {
 		handler.log('field', (fieldValue || ""), toTitle);

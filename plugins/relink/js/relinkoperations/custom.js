@@ -19,7 +19,7 @@ exports['custom'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	$tw.utils.each(fields, function(type, field) {
 		var relink = utils.selectRelinker(type);
 		var handler = new utils.FieldHandler(tiddler, field);
-		var value = relink(handler, fromTitle, toTitle);
+		var value = relink(handler, fromTitle, toTitle, options);
 		if (value !== undefined) {
 			changes[field] = value;
 		}

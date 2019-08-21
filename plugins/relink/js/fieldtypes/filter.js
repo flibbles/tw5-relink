@@ -5,7 +5,7 @@ This specifies logic for updating filters to reflect title changes.
 /**Returns undefined if no change was made.
  */
 
-exports.filter = function(handler, fromTitle, toTitle) {
+exports.filter = function(handler, fromTitle, toTitle, options) {
 	var filter = handler.value(),
 		indices;
 	if (filter && filter.indexOf(fromTitle) >= 0) {
