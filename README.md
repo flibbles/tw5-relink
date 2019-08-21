@@ -1,4 +1,4 @@
-# tw5-Relink
+# Relink
 
 tw5-relink is for automatically updating tiddlers in Tiddlywiki5 when renaming.
 

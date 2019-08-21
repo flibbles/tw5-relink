@@ -25,7 +25,7 @@ function testText(text, expected, options) {
 };
 
 it('allows all other unmanaged wikitext rules', function() {
-	function fine(text) { testText(text + " [[from here]]", {ignore: true}); };
+	function fine(text) { testText(text + " [[from here]]"); };
 	fine("This is ordinary text");
 	fine("This is a WikiLink here");
 	fine("This \n*is\n*a\n*list");
@@ -33,6 +33,10 @@ it('allows all other unmanaged wikitext rules', function() {
 	fine("External links: [ext[https://google.com]] and [ext[Tooltip|https://google.com]] here");
 	fine("Comments <!-- Look like this -->");
 	fine("Block Comments\n\n<!--\n\nLook like this? -->\n\n");
+});
+
+it('ignores titles in generic text', function() {
+	testText("This is from here to elsewhere", {ignored: true});
 });
 
 it('prettylinks ignore plaintext files', function() {
@@ -57,6 +61,18 @@ it('prettylinks', function() {
 	testText("Link to [[elsewhere]].");
 	testText("Link to [[desc|elsewhere]].");
 	testText("Multiple [[from here]] links [[description|from here]].");
+});
+
+it('transcludes', function() {
+	testText("{{from here}}")
+	testText("Before {{from here}} After")
+	testText("Before {{from here||template}} After")
+	testText("Before {{title||from here}} After")
+	testText("Before {{from here||from here}} After")
+	testText("Before\n\n{{from here||template}}\n\nAfter")
+	testText("Before {{  from here  }} After")
+	testText("Before {{  from here  ||  from here  }} After")
+	testText("{{elsewhere}}", {ignored: true})
 });
 
 it('field attributes', function() {

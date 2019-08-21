@@ -1,6 +1,6 @@
 /*\
 
-Handles replacement in wiki text inline rules, like:
+Handles replacement in wiki text inline rules, like,
 
 [[Introduction]]
 
