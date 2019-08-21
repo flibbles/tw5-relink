@@ -102,4 +102,8 @@ it('field:title operator', function() {
 	testFilter("A [field:title[from here]] B");
 });
 
+it('tag operator', function() {
+	testFilter("A [tag[from here]] B");
+});
+
 });
