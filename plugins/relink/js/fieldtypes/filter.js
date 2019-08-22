@@ -5,15 +5,14 @@ This specifies logic for updating filters to reflect title changes.
 /**Returns undefined if no change was made.
  */
 
-var prefix = "$:/config/flibbles/relink/operators/";
-var secretCache = "__relink_operators";
+var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
 exports.filter = function(handler, fromTitle, toTitle, options) {
 	var filter = handler.value(),
 		indices;
 	if (filter && filter.indexOf(fromTitle) >= 0) {
 		try {
-			var managedOperators = getManagedOperators(options);
+			var managedOperators = settings.getOperators(options);
 			var indices = scanFilter(filter,fromTitle,managedOperators);
 		} catch (err) {
 			// Not really anything to do. It's a bad filter.
@@ -174,26 +173,3 @@ function parseFilterOperation(indexes, title, filterString, p, whitelist) {
 	// Return the parsing position
 	return p;
 }
-
-/**We're caching the list of custom fields inside options.
- * See `relinkoperations/custom.js` for why,
- *
- * The configuration tiddlers require "yes" as text. This is so shadow
- * tiddlers can be overridden with blank, or "no" to disable them.
- */
-function getManagedOperators(options) {
-	var fields = options[secretCache];
-	if (fields === undefined) {
-		fields = {};
-		options.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
-			if (title.startsWith(prefix)) {
-				var name = title.substr(prefix.length);
-				if (tiddler.fields.text === "yes") {
-					fields[name] = true;
-				}
-			}
-		});
-		options[secretCache] = fields;
-	}
-	return fields;
-};

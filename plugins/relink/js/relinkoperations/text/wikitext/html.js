@@ -10,11 +10,10 @@ should be changed.
 
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
-var prefix = "$:/config/flibbles/relink/attributes/";
-var secretCache = "__relink_text_attributes";
+var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
 exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
-	var managedElement = getManagedAttributes(options)[this.nextTag.tag],
+	var managedElement = settings.getAttributes(options)[this.nextTag.tag],
 		builder = [],
 		buildIndex = this.nextTag.start;
 	if (managedElement) {
@@ -88,6 +87,7 @@ function wrapValue(value, preference) {
 			return preference + value + preference;
 		}
 	} else if (preference === '') {
+		// If there was no quotation, let's see if we can keep that.
 		if (!/([\/\s<>"'=])/.test(value)) {
 			return value;
 		}
@@ -111,35 +111,4 @@ AttributeHandler.prototype.log = function(adjective, from, to) {
 
 AttributeHandler.prototype.value = function() {
 	return this._value;
-};
-/**Just like with relinkoperations/custom.js, we cache the value of this
- * method inside the options, because it's better than regenerating it for
- * every single tiddler.
- * See ../custom.js for more details.
- */
-function getManagedAttributes(options) {
-	var attributes = options[secretCache];
-	if (attributes === undefined) {
-		attributes = Object.create(null);
-		options.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
-			if (title.startsWith(prefix) && utils.selectRelinker(tiddler.fields.text)) {
-				var basename = title.substr(prefix.length);
-				var pair = splitAtFirst(basename, '/');
-				var name = pair[0];
-				attributes[name] = attributes[name] || Object.create(null);
-				attributes[name][pair[1]] = tiddler.fields.text;
-			}
-		});
-		options[secretCache] = attributes;
-	}
-	return attributes;
-};
-
-function splitAtFirst(string, character) {
-	var index = string.indexOf(character);
-	if (index < 0) {
-		return [string, undefined];
-	} else {
-		return [string.substr(0, index), string.substr(index+1)]
-	}
 };
