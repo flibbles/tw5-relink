@@ -8,24 +8,11 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 
 \define body()
 <table><tbody>
-<$list variable="listItem"
-       filter="[all[shadows+tiddlers]prefix<prefix-fields>!has[draft.of]]">
+<$list filter="[all[shadows+tiddlers]prefix<prefix-fields>!has[draft.of]]">
 <tr>
-<td><$list filter="[<listItem>removeprefix<prefix-fields>]"><<currentTiddler>></$list></td>
-<td>
-<$select tiddler=<<listItem>> default="field">
-<option>field</option>
-<option>list</option>
-<option>filter</option>
-</$select>
-</td>
-<td><$button class="tc-btn-invisible"><$list filter="[<listItem>is[tiddler]]">
-<$action-deletetiddler $tiddler=<<listItem>> />
-<$list filter="[<tv-config-toolbar-icons>prefix[yes]]">{{$:/core/images/delete-button}}</$list>
-<$list filter="[<tv-config-toolbar-text>prefix[yes]]">
-<span class="tc-btn-text"><$text text={{$(lingo-base)$Delete/Caption}}/></span>
-</$list>
-</$list></$button></td>
+<td><$list filter="[all[current]removeprefix<prefix-fields>]"><<currentTiddler>></$list></td>
+<td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
+<td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 </tr>
 </$list>
 </tbody></table>

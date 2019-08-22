@@ -8,17 +8,10 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 
 \define body()
 <table><tbody>
-<$list variable="listItem"
-       filter="[all[shadows+tiddlers]prefix<prefix-ops>!has[draft.of]]">
+<$list filter="[all[shadows+tiddlers]prefix<prefix-ops>!has[draft.of]]">
 <tr>
-<td><$list filter="[<listItem>removeprefix<prefix-ops>]"><<currentTiddler>></$list></td>
-<td><$button class="tc-btn-invisible"><$list filter="[<listItem>is[tiddler]]">
-<$action-deletetiddler $tiddler=<<listItem>> />
-<$list filter="[<tv-config-toolbar-icons>prefix[yes]]">{{$:/core/images/delete-button}}</$list>
-<$list filter="[<tv-config-toolbar-text>prefix[yes]]">
-<span class="tc-btn-text"><$text text={{$(lingo-base)$Delete/Caption}}/></span>
-</$list>
-</$list></$button></td>
+<td><$list variable="listItem" filter="[<currentTiddler>removeprefix<prefix-ops>]"><<listItem>></$list></td>
+<td>{{||$:/plugins/flibbles/relink/ui/component/button-delete}}</td>
 </tr>
 </$list>
 </tbody></table>
