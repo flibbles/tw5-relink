@@ -23,7 +23,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 <$button tooltip={{$(lingo-base)$NewField/Hint}}
          aria-label={{$(lingo-base)$NewField/Caption}}>
 <$set name="tiddlerName"
-      filter="[{$(state-base)$field-name}addprefix<prefix-fields>]">
+      filter="[<prefix-fields>addsuffix{$(state-base)$field-name}]">
 <$action-setfield $tiddler=<<tiddlerName>>
                   text={{$:/config/flibbles/relink/settings/default-type}} />
 </$set>
