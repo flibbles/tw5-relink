@@ -1,4 +1,4 @@
 title: $:/config/flibbles/relink/attributes/
 
-$link/to: field
+$link/to: title
 $list/filter: filter

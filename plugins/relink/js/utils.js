@@ -37,6 +37,10 @@ exports.FieldHandler.prototype.log = function(adjective, from, to) {
 };
 
 exports.selectRelinker = function(type, value) {
+	if (type === "field") {
+		// This is legacy support for when 'title' was known as 'field'
+		type = "title";
+	}
 	if (value !== undefined && typeof value !== 'string') {
 		return exports.relinkList;
 	}

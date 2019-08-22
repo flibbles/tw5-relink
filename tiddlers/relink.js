@@ -54,7 +54,7 @@ it('still respects dontRenameInLists', function() {
 it('relinks custom field', function() {
 	var log = [];
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler(fieldConf("testUndef", "field"));
+	wiki.addTiddler(fieldConf("testUndef", "title"));
 	var t = relink({"testUndef": "from here"}, {wiki: wiki, log: log});
 	expect(t.fields.testUndef).toBe('to there');
 	expect(log).toEqual(["Renaming testUndef field 'from here' to 'to there' of tiddler 'test'"]);
@@ -81,6 +81,16 @@ it('ignores unrecognized custom field settings', function() {
 	wiki.addTiddler(fieldConf("ignoredList", "bizarre"));
 	var t = relink({"ignoredList": "ignore"}, {wiki: wiki, from: "ignore"});
 	expect(t.fields.ignoredList).toBe("ignore");
+});
+
+/**This is legacy support. The 'title' field type used to be called 'field'
+ * But field was unhelpful. What's it mean when a field is set to 'field'?
+ */
+it('supports "field" field settings', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(fieldConf("fieldList", "field"));
+	var t = relink({"fieldList": "from here"}, {wiki: wiki});
+	expect(t.fields.fieldList).toBe("to there");
 });
 
 it('relinks installed tiddlerfield field', function() {

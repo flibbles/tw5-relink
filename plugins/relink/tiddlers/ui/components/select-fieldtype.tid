@@ -1,7 +1,7 @@
 title: $:/plugins/flibbles/relink/ui/components/select-fieldtype
 
-<$select tiddler=<<currentTiddler>> default="field">
-<option>field</option>
+<$select tiddler=<<currentTiddler>> default="title">
+<option>title</option>
 <option>list</option>
 <option>filter</option>
 </$select>

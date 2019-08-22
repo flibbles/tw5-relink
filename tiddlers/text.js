@@ -22,7 +22,7 @@ function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var prefix = "$:/config/flibbles/relink/attributes/";
 	options.wiki.addTiddlers([
-		attrConf("$link", "to", "field"),
+		attrConf("$link", "to", "title"),
 		attrConf("$list", "filter", "filter"),
 	]);
 	var t = relink({text: text}, options);
@@ -149,6 +149,15 @@ it('ignores unrecognized attribute configurations', function() {
 	testText(`<$link to="A" /><$transclude tiddler="A" />`,
 	         `<$link to="to there" /><$transclude tiddler="A" />`,
 	         {wiki: wiki, from: "A"});
+});
+
+/**This is legacy support. The 'title' field type used to be called 'field'
+ * But field didn't make sense in many contexts.
+ */
+it('supports "field" attribute configuration', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(attrConf("$transclude", "tiddler", "field"));
+	testText(`<$transclude tiddler="from here" />`, {wiki: wiki});
 });
 
 it('filter attributes', function() {
