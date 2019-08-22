@@ -11,7 +11,7 @@ parts.
 "use strict";
 
 var fieldTypes = Object.create(null);
-$tw.modules.applyMethods('relinkfield', fieldTypes);
+$tw.modules.applyMethods('relinkfieldtype', fieldTypes);
 
 exports.FieldHandler = function(tiddler, field) {
 	this.tiddler = tiddler;

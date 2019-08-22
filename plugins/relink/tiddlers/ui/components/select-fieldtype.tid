@@ -1,7 +1,8 @@
 title: $:/plugins/flibbles/relink/ui/components/select-fieldtype
 
-<$select tiddler=<<currentTiddler>> default="title">
-<option>title</option>
-<option>list</option>
-<option>filter</option>
+<$select tiddler=<<currentTiddler>> default={{$:/config/flibbles/relinke/settings/default-type}} >
+<$list variable="option"
+       filter="[[relinkfieldtype]modules[]removeprefix[$:/plugins/flibbles/relink/js/fieldtypes/]removesuffix[.js]]">
+<option><$text text=<<option>> /></option>
+</$list>
 </$select>

@@ -17,7 +17,7 @@
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,
 			"fields": {
-				"module-type": "relinkfield",
+				"module-type": "relinkfieldtype",
 				"title": {
 					"source": "filename",
 					"prefix": "$:/plugins/flibbles/relink/js/fieldtypes/"

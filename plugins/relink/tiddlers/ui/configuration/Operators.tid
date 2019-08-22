@@ -11,7 +11,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 <$list filter="[all[shadows+tiddlers]prefix<prefix-ops>!has[draft.of]has[text]]">
 <tr>
 <td><$list variable="listItem" filter="[<currentTiddler>removeprefix<prefix-ops>]"><<listItem>></$list></td>
-<td>{{||$:/plugins/flibbles/relink/ui/component/button-delete}}</td>
+<td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 </tr>
 </$list>
 </tbody></table>

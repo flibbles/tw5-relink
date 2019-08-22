@@ -24,7 +24,8 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
          aria-label={{$(lingo-base)$NewField/Caption}}>
 <$set name="tiddlerName"
       filter="[{$(state-base)$field-name}addprefix<prefix-fields>]">
-<$action-setfield $tiddler=<<tiddlerName>> text="title" />
+<$action-setfield $tiddler=<<tiddlerName>>
+                  text={{$:/config/flibbles/relink/settings/default-type}} />
 </$set>
 <$action-deletetiddler $tiddler="$(state-base)$field-name" />
 <$text text={{$(lingo-base)$NewField/Caption}}/>
