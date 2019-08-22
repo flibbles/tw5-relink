@@ -5,7 +5,8 @@ This handles the fetching and distribution of relink settings.
 
 \*/
 
-var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+var fieldTypes = Object.create(null);
+$tw.modules.applyMethods('relinkfieldtype', fieldTypes);
 
 exports.getFields = function(options) {
 	return getSettings(options).fields;
@@ -34,7 +35,7 @@ exports.getAttributes = function(options) {
  */
 exports.factories = {
 	attributes: function(attributes, tiddler, key) {
-		var relinker = utils.selectRelinker(tiddler.fields.text);
+		var relinker = fieldTypes[tiddler.fields.text];
 		if (relinker) {
 			var elem = root(key);
 			var attr = key.substr(elem.length+1);
@@ -43,7 +44,7 @@ exports.factories = {
 		}
 	},
 	fields: function(fields, tiddler, name) {
-		var relinker = utils.selectRelinker(tiddler.fields.text);
+		var relinker = fieldTypes[tiddler.fields.text];
 		if (relinker) {
 			fields[name] = relinker;
 		}

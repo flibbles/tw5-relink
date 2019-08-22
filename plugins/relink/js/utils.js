@@ -10,9 +10,6 @@ parts.
 /*global $tw: false */
 "use strict";
 
-var fieldTypes = Object.create(null);
-$tw.modules.applyMethods('relinkfieldtype', fieldTypes);
-
 exports.FieldHandler = function(tiddler, field) {
 	this.tiddler = tiddler;
 	this.field = field;
@@ -34,8 +31,4 @@ exports.FieldHandler.prototype.descriptor = function(adjective) {
 
 exports.FieldHandler.prototype.log = function(adjective, from, to) {
 	console.log(`Renaming ${this.descriptor(adjective)} '${from}' to '${to}' of tiddler '${this.tiddler.fields.title}'`);
-};
-
-exports.selectRelinker = function(type) {
-	return fieldTypes[type];
 };
