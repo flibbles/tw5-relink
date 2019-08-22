@@ -36,31 +36,10 @@ exports.FieldHandler.prototype.log = function(adjective, from, to) {
 	console.log(`Renaming ${this.descriptor(adjective)} '${from}' to '${to}' of tiddler '${this.tiddler.fields.title}'`);
 };
 
-exports.selectRelinker = function(type, value) {
+exports.selectRelinker = function(type) {
 	if (type === "field") {
 		// This is legacy support for when 'title' was known as 'field'
 		type = "title";
 	}
-	if (value !== undefined && typeof value !== 'string') {
-		return exports.relinkList;
-	}
 	return fieldTypes[type];
-};
-
-// This expects the handler to return a list, not a string.
-// It's a special handler, used exclusively for `tag` and `list`
-exports.relinkList = function(handler, fromTitle, toTitle) {
-	var list = (handler.value() || []).slice(0),
-		isModified = false;
-	$tw.utils.each(list,function (title,index) {
-		if(title === fromTitle) {
-			handler.log('item', list[index], toTitle);
-			list[index] = toTitle;
-			isModified = true;
-		}
-	});
-	if (isModified) {
-		return list;
-	}
-	return undefined;
 };

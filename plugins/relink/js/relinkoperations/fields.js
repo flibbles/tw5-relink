@@ -14,7 +14,7 @@ var secretCache = "__relink_custom";
 
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 
-exports['custom'] = function(tiddler, fromTitle, toTitle, changes, options) {
+exports['fields'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = getConfiguredFields(options);
 	$tw.utils.each(fields, function(type, field) {
 		var relink = utils.selectRelinker(type);

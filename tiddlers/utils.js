@@ -45,7 +45,7 @@ exports.relink = function(fields, options) {
  *   ignored: If the expected string is not given, assume input === expected
  */
 exports.prepArgs = function(input, expected, options) {
-	if (typeof expected !== "string") {
+	if (typeof expected !== "string" && options === undefined) {
 		options = expected || {};
 		if (options && options.ignored) {
 			expected = input;
