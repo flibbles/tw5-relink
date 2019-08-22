@@ -13,3 +13,6 @@ exports.title = function(handler, fromTitle, toTitle, options) {
 	}
 	return undefined;
 };
+
+// This is legacy support for when 'title' was known as 'field'
+exports.field = exports.title;

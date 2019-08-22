@@ -37,9 +37,5 @@ exports.FieldHandler.prototype.log = function(adjective, from, to) {
 };
 
 exports.selectRelinker = function(type) {
-	if (type === "field") {
-		// This is legacy support for when 'title' was known as 'field'
-		type = "title";
-	}
 	return fieldTypes[type];
 };
