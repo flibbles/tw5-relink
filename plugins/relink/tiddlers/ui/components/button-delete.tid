@@ -5,7 +5,7 @@ title: $:/plugins/flibbles/relink/ui/components/button-delete
 <$button class="tc-btn-invisible"><$list filter="[all[current]is[tiddler]]">
 <$action-deletetiddler $tiddler=<<currentTiddler>> />
 </$list><$list filter="[all[current]is[shadow]]">
-<$action-createtiddler $basetitle=<<tiddlerName>> text="" />
+<$action-setfield $tiddler=<<tiddlerName>> text="" />
 </$list>
 <$list filter="[<tv-config-toolbar-icons>prefix[yes]]">{{$:/core/images/delete-button}}</$list>
 <$list filter="[<tv-config-toolbar-text>prefix[yes]]">
