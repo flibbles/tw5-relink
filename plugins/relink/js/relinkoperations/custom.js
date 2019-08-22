@@ -37,9 +37,9 @@ exports['custom'] = function(tiddler, fromTitle, toTitle, changes, options) {
 function getConfiguredFields(options) {
 	var fields = options[secretCache];
 	if (fields === undefined) {
-		fields = {};
+		fields = Object.create(null);
 		options.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
-			if (title.startsWith(prefix)) {
+			if (title.startsWith(prefix) && utils.selectRelinker(tiddler.fields.text)) {
 				var name = title.substr(prefix.length);
 				fields[name] = tiddler.fields.text;
 			}

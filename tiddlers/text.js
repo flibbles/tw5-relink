@@ -13,12 +13,17 @@ var relink = utils.relink;
 
 describe("text", function() {
 
+function attrConf(element, attribute, type) {
+	var prefix = "$:/config/flibbles/relink/attributes/";
+	return {title: prefix + element + "/" + attribute, text: type};
+};
+
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var prefix = "$:/config/flibbles/relink/attributes/";
 	options.wiki.addTiddlers([
-		{title: prefix + "$link/to", text: "field"},
-		{title: prefix + "$list/filter", text: "filter"},
+		attrConf("$link", "to", "field"),
+		attrConf("$list", "filter", "filter"),
 	]);
 	var t = relink({text: text}, options);
 	expect(t.fields.text).toEqual(expected);
@@ -68,10 +73,12 @@ it('transcludes', function() {
 	testText("Before {{from here}} After")
 	testText("Before {{from here||template}} After")
 	testText("Before {{title||from here}} After")
+	testText("Before {{||from here}} After")
 	testText("Before {{from here||from here}} After")
 	testText("Before\n\n{{from here||template}}\n\nAfter")
 	testText("Before {{  from here  }} After")
 	testText("Before {{  from here  ||  from here  }} After")
+	testText("Before {{||  from here  }} After")
 	testText("{{elsewhere}}", {ignored: true})
 });
 
@@ -128,11 +135,27 @@ it('field attributes fun with quotes', function() {
 	});
 });
 
+it('ignores blank attribute configurations', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers(attrConf("$transclude", "tiddler", ""));
+	testText(`<$link to="A" /><$transclude tiddler="A" />`,
+	         `<$link to="to there" /><$transclude tiddler="A" />`,
+	         {wiki: wiki, from: "A"});
+});
+
+it('ignores unrecognized attribute configurations', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(attrConf("$transclude", "tiddler", "kablam"));
+	testText(`<$link to="A" /><$transclude tiddler="A" />`,
+	         `<$link to="to there" /><$transclude tiddler="A" />`,
+	         {wiki: wiki, from: "A"});
+});
+
 it('filter attributes', function() {
 	var prefix = "$:/config/flibbles/relink/";
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
-		{title: prefix + "attributes/$list/filter", text: "filter"},
+		attrConf("$list", "filter", "filter"),
 		{title: prefix + "operators/title", text: "yes"}
 	]);
 	testText(`<$list filter="A [[from here]] B" />`, {wiki: wiki});

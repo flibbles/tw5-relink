@@ -40,7 +40,7 @@ exports.selectRelinker = function(type, value) {
 	if (value !== undefined && typeof value !== 'string') {
 		return exports.relinkList;
 	}
-	return fieldTypes[type] || fieldTypes['field'];
+	return fieldTypes[type];
 };
 
 // This expects the handler to return a list, not a string.

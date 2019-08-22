@@ -10,6 +10,11 @@ Tests the new relinking wiki methods.
 
 var relink = require("test/utils").relink;
 
+function fieldConf(field, type) {
+	var prefix =  "$:/config/flibbles/relink/fields/";
+	return {title: prefix + field, text: type};
+};
+
 describe('relink', function() {
 
 it("doesn't touch ineligible tiddlers", function() {
@@ -47,23 +52,35 @@ it('still respects dontRenameInLists', function() {
 });
 
 it('relinks custom field', function() {
-	var title =  "$:/config/flibbles/relink/fields/testUndef";
 	var log = [];
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({"title": title, "text": "field"});
+	wiki.addTiddler(fieldConf("testUndef", "field"));
 	var t = relink({"testUndef": "from here"}, {wiki: wiki, log: log});
 	expect(t.fields.testUndef).toBe('to there');
 	expect(log).toEqual(["Renaming testUndef field 'from here' to 'to there' of tiddler 'test'"]);
 });
 
 it('relinks custom list', function() {
-	var title =  "$:/config/flibbles/relink/fields/customList";
 	var log = [];
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({"title": title, "text": "list"});
+	wiki.addTiddler(fieldConf("customList", "list"));
 	var t = relink({"customList": "A [[from here]] B"}, {wiki: wiki, log: log});
 	expect(t.fields.customList).toBe('A [[to there]] B');
 	expect(log).toEqual(["Renaming customList item 'from here' to 'to there' of tiddler 'test'"]);
+});
+
+it('ignores blank custom field settings', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(fieldConf("ignoredList", ""));
+	var t = relink({"ignoredList": "ignore"}, {wiki: wiki, from: "ignore"});
+	expect(t.fields.ignoredList).toBe("ignore");
+});
+
+it('ignores unrecognized custom field settings', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(fieldConf("ignoredList", "bizarre"));
+	var t = relink({"ignoredList": "ignore"}, {wiki: wiki, from: "ignore"});
+	expect(t.fields.ignoredList).toBe("ignore");
 });
 
 it('relinks installed tiddlerfield field', function() {

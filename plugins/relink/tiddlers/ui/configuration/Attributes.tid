@@ -8,7 +8,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 
 \define body()
 <table><tbody>
-<$list filter="[all[shadows+tiddlers]prefix<prefix-attr>!has[draft.of]]">
+<$list filter="[all[shadows+tiddlers]prefix<prefix-attr>!has[draft.of]has[text]]">
 <$set name="element"
       filter="[all[current]removeprefix<prefix-attr>splitbefore[/]removesuffix[/]]">
 <$set name="attribute"

@@ -8,7 +8,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 
 \define body()
 <table><tbody>
-<$list filter="[all[shadows+tiddlers]prefix<prefix-ops>!has[draft.of]]">
+<$list filter="[all[shadows+tiddlers]prefix<prefix-ops>!has[draft.of]has[text]]">
 <tr>
 <td><$list variable="listItem" filter="[<currentTiddler>removeprefix<prefix-ops>]"><<listItem>></$list></td>
 <td>{{||$:/plugins/flibbles/relink/ui/component/button-delete}}</td>

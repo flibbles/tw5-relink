@@ -8,7 +8,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 
 \define body()
 <table><tbody>
-<$list filter="[all[shadows+tiddlers]prefix<prefix-fields>!has[draft.of]]">
+<$list filter="[all[shadows+tiddlers]prefix<prefix-fields>!has[draft.of]has[text]]">
 <tr>
 <td><$list filter="[all[current]removeprefix<prefix-fields>]"><<currentTiddler>></$list></td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>

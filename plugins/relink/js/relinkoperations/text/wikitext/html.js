@@ -122,7 +122,7 @@ function getManagedAttributes(options) {
 	if (attributes === undefined) {
 		attributes = Object.create(null);
 		options.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
-			if (title.startsWith(prefix)) {
+			if (title.startsWith(prefix) && utils.selectRelinker(tiddler.fields.text)) {
 				var basename = title.substr(prefix.length);
 				var pair = splitAtFirst(basename, '/');
 				var name = pair[0];

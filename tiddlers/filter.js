@@ -13,9 +13,12 @@ var relink = utils.relink;
 
 describe("filter fields", function() {
 
-function manageOperator(operator) {
+function operatorConf(operator, value) {
+	if (value === undefined) {
+		value = "yes";
+	}
 	var prefix = "$:/config/flibbles/relink/operators/";
-	return {title: prefix + operator, text: "yes"};
+	return {title: prefix + operator, text: value};
 }
 
 function testFilter(filter, expected, options) {
@@ -23,8 +26,8 @@ function testFilter(filter, expected, options) {
 	var title = "$:/config/flibbles/relink/fields/customFilter";
 	options.wiki.addTiddlers([
 		{title: title, text: "filter"},
-		manageOperator("title"),
-		manageOperator("tag")
+		operatorConf("title"),
+		operatorConf("tag")
 	]);
 	var t = relink({customFilter: filter}, options);
 	expect(t.fields.customFilter).toBe(expected);
@@ -104,6 +107,18 @@ it('field:title operator', function() {
 
 it('tag operator', function() {
 	testFilter("A [tag[from here]] B");
+});
+
+it('ignores blank tag configurations', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(operatorConf("empty", ""));
+	testFilter("[[A]] [empty[A]]", "[[to there]] [empty[A]]", {from: "A", wiki: wiki});
+});
+
+it('ignores non-yes tag configurations', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(operatorConf("bad", "eh?"));
+	testFilter("[[A]] [bad[A]]", "[[to there]] [bad[A]]", {from: "A", wiki: wiki});
 });
 
 });
