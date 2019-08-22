@@ -9,9 +9,8 @@ relink titles within the body.
 /*global $tw: false */
 "use strict";
 
-var utils = require("$:/plugins/flibbles/relink/js/utils.js");
-
 var defaultOperator = "text/vnd.tiddlywiki";
+
 var textOperators = Object.create(null);
 $tw.modules.applyMethods('relinktextoperator', textOperators);
 

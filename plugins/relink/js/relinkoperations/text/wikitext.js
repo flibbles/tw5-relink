@@ -10,7 +10,6 @@ and tries to swap it out if it is.
 "use strict";
 
 var type = 'text/vnd.tiddlywiki';
-var utils = require("$:/plugins/flibbles/relink/js/utils.js");
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
 
 var rules = Object.create(null);
