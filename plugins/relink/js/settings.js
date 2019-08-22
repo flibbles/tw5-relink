@@ -34,16 +34,18 @@ exports.getAttributes = function(options) {
  */
 exports.factories = {
 	attributes: function(attributes, tiddler, key) {
-		if (utils.selectRelinker(tiddler.fields.text)) {
+		var relinker = utils.selectRelinker(tiddler.fields.text);
+		if (relinker) {
 			var elem = root(key);
 			var attr = key.substr(elem.length+1);
 			attributes[elem] = attributes[elem] || Object.create(null);
-			attributes[elem][attr] = tiddler.fields.text;
+			attributes[elem][attr] = relinker;
 		}
 	},
 	fields: function(fields, tiddler, name) {
-		if (utils.selectRelinker(tiddler.fields.text)) {
-			fields[name] = tiddler.fields.text;
+		var relinker = utils.selectRelinker(tiddler.fields.text);
+		if (relinker) {
+			fields[name] = relinker;
 		}
 	},
 	/* The configuration tiddlers require "yes" as text. This is so shadow

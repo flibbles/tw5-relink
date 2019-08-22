@@ -8,7 +8,6 @@ should be changed.
 
 \*/
 
-var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
@@ -18,8 +17,8 @@ exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
 		buildIndex = this.nextTag.start;
 	if (managedElement) {
 		for (var attributeName in this.nextTag.attributes) {
-			var expectedType = managedElement[attributeName];
-			if (!expectedType) {
+			var attrRelinker = managedElement[attributeName];
+			if (!attrRelinker) {
 				continue;
 			}
 			var attr = this.nextTag.attributes[attributeName];
@@ -30,9 +29,8 @@ exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
 			if (nextEql < 0 || nextEql > attr.end) {
 				continue;
 			}
-			var relink = utils.selectRelinker(expectedType);
 			var handler = new AttributeHandler(tiddler, attr.value);
-			var value = relink(handler, fromTitle, toTitle, options);
+			var value = attrRelinker(handler, fromTitle, toTitle, options);
 			if (value === undefined) {
 				continue;
 			}

@@ -14,10 +14,9 @@ var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
 exports['fields'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = settings.getFields(options);
-	$tw.utils.each(fields, function(type, field) {
-		var relink = utils.selectRelinker(type);
+	$tw.utils.each(fields, function(relinker, field) {
 		var handler = new utils.FieldHandler(tiddler, field);
-		var value = relink(handler, fromTitle, toTitle, options);
+		var value = relinker(handler, fromTitle, toTitle, options);
 		if (value !== undefined) {
 			changes[field] = value;
 		}
