@@ -31,7 +31,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
          aria-label={{$(lingo-base)$NewAttribute/Caption}}>
 <$set name="tiddlerName"
       filter="[<prefix-attr>addsuffix{$(state-base)$element-name}addsuffix[/]addsuffix{$(state-base)$attribute-name}]">
-<$action-createtiddler $basetitle=<<tiddlerName>> text="field" />
+<$action-setfield $tiddler=<<tiddlerName>> text="title" />
 </$set>
 <$action-deletetiddler $tiddler="$(state-base)$attribute-name" />
 <$action-deletetiddler $tiddler="$(state-base)$element-name" />

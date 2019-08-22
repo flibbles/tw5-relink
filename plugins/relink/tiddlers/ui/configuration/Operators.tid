@@ -23,7 +23,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
          aria-label={{$(lingo-base)$NewOperator/Caption}}>
 <$set name="tiddlerName"
       filter="[<prefix-ops>addsuffix{$(state-base)$operator-name}]">
-<$action-createtiddler $basetitle=<<tiddlerName>> text="yes" />
+<$action-setfield $tiddler=<<tiddlerName>> text="yes" />
 </$set>
 <$action-deletetiddler $tiddler="$(state-base)$operator-name" />
 <$text text={{$(lingo-base)$NewOperator/Caption}}/>
