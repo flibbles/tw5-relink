@@ -1,0 +1,12 @@
+title: Relink
+
+\define plugin() $:/plugins/flibbles/relink
+
+<$tiddler tiddler=<<plugin>> >
+
+|!Version | {{!!version}} |
+|!TW5 compatibility |{{!!core-version}} |
+
+</$tiddler>
+
+This is the demo site for ''Relink'', the Tiddlywiki5 plugin which aids in renaming tiddlers by propogating the change across all existing tiddlers.

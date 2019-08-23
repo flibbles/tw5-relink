@@ -1,0 +1,35 @@
+example-filter: [all[]] -Rick
+example-single: Rick
+list: [[Some Tiddler]] Rick [[Another Tiddler]]
+tags: Rick
+title: Demonstration
+
+This page includes many references to the tiddler ''Rick'' down below, whose title you can change to see how this page reacts.
+
+!! Links
+
+[[A link to Rick.|Rick]]
+
+Notice that plaintext references to Rick are not changed. Only occurrences of the title that in some way link to the page are updated.
+
+!! Widgets
+
+<$checkbox tiddler="Rick" tag="checked">Check box for tag `checked`</$checkbox> 
+
+Checkboxes, and all core widgets whose attributes can reference a tiddler will be updated on a rename. You can configure which widgets, and corresponding attributes, are updated, including with custom widgets.
+
+!! Filters
+
+<$list filter="Rick [tag[Rick]]" />
+
+Filters in whitelisted fields and attributes will be updated as well. However, Relink only updates the operands of whitelisted filter operators. This includes `tag` and `title`, but you can add or remove any operators you want to the list.
+
+!! Fields
+
+<table>
+<$list variable="field" filter="list tags example-filter example-single">
+<tr><td>''<<field>>''</td><td class="pre"><$view field=<<field>> /></td></tr>
+</$list>
+</table>
+
+Whitelisted tiddler fields are updated just as well. Without this plugin, Tiddlywiki could manage `list` and `tags` on its own. ''Relink'' opens the door for other tiddlers, including ones that specify something other than a string list, liek a filter, or a single tiddler title.
