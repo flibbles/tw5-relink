@@ -1,8 +1,0 @@
-module-type: tiddlerfield
-title: tiddlerfields/testfield
-type: application/json
-
-{
-	"name": "testfield",
-	"relinkable": true
-}

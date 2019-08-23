@@ -1,9 +1,0 @@
-module-type: tiddlerfield
-title: tiddlerfields/teststringlist
-type: application/json
-
-{
-	"name": "teststringlist",
-	"type": "list",
-	"relinkable": true
-}
