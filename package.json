@@ -6,8 +6,9 @@
     "plugin_dir": "/usr/local/lib/node_modules/tiddlywiki/plugins/flibbles"
   },
   "scripts": {
-    "test": "tiddlywiki --version",
+    "test": "tiddlywiki --build test",
     "build": "mkdir -p ${npm_package_config_plugin_dir} && cp -R ./plugins/relink ${npm_package_config_plugin_dir}",
+    "demo": "tiddlywiki --build demo",
     "prebuild": "npm run clean",
     "clean": "rm -Rf ${npm_package_config_plugin_dir}/relink"
   },

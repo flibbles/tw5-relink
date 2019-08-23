@@ -1,5 +1,5 @@
 {
-	"description": "Testing framework for tw5-relink",
+	"description": "Testing documentation, and demo framework for tw5-relink",
 	"config": {
 		"wikiTiddlersSubDir": "./test"
 	},
@@ -11,7 +11,13 @@
 		"tiddlywiki/snowwhite"
 	],
 	"build": {
-		"index": [
-			"--rendertiddler","$:/core/save/all","test.html","text/plain"]
+		"test": [
+			"--output", "./docs/",
+			"--rendertiddler","$:/core/save/all","test.html","text/plain"
+		],
+		"demo": [
+			"--output", "./docs/",
+			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine"
+		]
 	}
 }
