@@ -11,7 +11,7 @@ describe("filter fields", function() {
 
 function operatorConf(operator, value) {
 	if (value === undefined) {
-		value = "yes";
+		value = "title";
 	}
 	var prefix = "$:/config/flibbles/relink/operators/";
 	return {title: prefix + operator, text: value};
@@ -111,10 +111,21 @@ it('ignores blank tag configurations', function() {
 	testFilter("[[A]] [empty[A]]", "[[to there]] [empty[A]]", {from: "A", wiki: wiki});
 });
 
-it('ignores non-yes tag configurations', function() {
+it('ignores non-title tag configurations', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(operatorConf("bad", "eh?"));
 	testFilter("[[A]] [bad[A]]", "[[to there]] [bad[A]]", {from: "A", wiki: wiki});
+});
+
+/** This is legacy support. Originally, the value of the configuration tiddlers
+ *  was set to "yes" because I didn't think it really mattered, but it turns
+ *  out it may actually be other values one day, so I'm switching it to title
+ *  sooner rather than later.
+ */
+it("but it doesn't ignore 'yes' configurations", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(operatorConf("good", "yes"));
+	testFilter("[[A]] [good[A]]", {from: "A", wiki: wiki});
 });
 
 });
