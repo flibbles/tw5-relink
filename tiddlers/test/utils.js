@@ -1,6 +1,4 @@
 /*\
-title: test/utils.js
-type: application/javascript
 module-type: library
 
 Utilities for test.

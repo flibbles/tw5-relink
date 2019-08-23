@@ -1,8 +1,4 @@
 /*\
-tags: $:/tags/test-spec
-title: test/relink.js
-type: application/javascript
-module-type: test.relink
 
 Tests the new relinking wiki methods.
 
