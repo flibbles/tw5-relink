@@ -1,0 +1,13 @@
+title: Operators
+
+Whenever a filter is processed by Relink, whether in a field or an attribute<!-- or a filtered transclude expression -->, it will only update the operands of whitelisted operators.
+
+`tag` and `title` are whitelisted by default. That means on rename //MyTiddler// -> //New Tiddler//:
+
+`[title[MyTiddler]] [tag[MyTiddler]]`
+
+becomes
+
+`[title[New Tiddler]] [tag[New Tiddler]]`
+
+''Title'' is special. If it's whitelisted, then it includes all shorthands for title. All runs of the filter: `[title[MyTiddler]] [[MyTiddler]] [field:title[MyTiddler]] MyTiddler "MyTiddler" 'MyTiddler'` would all be changed on a rename of //MyTiddler//.

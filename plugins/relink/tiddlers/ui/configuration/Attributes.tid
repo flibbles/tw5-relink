@@ -7,6 +7,9 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 \define state-base() $:/state/flibbles/relink/
 
 \define body()
+
+{{$:/plugins/flibbles/relink/language/Help/Attributes}}
+
 <table><tbody>
 <$list filter="[all[shadows+tiddlers]prefix<prefix-attr>!has[draft.of]has[text]]">
 <$set name="element"

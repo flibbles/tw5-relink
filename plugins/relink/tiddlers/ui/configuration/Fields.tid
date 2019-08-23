@@ -7,6 +7,9 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 \define state-base() $:/state/flibbles/relink/
 
 \define body()
+
+{{$:/plugins/flibbles/relink/language/Help/Fields}}
+
 <table><tbody>
 <$list filter="[all[shadows+tiddlers]prefix<prefix-fields>!has[draft.of]has[text]]">
 <tr>

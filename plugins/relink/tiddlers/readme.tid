@@ -1,6 +1,12 @@
 title: $:/plugins/flibbles/relink/readme
 type: text/vnd.tiddlywiki
 
-This mod allows for customizability when relinking tiddlers that are renamed.
+When renaming a tiddler, Relink can update the fields, filters, and widgets
+of all other tiddlers. However, it works through whitelisting.
 
-More than just ``tags`` and ``list`` fields, but ``list-after``, ``list-before`` and any other field specific to your tiddlywiki can be set to be retouched in all tiddlers when one tiddler is renamed.
+It's already configured to update tiddler titles for all core widgets, filters,
+and fields, but the whitelists can be customized for each of this in the
+configuration panel.
+
+See [[the tw5-relink website|https://github.com/flibbles/tw5-relink]] for
+more details and examples.

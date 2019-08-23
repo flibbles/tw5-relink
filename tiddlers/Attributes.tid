@@ -1,0 +1,13 @@
+title: Attributes
+
+The attributes of widgets can be updated by Relink, but only if they're whitelisted. Given a whitelisted element/attribute pair, such as `$link` and `to`, the following update could happen:
+
+`<$link to="MyTiddler">A link to my tiddler</$link>`
+
+would update to:
+
+`<$link to="New Tiddler">A link to my tiddler</$link>`
+
+If you have `$list`/`filter` whitelisted and configured as a filter, then the widget `<$list filter="..." />` would have the contents of its filter attribute evaluated, and any whitelisted filter operators inside of it would be considered for updating during a rename operation.
+
+For each element/attribute pair, you must specify its [[type|Field Types]].

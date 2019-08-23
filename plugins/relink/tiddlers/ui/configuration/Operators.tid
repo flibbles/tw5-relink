@@ -7,6 +7,9 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 \define state-base() $:/state/flibbles/relink/
 
 \define body()
+
+{{$:/plugins/flibbles/relink/language/Help/Operators}}
+
 <table><tbody>
 <$list filter="[all[shadows+tiddlers]prefix<prefix-ops>!has[draft.of]has[text]]">
 <tr>
