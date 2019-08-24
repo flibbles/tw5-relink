@@ -34,6 +34,8 @@ it('allows all other unmanaged wikitext rules', function() {
 	fine("External links: [ext[https://google.com]] and [ext[Tooltip|https://google.com]] here");
 	fine("Comments <!-- Look like this -->");
 	fine("Block Comments\n\n<!--\n\nLook like this? -->\n\n");
+	fine("\\define macro() Single line stuff\n");
+	fine("\\define macro()\nMultiline stuff\n\\end\n");
 });
 
 it('ignores titles in generic text', function() {
@@ -137,7 +139,8 @@ it('field attributes fun with quotes', function() {
 it('uses macros for literally unquotable titles', function() {
 	var to = 'End\'s with "quotes"';
 	var to2 = 'Another\'"quotes"';
-	var macro = '\\define relink-1() '+to+'\n'
+	var macro = '\\define relink-1() '+to+'\n';
+	var macro2 = '\\define relink-1() '+to2+'\n';
 	var expectedLink = '<$link to=<<relink-1>>/>';
 	testText("<$link to='from here'/>", macro+expectedLink, {to: to});
 	testText("Before <$link to='from here'/> After",
@@ -147,6 +150,8 @@ it('uses macros for literally unquotable titles', function() {
 	// Only one macro is made, even when multiple instances occur
 	testText("<$link to='from here'/><$link to='from here'/>",
 		 macro+expectedLink+expectedLink, {to: to});
+	// Running it twice still works
+	testText(macro+expectedLink, macro2+expectedLink, {from: to, to: to2, debug: true});
 });
 
 it('ignores blank attribute configurations', function() {

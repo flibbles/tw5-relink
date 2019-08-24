@@ -17,8 +17,10 @@ $tw.modules.applyMethods('relinkwikitextrule', rules);
 
 function WikiWalker() {
 	WikiParser.apply(this, arguments);
+	this.relinkRules = this.inlineRules.concat(this.pragmaRules);
 };
 WikiWalker.prototype = Object.create(WikiParser.prototype);
+WikiWalker.prototype.parsePragmas = function() {return []; };
 WikiWalker.prototype.parseInlineRun = function() {};
 WikiWalker.prototype.parseBlocks = function() {};
 
@@ -49,7 +51,7 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 		parser = new WikiWalker(null, text, options),
 		state = new State,
 		matchingRule;
-	while (matchingRule = parser.findNextMatch(parser.inlineRules, parser.pos)) {
+	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		var name = matchingRule.rule.name;
 		if (rules[name]) {
 			var newSegment = rules[name].call(matchingRule.rule, tiddler, text, fromTitle, toTitle, options, state);
