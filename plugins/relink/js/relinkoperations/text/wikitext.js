@@ -25,24 +25,32 @@ WikiWalker.prototype.parseInlineRun = function() {};
 WikiWalker.prototype.parseBlocks = function() {};
 
 function State() {
-	this.placeholders = Object.create(null);
+	this.placeholder = undefined;
 	this.used = false;
+	this.reserved = {};
 };
 
 State.prototype.getPlaceholderFor = function(value) {
-	this.used = true;
-	return this.placeholders[value] = "relink-1";
+	if (this.placeholder === undefined) {
+		this.used = true;
+		var number = 1;
+		while(this.reserved[number]) {number+=1};
+		this.placeholder = "relink-" + number;
+		this.value = value;
+	}
+	return this.placeholder;
+};
+
+State.prototype.reserve = function(number) {
+	this.reserved[parseInt(number)] = true;
 };
 
 State.prototype.getPreamble = function() {
-	var rtn = [];
-	for (var name in this.placeholders) {
-		rtn.push(`\\define ${this.placeholders[name]}() ${name}\n`);
+	if (this.placeholder) {
+		return `\\define ${this.placeholder}() ${this.value}\n`;
 	}
-	return rtn;
+	return undefined;
 };
-
-State.prototype.hasPreamble = function() { return this.used; }
 
 exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var text = tiddler.fields.text,
@@ -73,8 +81,9 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 		}
 	}
 	if (builder.length > 0) {
-		if (state.hasPreamble()) {
-			builder.unshift.apply(builder, state.getPreamble());
+		var preamble = state.getPreamble();
+		if (preamble) {
+			builder.unshift(preamble);
 		}
 		builder.push(text.substr(buildIndex));
 		changes.text = builder.join('');
