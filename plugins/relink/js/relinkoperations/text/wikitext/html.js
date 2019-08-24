@@ -40,8 +40,15 @@ exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
 			               - (quote.length*2)
 			               - attr.value.length;
 			builder.push(text.substring(buildIndex, valueStart));
-			// If it wasn't quoted, quote it now to be safe.
-			builder.push(wrapValue(value, quote));
+			var quotedValue = wrapValue(value, quote);
+			if (quotedValue !== undefined) {
+				builder.push(quotedValue);
+			} else {
+				// The value was unquotable. We need to make
+				// a macro in order to replace it.
+				builder.unshift("\\define relink-1() ", value, '\n');
+				builder.push("<<relink-1>>");
+			}
 			buildIndex = valueStart
 			           + attr.value.length
 			           + (quote.length*2);
@@ -79,23 +86,24 @@ function determineQuote(text, attr) {
  * If it can stick with the preference, it will.
  */
 function wrapValue(value, preference) {
-	var choices = ["'", '"', '"""'];
-	if (preference) {
-		if (value.indexOf(preference) < 0) {
+	var choices = {
+		"": function(v) {return !/([\/\s<>"'=])/.test(value); },
+		"'": function(v) {return v.indexOf("'") < 0; },
+		'"': function(v) {return v.indexOf('"') < 0; },
+		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';}
+	};
+	if (choices[preference]) {
+		if (choices[preference](value)) {
 			return preference + value + preference;
 		}
-	} else if (preference === '') {
-		// If there was no quotation, let's see if we can keep that.
-		if (!/([\/\s<>"'=])/.test(value)) {
-			return value;
+	}
+	for (var quote in choices) {
+		if (choices[quote](value)) {
+			return quote + value + quote;
 		}
 	}
-	for (var i = 0; i < choices.length; i++) {
-		if (value.indexOf(choices[i]) < 0) {
-			return choices[i] + value + choices[i];
-		}
-	}
-	throw new RuntimeError("Relink does not know how to relink to such a bizarre title: " + value);
+	// No quotes will work on this
+	return undefined;
 };
 
 function AttributeHandler(tiddler, value) {

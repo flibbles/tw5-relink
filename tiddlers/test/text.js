@@ -129,6 +129,17 @@ it('field attributes fun with quotes', function() {
 	$tw.utils.each('= <>/"\n\t', function(ch) {
 		testQuote(`A`, `'te${ch}st'`, {from: "A", to: `te${ch}st`});
 	});
+
+	// Now for the super advanced quotes!! //
+	testQuote("from", `""""begins" with quote; has apos'"""`, {from: "from", to: `"begins" with quote; has apos'`});
+});
+
+it('uses macros for literally unquotable titles', function() {
+	var to = 'End\'s with "quotes"';
+	var expected = '\\define relink-1() '+to+'\n<$link to=<<relink-1>>/>';
+	testText("<$link to='from here'/>", expected, {to: to});
+	// It'll prefer triple-quotes, but it should still resort to macros.
+	testText('<$link to="""from here"""/>', expected, {to: to});
 });
 
 it('ignores blank attribute configurations', function() {
