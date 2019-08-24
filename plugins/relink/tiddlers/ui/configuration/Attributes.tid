@@ -11,6 +11,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 {{$:/plugins/flibbles/relink/language/Help/Attributes}}
 
 <table><tbody>
+<tr><th>Widget/HTML Element</th><th>Attribute</th><th>Type</th><th>Delete</th></tr>
 <$list filter="[all[shadows+tiddlers]prefix<prefix-attr>!has[draft.of]has[text]]">
 <$set name="element"
       filter="[all[current]removeprefix<prefix-attr>splitbefore[/]removesuffix[/]]">

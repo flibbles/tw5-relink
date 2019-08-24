@@ -11,6 +11,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 {{$:/plugins/flibbles/relink/language/Help/Fields}}
 
 <table><tbody>
+<tr><th>Field Name</th><th>Field Type</th><th>Delete</th></tr>
 <$list filter="[all[shadows+tiddlers]prefix<prefix-fields>!has[draft.of]has[text]]">
 <tr>
 <td><$list filter="[all[current]removeprefix<prefix-fields>]"><<currentTiddler>></$list></td>

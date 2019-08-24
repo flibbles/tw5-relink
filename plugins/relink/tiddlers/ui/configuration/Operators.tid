@@ -11,6 +11,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 {{$:/plugins/flibbles/relink/language/Help/Operators}}
 
 <table><tbody>
+<tr><th>Filter Operator</th><th>Delete</th></tr>
 <$list filter="[all[shadows+tiddlers]prefix<prefix-ops>!has[draft.of]has[text]]">
 <tr>
 <td><$list variable="listItem" filter="[<currentTiddler>removeprefix<prefix-ops>]"><<listItem>></$list></td>
