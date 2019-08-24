@@ -1,0 +1,9 @@
+caption: Transcludes
+tags: Documentation WikiText
+
+Simple Transclusion patterns areautomatically updated. This includes both the tiddler and the template tiddler.
+
+```
+{{MyTiddler}}
+{{MyTiddler||TemplateTiddler}}
+```
