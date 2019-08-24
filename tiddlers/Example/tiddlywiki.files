@@ -1,0 +1,20 @@
+{
+	"directories": [
+		{
+			"path": ".",
+			"filesRegExp": "^.*\\.tid$",
+			"isTiddlerFile": true,
+			"fields": {
+				"caption": {
+					"source": "basename"
+				},
+				"tags": "Example",
+				"relink.showcase": "text",
+				"title": {
+					"source": "basename",
+					"prefix": "Example/"
+				}
+			}
+		}
+	]
+}

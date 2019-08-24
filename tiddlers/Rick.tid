@@ -1,9 +1,0 @@
-title: Rick
-
-Feel free to change my name.
-
-<$button>
-
-Rick "The Duke" Morranis
-<$action-sendmessage $message="tm-rename-tiddler" to="""Rick "The Duke" Morranis""" />
-</$button>

@@ -1,0 +1,29 @@
+title: Frodo
+
+\define rename(name)
+<$button>
+
+$name$
+<$action-sendmessage $message="tm-rename-tiddler" to=<<__name__>> />
+</$button>
+\end
+Feel free to change my name.
+
+<<rename Sam>>
+
+<<rename Legolas>>
+
+<<rename Gimli>>
+
+<<rename "Pippin & Merry">>
+
+<<rename 'Gandalf the Gray'>>
+
+<!-- Don't actually support this one yet
+
+<<rename "Aragorn [Strider]">>
+-->
+
+<<rename Aragorn>>
+
+<<rename "Sam's pony: Bill">>
