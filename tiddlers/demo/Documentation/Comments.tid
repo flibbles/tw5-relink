@@ -1,0 +1,10 @@
+caption: Comments
+tags: Documentation WikiText
+
+Any text inside of comments is ''completely ignored'', even if that text matches syntax constructs which would otherwise be updated.
+
+```
+<!-- Nothing inside of here
+     will ever be touched.
+-->
+```

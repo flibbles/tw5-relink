@@ -1,0 +1,10 @@
+title: Templates/ul
+
+<!-- Useful for making lists of a tag. -->
+<ul><$list variable="listItem"
+           filter="[tag<currentTiddler>!has[draft.of]]">
+ <li><$link to=<<listItem>> >
+  <$transclude tiddler=<<listItem>> field="caption">
+   <$text text=<<listItem>> />
+  </$transclude></$link></li>
+</$list></ul>

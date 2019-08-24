@@ -1,4 +1,5 @@
-title: Operators
+caption: Operators
+tags: Documentation Construct
 
 Whenever a filter is processed by Relink, whether in a field or an attribute<!-- or a filtered transclude expression -->, it will only update the operands of whitelisted operators.
 

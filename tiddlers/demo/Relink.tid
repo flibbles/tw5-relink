@@ -11,10 +11,12 @@ title: Relink
 
 This is the demo site for ''Relink'', the Tiddlywiki5 plugin which aids in renaming tiddlers by propogating the change across all existing tiddlers.
 
-To install, drag the following onto your Tiddlywiki project and say "yes" to import.
+{{Relink||Templates/ul}}
+
+!! To Install
+
+Drag the following onto your Tiddlywiki project and say "yes" to import.
 
 @@text-align:center;
 <$link to=<<plugin>> class="relink-dragger">Drag n' Drop me!</$link>
 @@
-
-[[The release notes are available here.|Versions]]

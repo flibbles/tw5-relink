@@ -1,4 +1,5 @@
-title: Attributes
+caption: Attributes
+tags: Documentation Construct
 
 The attributes of widgets can be updated by Relink, but only if they're whitelisted. Given a whitelisted element/attribute pair, such as `$link` and `to`, the following update could happen:
 

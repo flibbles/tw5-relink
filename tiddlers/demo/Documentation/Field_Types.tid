@@ -1,4 +1,5 @@
-title: Field Types
+caption: Field Types
+tags: Documentation
 
 Fields and attributes have types. Depending on the type, Relink will parse them differently.
 
