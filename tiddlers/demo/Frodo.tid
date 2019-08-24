@@ -1,5 +1,6 @@
 title: Frodo
 
+\define bill() Sam's pony "Bill"
 \define rename(name)
 <$button>
 
@@ -26,4 +27,4 @@ Feel free to change my name.
 
 <<rename Aragorn>>
 
-<<rename "Sam's pony: Bill">>
+<$macrocall $name="rename" name=<<bill>> />

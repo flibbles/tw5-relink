@@ -8,7 +8,7 @@ the title link of any example to tinker with that example directly.
 
 -->
 
-This page includes many references to the tiddler ''Frodo'' down below, whose title you can change to see how this page reacts.
+Change the tiddler''Frodo'' down below to see how these examples react.
 
 <$macrocall $name="tabs"
             tabsList="[tag[Example]]"
