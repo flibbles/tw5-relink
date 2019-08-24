@@ -22,16 +22,37 @@ WikiWalker.prototype = Object.create(WikiParser.prototype);
 WikiWalker.prototype.parseInlineRun = function() {};
 WikiWalker.prototype.parseBlocks = function() {};
 
+function State() {
+	this.placeholders = Object.create(null);
+	this.used = false;
+};
+
+State.prototype.getPlaceholderFor = function(value) {
+	this.used = true;
+	return this.placeholders[value] = "relink-1";
+};
+
+State.prototype.getPreamble = function() {
+	var rtn = [];
+	for (var name in this.placeholders) {
+		rtn.push(`\\define ${this.placeholders[name]}() ${name}\n`);
+	}
+	return rtn;
+};
+
+State.prototype.hasPreamble = function() { return this.used; }
+
 exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var text = tiddler.fields.text,
 		builder = [],
 		buildIndex = 0,
 		parser = new WikiWalker(null, text, options),
+		state = new State,
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.inlineRules, parser.pos)) {
 		var name = matchingRule.rule.name;
 		if (rules[name]) {
-			var newSegment = rules[name].call(matchingRule.rule, tiddler, text, fromTitle, toTitle, options);
+			var newSegment = rules[name].call(matchingRule.rule, tiddler, text, fromTitle, toTitle, options, state);
 			if (newSegment !== undefined) {
 				builder.push(text.substring(buildIndex, matchingRule.matchIndex));
 				builder.push(newSegment);
@@ -50,6 +71,9 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 		}
 	}
 	if (builder.length > 0) {
+		if (state.hasPreamble()) {
+			builder.unshift.apply(builder, state.getPreamble());
+		}
 		builder.push(text.substr(buildIndex));
 		changes.text = builder.join('');
 	}

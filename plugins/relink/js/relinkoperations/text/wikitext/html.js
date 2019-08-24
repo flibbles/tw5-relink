@@ -11,7 +11,7 @@ should be changed.
 var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
-exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
+exports['html'] = function(tiddler, text, fromTitle, toTitle, options, state) {
 	var managedElement = settings.getAttributes(options)[this.nextTag.tag],
 		builder = [],
 		buildIndex = this.nextTag.start;
@@ -46,8 +46,8 @@ exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
 			} else {
 				// The value was unquotable. We need to make
 				// a macro in order to replace it.
-				builder.unshift("\\define relink-1() ", value, '\n');
-				builder.push("<<relink-1>>");
+				var holder = state.getPlaceholderFor(value);
+				builder.push("<<", holder, ">>");
 			}
 			buildIndex = valueStart
 			           + attr.value.length

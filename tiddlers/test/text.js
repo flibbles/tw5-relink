@@ -136,10 +136,17 @@ it('field attributes fun with quotes', function() {
 
 it('uses macros for literally unquotable titles', function() {
 	var to = 'End\'s with "quotes"';
-	var expected = '\\define relink-1() '+to+'\n<$link to=<<relink-1>>/>';
-	testText("<$link to='from here'/>", expected, {to: to});
+	var to2 = 'Another\'"quotes"';
+	var macro = '\\define relink-1() '+to+'\n'
+	var expectedLink = '<$link to=<<relink-1>>/>';
+	testText("<$link to='from here'/>", macro+expectedLink, {to: to});
+	testText("Before <$link to='from here'/> After",
+	         macro+"Before "+expectedLink+" After", {to: to});
 	// It'll prefer triple-quotes, but it should still resort to macros.
-	testText('<$link to="""from here"""/>', expected, {to: to});
+	testText('<$link to="""from here"""/>', macro+expectedLink, {to: to});
+	// Only one macro is made, even when multiple instances occur
+	testText("<$link to='from here'/><$link to='from here'/>",
+		 macro+expectedLink+expectedLink, {to: to});
 });
 
 it('ignores blank attribute configurations', function() {
