@@ -1,0 +1,15 @@
+{
+	"directories": [
+		{
+			"path": ".",
+			"filesRegExp": "^.*\\.tid$",
+			"isTiddlerFile": true,
+			"fields": {
+				"title": {
+					"source": "basename",
+					"prefix": "Versions/"
+				}
+			}
+		}
+	]
+}

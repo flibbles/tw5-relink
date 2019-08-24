@@ -1,0 +1,8 @@
+title: Versions
+
+!! Release Notes
+
+<$macrocall $name="tabs"
+            tabsList="[prefix[Versions/]!nsort[created]]"
+            default={{{[prefix[Versions/]nsort[created]first[]]}}}
+            class="tc-vertical" />
