@@ -1,0 +1,14 @@
+caption: Known Issues
+tags: Relink
+title: Issues
+
+These are issues that I'm working to correct as soon as I can, but Relink handles the majority of all cases, so I'm making it available before it's 100% perfect.
+
+* Filtered Transludes are not managed (e.g. `{{{[[tag[MyTiddler]]}}}`)
+* WikiLinks aren't managed (e.g. `MyTiddler` being an autolink)
+* ~TextReferences aren't managed. This is stuff like `Title!!field`. These are used in a few places, like the `list` filtered operator.
+** Related: Indirect attributes and operands aren't supported (e.g. `<$set name="Something" value={{tiddler!!field}} />` or `[prefix{tiddler!!field}]`)
+* Macrocalls are not managed (e.g. `<<macro MyTiddler>>`, or `<$macrocall $name="macro" tiddler="MyTiddler"`). This'll involve another whole customizable whitelist.
+* I believe there are some complicated tiddler titles that can choke up the filter relinker. I need to test more thoroughly though.
+* If `\define relink-??()` is encountered after pragmas should no longer be parsed, this is still relinked if its title matches the fromTitle. I'm not actually sure I should prevent this. It's a weird use case, but I think the user will still probably want it replaced.
+* Relink should respect `\rules` pragma. It actually might already, but I need to test this.
