@@ -1,4 +1,4 @@
-title: Demonstration
+title: Example
 
 <!-- NOTICE
 
@@ -10,18 +10,7 @@ the title link of any example to tinker with that example directly.
 
 This page includes many references to the tiddler ''Frodo'' down below, whose title you can change to see how this page reacts.
 
-<$list filter="[tag[Example]]">
-
-!! <$link to=<<currentTiddler>> >{{!!caption}}</$link>
-
-<$transclude />
-
-<table>
-<$list variable="field" filter="[enlist{!!relink.showcase}]">
-<tr><td>''<<field>>''</td><td class="pre"><$view field=<<field>> /></td></tr>
-</$list>
-</table>
-
-<$transclude field="description" />
-
-</$list>
+<$macrocall $name="tabs"
+            tabsList="[tag[Example]]"
+            default="Example/Links"
+            template="Templates/Example" />

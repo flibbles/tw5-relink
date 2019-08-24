@@ -1,5 +1,9 @@
 title: $:/
 
-DefaultTiddlers: Relink Demonstration Frodo
+DefaultTiddlers: Relink Example Frodo
 SiteTitle: Relink
 SiteSubtitle: flexibility when relinking renamed tiddlers
+themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint: 1060px
+themes/tiddlywiki/vanilla/metrics/storyright: 870px
+themes/tiddlywiki/vanilla/metrics/storywidth: 870px
+themes/tiddlywiki/vanilla/metrics/tiddlerwidth: 800px

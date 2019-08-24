@@ -2,7 +2,12 @@ tags: $:/tags/Stylesheet
 title: Stylesheet.css
 type: text/css
 
-.pre {
-	font-family: "SFMono-Regular",Consolas,"Liberation Mono",Menlo,Courier,monospace;
-	background-color: #f5f5f5;
+td.relink-text {
+	padding: 0px;
+}
+
+td.relink-text pre {
+	padding: 6px;
+	margin: 0px;
+	border: none;
 }

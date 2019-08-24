@@ -1,0 +1,20 @@
+title: Templates/Example
+
+<$tiddler tiddler=<<currentTab>> >
+
+!! <$link>{{!!caption}}</$link>
+
+<table>
+<$list variable="field" filter="[enlist{!!relink.showcase}]">
+<tr><td>''<<field>>''</td><td class="relink-text"><pre><$view field=<<field>> /></pre></td></tr>
+</$list>
+</table>
+
+<blockquote>
+
+<$transclude />
+
+</blockquote>
+
+<$transclude field="description" />
+</$tiddler>
