@@ -15,7 +15,7 @@ var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[typ
 var rules = Object.create(null);
 $tw.modules.applyMethods('relinkwikitextrule', rules);
 
-function WikiWalker() {
+function WikiRelinker() {
 	WikiParser.apply(this, arguments);
 	this.inlineRules = this.inlineRules.concat(this.pragmaRules);
 	// We work through relinkRules so we can change it later.
@@ -25,12 +25,12 @@ function WikiWalker() {
 	this.reservedPlaceholders = Object.create(null);
 };
 
-WikiWalker.prototype = Object.create(WikiParser.prototype);
-WikiWalker.prototype.parsePragmas = function() {return []; };
-WikiWalker.prototype.parseInlineRun = function() {};
-WikiWalker.prototype.parseBlocks = function() {};
+WikiRelinker.prototype = Object.create(WikiParser.prototype);
+WikiRelinker.prototype.parsePragmas = function() {return []; };
+WikiRelinker.prototype.parseInlineRun = function() {};
+WikiRelinker.prototype.parseBlocks = function() {};
 
-WikiWalker.prototype.getPlaceholderFor = function(value) {
+WikiRelinker.prototype.getPlaceholderFor = function(value) {
 	if (this.placeholder === undefined) {
 		var number = 1;
 		while(this.reservedPlaceholders[number]) {number+=1};
@@ -40,11 +40,11 @@ WikiWalker.prototype.getPlaceholderFor = function(value) {
 	return this.placeholder;
 };
 
-WikiWalker.prototype.reserve = function(number) {
+WikiRelinker.prototype.reserve = function(number) {
 	this.reservedPlaceholders[parseInt(number)] = true;
 };
 
-WikiWalker.prototype.getPreamble = function() {
+WikiRelinker.prototype.getPreamble = function() {
 	if (this.placeholder) {
 		return `\\define ${this.placeholder}() ${this.value}\n`;
 	}
@@ -55,7 +55,7 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var text = tiddler.fields.text,
 		builder = [],
 		buildIndex = 0,
-		parser = new WikiWalker(null, text, options),
+		parser = new WikiRelinker(null, text, options),
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		var name = matchingRule.rule.name;
