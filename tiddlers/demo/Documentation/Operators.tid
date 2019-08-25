@@ -1,6 +1,7 @@
 caption: Operators
 tags: Documentation Construct
 
+\rules except wikilink
 Whenever a filter is processed by Relink, whether in a field or an attribute<!-- or a filtered transclude expression -->, it will only update the operands of whitelisted operators.
 
 `tag` and `title` are whitelisted by default. That means on rename //MyTiddler// -> //New Tiddler//:

@@ -1,6 +1,7 @@
 caption: Field Types
 tags: Documentation
 
+\rules except wikilink
 Fields and attributes have types. Depending on the type, Relink will parse them differently.
 
 !!! Title
