@@ -21,34 +21,30 @@ function WikiWalker() {
 	// We work through relinkRules so we can change it later.
 	// relinkRules is inlineRules so it gets touched up by amendRules().
 	this.relinkRules = this.inlineRules;
+	this.placeholder = undefined;
+	this.reservedPlaceholders = Object.create(null);
 };
+
 WikiWalker.prototype = Object.create(WikiParser.prototype);
 WikiWalker.prototype.parsePragmas = function() {return []; };
 WikiWalker.prototype.parseInlineRun = function() {};
 WikiWalker.prototype.parseBlocks = function() {};
 
-function State() {
-	this.placeholder = undefined;
-	this.used = false;
-	this.reserved = {};
-};
-
-State.prototype.getPlaceholderFor = function(value) {
+WikiWalker.prototype.getPlaceholderFor = function(value) {
 	if (this.placeholder === undefined) {
-		this.used = true;
 		var number = 1;
-		while(this.reserved[number]) {number+=1};
+		while(this.reservedPlaceholders[number]) {number+=1};
 		this.placeholder = "relink-" + number;
 		this.value = value;
 	}
 	return this.placeholder;
 };
 
-State.prototype.reserve = function(number) {
-	this.reserved[parseInt(number)] = true;
+WikiWalker.prototype.reserve = function(number) {
+	this.reservedPlaceholders[parseInt(number)] = true;
 };
 
-State.prototype.getPreamble = function() {
+WikiWalker.prototype.getPreamble = function() {
 	if (this.placeholder) {
 		return `\\define ${this.placeholder}() ${this.value}\n`;
 	}
@@ -60,12 +56,11 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 		builder = [],
 		buildIndex = 0,
 		parser = new WikiWalker(null, text, options),
-		state = new State,
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		var name = matchingRule.rule.name;
 		if (rules[name]) {
-			var newSegment = rules[name].call(matchingRule.rule, tiddler, text, fromTitle, toTitle, options, state);
+			var newSegment = rules[name].call(matchingRule.rule, tiddler, text, fromTitle, toTitle, options);
 			if (newSegment !== undefined) {
 				builder.push(text.substring(buildIndex, matchingRule.matchIndex));
 				builder.push(newSegment);
@@ -84,7 +79,7 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 		}
 	}
 	if (builder.length > 0) {
-		var preamble = state.getPreamble();
+		var preamble = parser.getPreamble();
 		if (preamble) {
 			builder.unshift(preamble);
 		}

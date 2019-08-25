@@ -7,7 +7,7 @@ that we may have previously install.
 
 \*/
 
-exports['macrodef'] = function(tiddler, text, fromTitle, toTitle, options, state) {
+exports['macrodef'] = function(tiddler, text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var m = this.match;
 	// !m[3] means it's not a multiline macrodef
@@ -22,7 +22,7 @@ exports['macrodef'] = function(tiddler, text, fromTitle, toTitle, options, state
 			return `\\define ${m[1]}() ${toTitle}${match[2]}`;
 		} else {
 			// That number is taken.
-			state.reserve(placeholder[1]);
+			this.parser.reserve(placeholder[1]);
 		}
 	}
 	return undefined;
