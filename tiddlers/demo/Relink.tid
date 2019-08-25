@@ -5,7 +5,7 @@ title: Relink
 <$tiddler tiddler=<<plugin>> >
 
 |!Version |{{!!version}} |
-|!Build date |<$view tiddler={{{[[Versions/]addsuffix{!!version}]}}} field="created" format="date" template="MMM DDth, YYYY" /> |
+|!Build date |<$view field="created" format="date" template="MMM DDth, YYYY" /> |
 |!TW5 compatibility |{{!!core-version}} |
 
 
