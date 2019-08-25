@@ -141,6 +141,12 @@ Error message and password prompt
 
 <li>$:/config/flibbles/relink/fields/example-single</li>
 
+<li>$:/config/PageControlButtons/Visibility/$:/core/ui/Buttons/home</li>
+
+<li>$:/config/RelinkOnRename</li>
+
+<li>$:/config/ViewToolbarButtons/Visibility/$:/core/ui/Buttons/info</li>
+
 <li>$:/core</li>
 
 <li>$:/DefaultTiddlers</li>
@@ -169,41 +175,49 @@ Error message and password prompt
 
 <li>$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth</li>
 
+<li>Attributes</li>
+
+<li>BilboBaggins</li>
+
+<li>Comments</li>
+
+<li>Demo</li>
+
+<li>Demo/Fields</li>
+
+<li>Demo/Filters</li>
+
+<li>Demo/Links</li>
+
+<li>Demo/Widgets</li>
+
 <li>Documentation</li>
 
 <li>Documentation/Attributes</li>
 
-<li>Documentation/Comments</li>
-
-<li>Documentation/Field Types</li>
-
 <li>Documentation/Fields</li>
-
-<li>Documentation/Links</li>
 
 <li>Documentation/Operators</li>
 
-<li>Documentation/Transcludes</li>
+<li>Field Types</li>
 
-<li>Example</li>
-
-<li>Example/Fields</li>
-
-<li>Example/Filters</li>
-
-<li>Example/Links</li>
-
-<li>Example/Widgets</li>
+<li>Fields</li>
 
 <li>Frodo</li>
 
 <li>Issues</li>
 
+<li>Links</li>
+
+<li>Operators</li>
+
+<li>Pragma</li>
+
 <li>Relink</li>
 
 <li>Stylesheet.css</li>
 
-<li>Templates/Example</li>
+<li>Templates/Demo</li>
 
 <li>Templates/now</li>
 
@@ -211,11 +225,15 @@ Error message and password prompt
 
 <li>Templates/Version</li>
 
+<li>Transcludes</li>
+
 <li>Versions</li>
 
 <li>Versions/1.0.0</li>
 
 <li>Versions/1.1.0</li>
+
+<li>Versions/1.2</li>
 
 </ul>
 </p>
@@ -232,6 +250,15 @@ Error message and password prompt
 </div>
 <div title="$:/config/flibbles/relink/fields/example-single">
 <pre>title</pre>
+</div>
+<div title="$:/config/PageControlButtons/Visibility/$:/core/ui/Buttons/home">
+<pre>show</pre>
+</div>
+<div title="$:/config/RelinkOnRename">
+<pre>yes</pre>
+</div>
+<div title="$:/config/ViewToolbarButtons/Visibility/$:/core/ui/Buttons/info">
+<pre>show</pre>
 </div>
 <div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="" description="TiddlyWiki5 core" list="readme" plugin-priority="0" plugin-type="plugin" title="$:/core" type="application/json" version="5.1.19">
 <pre>{
@@ -9111,12 +9138,12 @@ Error message and password prompt
 }</pre>
 </div>
 <div title="$:/DefaultTiddlers">
-<pre>Relink Example Frodo</pre>
+<pre>Relink Demo Frodo</pre>
 </div>
 <div title="$:/isEncrypted">
 <pre>no</pre>
 </div>
-<div author="Flibbles" core-version="&gt;=5.1.14" dependents="" description="Relink - flexibility when relinking renamed tiddlers" list="readme configuration" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink" type="application/json" version="1.1.1">
+<div author="Flibbles" core-version="&gt;=5.1.14" created="20190825193402541" dependents="" description="Relink - flexibility when relinking renamed tiddlers" list="readme configuration" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink" type="application/json" version="1.2.0">
 <pre>{
     &quot;tiddlers&quot;: {
         &quot;$:/plugins/flibbles/relink/js/bulkops.js&quot;: {
@@ -9126,7 +9153,7 @@ Error message and password prompt
             &quot;type&quot;: &quot;application/javascript&quot;
         },
         &quot;$:/plugins/flibbles/relink/js/settings.js&quot;: {
-            &quot;text&quot;: &quot;/*\\\nmodule-type: library\n\nThis handles the fetching and distribution of relink settings.\n\n\\*/\n\nvar fieldTypes = Object.create(null);\n$tw.modules.applyMethods('relinkfieldtype', fieldTypes);\n\nexports.getFields = function(options) {\n\treturn getSettings(options).fields;\n};\n\nexports.getOperators = function(options) {\n\treturn getSettings(options).operators;\n};\n\nexports.getAttributes = function(options) {\n\treturn getSettings(options).attributes;\n};\n\n/**Factories define methods that create settings given config tiddlers.\n * for factory method 'example', it will be called once for each:\n * \&quot;$:/config/flibbles/relink/example/...\&quot; tiddler that exists.\n * the argument \&quot;key\&quot; will be set to the contents of \&quot;...\&quot;\n *\n * The reason I build relink settings in this convoluted way is to minimize\n * the number of times tiddlywiki has to run through EVERY tiddler looking\n * for relink config tiddlers.\n *\n * Also, by exporting \&quot;factories\&quot;, anyone who extends relink can patch in\n * their own factory methods to create settings that are generated exactly\n * once per rename.\n */\nexports.factories = {\n\tattributes: function(attributes, tiddler, key) {\n\t\tvar relinker = fieldTypes[tiddler.fields.text];\n\t\tif (relinker) {\n\t\t\tvar elem = root(key);\n\t\t\tvar attr = key.substr(elem.length+1);\n\t\t\tattributes[elem] = attributes[elem] || Object.create(null);\n\t\t\tattributes[elem][attr] = relinker;\n\t\t}\n\t},\n\tfields: function(fields, tiddler, name) {\n\t\tvar relinker = fieldTypes[tiddler.fields.text];\n\t\tif (relinker) {\n\t\t\tfields[name] = relinker;\n\t\t}\n\t},\n\t/* The config tiddlers require \&quot;title\&quot; as text. (\&quot;yes\&quot; for legacy)\n\t * This is so shadow because in theory, we may need to support other\n\t * field types. I know there are TextReferences in some, and enlist\n\t * is a list. We may need to support that some day.\n\t */\n\toperators: function(operators, tiddler, name) {\n\t\tif (tiddler.fields.text === \&quot;title\&quot; || tiddler.fields.text === \&quot;yes\&quot;) {\n\t\t\toperators[name] = true;\n\t\t}\n\t}\n};\n\n/**We're caching the generated settings inside of options. Not exactly how\n * options was meant to be used, but it's fiiiiine.\n * The wiki global cache isn't a great place, because it'll get cleared many\n * times during a bulk relinking operation, and we can't recalculate this every\n * time without exploding a rename operation's time.\n * options works great. It only lasts just as long as the rename.\n * No longer, no shorter.\n */\nfunction getSettings(options) {\n\tvar secretCache = \&quot;__relink_settings\&quot;;\n\tvar cache = options[secretCache];\n\tif (cache === undefined) {\n\t\tcache = options[secretCache] = compileSettings(options.wiki);\n\t}\n\treturn cache;\n};\n\nfunction compileSettings(wiki) {\n\tvar prefix = \&quot;$:/config/flibbles/relink/\&quot;;\n\tvar settings = Object.create(null);\n\twiki.eachShadowPlusTiddlers(function(tiddler, title) {\n\t\tif (title.startsWith(prefix)) {\n\t\t\tvar remainder = title.substr(prefix.length);\n\t\t\tvar category = root(remainder);\n\t\t\tvar factory = exports.factories[category];\n\t\t\tif (factory) {\n\t\t\t\tsettings[category] = settings[category] || Object.create(null);\n\t\t\t\tvar name = remainder.substr(category.length+1);\n\t\t\t\tfactory(settings[category], tiddler, name);\n\t\t\t}\n\t\t}\n\t});\n\treturn settings;\n};\n\nfunction root(string) {\n\tvar index = string.indexOf('/');\n\tif (index &gt;= 0) {\n\t\treturn string.substr(0, index);\n\t}\n};\n&quot;,
+            &quot;text&quot;: &quot;/*\\\nmodule-type: library\n\nThis handles the fetching and distribution of relink settings.\n\n\\*/\n\nvar fieldTypes = Object.create(null);\n$tw.modules.applyMethods('relinkfieldtype', fieldTypes);\n\n/**Returns a specific relinker.\n * This is useful for wikitext rules which need to parse a filter or a list\n */\nexports.getRelinker = function(name) {\n\treturn fieldTypes[name];\n};\n\nexports.getFields = function(options) {\n\treturn getSettings(options).fields;\n};\n\nexports.getOperators = function(options) {\n\treturn getSettings(options).operators;\n};\n\nexports.getAttributes = function(options) {\n\treturn getSettings(options).attributes;\n};\n\n/**Factories define methods that create settings given config tiddlers.\n * for factory method 'example', it will be called once for each:\n * \&quot;$:/config/flibbles/relink/example/...\&quot; tiddler that exists.\n * the argument \&quot;key\&quot; will be set to the contents of \&quot;...\&quot;\n *\n * The reason I build relink settings in this convoluted way is to minimize\n * the number of times tiddlywiki has to run through EVERY tiddler looking\n * for relink config tiddlers.\n *\n * Also, by exporting \&quot;factories\&quot;, anyone who extends relink can patch in\n * their own factory methods to create settings that are generated exactly\n * once per rename.\n */\nexports.factories = {\n\tattributes: function(attributes, tiddler, key) {\n\t\tvar relinker = fieldTypes[tiddler.fields.text];\n\t\tif (relinker) {\n\t\t\tvar elem = root(key);\n\t\t\tvar attr = key.substr(elem.length+1);\n\t\t\tattributes[elem] = attributes[elem] || Object.create(null);\n\t\t\tattributes[elem][attr] = relinker;\n\t\t}\n\t},\n\tfields: function(fields, tiddler, name) {\n\t\tvar relinker = fieldTypes[tiddler.fields.text];\n\t\tif (relinker) {\n\t\t\tfields[name] = relinker;\n\t\t}\n\t},\n\t/* The config tiddlers require \&quot;title\&quot; as text. (\&quot;yes\&quot; for legacy)\n\t * This is so shadow because in theory, we may need to support other\n\t * field types. I know there are TextReferences in some, and enlist\n\t * is a list. We may need to support that some day.\n\t */\n\toperators: function(operators, tiddler, name) {\n\t\tif (tiddler.fields.text === \&quot;title\&quot; || tiddler.fields.text === \&quot;yes\&quot;) {\n\t\t\toperators[name] = true;\n\t\t}\n\t}\n};\n\n/**We're caching the generated settings inside of options. Not exactly how\n * options was meant to be used, but it's fiiiiine.\n * The wiki global cache isn't a great place, because it'll get cleared many\n * times during a bulk relinking operation, and we can't recalculate this every\n * time without exploding a rename operation's time.\n * options works great. It only lasts just as long as the rename.\n * No longer, no shorter.\n */\nfunction getSettings(options) {\n\tvar secretCache = \&quot;__relink_settings\&quot;;\n\tvar cache = options[secretCache];\n\tif (cache === undefined) {\n\t\tcache = options[secretCache] = compileSettings(options.wiki);\n\t}\n\treturn cache;\n};\n\nfunction compileSettings(wiki) {\n\tvar prefix = \&quot;$:/config/flibbles/relink/\&quot;;\n\tvar settings = Object.create(null);\n\tfor (var name in exports.factories) {\n\t\tsettings[name] = Object.create(null);\n\t}\n\twiki.eachShadowPlusTiddlers(function(tiddler, title) {\n\t\tif (title.startsWith(prefix)) {\n\t\t\tvar remainder = title.substr(prefix.length);\n\t\t\tvar category = root(remainder);\n\t\t\tvar factory = exports.factories[category];\n\t\t\tif (factory) {\n\t\t\t\tvar name = remainder.substr(category.length+1);\n\t\t\t\tfactory(settings[category], tiddler, name);\n\t\t\t}\n\t\t}\n\t});\n\treturn settings;\n};\n\nfunction root(string) {\n\tvar index = string.indexOf('/');\n\tif (index &gt;= 0) {\n\t\treturn string.substr(0, index);\n\t}\n};\n&quot;,
             &quot;module-type&quot;: &quot;library&quot;,
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/settings.js&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;
@@ -9162,39 +9189,63 @@ Error message and password prompt
             &quot;type&quot;: &quot;application/javascript&quot;
         },
         &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext.js&quot;: {
-            &quot;text&quot;: &quot;/*\\\n\nChecks for fromTitle in a tiddler's text. If found, sees if it's relevant,\nand tries to swap it out if it is.\n\n\\*/\n\n/*jslint node: false, browser: true */\n/*global $tw: false */\n\&quot;use strict\&quot;;\n\nvar type = 'text/vnd.tiddlywiki';\nvar WikiParser = require(\&quot;$:/core/modules/parsers/wikiparser/wikiparser.js\&quot;)[type];\n\nvar rules = Object.create(null);\n$tw.modules.applyMethods('relinkwikitextrule', rules);\n\nfunction WikiWalker() {\n\tWikiParser.apply(this, arguments);\n\tthis.relinkRules = this.inlineRules.concat(this.pragmaRules);\n};\nWikiWalker.prototype = Object.create(WikiParser.prototype);\nWikiWalker.prototype.parsePragmas = function() {return []; };\nWikiWalker.prototype.parseInlineRun = function() {};\nWikiWalker.prototype.parseBlocks = function() {};\n\nfunction State() {\n\tthis.placeholder = undefined;\n\tthis.used = false;\n\tthis.reserved = {};\n};\n\nState.prototype.getPlaceholderFor = function(value) {\n\tif (this.placeholder === undefined) {\n\t\tthis.used = true;\n\t\tvar number = 1;\n\t\twhile(this.reserved[number]) {number+=1};\n\t\tthis.placeholder = \&quot;relink-\&quot; + number;\n\t\tthis.value = value;\n\t}\n\treturn this.placeholder;\n};\n\nState.prototype.reserve = function(number) {\n\tthis.reserved[parseInt(number)] = true;\n};\n\nState.prototype.getPreamble = function() {\n\tif (this.placeholder) {\n\t\treturn `\\\\define ${this.placeholder}() ${this.value}\\n`;\n\t}\n\treturn undefined;\n};\n\nexports[type] = function(tiddler, fromTitle, toTitle, changes, options) {\n\tvar text = tiddler.fields.text,\n\t\tbuilder = [],\n\t\tbuildIndex = 0,\n\t\tparser = new WikiWalker(null, text, options),\n\t\tstate = new State,\n\t\tmatchingRule;\n\twhile (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {\n\t\tvar name = matchingRule.rule.name;\n\t\tif (rules[name]) {\n\t\t\tvar newSegment = rules[name].call(matchingRule.rule, tiddler, text, fromTitle, toTitle, options, state);\n\t\t\tif (newSegment !== undefined) {\n\t\t\t\tbuilder.push(text.substring(buildIndex, matchingRule.matchIndex));\n\t\t\t\tbuilder.push(newSegment);\n\t\t\t\tbuildIndex = parser.pos;\n\t\t\t}\n\t\t} else {\n\t\t\tif (matchingRule.rule.matchRegExp !== undefined) {\n\t\t\t\tparser.pos = matchingRule.rule.matchRegExp.lastIndex;\n\t\t\t} else {\n\t\t\t\t// We can't easily determine the end of this\n\t\t\t\t// rule match. We'll \&quot;parse\&quot; it so that\n\t\t\t\t// parser.pos gets updated, but we throw away\n\t\t\t\t// the results.\n\t\t\t\tmatchingRule.rule.parse();\n\t\t\t}\n\t\t}\n\t}\n\tif (builder.length &gt; 0) {\n\t\tvar preamble = state.getPreamble();\n\t\tif (preamble) {\n\t\t\tbuilder.unshift(preamble);\n\t\t}\n\t\tbuilder.push(text.substr(buildIndex));\n\t\tchanges.text = builder.join('');\n\t}\n};\n&quot;,
+            &quot;text&quot;: &quot;/*\\\n\nChecks for fromTitle in a tiddler's text. If found, sees if it's relevant,\nand tries to swap it out if it is.\n\n\\*/\n\n/*jslint node: false, browser: true */\n/*global $tw: false */\n\&quot;use strict\&quot;;\n\nvar type = 'text/vnd.tiddlywiki';\nvar WikiParser = require(\&quot;$:/core/modules/parsers/wikiparser/wikiparser.js\&quot;)[type];\n\nvar rules = Object.create(null);\n$tw.modules.applyMethods('relinkwikitextrule', rules);\n\nfunction WikiRelinker(text, toTitle, options) {\n\tWikiParser.call(this, null, text, options);\n\tthis.toTitle = toTitle;\n\tthis.inlineRules = this.inlineRules.concat(this.pragmaRules);\n\t// We work through relinkRules so we can change it later.\n\t// relinkRules is inlineRules so it gets touched up by amendRules().\n\tthis.relinkRules = this.inlineRules;\n\tthis.placeholders = Object.create(null);\n\tthis.reverseMap = Object.create(null);\n\tthis.knownMacros = Object.create(null);\n};\n\nWikiRelinker.prototype = Object.create(WikiParser.prototype);\nWikiRelinker.prototype.parsePragmas = function() {return []; };\nWikiRelinker.prototype.parseInlineRun = function() {};\nWikiRelinker.prototype.parseBlocks = function() {};\n\nWikiRelinker.prototype.getPlaceholderFor = function(value, category) {\n\tvar placeholder = this.reverseMap[value];\n\tif (placeholder) {\n\t\treturn placeholder;\n\t}\n\tvar number = 0;\n\tvar prefix = \&quot;relink-\&quot;\n\tif (category) {\n\t\tprefix += category + \&quot;-\&quot;;\n\t}\n\tdo {\n\t\tnumber += 1;\n\t\tplaceholder = prefix + number;\n\t} while (this.knownMacros[placeholder]);\n\tthis.placeholders[placeholder] = value;\n\tthis.reverseMap[value] = placeholder;\n\tthis.reserve(placeholder);\n\treturn placeholder;\n};\n\nWikiRelinker.prototype.reserve = function(macro) {\n\tthis.knownMacros[macro] = true;\n};\n\nWikiRelinker.prototype.getPreamble = function() {\n\tvar results = [];\n\tfor (var name in this.placeholders) {\n\t\tvar val = this.placeholders[name];\n\t\tresults.push(`\\\\define ${name}() ${val}\\n`);\n\t}\n\tif (results.length &gt; 0) {\n\t\treturn results.join('');\n\t} else {\n\t\treturn undefined;\n\t}\n};\n\nexports[type] = function(tiddler, fromTitle, toTitle, changes, options) {\n\tvar text = tiddler.fields.text,\n\t\tbuilder = [],\n\t\tbuildIndex = 0,\n\t\tparser = new WikiRelinker(text, toTitle, options),\n\t\tmatchingRule;\n\twhile (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {\n\t\tvar name = matchingRule.rule.name;\n\t\tif (rules[name]) {\n\t\t\tvar newSegment = rules[name].call(matchingRule.rule, tiddler, text, fromTitle, toTitle, options);\n\t\t\tif (newSegment !== undefined) {\n\t\t\t\tbuilder.push(text.substring(buildIndex, matchingRule.matchIndex));\n\t\t\t\tbuilder.push(newSegment);\n\t\t\t\tbuildIndex = parser.pos;\n\t\t\t}\n\t\t} else {\n\t\t\tif (matchingRule.rule.matchRegExp !== undefined) {\n\t\t\t\tparser.pos = matchingRule.rule.matchRegExp.lastIndex;\n\t\t\t} else {\n\t\t\t\t// We can't easily determine the end of this\n\t\t\t\t// rule match. We'll \&quot;parse\&quot; it so that\n\t\t\t\t// parser.pos gets updated, but we throw away\n\t\t\t\t// the results.\n\t\t\t\tmatchingRule.rule.parse();\n\t\t\t}\n\t\t}\n\t}\n\tif (builder.length &gt; 0) {\n\t\tvar preamble = parser.getPreamble();\n\t\tif (preamble) {\n\t\t\tbuilder.unshift(preamble);\n\t\t}\n\t\tbuilder.push(text.substr(buildIndex));\n\t\tchanges.text = builder.join('');\n\t}\n};\n&quot;,
             &quot;module-type&quot;: &quot;relinktextoperator&quot;,
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext.js&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;
         },
         &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/comment.js&quot;: {
-            &quot;text&quot;: &quot;/*\\\n\nHandles comment blocks. Or rather //doesn't// handle them, since we should\nignore their contents.\n\n\&quot;&lt;!-- [[Renamed Title]] --&gt;\&quot; will remain unchanged.\n\n\\*/\n\nfunction ruleHandler(tiddler, text, fromTitle, toTitle, options) {\n\tthis.parser.pos = this.endMatchRegExp.lastIndex;\n\treturn undefined;\n};\n\n// I don't use block parsing, but I want to cover both just in case.\nexports['commentinline'] = exports['commentblock'] = ruleHandler;\n&quot;,
+            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkwikitextrule\n\nHandles comment blocks. Or rather //doesn't// handle them, since we should\nignore their contents.\n\n\&quot;&lt;!-- [[Renamed Title]] --&gt;\&quot; will remain unchanged.\n\n\\*/\n\nfunction ruleHandler(tiddler, text, fromTitle, toTitle, options) {\n\tthis.parser.pos = this.endMatchRegExp.lastIndex;\n\treturn undefined;\n};\n\n// I don't use block parsing, but I want to cover both just in case.\nexports['commentinline'] = exports['commentblock'] = ruleHandler;\n&quot;,
             &quot;module-type&quot;: &quot;relinkwikitextrule&quot;,
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/comment.js&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;
         },
         &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/html.js&quot;: {
-            &quot;text&quot;: &quot;/*\\\n\nHandles replacement in attributes of widgets and html elements\nThis is configurable to select exactly which attributes of which elements\nshould be changed.\n\n&lt;$link to=\&quot;TiddlerTitle\&quot; /&gt;\n\n\\*/\n\nvar html = require(\&quot;$:/core/modules/parsers/wikiparser/rules/html.js\&quot;);\nvar settings = require('$:/plugins/flibbles/relink/js/settings.js');\n\nexports['html'] = function(tiddler, text, fromTitle, toTitle, options, state) {\n\tvar managedElement = settings.getAttributes(options)[this.nextTag.tag],\n\t\tbuilder = [],\n\t\tbuildIndex = this.nextTag.start;\n\tif (managedElement) {\n\t\tfor (var attributeName in this.nextTag.attributes) {\n\t\t\tvar attrRelinker = managedElement[attributeName];\n\t\t\tif (!attrRelinker) {\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tvar attr = this.nextTag.attributes[attributeName];\n\t\t\tvar nextEql = text.indexOf('=', attr.start);\n\t\t\t// This is the rare case of changing tiddler\n\t\t\t// \&quot;true\&quot; to something else when \&quot;true\&quot; is\n\t\t\t// implicit, like &lt;$link to /&gt; We ignore those.\n\t\t\tif (nextEql &lt; 0 || nextEql &gt; attr.end) {\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tvar handler = new AttributeHandler(tiddler, attr.value);\n\t\t\tvar value = attrRelinker(handler, fromTitle, toTitle, options);\n\t\t\tif (value === undefined) {\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tvar quote = determineQuote(text, attr);\n\t\t\t// account for the quote if it's there.\n\t\t\tvar valueStart = attr.end\n\t\t\t               - (quote.length*2)\n\t\t\t               - attr.value.length;\n\t\t\tbuilder.push(text.substring(buildIndex, valueStart));\n\t\t\tvar quotedValue = wrapValue(value, quote);\n\t\t\tif (quotedValue !== undefined) {\n\t\t\t\tbuilder.push(quotedValue);\n\t\t\t} else {\n\t\t\t\t// The value was unquotable. We need to make\n\t\t\t\t// a macro in order to replace it.\n\t\t\t\tvar holder = state.getPlaceholderFor(value);\n\t\t\t\tbuilder.push(\&quot;&lt;&lt;\&quot;, holder, \&quot;&gt;&gt;\&quot;);\n\t\t\t}\n\t\t\tbuildIndex = valueStart\n\t\t\t           + attr.value.length\n\t\t\t           + (quote.length*2);\n\t\t}\n\t}\n\tthis.parser.pos = this.nextTag.end;\n\tif (builder.length &gt; 0) {\n\t\tbuilder.push(text.substring(buildIndex, this.nextTag.end));\n\t\treturn builder.join('');\n\t}\n\treturn undefined;\n};\n\n/**Givin some text, and an attribute within that text, this returns\n * what type of quotation that attribute is using.\n */\nfunction determineQuote(text, attr) {\n\tvar pos = attr.end-1;\n\tif (text.startsWith(\&quot;'\&quot;, pos)) {\n\t\treturn \&quot;'\&quot;;\n\t}\n\tif (text.startsWith('\&quot;', pos)) {\n\t\tif (text.startsWith('\&quot;\&quot;\&quot;', pos-2)) {\n\t\t\treturn '\&quot;\&quot;\&quot;';\n\t\t} else {\n\t\t\treturn '\&quot;';\n\t\t}\n\t}\n\treturn '';\n};\n\n/**Tiddlywiki doesn't have escape characters for attribute values. Instead,\n * we just have to find the type of quotes that'll work for the given title.\n * There exist titles that simply can't be quoted.\n * If it can stick with the preference, it will.\n */\nfunction wrapValue(value, preference) {\n\tvar choices = {\n\t\t\&quot;\&quot;: function(v) {return !/([\\/\\s&lt;&gt;\&quot;'=])/.test(value); },\n\t\t\&quot;'\&quot;: function(v) {return v.indexOf(\&quot;'\&quot;) &lt; 0; },\n\t\t'\&quot;': function(v) {return v.indexOf('\&quot;') &lt; 0; },\n\t\t'\&quot;\&quot;\&quot;': function(v) {return v.indexOf('\&quot;\&quot;\&quot;') &lt; 0 &amp;&amp; v[v.length-1] != '\&quot;';}\n\t};\n\tif (choices[preference]) {\n\t\tif (choices[preference](value)) {\n\t\t\treturn preference + value + preference;\n\t\t}\n\t}\n\tfor (var quote in choices) {\n\t\tif (choices[quote](value)) {\n\t\t\treturn quote + value + quote;\n\t\t}\n\t}\n\t// No quotes will work on this\n\treturn undefined;\n};\n\nfunction AttributeHandler(tiddler, value) {\n\tthis.tiddler = tiddler;\n\tthis._value = value;\n};\n\nAttributeHandler.prototype.log = function(adjective, from, to) {\n\tconsole.log(`Renaming attribute ${adjective} '${from}' to '${to}' of tiddler '${this.tiddler.fields.title}'`);\n};\n\nAttributeHandler.prototype.value = function() {\n\treturn this._value;\n};\n&quot;,
+            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkwikitextrule\n\nHandles replacement in attributes of widgets and html elements\nThis is configurable to select exactly which attributes of which elements\nshould be changed.\n\n&lt;$link to=\&quot;TiddlerTitle\&quot; /&gt;\n\n\\*/\n\nvar utils = require(\&quot;./utils.js\&quot;);\nvar html = require(\&quot;$:/core/modules/parsers/wikiparser/rules/html.js\&quot;);\nvar settings = require('$:/plugins/flibbles/relink/js/settings.js');\n\nexports['html'] = function(tiddler, text, fromTitle, toTitle, options) {\n\tvar managedElement = settings.getAttributes(options)[this.nextTag.tag],\n\t\tbuilder = [],\n\t\tbuildIndex = this.nextTag.start;\n\tif (managedElement) {\n\t\tfor (var attributeName in this.nextTag.attributes) {\n\t\t\tvar attrRelinker = managedElement[attributeName];\n\t\t\tif (!attrRelinker) {\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tvar attr = this.nextTag.attributes[attributeName];\n\t\t\tvar nextEql = text.indexOf('=', attr.start);\n\t\t\t// This is the rare case of changing tiddler\n\t\t\t// \&quot;true\&quot; to something else when \&quot;true\&quot; is\n\t\t\t// implicit, like &lt;$link to /&gt; We ignore those.\n\t\t\tif (nextEql &lt; 0 || nextEql &gt; attr.end) {\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tvar handler = new AttributeHandler(tiddler, attr.value);\n\t\t\tvar value = attrRelinker(handler, fromTitle, toTitle, options);\n\t\t\tif (value === undefined) {\n\t\t\t\tcontinue;\n\t\t\t}\n\t\t\tvar quote = determineQuote(text, attr);\n\t\t\t// account for the quote if it's there.\n\t\t\tvar valueStart = attr.end\n\t\t\t               - (quote.length*2)\n\t\t\t               - attr.value.length;\n\t\t\tbuilder.push(text.substring(buildIndex, valueStart));\n\t\t\tvar quotedValue = utils.wrapAttributeValue(value,quote);\n\t\t\tif (quotedValue !== undefined) {\n\t\t\t\tbuilder.push(quotedValue);\n\t\t\t} else {\n\t\t\t\t// The value was unquotable. We need to make\n\t\t\t\t// a macro in order to replace it.\n\t\t\t\tvar holder = this.parser.getPlaceholderFor(value);\n\t\t\t\tbuilder.push(\&quot;&lt;&lt;\&quot;, holder, \&quot;&gt;&gt;\&quot;);\n\t\t\t}\n\t\t\tbuildIndex = valueStart\n\t\t\t           + attr.value.length\n\t\t\t           + (quote.length*2);\n\t\t}\n\t}\n\tthis.parser.pos = this.nextTag.end;\n\tif (builder.length &gt; 0) {\n\t\tbuilder.push(text.substring(buildIndex, this.nextTag.end));\n\t\treturn builder.join('');\n\t}\n\treturn undefined;\n};\n\n/**Givin some text, and an attribute within that text, this returns\n * what type of quotation that attribute is using.\n */\nfunction determineQuote(text, attr) {\n\tvar pos = attr.end-1;\n\tif (text.startsWith(\&quot;'\&quot;, pos)) {\n\t\treturn \&quot;'\&quot;;\n\t}\n\tif (text.startsWith('\&quot;', pos)) {\n\t\tif (text.startsWith('\&quot;\&quot;\&quot;', pos-2)) {\n\t\t\treturn '\&quot;\&quot;\&quot;';\n\t\t} else {\n\t\t\treturn '\&quot;';\n\t\t}\n\t}\n\treturn '';\n};\n\nfunction AttributeHandler(tiddler, value) {\n\tthis.tiddler = tiddler;\n\tthis._value = value;\n};\n\nAttributeHandler.prototype.log = function(adjective, from, to) {\n\tconsole.log(`Renaming attribute ${adjective} '${from}' to '${to}' of tiddler '${this.tiddler.fields.title}'`);\n};\n\nAttributeHandler.prototype.value = function() {\n\treturn this._value;\n};\n&quot;,
             &quot;module-type&quot;: &quot;relinkwikitextrule&quot;,
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/html.js&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;
         },
+        &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/import.js&quot;: {
+            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkwikitextrule\n\nHandles import pragmas\n\n\\import [tag[MyTiddler]]\n\\*/\n\nvar settings = require(\&quot;$:/plugins/flibbles/relink/js/settings.js\&quot;);\nvar filterRelinker = settings.getRelinker('filter');\n\nexports['import'] = function(tiddler, text, fromTitle, toTitle, options) {\n\t// In this one case, I'll let the parser parse out the filter and move\n\t// the ptr.\n\tvar start = this.matchRegExp.lastIndex;\n\tvar parseTree = this.parse();\n\tvar filter = parseTree[0].attributes.filter.value;\n\tvar handler = new ImportHandler(tiddler, filter);\n\tvar value = filterRelinker(handler, fromTitle, toTitle, options);\n\tif (value !== undefined) {\n\t\tvar newline = text.substring(start+filter.length, this.parser.pos);\n\t\treturn \&quot;\\\\import \&quot; + value + newline;\n\t}\n\treturn undefined;\n};\n\nfunction ImportHandler(tiddler, value) {\n\tthis.tiddler = tiddler;\n\tthis._value = value;\n};\n\nImportHandler.prototype.log = function(){};\nImportHandler.prototype.value = function() { return this._value; }\n&quot;,
+            &quot;module-type&quot;: &quot;relinkwikitextrule&quot;,
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/import.js&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;
+        },
         &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/macrodef.js&quot;: {
-            &quot;text&quot;: &quot;/*\\\n\nHandles pragma macro definitions. Except we only update placeholder macros\nthat we may have previously install.\n\n\\define relink-?() Tough title\n\n\\*/\n\nexports['macrodef'] = function(tiddler, text, fromTitle, toTitle, options, state) {\n\tthis.parser.pos = this.matchRegExp.lastIndex;\n\tvar m = this.match;\n\t// !m[3] means it's not a multiline macrodef\n\tvar placeholder = /^relink-(\\d+)$/.exec(m[1]);\n\tif (placeholder &amp;&amp; m[2] === '' &amp;&amp; !m[3]) {\n\t\tthis.parser.pos = $tw.utils.skipWhiteSpace(text, this.parser.pos);\n\t\tvar valueRegExp = /([^\\n\\r]+)(\\r?\\n)/mg;\n\t\tvalueRegExp.lastIndex = this.parser.pos;\n\t\tvar match = valueRegExp.exec(text);\n\t\tif (match &amp;&amp; match[1] === fromTitle) {\n\t\t\tthis.parser.pos += match[0].length;\n\t\t\treturn `\\\\define ${m[1]}() ${toTitle}${match[2]}`;\n\t\t} else {\n\t\t\t// That number is taken.\n\t\t\tstate.reserve(placeholder[1]);\n\t\t}\n\t}\n\treturn undefined;\n};\n&quot;,
+            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkwikitextrule\n\nHandles pragma macro definitions. Except we only update placeholder macros\nthat we may have previously install.\n\n\\define relink-?() Tough title\n\n\\*/\n\nexports['macrodef'] = function(tiddler, text, fromTitle, toTitle, options) {\n\tthis.parser.pos = this.matchRegExp.lastIndex;\n\tvar m = this.match;\n\t// This macro is not available should we need to make one.\n\tthis.parser.reserve(m[1]);\n\t// !m[3] means it's not a multiline macrodef\n\tvar placeholder = /^relink-(\\d+)$/.exec(m[1]);\n\tif (placeholder &amp;&amp; m[2] === '' &amp;&amp; !m[3]) {\n\t\tthis.parser.pos = $tw.utils.skipWhiteSpace(text, this.parser.pos);\n\t\tvar valueRegExp = /([^\\n\\r]+)(\\r?\\n)/mg;\n\t\tvalueRegExp.lastIndex = this.parser.pos;\n\t\tvar match = valueRegExp.exec(text);\n\t\tif (match &amp;&amp; match[1] === fromTitle) {\n\t\t\tthis.parser.pos += match[0].length;\n\t\t\treturn `\\\\define ${m[1]}() ${toTitle}${match[2]}`;\n\t\t}\n\t}\n\treturn undefined;\n};\n&quot;,
             &quot;module-type&quot;: &quot;relinkwikitextrule&quot;,
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/macrodef.js&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;
         },
         &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js&quot;: {
-            &quot;text&quot;: &quot;/*\\\n\nHandles replacement in wiki text inline rules, like,\n\n[[Introduction]]\n\n[[link description|TiddlerTitle]]\n\n\\*/\n\nexports['prettylink'] = function(tiddler, text, fromTitle, toTitle, options) {\n\tthis.parser.pos = this.matchRegExp.lastIndex;\n\tvar m = this.match;\n\tif (m[2] === undefined &amp;&amp; m[1] === fromTitle) {\n\t\treturn \&quot;[[\&quot; + toTitle + \&quot;]]\&quot;;\n\t}\n\tif (m[2] === fromTitle) {\n\t\treturn \&quot;[[\&quot; + m[1] + \&quot;|\&quot; + toTitle + \&quot;]]\&quot;;\n\t}\n\treturn undefined;\n};\n&quot;,
+            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkwikitextrule\n\nHandles replacement in wiki text inline rules, like,\n\n[[Introduction]]\n\n[[link description|TiddlerTitle]]\n\n\\*/\n\nexports['prettylink'] = function(tiddler, text, fromTitle, toTitle, options) {\n\tthis.parser.pos = this.matchRegExp.lastIndex;\n\tvar caption, m = this.match;\n\tif (m[2] === fromTitle) {\n\t\t// format is [[caption|MyTiddler]]\n\t\tcaption = m[1];\n\t} else if (m[2] !== undefined || m[1] !== fromTitle) {\n\t\t// format is [[MyTiddler]], and it doesn't match\n\t\treturn undefined;\n\t}\n\tif (isSafe(toTitle)) {\n\t\treturn prettyLink(toTitle, caption);\n\t} else {\n\t\tvar ph = this.parser.getPlaceholderFor(toTitle);\n\t\tvar link = prettyLink(\&quot;$(\&quot;+ph+\&quot;)$\&quot;, caption);\n\t\tvar macro = this.parser.getPlaceholderFor(link, 'pretty');\n\t\treturn \&quot;&lt;&lt;\&quot; + macro + \&quot;&gt;&gt;\&quot;;\n\t}\n};\n\nfunction prettyLink(title, caption) {\n\tif (caption) {\n\t\treturn \&quot;[[\&quot; + caption + \&quot;|\&quot; + title + \&quot;]]\&quot;;\n\t} else {\n\t\treturn \&quot;[[\&quot; + title + \&quot;]]\&quot;;\n\t}\n};\n\nfunction isSafe(value) {\n\treturn value.indexOf(\&quot;]]\&quot;) &lt; 0 &amp;&amp; value[value.length-1] !== ']';\n};\n&quot;,
             &quot;module-type&quot;: &quot;relinkwikitextrule&quot;,
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;
         },
+        &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/rules.js&quot;: {
+            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkwikitextrule\n\nParses and acknowledges any pragma rules a tiddler has.\n\n\\rules except html wikilink\n\n\\*/\n\n/**This is all we have to do. The rules rule doesn't parse. It just amends\n * the rules, which is exactly what I want it to do too.\n * It also takes care of moving the pos pointer forward.\n */\nexports['rules'] = function() { this.parse(); };\n&quot;,
+            &quot;module-type&quot;: &quot;relinkwikitextrule&quot;,
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/rules.js&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;
+        },
         &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/transclude.js&quot;: {
-            &quot;text&quot;: &quot;/*\\\nHandles replacement of transclusions in wiki text like,\n\n{{RenamedTiddler}}\n{{RenamedTiddler||TemplateTitle}}\n\nThis renames both the tiddler and the template field.\n\n\\*/\n\nfunction transclude(tiddler, text, fromTitle, toTitle, options) {\n\tthis.parser.pos = this.matchRegExp.lastIndex;\n\tvar m = this.match;\n\tvar title = m[1];\n\tvar template = m[2];\n\tvar isModified = false;\n\t// We go to extra lengths to preserve surrounding whitespace.\n\tif ($tw.utils.trim(title) === fromTitle) {\n\t\ttitle = title.replace(fromTitle, toTitle);\n\t\tisModified = true;\n\t}\n\tif ($tw.utils.trim(template) === fromTitle) {\n\t\ttemplate = template.replace(fromTitle, toTitle);\n\t\tisModified = true;\n\t}\n\tif (isModified) {\n\t\tif (template !== undefined) {\n\t\t\treturn `{{${title}||${template}}}`;\n\t\t} else {\n\t\t\treturn `{{${title}}}`;\n\t\t}\n\t}\n\treturn undefined;\n};\n\nexports['transcludeinline'] = exports['transcludeblock'] = transclude;\n&quot;,
+            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkwikitextrule\n\nHandles replacement of transclusions in wiki text like,\n\n{{RenamedTiddler}}\n{{RenamedTiddler||TemplateTitle}}\n\nThis renames both the tiddler and the template field.\n\n\\*/\n\nfunction transclude(tiddler, text, fromTitle, toTitle, options) {\n\tthis.parser.pos = this.matchRegExp.lastIndex;\n\tvar m = this.match;\n\tvar title = m[1];\n\tvar template = m[2];\n\tvar isModified = false;\n\t// We go to extra lengths to preserve surrounding whitespace.\n\tif ($tw.utils.trim(title) === fromTitle) {\n\t\ttitle = title.replace(fromTitle, toTitle);\n\t\tisModified = true;\n\t}\n\tif ($tw.utils.trim(template) === fromTitle) {\n\t\ttemplate = template.replace(fromTitle, toTitle);\n\t\tisModified = true;\n\t}\n\tif (isModified) {\n\t\tif (template !== undefined) {\n\t\t\treturn `{{${title}||${template}}}`;\n\t\t} else {\n\t\t\treturn `{{${title}}}`;\n\t\t}\n\t}\n\treturn undefined;\n};\n\nexports['transcludeinline'] = exports['transcludeblock'] = transclude;\n&quot;,
             &quot;module-type&quot;: &quot;relinkwikitextrule&quot;,
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/transclude.js&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;
+        },
+        &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/utils.js&quot;: {
+            &quot;text&quot;: &quot;/*\\\nmodule-type: library\n\nUtility methods for the wikitext relink rules.\n\n\\*/\n\n/**Finds an appropriate quote mark for a given value.\n *\n *Tiddlywiki doesn't have escape characters for attribute values. Instead,\n * we just have to find the type of quotes that'll work for the given title.\n * There exist titles that simply can't be quoted.\n * If it can stick with the preference, it will.\n *\n * return: Returns the wrapped value, or undefined if it's impossible to wrap\n */\nexports.wrapAttributeValue = function(value, preference) {\n\tvar choices = {\n\t\t\&quot;\&quot;: function(v) {return !/([\\/\\s&lt;&gt;\&quot;'=])/.test(value); },\n\t\t\&quot;'\&quot;: function(v) {return v.indexOf(\&quot;'\&quot;) &lt; 0; },\n\t\t'\&quot;': function(v) {return v.indexOf('\&quot;') &lt; 0; },\n\t\t'\&quot;\&quot;\&quot;': function(v) {return v.indexOf('\&quot;\&quot;\&quot;') &lt; 0 &amp;&amp; v[v.length-1] != '\&quot;';}\n\t};\n\tif (choices[preference]) {\n\t\tif (choices[preference](value)) {\n\t\t\treturn preference + value + preference;\n\t\t}\n\t}\n\tfor (var quote in choices) {\n\t\tif (choices[quote](value)) {\n\t\t\treturn quote + value + quote;\n\t\t}\n\t}\n\t// No quotes will work on this\n\treturn undefined;\n};\n\n&quot;,
+            &quot;module-type&quot;: &quot;library&quot;,
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/utils.js&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;
+        },
+        &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/wikilink.js&quot;: {
+            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkwikitextrule\n\nHandles CamelCase links\n\nWikiLink\n\nbut not:\n\n~WikiLink\n\n\\*/\n\nexports['wikilink'] = function(tiddler, text, fromTitle, toTitle, options) {\n\tthis.parser.pos = this.matchRegExp.lastIndex;\n\tif (this.match[0] === fromTitle &amp;&amp; this.match[0][0] !== '~') {\n\t\tif (toTitle.match(this.matchRegExp) &amp;&amp; toTitle[0] !== '~') {\n\t\t\treturn toTitle;\n\t\t} else {\n\t\t\treturn \&quot;[[\&quot; + toTitle + \&quot;]]\&quot;;\n\t\t}\n\t}\n\treturn undefined;\n};\n\n&quot;,
+            &quot;module-type&quot;: &quot;relinkwikitextrule&quot;,
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/wikilink.js&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;
         },
         &quot;$:/config/flibbles/relink/attributes/$button/to&quot;: {
@@ -9403,15 +9454,15 @@ Error message and password prompt
         },
         &quot;$:/plugins/flibbles/relink/language/Help/Attributes&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/language/Help/Attributes&quot;,
-            &quot;text&quot;: &quot;See the [[Attributes documentation page|https://flibbles.github.io/tw5-relink/#Documentation/Attributes]] for details.&quot;
+            &quot;text&quot;: &quot;See the [[Attributes documentation page|https://flibbles.github.io/tw5-relink/#Attributes]] for details.&quot;
         },
         &quot;$:/plugins/flibbles/relink/language/Help/Fields&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/language/Help/Fields&quot;,
-            &quot;text&quot;: &quot;See the [[Fields documentation page|https://flibbles.github.io/tw5-relink/#Documentation/Fields]] for details.&quot;
+            &quot;text&quot;: &quot;See the [[Fields documentation page|https://flibbles.github.io/tw5-relink/#Fields]] for details.&quot;
         },
         &quot;$:/plugins/flibbles/relink/language/Help/Operators&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/language/Help/Operators&quot;,
-            &quot;text&quot;: &quot;See the [[Operators documentation page|https://flibbles.github.io/tw5-relink/#Documentation/Operators]] for details.&quot;
+            &quot;text&quot;: &quot;See the [[Operators documentation page|https://flibbles.github.io/tw5-relink/#Operators]] for details.&quot;
         },
         &quot;$:/plugins/flibbles/relink/language/ui/Attributes/Caption&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/language/ui/Attributes/Caption&quot;,
@@ -9477,7 +9528,7 @@ Error message and password prompt
 <div title="$:/SiteTitle">
 <pre>Relink</pre>
 </div>
-<div list="Relink Example Frodo" title="$:/StoryList">
+<div list="Relink Demo Frodo" title="$:/StoryList">
 <pre></pre>
 </div>
 <div plugin-type="info" title="$:/temp/info-plugin" type="application/json">
@@ -9615,6 +9666,86 @@ Error message and password prompt
 <div title="$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth">
 <pre>800px</pre>
 </div>
+<div caption="Attributes" tags="Documentation Construct" title="Attributes">
+<pre>The attributes of widgets can be updated by Relink, but only if they're whitelisted. Given a whitelisted element/attribute pair, such as `$link` and `to`, the following update could happen:
+
+`&lt;$link to=&quot;MyTiddler&quot;&gt;A link to my tiddler&lt;/$link&gt;`
+
+would update to:
+
+`&lt;$link to=&quot;New Tiddler&quot;&gt;A link to my tiddler&lt;/$link&gt;`
+
+If you have `$list`/`filter` whitelisted and configured as a filter, then the widget `&lt;$list filter=&quot;...&quot; /&gt;` would have the contents of its filter attribute evaluated, and any whitelisted filter operators inside of it would be considered for updating during a rename operation.
+
+For each element/attribute pair, you must specify its [[type|Field Types]].
+</pre>
+</div>
+<div title="BilboBaggins">
+<pre>\import Frodo
+
+This tiddler is used to test CamelCase wikilinks.
+
+&lt;&lt;rename ThorinOakenshield&gt;&gt;
+
+&lt;&lt;rename Fili&gt;&gt;
+
+&lt;&lt;rename Dori&gt;&gt;
+
+&lt;&lt;rename Óin&gt;&gt;
+
+&lt;&lt;rename Glóin&gt;&gt;
+
+&lt;&lt;rename 'Gandalf the Gray'&gt;&gt;
+</pre>
+</div>
+<div caption="Comments" tags="Documentation WikiText" title="Comments">
+<pre>Any text inside of comments is ''completely ignored'', even if that text matches syntax constructs which would otherwise be updated.
+
+```
+&lt;!-- Nothing inside of here
+     will ever be touched.
+--&gt;
+```
+</pre>
+</div>
+<div caption="Interactive Demo" tags="Relink" title="Demo">
+<pre>&lt;!-- NOTICE
+
+This tiddler merely transcludes all the examples together. If you'd like to
+edit tiddlers to experiment with alterations, you're probably best clicking
+the title link of any example to tinker with that example directly.
+
+--&gt;
+
+Change the tiddler ''[[Frodo]]'' down below to see how these examples react.
+
+&lt;$macrocall $name=&quot;tabs&quot;
+            tabsList=&quot;[tag[Demo]]&quot;
+            default=&quot;Demo/Links&quot;
+            template=&quot;Templates/Demo&quot; /&gt;
+</pre>
+</div>
+<div caption="Fields" description="Whitelisted tiddler fields are updated just as well. Without this plugin, Tiddlywiki could manage `list` and `tags` on its own. ''Relink'' opens the door for other tiddlers, including ones that specify something other than a string list, like a filter, or a single tiddler title." example-filter="[all[]] -Frodo" example-single="Frodo" list="[[Some Tiddler]] Frodo [[Another Tiddler]]" relink.showcase="list tags example-filter example-single" tags="Demo Frodo" title="Demo/Fields">
+<pre></pre>
+</div>
+<div caption="Filters" description="Filters in whitelisted fields and attributes will be updated as well. However, Relink only updates the operands of whitelisted filter operators. This includes `tag` and `title`, but you can add or remove any operators you want to the list." relink.showcase="text" tags="Demo" title="Demo/Filters">
+<pre>&lt;$list filter=&quot;Frodo [tag[Frodo]]&quot; /&gt;
+</pre>
+</div>
+<div caption="Links" description="Notice that plaintext references to Frodo are not changed. Only occurrences of the title that in some way link to the page are updated." relink.showcase="text" tags="Demo" title="Demo/Links">
+<pre>[[Frodo]]
+
+[[Descriptive link to Frodo.|Frodo]]
+
+BilboBaggins is a ~CamelCase link. Visit ~BilboBaggins to test Wikilinks.
+</pre>
+</div>
+<div caption="Widgets" description="Checkboxes, and all core widgets whose attributes can reference a tiddler will be updated on a rename. You can configure which widgets, and corresponding attributes, are updated, including with custom widgets." relink.showcase="text" tags="Demo" title="Demo/Widgets">
+<pre>&lt;$checkbox tiddler=&quot;Frodo&quot; tag=&quot;checked&quot;&gt;
+Check tag `checked`
+&lt;/$checkbox&gt;
+</pre>
+</div>
 <div caption="Documentation" tags="Relink" title="Documentation">
 <pre>\rules except wikilink
 
@@ -9633,32 +9764,18 @@ There are also numerous WikiText syntax patterns for which Relink has predefined
 {{WikiText||Templates/ul}}
 </pre>
 </div>
-<div caption="Attributes" tags="Documentation Construct" title="Documentation/Attributes">
-<pre>The attributes of widgets can be updated by Relink, but only if they're whitelisted. Given a whitelisted element/attribute pair, such as `$link` and `to`, the following update could happen:
-
-`&lt;$link to=&quot;MyTiddler&quot;&gt;A link to my tiddler&lt;/$link&gt;`
-
-would update to:
-
-`&lt;$link to=&quot;New Tiddler&quot;&gt;A link to my tiddler&lt;/$link&gt;`
-
-If you have `$list`/`filter` whitelisted and configured as a filter, then the widget `&lt;$list filter=&quot;...&quot; /&gt;` would have the contents of its filter attribute evaluated, and any whitelisted filter operators inside of it would be considered for updating during a rename operation.
-
-For each element/attribute pair, you must specify its [[type|Documentation/Field Types]].
-</pre>
+<div title="Documentation/Attributes">
+<pre>This tiddler has moved [[here|Attributes]].</pre>
 </div>
-<div caption="Comments" tags="Documentation WikiText" title="Documentation/Comments">
-<pre>Any text inside of comments is ''completely ignored'', even if that text matches syntax constructs which would otherwise be updated.
-
-```
-&lt;!-- Nothing inside of here
-     will ever be touched.
---&gt;
-```
-</pre>
+<div title="Documentation/Fields">
+<pre>This tiddler has moved [[here|Fields]].</pre>
 </div>
-<div caption="Field Types" tags="Documentation" title="Documentation/Field Types">
-<pre>Fields and attributes have types. Depending on the type, Relink will parse them differently.
+<div title="Documentation/Operators">
+<pre>This tiddler has moved [[here|Operators]].</pre>
+</div>
+<div caption="Field Types" tags="Documentation" title="Field Types">
+<pre>\rules except wikilink
+Fields and attributes have types. Depending on the type, Relink will parse them differently.
 
 !!! Title
 
@@ -9699,10 +9816,10 @@ For example, take `&lt;$list filter=&quot;[[MyTiddler]] [tag[MyTiddler]!has[draf
 `&lt;$list filter=&quot;[[NewTiddler]] [tag[NewTiddler]!has[draft.of]]&quot; /&gt;`
 </pre>
 </div>
-<div caption="Fields" tags="Documentation Construct" title="Documentation/Fields">
+<div caption="Fields" tags="Documentation Construct" title="Fields">
 <pre>Configure which tiddler fields Relink will consider for updating. For instance, `list` and `tags` are configured by default, which means whenever a tiddler name updates, Relink will look at the `list` and `tags` field of every tiddler for possible updating.
 
-For each field, you must specify its [[type|Documentation/Field Types]].
+For each field, you must specify its [[type|Field Types]].
 
 Example: If the field name `list` is configured as a `list`, that means the following:
 
@@ -9721,84 +9838,12 @@ will updated to:
 If //Tiddler B// is renamed to //New Tiddler.
 </pre>
 </div>
-<div caption="Links" tags="Documentation WikiText" title="Documentation/Links">
-<pre>All links which Relink finds that point to the changing title will be updated, however, their captions won't be touched.
-
-```
-[[Tiddler Title]]
-
-[[Displayed Link Title|Tiddler Title]]
-```
-
-[[Example|Example|Links]]
-</pre>
-</div>
-<div caption="Operators" tags="Documentation Construct" title="Documentation/Operators">
-<pre>Whenever a filter is processed by Relink, whether in a field or an attribute&lt;!-- or a filtered transclude expression --&gt;, it will only update the operands of whitelisted operators.
-
-`tag` and `title` are whitelisted by default. That means on rename //MyTiddler// -&gt; //New Tiddler//:
-
-`[title[MyTiddler]] [tag[MyTiddler]]`
-
-becomes
-
-`[title[New Tiddler]] [tag[New Tiddler]]`
-
-''Title'' is special. If it's whitelisted, then it includes all shorthands for title. All runs of the filter: `[title[MyTiddler]] [[MyTiddler]] [field:title[MyTiddler]] MyTiddler &quot;MyTiddler&quot; 'MyTiddler'` would all be changed on a rename of //MyTiddler//.
-</pre>
-</div>
-<div caption="Transcludes" tags="Documentation WikiText" title="Documentation/Transcludes">
-<pre>Simple Transclusion patterns areautomatically updated. This includes both the tiddler and the template tiddler.
-
-```
-{{MyTiddler}}
-{{MyTiddler||TemplateTiddler}}
-```
-</pre>
-</div>
-<div title="Example">
-<pre>&lt;!-- NOTICE
-
-This tiddler merely transcludes all the examples together. If you'd like to
-edit tiddlers to experiment with alterations, you're probably best clicking
-the title link of any example to tinker with that example directly.
-
---&gt;
-
-Change the tiddler ''Frodo'' down below to see how these examples react.
-
-&lt;$macrocall $name=&quot;tabs&quot;
-            tabsList=&quot;[tag[Example]]&quot;
-            default=&quot;Example/Links&quot;
-            template=&quot;Templates/Example&quot; /&gt;
-</pre>
-</div>
-<div caption="Fields" description="Whitelisted tiddler fields are updated just as well. Without this plugin, Tiddlywiki could manage `list` and `tags` on its own. ''Relink'' opens the door for other tiddlers, including ones that specify something other than a string list, like a filter, or a single tiddler title." example-filter="[all[]] -Frodo" example-single="Frodo" list="[[Some Tiddler]] Frodo [[Another Tiddler]]" relink.showcase="list tags example-filter example-single" tags="Example Frodo" title="Example/Fields">
-<pre></pre>
-</div>
-<div caption="Filters" description="Filters in whitelisted fields and attributes will be updated as well. However, Relink only updates the operands of whitelisted filter operators. This includes `tag` and `title`, but you can add or remove any operators you want to the list." relink.showcase="text" tags="Example" title="Example/Filters">
-<pre>&lt;$list filter=&quot;Frodo [tag[Frodo]]&quot; /&gt;
-</pre>
-</div>
-<div caption="Links" description="Notice that plaintext references to Frodo are not changed. Only occurrences of the title that in some way link to the page are updated." relink.showcase="text" tags="Example" title="Example/Links">
-<pre>[[Frodo]]
-
-[[Descriptive link to Frodo.|Frodo]]
-
-</pre>
-</div>
-<div caption="Widgets" description="Checkboxes, and all core widgets whose attributes can reference a tiddler will be updated on a rename. You can configure which widgets, and corresponding attributes, are updated, including with custom widgets." relink.showcase="text" tags="Example" title="Example/Widgets">
-<pre>&lt;$checkbox tiddler=&quot;Frodo&quot; tag=&quot;checked&quot;&gt;
-Check tag `checked`
-&lt;/$checkbox&gt;
-</pre>
-</div>
 <div title="Frodo">
 <pre>\define bill() Sam's pony &quot;Bill&quot;
 \define rename(name)
 &lt;$button&gt;
 
-$name$
+&lt;$text text=&lt;&lt;__name__&gt;&gt; /&gt;
 &lt;$action-sendmessage $message=&quot;tm-rename-tiddler&quot; to=&lt;&lt;__name__&gt;&gt; /&gt;
 &lt;/$button&gt;
 \end
@@ -9828,13 +9873,56 @@ Feel free to change my name.
 <pre>These are issues that I'm working to correct as soon as I can, but Relink handles the majority of all cases, so I'm making it available before it's 100% perfect.
 
 * Filtered Transludes are not managed (e.g. `{{{[[tag[MyTiddler]]}}}`)
-* WikiLinks aren't managed (e.g. `MyTiddler` being an autolink)
 * ~TextReferences aren't managed. This is stuff like `Title!!field`. These are used in a few places, like the `list` filtered operator.
 ** Related: Indirect attributes and operands aren't supported (e.g. `&lt;$set name=&quot;Something&quot; value={{tiddler!!field}} /&gt;` or `[prefix{tiddler!!field}]`)
 * Macrocalls are not managed (e.g. `&lt;&lt;macro MyTiddler&gt;&gt;`, or `&lt;$macrocall $name=&quot;macro&quot; tiddler=&quot;MyTiddler&quot;`). This'll involve another whole customizable whitelist.
+* Camelcase WikiLinks can choke on some complicated title. It should use the same mechanism as prettylinks.
 * I believe there are some complicated tiddler titles that can choke up the filter relinker. I need to test more thoroughly though.
 * If `\define relink-??()` is encountered after pragmas should no longer be parsed, this is still relinked if its title matches the fromTitle. I'm not actually sure I should prevent this. It's a weird use case, but I think the user will still probably want it replaced.
 * Relink should respect `\rules` pragma. It actually might already, but I need to test this.
+* If an attribute contains a filter which cannot be renamed in place, Relink probably muffs up creating a placeholder macro. Gotta test.
+</pre>
+</div>
+<div caption="Links" tags="Documentation WikiText" title="Links">
+<pre>All links which Relink finds that point to the changing title will be updated, however, their captions won't be touched.
+
+```
+[[Tiddler Title]]
+
+[[Displayed Link Title|Tiddler Title]]
+```
+
+[[Demo]]
+</pre>
+</div>
+<div caption="Operators" tags="Documentation Construct" title="Operators">
+<pre>\rules except wikilink
+Whenever a filter is processed by Relink, whether in a field or an attribute&lt;!-- or a filtered transclude expression --&gt;, it will only update the operands of whitelisted operators.
+
+`tag` and `title` are whitelisted by default. That means on rename //MyTiddler// -&gt; //New Tiddler//:
+
+`[title[MyTiddler]] [tag[MyTiddler]]`
+
+becomes
+
+`[title[New Tiddler]] [tag[New Tiddler]]`
+
+''Title'' is special. If it's whitelisted, then it includes all shorthands for title. All runs of the filter: `[title[MyTiddler]] [[MyTiddler]] [field:title[MyTiddler]] MyTiddler &quot;MyTiddler&quot; 'MyTiddler'` would all be changed on a rename of //MyTiddler//.
+</pre>
+</div>
+<div caption="Pragma //(//\//define, //\//rules, ...)//" tags="Documentation WikiText" title="Pragma">
+<pre>Relink manages relevant pragma statements.
+
+;`\define`
+: Relink ignores define pragma, //except// for macros which Relink created while trying to resolve another relink on the page. For instance, if it created
+: `\define relink-1() My &quot;complicated&quot; [[Tiddler]]`
+: it will update that definition if that weird tiddler is ever renamed again.
+;`\import`
+: Relink processes its filter using standard filter relink rules
+;`\rules`
+: Relink does nothing to the rules pragma, but it does respect it. For instance, if html is disable, then relink will not process any elements or widgets in the rest of the tiddler, since they're technically plaintext.
+;`\whitespace`
+: Irrelevant to Relink. Ignored.
 </pre>
 </div>
 <div title="Relink">
@@ -9843,7 +9931,7 @@ Feel free to change my name.
 &lt;$tiddler tiddler=&lt;&lt;plugin&gt;&gt; &gt;
 
 |!Version |{{!!version}} |
-|!Build date |&lt;$view tiddler={{{[[Versions/]addsuffix{!!version}]}}} field=&quot;created&quot; format=&quot;date&quot; template=&quot;MMM DDth, YYYY&quot; /&gt; |
+|!Build date |&lt;$view field=&quot;created&quot; format=&quot;date&quot; template=&quot;MMM DDth, YYYY&quot; /&gt; |
 |!TW5 compatibility |{{!!core-version}} |
 
 
@@ -9911,7 +9999,7 @@ td.relink-text pre {
 }
 </pre>
 </div>
-<div title="Templates/Example">
+<div title="Templates/Demo">
 <pre>&lt;$tiddler tiddler=&lt;&lt;currentTab&gt;&gt; &gt;
 
 !! &lt;$link&gt;{{!!caption}}&lt;/$link&gt;
@@ -9959,6 +10047,15 @@ td.relink-text pre {
 &lt;/$tiddler&gt;
 </pre>
 </div>
+<div caption="Transcludes" tags="Documentation WikiText" title="Transcludes">
+<pre>Simple Transclusion patterns areautomatically updated. This includes both the tiddler and the template tiddler.
+
+```
+{{MyTiddler}}
+{{MyTiddler||TemplateTiddler}}
+```
+</pre>
+</div>
 <div caption="Release Notes" tags="Relink" title="Versions">
 <pre>&lt;$macrocall $name=&quot;tabs&quot;
             tabsList=&quot;[prefix[Versions/]!nsort[created]]&quot;
@@ -9991,6 +10088,15 @@ td.relink-text pre {
 !! v.1.1.1
 
 * Corrected several broken links (and a typo)
+</pre>
+</div>
+<div caption="v1.2" title="Versions/1.2">
+<pre>!! v1.2.0
+
+* Corrected crash that occurred when any Relink whitelist was empty.
+* Added support for ~WikiLinks
+* prettylinks can support more difficult renames, such as `tiddler with [[brackets]]`
+* Support for the `\import` pragma
 </pre>
 </div>
 
