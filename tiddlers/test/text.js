@@ -63,6 +63,16 @@ it('prettylinks', function() {
 	testText("Multiple [[from here]] links [[description|from here]].");
 });
 
+it('wikilinks', function() {
+	testText("A WikiLink please", {from: "WikiLink", to: "WikiChange"});
+	testText("A ~WikiLink please", {from: "WikiLink", ignored: true});
+	testText("A ~WikiLink please", {from: "~WikiLink", ignored: true});
+	testText("A WikiLink please", "A [[to there]] please", {from: "WikiLink"});
+	testText("A WikiLink please", "A [[lowerCase]] please", {from: "WikiLink", to: "lowerCase"});
+	testText("A WikiLink please", "A [[~TildaCase]] please", {from: "WikiLink", to: "~TildaCase"});
+	testText("\\rules except wikilink\nA WikiLink please", {from: "WikiLink", ignored: true});
+});
+
 it('transcludes', function() {
 	testText("{{from here}}")
 	testText("Before {{from here}} After")

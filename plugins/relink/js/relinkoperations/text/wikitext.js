@@ -17,7 +17,10 @@ $tw.modules.applyMethods('relinkwikitextrule', rules);
 
 function WikiWalker() {
 	WikiParser.apply(this, arguments);
-	this.relinkRules = this.inlineRules.concat(this.pragmaRules);
+	this.inlineRules = this.inlineRules.concat(this.pragmaRules);
+	// We work through relinkRules so we can change it later.
+	// relinkRules is inlineRules so it gets touched up by amendRules().
+	this.relinkRules = this.inlineRules;
 };
 WikiWalker.prototype = Object.create(WikiParser.prototype);
 WikiWalker.prototype.parsePragmas = function() {return []; };
