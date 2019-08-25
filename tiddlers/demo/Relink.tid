@@ -4,14 +4,17 @@ title: Relink
 
 <$tiddler tiddler=<<plugin>> >
 
-|!Version | {{!!version}} |
+|!Version |{{!!version}} |
+|!Build date |<$view tiddler={{{[[Versions/]addsuffix{!!version}]}}} field="created" format="date" template="MMM DDth, YYYY" /> |
 |!TW5 compatibility |{{!!core-version}} |
 
-</$tiddler>
 
 This is the demo site for ''Relink'', the Tiddlywiki5 plugin which aids in renaming tiddlers by propogating the change across all existing tiddlers.
 
 {{Relink||Templates/ul}}
+
+To report an issue, please visit <a href={{!!source}}>the github page</a>.
+</$tiddler>
 
 !! To Install
 
