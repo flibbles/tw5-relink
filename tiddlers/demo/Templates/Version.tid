@@ -1,0 +1,11 @@
+title: Templates/Version
+
+<$tiddler tiddler=<<currentTab>> >
+
+!! Version <$text text={{{[all[current]removeprefix[Versions/]]}}} />
+
+!!!!! <$view field="created" format="date" template="MMM DDth, YYYY" />
+
+<$transclude />
+
+</$tiddler>

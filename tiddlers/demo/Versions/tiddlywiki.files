@@ -5,6 +5,10 @@
 			"filesRegExp": "^.*\\.tid$",
 			"isTiddlerFile": true,
 			"fields": {
+				"caption": {
+					"source": "basename",
+					"prefix": "v"
+				},
 				"title": {
 					"source": "basename",
 					"prefix": "Versions/"

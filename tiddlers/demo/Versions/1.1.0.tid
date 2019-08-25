@@ -1,0 +1,14 @@
+created: 12
+title: Versions/1.1.0
+
+* Added support for configuring operators. It wasn't there before, even though I said it was.
+* Fixed issue #1
+* Added demo site complete with documentation. Added links to it from the configuration pages.
+* Added support for dynamic Field Types. Will come in handy once "Text References" have to be added.
+* Changed name of Field Type "field" to "title", since title is easier to understand.
+* Changed prompt that pops up when renaming a tiddler. This will only occur on english versions of Tiddlywiki.
+* Made `list` and `tags` appear on the fields configuration page, so they can be removed. Simplified how those two are handled under the hood.
+* Added the relevant attributes for as many core widgets that I could.
+* Corrected issue where default configurations could not be removed.
+* Added support for simple transclusion syntax (i.e `{{Tiddler}}` and `{{Tiddler||Template}}`)
+* Fixed issue where Relink would fumble attribute values that had apostrophes and ended with a quoate. They are impossible, but now Relink makes a macro placeholder as an alternative.

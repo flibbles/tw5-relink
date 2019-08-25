@@ -1,0 +1,3 @@
+title: Templates/now
+
+<<now [UTC]YYYY0MM0DD0hh0mm0ssXXX>>

@@ -16,6 +16,7 @@
 			"--rendertiddler","$:/core/save/all","test.html","text/plain"
 		],
 		"demo": [
+			"--setfield", "[[$:/plugins/flibbles/relink]get[version]addprefix[Versions/]]", "created", "Templates/now", "text/plain",
 			"--output", "./docs/",
 			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine"
 		]

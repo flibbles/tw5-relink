@@ -2,9 +2,8 @@ caption: Release Notes
 tags: Relink
 title: Versions
 
-!! Release Notes
-
 <$macrocall $name="tabs"
             tabsList="[prefix[Versions/]!nsort[created]]"
-            default={{{[prefix[Versions/]nsort[created]first[]]}}}
+            default={{{[prefix[Versions/]!nsort[created]first[]]}}}
+            template="Templates/Version"
             class="tc-vertical" />
