@@ -3,4 +3,4 @@ example-single: Frodo
 example-filter: [all[]] -Frodo
 list: [[Some Tiddler]] Frodo [[Another Tiddler]]
 relink.showcase: list tags example-filter example-single
-tags: Example Frodo
+tags: Demo Frodo

@@ -1,4 +1,4 @@
-title: Templates/Example
+title: Templates/Demo
 
 <$tiddler tiddler=<<currentTab>> >
 

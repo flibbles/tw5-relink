@@ -1,6 +1,6 @@
-caption: Interactive Example
+caption: Interactive Demo
 tags: Relink
-title: Example
+title: Demo
 
 <!-- NOTICE
 
@@ -13,6 +13,6 @@ the title link of any example to tinker with that example directly.
 Change the tiddler ''[[Frodo]]'' down below to see how these examples react.
 
 <$macrocall $name="tabs"
-            tabsList="[tag[Example]]"
-            default="Example/Links"
-            template="Templates/Example" />
+            tabsList="[tag[Demo]]"
+            default="Demo/Links"
+            template="Templates/Demo" />
