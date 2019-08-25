@@ -1,0 +1,5 @@
+title: Versions/1.1.0
+
+!! v1.2.0
+
+* Corrected crash that occurred when any Relink whitelist was empty.
