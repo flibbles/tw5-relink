@@ -4,7 +4,7 @@ title: Frodo
 \define rename(name)
 <$button>
 
-$name$
+<$text text=<<__name__>> />
 <$action-sendmessage $message="tm-rename-tiddler" to=<<__name__>> />
 </$button>
 \end

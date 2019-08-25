@@ -4,3 +4,4 @@ description: Notice that plaintext references to Frodo are not changed. Only occ
 
 [[Descriptive link to Frodo.|Frodo]]
 
+BilboBaggins is a ~CamelCase link. Visit ~BilboBaggins to test Wikilinks.
