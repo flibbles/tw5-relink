@@ -1,4 +1,5 @@
 /*\
+module-type: relinkwikitextrule
 
 Parses and acknowledges any pragma rules a tiddler has.
 

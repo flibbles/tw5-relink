@@ -56,7 +56,6 @@
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,
 			"fields": {
-				"module-type": "relinkwikitextrule",
 				"title": {
 					"source": "filename",
 					"prefix": "$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/"

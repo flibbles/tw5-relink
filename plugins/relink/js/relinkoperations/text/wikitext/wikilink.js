@@ -1,4 +1,5 @@
 /*\
+module-type: relinkwikitextrule
 
 Handles CamelCase links
 

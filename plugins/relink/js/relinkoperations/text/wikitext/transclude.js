@@ -1,4 +1,6 @@
 /*\
+module-type: relinkwikitextrule
+
 Handles replacement of transclusions in wiki text like,
 
 {{RenamedTiddler}}

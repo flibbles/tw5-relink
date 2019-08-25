@@ -1,4 +1,5 @@
 /*\
+module-type: relinkwikitextrule
 
 Handles replacement in wiki text inline rules, like,
 

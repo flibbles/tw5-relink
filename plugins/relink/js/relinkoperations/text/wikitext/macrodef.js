@@ -1,4 +1,5 @@
 /*\
+module-type: relinkwikitextrule
 
 Handles pragma macro definitions. Except we only update placeholder macros
 that we may have previously install.

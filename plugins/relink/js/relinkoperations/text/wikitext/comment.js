@@ -1,4 +1,5 @@
 /*\
+module-type: relinkwikitextrule
 
 Handles comment blocks. Or rather //doesn't// handle them, since we should
 ignore their contents.

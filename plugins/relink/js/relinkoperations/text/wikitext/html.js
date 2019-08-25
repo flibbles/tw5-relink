@@ -1,4 +1,5 @@
 /*\
+module-type: relinkwikitextrule
 
 Handles replacement in attributes of widgets and html elements
 This is configurable to select exactly which attributes of which elements
@@ -8,6 +9,7 @@ should be changed.
 
 \*/
 
+var utils = require("./utils.js");
 var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
@@ -40,7 +42,7 @@ exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
 			               - (quote.length*2)
 			               - attr.value.length;
 			builder.push(text.substring(buildIndex, valueStart));
-			var quotedValue = wrapValue(value, quote);
+			var quotedValue = utils.wrapAttributeValue(value,quote);
 			if (quotedValue !== undefined) {
 				builder.push(quotedValue);
 			} else {
@@ -78,32 +80,6 @@ function determineQuote(text, attr) {
 		}
 	}
 	return '';
-};
-
-/**Tiddlywiki doesn't have escape characters for attribute values. Instead,
- * we just have to find the type of quotes that'll work for the given title.
- * There exist titles that simply can't be quoted.
- * If it can stick with the preference, it will.
- */
-function wrapValue(value, preference) {
-	var choices = {
-		"": function(v) {return !/([\/\s<>"'=])/.test(value); },
-		"'": function(v) {return v.indexOf("'") < 0; },
-		'"': function(v) {return v.indexOf('"') < 0; },
-		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';}
-	};
-	if (choices[preference]) {
-		if (choices[preference](value)) {
-			return preference + value + preference;
-		}
-	}
-	for (var quote in choices) {
-		if (choices[quote](value)) {
-			return quote + value + quote;
-		}
-	}
-	// No quotes will work on this
-	return undefined;
 };
 
 function AttributeHandler(tiddler, value) {
