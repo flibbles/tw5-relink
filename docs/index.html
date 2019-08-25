@@ -175,7 +175,7 @@ Error message and password prompt
 
 <li>Documentation/Comments</li>
 
-<li>Documentation/Field_Types</li>
+<li>Documentation/Field Types</li>
 
 <li>Documentation/Fields</li>
 
@@ -9403,15 +9403,15 @@ Error message and password prompt
         },
         &quot;$:/plugins/flibbles/relink/language/Help/Attributes&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/language/Help/Attributes&quot;,
-            &quot;text&quot;: &quot;See the [[Attributes documentation page|https://flibbles.github.io/#Documentation/Attributes]] for details.&quot;
+            &quot;text&quot;: &quot;See the [[Attributes documentation page|https://flibbles.github.io/tw5-relink/#Documentation/Attributes]] for details.&quot;
         },
         &quot;$:/plugins/flibbles/relink/language/Help/Fields&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/language/Help/Fields&quot;,
-            &quot;text&quot;: &quot;See the [[Fields documentation page|https://flibbles.github.io/#Documentation/Fields]] for details.&quot;
+            &quot;text&quot;: &quot;See the [[Fields documentation page|https://flibbles.github.io/tw5-relink/#Documentation/Fields]] for details.&quot;
         },
         &quot;$:/plugins/flibbles/relink/language/Help/Operators&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/language/Help/Operators&quot;,
-            &quot;text&quot;: &quot;See the [[Operators documentation page|https://flibbles.github.io/#Documentation/Operators]] for details.&quot;
+            &quot;text&quot;: &quot;See the [[Operators documentation page|https://flibbles.github.io/tw5-relink/#Documentation/Operators]] for details.&quot;
         },
         &quot;$:/plugins/flibbles/relink/language/ui/Attributes/Caption&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/language/ui/Attributes/Caption&quot;,
@@ -9644,7 +9644,7 @@ would update to:
 
 If you have `$list`/`filter` whitelisted and configured as a filter, then the widget `&lt;$list filter=&quot;...&quot; /&gt;` would have the contents of its filter attribute evaluated, and any whitelisted filter operators inside of it would be considered for updating during a rename operation.
 
-For each element/attribute pair, you must specify its [[type|Field Types]].
+For each element/attribute pair, you must specify its [[type|Documentation/Field Types]].
 </pre>
 </div>
 <div caption="Comments" tags="Documentation WikiText" title="Documentation/Comments">
@@ -9657,7 +9657,7 @@ For each element/attribute pair, you must specify its [[type|Field Types]].
 ```
 </pre>
 </div>
-<div caption="Field Types" tags="Documentation" title="Documentation/Field_Types">
+<div caption="Field Types" tags="Documentation" title="Documentation/Field Types">
 <pre>Fields and attributes have types. Depending on the type, Relink will parse them differently.
 
 !!! Title
@@ -9702,7 +9702,7 @@ For example, take `&lt;$list filter=&quot;[[MyTiddler]] [tag[MyTiddler]!has[draf
 <div caption="Fields" tags="Documentation Construct" title="Documentation/Fields">
 <pre>Configure which tiddler fields Relink will consider for updating. For instance, `list` and `tags` are configured by default, which means whenever a tiddler name updates, Relink will look at the `list` and `tags` field of every tiddler for possible updating.
 
-For each field, you must specify its [[type|Field Types]].
+For each field, you must specify its [[type|Documentation/Field Types]].
 
 Example: If the field name `list` is configured as a `list`, that means the following:
 
@@ -9773,7 +9773,7 @@ Change the tiddler ''Frodo'' down below to see how these examples react.
             template=&quot;Templates/Example&quot; /&gt;
 </pre>
 </div>
-<div caption="Fields" description="Whitelisted tiddler fields are updated just as well. Without this plugin, Tiddlywiki could manage `list` and `tags` on its own. ''Relink'' opens the door for other tiddlers, including ones that specify something other than a string list, liek a filter, or a single tiddler title." example-filter="[all[]] -Frodo" example-single="Frodo" list="[[Some Tiddler]] Frodo [[Another Tiddler]]" relink.showcase="list tags example-filter example-single" tags="Example Frodo" title="Example/Fields">
+<div caption="Fields" description="Whitelisted tiddler fields are updated just as well. Without this plugin, Tiddlywiki could manage `list` and `tags` on its own. ''Relink'' opens the door for other tiddlers, including ones that specify something other than a string list, like a filter, or a single tiddler title." example-filter="[all[]] -Frodo" example-single="Frodo" list="[[Some Tiddler]] Frodo [[Another Tiddler]]" relink.showcase="list tags example-filter example-single" tags="Example Frodo" title="Example/Fields">
 <pre></pre>
 </div>
 <div caption="Filters" description="Filters in whitelisted fields and attributes will be updated as well. However, Relink only updates the operands of whitelisted filter operators. This includes `tag` and `title`, but you can add or remove any operators you want to the list." relink.showcase="text" tags="Example" title="Example/Filters">

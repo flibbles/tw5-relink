@@ -16,11 +16,11 @@ relevant tiddlers and updates prettyLinks, transclusions, widgets, and other
 syntax patterns to properly reflect the title change. All of this is fully
 customizable.
 
-For a demonstration, and for documentation, see the (tiddlywiki demo site)[http://flibbles.github.io/#Documentation/Fields].
+For a demonstration, and for documentation, see the (tiddlywiki demo site)[https://flibbles.github.io/tw5-relink/].
 
 ## How to install
 
-Visit the (demo site)[http://flibbles.github.io/#Documentation/Fields]. It will have a little thingy you can drag onto your tiddlywiki project. (The demo site will explain it better.)
+Visit the (demo site)[https://flibbles.github.io/tw5-relink/]. It will have a little thingy you can drag onto your tiddlywiki project. (The demo site will explain it better.)
 
 ### For Node.js
 
