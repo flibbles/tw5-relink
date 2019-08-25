@@ -1,0 +1,16 @@
+caption: Pragma //(//\//define, //\//rules, ...)//
+tags: Documentation WikiText
+title: Pragma
+
+Relink manages relevant pragma statements.
+
+;`\define`
+: Relink ignores define pragma, //except// for macros which Relink created while trying to resolve another relink on the page. For instance, if it created
+: `\define relink-1() My "complicated" [[Tiddler]]`
+: it will update that definition if that weird tiddler is ever renamed again.
+;`\import`
+: Relink processes its filter using standard filter relink rules
+;`\rules`
+: Relink does nothing to the rules pragma, but it does respect it. For instance, if html is disable, then relink will not process any elements or widgets in the rest of the tiddler, since they're technically plaintext.
+;`\whitespace`
+: Irrelevant to Relink. Ignored.
