@@ -8,6 +8,13 @@ This handles the fetching and distribution of relink settings.
 var fieldTypes = Object.create(null);
 $tw.modules.applyMethods('relinkfieldtype', fieldTypes);
 
+/**Returns a specific relinker.
+ * This is useful for wikitext rules which need to parse a filter or a list
+ */
+exports.getRelinker = function(name) {
+	return fieldTypes[name];
+};
+
 exports.getFields = function(options) {
 	return getSettings(options).fields;
 };

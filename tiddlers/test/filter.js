@@ -6,16 +6,9 @@ Tests the new relinking wiki methods.
 
 var utils = require("test/utils");
 var relink = utils.relink;
+var operatorConf = utils.operatorConf;
 
 describe("filter fields", function() {
-
-function operatorConf(operator, value) {
-	if (value === undefined) {
-		value = "title";
-	}
-	var prefix = "$:/config/flibbles/relink/operators/";
-	return {title: prefix + operator, text: value};
-}
 
 function testFilter(filter, expected, options) {
 	[filter, expected, options] = utils.prepArgs(filter, expected, options);

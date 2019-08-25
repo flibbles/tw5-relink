@@ -89,3 +89,13 @@ exports.placeholder = function(number, value, newline) {
 	newline = newline || '\n'
 	return `\\define relink-${number}() ${value}${newline}`;
 };
+
+/**Returns a configuration tiddler for a filter operator.
+ */
+exports.operatorConf = function(operator, value) {
+	if (value === undefined) {
+		value = "title";
+	}
+	var prefix = "$:/config/flibbles/relink/operators/";
+	return {title: prefix + operator, text: value};
+}

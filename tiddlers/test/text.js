@@ -98,6 +98,20 @@ it('placeholders', function() {
 	testText(macro(1,from,"\r\n")+content, {from: from, to: to});
 });
 
+it('import pragma', function() {
+	function wiki() {
+		var w = new $tw.Wiki();
+		w.addTiddler(utils.operatorConf("title"));
+		return w;
+	};
+	testText("\\import [title[from here]]\nstuff.", {wiki: wiki()});
+	testText("\\import [title[from here]]\n\n\nstuff.", {wiki: wiki()});
+	testText("\\import     [title[from here]]   \nstuff.", {wiki: wiki()});
+	testText("\\import [[from here]]\r\nstuff.", {wiki: wiki()});
+	testText("\\import from\nstuff.",
+	         "\\import [[to there]]\nstuff.", {from: "from", wiki: wiki()});
+});
+
 it('transcludes', function() {
 	testText("{{from here}}")
 	testText("Before {{from here}} After")
