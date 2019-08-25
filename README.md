@@ -1,15 +1,13 @@
 # Relink
 
-tw5-relink is for automatically updating tiddlers in Tiddlywiki5 when renaming.
-
-By default in TW5, when you rename a tiddler, it gives you the option to
+By default in Tiddlywiki5, when you rename a tiddler, it gives you the option to
 automatically update the `list` and `tags` field of all other tiddlers.
 
 But what about updating a tiddler's text? What about other fields like
 `list-before` and `list-after`. What about other fields that are unique to
 my project?
 
-This is what relink is for. It expands on TW5's bulk updating to allow for
+This is what Relink is for. It expands on TW5's bulk updating to allow for
 any customizable fields to be updated, whether they're lists, filters, or
 single-tiddler fields. In addition, relink parses through the text of all
 relevant tiddlers and updates prettyLinks, transclusions, widgets, and other
