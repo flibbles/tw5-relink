@@ -13,26 +13,14 @@ This is what relink is for. It expands on TW5's bulk updating to allow for
 any customizable fields to be updated, whether they're lists, filters, or
 single-tiddler fields. In addition, relink parses through the text of all
 relevant tiddlers and updates prettyLinks, transclusions, widgets, and other
-syntax patterns to properly reflect the title change.
+syntax patterns to properly reflect the title change. All of this is fully
+customizable.
 
-### Widgets
-
-Widget attributes are updated if they're whitelisted. By default, several
-widget attributes are whitelisted, such as `to=` in `<$link>`, but the
-defaults can be removed, and custom attributes can be added in relink
-configuration, and you can specify whether they'll specify single tiddlers,
-lists, or filters (such as `<$list filter=`).
-
-### Filters
-
-Filters in whitelisted fields and attributes are updated as well. However,
-only certain operands are evaluated for updating. This too uses a configurable
-whitelist. The defaults are `[title[]]` operators (including shorthands such
-as `[[Title]]`, `"Title"`, `'Title'`, `Title`, and `[field:title[Title]]`),
-and the `[tag[]]` operator. These can be removed, and others can be added
-through the relink configuration.
+For a demonstration, and for documentation, see the (tiddlywiki demo site)[http://flibbles.github.io/#Documentation/Fields].
 
 ## How to install
+
+Visit the (demo site)[http://flibbles.github.io/#Documentation/Fields]. It will have a little thingy you can drag onto your tiddlywiki project. (The demo site will explain it better.)
 
 ### For Node.js
 
@@ -62,7 +50,6 @@ projects.
 
 ## How to test
 
-Testing requires `npm` to be installed, as well as `tiddlywiki` to be installed
-and available on the command line (most likely installed using `npm`).
+Make sure you have `tiddlywiki` available on your PATH. From the project root directory, type:
 
-Then run: `npm test`
+Then run: `tiddlywiki --build test`
