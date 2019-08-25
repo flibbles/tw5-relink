@@ -61,6 +61,20 @@ it('prettylinks', function() {
 	testText("Link to [[elsewhere]].");
 	testText("Link to [[desc|elsewhere]].");
 	testText("Multiple [[from here]] links [[description|from here]].");
+	testText("Link to [[from here]].", {to: "to [bracket] there"});
+
+	// Tricky renames
+	var macro = utils.placeholder;
+	function tricky(to, caption) {
+		caption = caption ? caption+"|" : "";
+		var expected = macro(1,to)
+		             + macro("pretty-1", `[[${caption}$(relink-1)$]]`)
+		             + "Link to <<relink-pretty-1>>.";
+		testText(`Link to [[${caption}from here]].`,expected, {to: to});
+	};
+	tricky("to [bracks]");
+	tricky("to [bracks]", "caption");
+	tricky("to [[brackets]] here");
 });
 
 it('wikilinks', function() {
@@ -71,6 +85,17 @@ it('wikilinks', function() {
 	testText("A WikiLink please", "A [[lowerCase]] please", {from: "WikiLink", to: "lowerCase"});
 	testText("A WikiLink please", "A [[~TildaCase]] please", {from: "WikiLink", to: "~TildaCase"});
 	testText("\\rules except wikilink\nA WikiLink please", {from: "WikiLink", ignored: true});
+});
+
+it('placeholders', function() {
+	var from = 'End\'s with "quotes"';
+	var to = 'Another\'"quotes"';
+	var content = "Anything goes here";
+	var macro = utils.placeholder;
+	// placeholders get replaced too
+	testText(macro(1,from)+content, {from: from, to: to});
+	// Works with Windows newlines
+	testText(macro(1,from,"\r\n")+content, {from: from, to: to});
 });
 
 it('transcludes', function() {

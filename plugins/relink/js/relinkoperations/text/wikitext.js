@@ -15,14 +15,16 @@ var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[typ
 var rules = Object.create(null);
 $tw.modules.applyMethods('relinkwikitextrule', rules);
 
-function WikiRelinker() {
-	WikiParser.apply(this, arguments);
+function WikiRelinker(text, toTitle, options) {
+	WikiParser.call(this, null, text, options);
+	this.toTitle = toTitle;
 	this.inlineRules = this.inlineRules.concat(this.pragmaRules);
 	// We work through relinkRules so we can change it later.
 	// relinkRules is inlineRules so it gets touched up by amendRules().
 	this.relinkRules = this.inlineRules;
-	this.placeholder = undefined;
-	this.reservedPlaceholders = Object.create(null);
+	this.placeholders = Object.create(null);
+	this.reverseMap = Object.create(null);
+	this.knownMacros = Object.create(null);
 };
 
 WikiRelinker.prototype = Object.create(WikiParser.prototype);
@@ -30,32 +32,48 @@ WikiRelinker.prototype.parsePragmas = function() {return []; };
 WikiRelinker.prototype.parseInlineRun = function() {};
 WikiRelinker.prototype.parseBlocks = function() {};
 
-WikiRelinker.prototype.getPlaceholderFor = function(value) {
-	if (this.placeholder === undefined) {
-		var number = 1;
-		while(this.reservedPlaceholders[number]) {number+=1};
-		this.placeholder = "relink-" + number;
-		this.value = value;
+WikiRelinker.prototype.getPlaceholderFor = function(value, category) {
+	var placeholder = this.reverseMap[value];
+	if (placeholder) {
+		return placeholder;
 	}
-	return this.placeholder;
+	var number = 0;
+	var prefix = "relink-"
+	if (category) {
+		prefix += category + "-";
+	}
+	do {
+		number += 1;
+		placeholder = prefix + number;
+	} while (this.knownMacros[placeholder]);
+	this.placeholders[placeholder] = value;
+	this.reverseMap[value] = placeholder;
+	this.reserve(placeholder);
+	return placeholder;
 };
 
-WikiRelinker.prototype.reserve = function(number) {
-	this.reservedPlaceholders[parseInt(number)] = true;
+WikiRelinker.prototype.reserve = function(macro) {
+	this.knownMacros[macro] = true;
 };
 
 WikiRelinker.prototype.getPreamble = function() {
-	if (this.placeholder) {
-		return `\\define ${this.placeholder}() ${this.value}\n`;
+	var results = [];
+	for (var name in this.placeholders) {
+		var val = this.placeholders[name];
+		results.push(`\\define ${name}() ${val}\n`);
 	}
-	return undefined;
+	if (results.length > 0) {
+		return results.join('');
+	} else {
+		return undefined;
+	}
 };
 
 exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var text = tiddler.fields.text,
 		builder = [],
 		buildIndex = 0,
-		parser = new WikiRelinker(null, text, options),
+		parser = new WikiRelinker(text, toTitle, options),
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		var name = matchingRule.rule.name;

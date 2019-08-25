@@ -80,3 +80,12 @@ exports.collectLogs = function(scope, options) {
 	return logMessages;
 };
 
+/**Returns the placeholder pragma
+ *
+ * There are times when Relink can't relink in place, so it has to resort
+ * to using macros. This is the macro pattern.
+ */
+exports.placeholder = function(number, value, newline) {
+	newline = newline || '\n'
+	return `\\define relink-${number}() ${value}${newline}`;
+};

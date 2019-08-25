@@ -81,10 +81,7 @@ it('field attributes fun with quotes', function() {
 });
 
 it('uses macros for literally unquotable titles', function() {
-	function macro(number, value, newline) {
-		newline = newline || '\n'
-		return `\\define relink-${number}() ${value}${newline}`;
-	};
+	var macro = utils.placeholder;
 	function link(number) {
 		return `<$link to=<<relink-${number||1}>>/>`;
 	};
@@ -99,10 +96,6 @@ it('uses macros for literally unquotable titles', function() {
 	// Only one macro is made, even when multiple instances occur
 	testText("<$link to='from here'/><$link to='from here'/>",
 		 macro(1,to)+link(1)+link(1), {to: to});
-	// Running it twice still works
-	testText(macro(1,to)+link(1), macro(1,to2)+link(1),{from: to, to: to2});
-	// Running twice works with \r\n
-	testText(macro(1,to,"\r\n")+link(1), macro(1,to2,"\r\n")+link(1),{from: to, to: to2});
 	// If the first placeholder is taken, take the next
 	testText(macro(1,to)+link(1)+"<$link to='from here'/>",
 	         macro(2,to2)+macro(1,to)+link(1)+link(2), {to: to2});

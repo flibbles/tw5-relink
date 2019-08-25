@@ -11,6 +11,8 @@ that we may have previously install.
 exports['macrodef'] = function(tiddler, text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var m = this.match;
+	// This macro is not available should we need to make one.
+	this.parser.reserve(m[1]);
 	// !m[3] means it's not a multiline macrodef
 	var placeholder = /^relink-(\d+)$/.exec(m[1]);
 	if (placeholder && m[2] === '' && !m[3]) {
@@ -21,9 +23,6 @@ exports['macrodef'] = function(tiddler, text, fromTitle, toTitle, options) {
 		if (match && match[1] === fromTitle) {
 			this.parser.pos += match[0].length;
 			return `\\define ${m[1]}() ${toTitle}${match[2]}`;
-		} else {
-			// That number is taken.
-			this.parser.reserve(placeholder[1]);
 		}
 	}
 	return undefined;
