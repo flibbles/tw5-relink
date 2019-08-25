@@ -1,5 +1,6 @@
 caption: Comments
 tags: Documentation WikiText
+title: Comments
 
 Any text inside of comments is ''completely ignored'', even if that text matches syntax constructs which would otherwise be updated.
 

@@ -1,5 +1,6 @@
 caption: Attributes
 tags: Documentation Construct
+title: Attributes
 
 The attributes of widgets can be updated by Relink, but only if they're whitelisted. Given a whitelisted element/attribute pair, such as `$link` and `to`, the following update could happen:
 
@@ -11,4 +12,4 @@ would update to:
 
 If you have `$list`/`filter` whitelisted and configured as a filter, then the widget `<$list filter="..." />` would have the contents of its filter attribute evaluated, and any whitelisted filter operators inside of it would be considered for updating during a rename operation.
 
-For each element/attribute pair, you must specify its [[type|Documentation/Field Types]].
+For each element/attribute pair, you must specify its [[type|Field Types]].
