@@ -10,6 +10,8 @@ This renames both the tiddler and the template field.
 
 \*/
 
+var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
+
 function transclude(tiddler, text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var m = this.match;
@@ -26,6 +28,11 @@ function transclude(tiddler, text, fromTitle, toTitle, options) {
 		isModified = true;
 	}
 	if (isModified) {
+		log("transclude", {
+			from: fromTitle,
+			to: toTitle,
+			tiddler: tiddler.fields.title
+		});
 		if (template !== undefined) {
 			return `{{${title}||${template}}}`;
 		} else {

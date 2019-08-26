@@ -8,6 +8,8 @@ that we may have previously install.
 
 \*/
 
+var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
+
 exports['macrodef'] = function(tiddler, text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var m = this.match;
@@ -21,6 +23,12 @@ exports['macrodef'] = function(tiddler, text, fromTitle, toTitle, options) {
 		valueRegExp.lastIndex = this.parser.pos;
 		var match = valueRegExp.exec(text);
 		if (match && match[1] === fromTitle) {
+			log("macrodef", {
+				from: fromTitle,
+				to: toTitle,
+				tiddler: tiddler.fields.title,
+				macro: m[1]
+			});
 			this.parser.pos += match[0].length;
 			return `\\define ${m[1]}() ${toTitle}${match[2]}`;
 		}

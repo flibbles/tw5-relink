@@ -53,7 +53,9 @@ it('handles managed rules inside unmanaged rules', function() {
 });
 
 it('prettylinks', function() {
-	testText("Link to [[from here]].");
+	var log = [];
+	testText("Link to [[from here]].", {log: log});
+	expect(log).toEqual(["Renaming 'from here' to 'to there' in prettylink of tiddler 'test'"]);
 	testText("Link to [[description|from here]].");
 	testText("Link to [[weird]desc|from here]].");
 	testText("Link to [[it is from here|from here]].", "Link to [[it is from here|to there]].");
@@ -66,22 +68,28 @@ it('prettylinks', function() {
 	// Tricky renames
 	var macro = utils.placeholder;
 	function tricky(to, caption) {
+		log = [];
 		caption = caption ? caption+"|" : "";
 		var expected = macro(1,to)
 		             + macro("pretty-1", `[[${caption}$(relink-1)$]]`)
 		             + "Link to <<relink-pretty-1>>.";
-		testText(`Link to [[${caption}from here]].`,expected, {to: to});
+		testText(`Link to [[${caption}from here]].`,expected, {to: to, log: log});
 	};
 	tricky("to [bracks]");
+	expect(log).toEqual(["Renaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test' by creating placeholder macros"]);
 	tricky("to [bracks]", "caption");
 	tricky("to [[brackets]] here");
 });
 
 it('wikilinks', function() {
-	testText("A WikiLink please", {from: "WikiLink", to: "WikiChange"});
+	var log = [];
+	testText("A WikiLink please", {from: "WikiLink", to: "WikiChange", log: log});
+	expect(log).toEqual(["Renaming 'WikiLink' to 'WikiChange' in CamelCase link of tiddler 'test'"]);
 	testText("A ~WikiLink please", {from: "WikiLink", ignored: true});
 	testText("A ~WikiLink please", {from: "~WikiLink", ignored: true});
-	testText("A WikiLink please", "A [[to there]] please", {from: "WikiLink"});
+	log = [];
+	testText("A WikiLink please", "A [[to there]] please", {from: "WikiLink", log: log});
+	expect(log).toEqual(["Renaming 'WikiLink' to 'to there' in CamelCase link of tiddler 'test' by converting it into a prettylink"]);
 	testText("A WikiLink please", "A [[lowerCase]] please", {from: "WikiLink", to: "lowerCase"});
 	testText("A WikiLink please", "A [[~TildaCase]] please", {from: "WikiLink", to: "~TildaCase"});
 	testText("\\rules except wikilink\nA WikiLink please", {from: "WikiLink", ignored: true});
@@ -92,8 +100,10 @@ it('placeholders', function() {
 	var to = 'Another\'"quotes"';
 	var content = "Anything goes here";
 	var macro = utils.placeholder;
+	var log = [];
 	// placeholders get replaced too
-	testText(macro(1,from)+content, {from: from, to: to});
+	testText(macro(1,from)+content, {from: from, to: to, log: log});
+	expect(log).toEqual([`Renaming '${from}' to '${to}' in relink-1 definition of tiddler 'test'`]);
 	// Works with Windows newlines
 	testText(macro(1,from,"\r\n")+content, {from: from, to: to});
 });
@@ -113,7 +123,9 @@ it('import pragma', function() {
 });
 
 it('transcludes', function() {
-	testText("{{from here}}")
+	var log = [];
+	testText("{{from here}}", {log: log})
+	expect(log).toEqual(["Renaming 'from here' to 'to there' in transclusion of tiddler 'test'"]);
 	testText("Before {{from here}} After")
 	testText("Before {{from here||template}} After")
 	testText("Before {{title||from here}} After")

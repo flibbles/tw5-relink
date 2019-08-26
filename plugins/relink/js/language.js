@@ -21,7 +21,13 @@ exports.logRelink = function(message, args) {
 };
 
 exports.log = {
-	"import": "Renaming '<<from>>' to '<<to>>' in \\import filter operand of tiddler '<<tiddler>>'",
 	"attribute": "Renaming '<<from>>' to '<<to>>' in <<type>> attribute <$<<element>> <<attribute>> /> of tiddler '<<tiddler>>'",
-	"field": "Renaming '<<from>>' to '<<to>>' in <<field>> of tiddler '<<tiddler>>'"
+	"field": "Renaming '<<from>>' to '<<to>>' in <<field>> of tiddler '<<tiddler>>'",
+	"import": "Renaming '<<from>>' to '<<to>>' in \\import filter operand of tiddler '<<tiddler>>'",
+	"macrodef": "Renaming '<<from>>' to '<<to>>' in <<macro>> definition of tiddler '<<tiddler>>'",
+	"prettylink": "Renaming '<<from>>' to '<<to>>' in prettylink of tiddler '<<tiddler>>'",
+	"prettylink-placeholder": "Renaming '<<from>>' to '<<to>>' in prettylink of tiddler '<<tiddler>>' by creating placeholder macros",
+	"transclude": "Renaming '<<from>>' to '<<to>>' in transclusion of tiddler '<<tiddler>>'",
+	"wikilink": "Renaming '<<from>>' to '<<to>>' in CamelCase link of tiddler '<<tiddler>>'",
+	"wikilink-pretty": "Renaming '<<from>>' to '<<to>>' in CamelCase link of tiddler '<<tiddler>>' by converting it into a prettylink"
 };

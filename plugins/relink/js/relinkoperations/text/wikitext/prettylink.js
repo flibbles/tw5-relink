@@ -9,6 +9,8 @@ Handles replacement in wiki text inline rules, like,
 
 \*/
 
+var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
+
 exports['prettylink'] = function(tiddler, text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var caption, m = this.match;
@@ -19,9 +21,16 @@ exports['prettylink'] = function(tiddler, text, fromTitle, toTitle, options) {
 		// format is [[MyTiddler]], and it doesn't match
 		return undefined;
 	}
+	var logArguments = {
+		from: fromTitle,
+		to: toTitle,
+		tiddler: tiddler.fields.title
+	};
 	if (isSafe(toTitle)) {
+		log("prettylink", logArguments);
 		return prettyLink(toTitle, caption);
 	} else {
+		log("prettylink-placeholder", logArguments);
 		var ph = this.parser.getPlaceholderFor(toTitle);
 		var link = prettyLink("$("+ph+")$", caption);
 		var macro = this.parser.getPlaceholderFor(link, 'pretty');
