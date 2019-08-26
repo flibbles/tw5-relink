@@ -36,28 +36,30 @@ exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
 			if (value === undefined) {
 				continue;
 			}
-			log("attribute", {
-				from: fromTitle,
-				to: toTitle,
-				tiddler: tiddler.fields.title,
-				type: attrRelinker.name,
-				element: this.nextTag.tag,
-				attribute: attributeName
-			});
 			var quote = determineQuote(text, attr);
 			// account for the quote if it's there.
 			var valueStart = attr.end
 			               - (quote.length*2)
 			               - attr.value.length;
 			builder.push(text.substring(buildIndex, valueStart));
+			var logArguments = {
+				from: fromTitle,
+				to: toTitle,
+				tiddler: tiddler.fields.title,
+				type: attrRelinker.name,
+				element: this.nextTag.tag,
+				attribute: attributeName
+			};
 			var quotedValue = utils.wrapAttributeValue(value,quote);
 			if (quotedValue !== undefined) {
 				builder.push(quotedValue);
+				log("attribute", logArguments);
 			} else {
 				// The value was unquotable. We need to make
 				// a macro in order to replace it.
 				var holder = this.parser.getPlaceholderFor(value);
 				builder.push("<<", holder, ">>");
+				log("attribute-placeholder", logArguments);
 			}
 			buildIndex = valueStart
 			           + attr.value.length

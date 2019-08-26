@@ -76,7 +76,7 @@ it('prettylinks', function() {
 		testText(`Link to [[${caption}from here]].`,expected, {to: to, log: log});
 	};
 	tricky("to [bracks]");
-	expect(log).toEqual(["Renaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test' by creating placeholder macros"]);
+	expect(log).toEqual(["%cRenaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test' %cby creating placeholder macros"]);
 	tricky("to [bracks]", "caption");
 	tricky("to [[brackets]] here");
 });
@@ -89,7 +89,7 @@ it('wikilinks', function() {
 	testText("A ~WikiLink please", {from: "~WikiLink", ignored: true});
 	log = [];
 	testText("A WikiLink please", "A [[to there]] please", {from: "WikiLink", log: log});
-	expect(log).toEqual(["Renaming 'WikiLink' to 'to there' in CamelCase link of tiddler 'test' by converting it into a prettylink"]);
+	expect(log).toEqual(["%cRenaming 'WikiLink' to 'to there' in CamelCase link of tiddler 'test' %cby converting it into a prettylink"]);
 	testText("A WikiLink please", "A [[lowerCase]] please", {from: "WikiLink", to: "lowerCase"});
 	testText("A WikiLink please", "A [[~TildaCase]] please", {from: "WikiLink", to: "~TildaCase"});
 	testText("\\rules except wikilink\nA WikiLink please", {from: "WikiLink", ignored: true});

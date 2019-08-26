@@ -25,7 +25,9 @@ function testText(text, expected, options) {
 };
 
 it('field attributes', function() {
-	testText('<$link to="from here">caption</$link>');
+	var log = [];
+	testText('<$link to="from here">caption</$link>', {log: log});
+	expect(log).toEqual(["Renaming 'from here' to 'to there' in <$link to /> attribute of tiddler 'test'"]);
 	testText('<$link to="from here">\n\ncaption</$link>\n\n');
 	testText(`<$link to='from here'>caption</$link>`);
 	testText(`<$link to='from here' />`);
@@ -88,7 +90,9 @@ it('uses macros for literally unquotable titles', function() {
 	var to = 'End\'s with "quotes"';
 	var to2 = 'Another\'"quotes"';
 	var expectedLink = '<$link to=<<relink-1>>/>';
-	testText("<$link to='from here'/>", macro(1,to)+link(1), {to: to});
+	var log = [];
+	testText("<$link to='from here'/>", macro(1,to)+link(1), {to: to, log: log});
+	expect(log).toEqual(["%cRenaming 'from here' to '"+to+"' in <$link to /> attribute of tiddler 'test' %cby creating placeholder macros"]);
 	testText("Before <$link to='from here'/> After",
 	         macro(1,to)+"Before "+link(1)+" After", {to: to});
 	// It'll prefer triple-quotes, but it should still resort to macros.
