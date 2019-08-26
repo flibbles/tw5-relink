@@ -8,6 +8,13 @@ This handles the fetching and distribution of relink settings.
 var fieldTypes = Object.create(null);
 $tw.modules.applyMethods('relinkfieldtype', fieldTypes);
 
+// TODO: This is temporary until I get a better setup
+// In reality, I should have the fieldType modules supply more than just a
+// function. They should specify their name. and Allow for a possible delinker.
+for (var type in fieldTypes) {
+	fieldTypes[type].name = type;
+}
+
 /**Returns a specific relinker.
  * This is useful for wikitext rules which need to parse a filter or a list
  */

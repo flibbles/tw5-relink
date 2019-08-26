@@ -5,10 +5,8 @@ simplest kind of field type. One title swaps out for the other.
 
 /**Returns undefined if no change was made.
  */
-exports.title = function(handler, fromTitle, toTitle, options) {
-	var fieldValue = handler.value();
-	if (fieldValue === fromTitle) {
-		handler.log('field', (fieldValue || ""), toTitle);
+exports.title = function(value, fromTitle, toTitle, options) {
+	if (value === fromTitle) {
 		return toTitle;
 	}
 	return undefined;

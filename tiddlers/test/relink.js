@@ -53,14 +53,14 @@ it('still relinks tags', function() {
 	var log = [];
 	var t = testTags("[[from here]] another",
 	                 ['to there', 'another'], {log: log});
-	expect(log).toEqual(["Renaming tag 'from here' to 'to there' of tiddler 'test'"]);
+	expect(log).toEqual(["Renaming 'from here' to 'to there' in tags of tiddler 'test'"]);
 });
 
 it('still relinks lists', function() {
 	var log = [];
 	var t = testList("[[from here]] another",
 	                 ['to there', 'another'], {log: log});
-	expect(log).toEqual(["Renaming list item 'from here' to 'to there' of tiddler 'test'"]);
+	expect(log).toEqual(["Renaming 'from here' to 'to there' in list field of tiddler 'test'"]);
 });
 
 /** I have chosen not to respect dontRenameInTags and dontRenameInLists
@@ -82,13 +82,13 @@ it('still respects dontRenameInLists', function() {
 it('relinks custom field', function() {
 	var log = [];
 	var t = testField("from here", {log: log});
-	expect(log).toEqual(["Renaming test field 'from here' to 'to there' of tiddler 'test'"]);
+	expect(log).toEqual(["Renaming 'from here' to 'to there' in test field of tiddler 'test'"]);
 });
 
 it('relinks custom list', function() {
 	var log = [];
 	var t = testField("A [[from here]] B", {type: "list", log: log});
-	expect(log).toEqual(["Renaming test item 'from here' to 'to there' of tiddler 'test'"]);
+	expect(log).toEqual(["Renaming 'from here' to 'to there' in test field of tiddler 'test'"]);
 });
 
 it('ignores blank custom field settings', function() {
@@ -111,7 +111,7 @@ it('relinks installed tiddlerfield list', function() {
 	var log = [];
 	var t = relink({"testlist": "[[from here]] another"}, {log: log});
 	expect(t.fields.testlist.slice(0)).toEqual(['to there', 'another']);
-	expect(log).toEqual(["Renaming testlist item 'from here' to 'to there' of tiddler 'test'"]);
+	expect(log).toEqual(["Renaming 'from here' to 'to there' in testlist field of tiddler 'test'"]);
 });
 */
 

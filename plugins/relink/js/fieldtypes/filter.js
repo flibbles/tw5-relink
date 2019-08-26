@@ -7,9 +7,8 @@ This specifies logic for updating filters to reflect title changes.
 
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
-exports.filter = function(handler, fromTitle, toTitle, options) {
-	var filter = handler.value(),
-		indices;
+exports.filter = function(filter, fromTitle, toTitle, options) {
+	var indices;
 	if (filter && filter.indexOf(fromTitle) >= 0) {
 		try {
 			var managedOperators = settings.getOperators(options);
@@ -41,7 +40,6 @@ exports.filter = function(handler, fromTitle, toTitle, options) {
 					}
 				}
 				filter = filter.slice(0, index) + to + filter.slice(index + fromLength);
-				handler.log('operand', fromTitle, toTitle);
 			}
 			return filter;
 		}

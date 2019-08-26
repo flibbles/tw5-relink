@@ -25,7 +25,7 @@ function testFilter(filter, expected, options) {
 it('relinks and logs', function() {
 	var log = [];
 	testFilter("A [[from here]] B", {log: log});
-	expect(log).toEqual(["Renaming customFilter operand 'from here' to 'to there' of tiddler 'test'"]);
+	expect(log).toEqual(["Renaming 'from here' to 'to there' in customFilter field of tiddler 'test'"]);
 });
 
 it('quotes', function() {

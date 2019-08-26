@@ -11,6 +11,7 @@ should be changed.
 
 var utils = require("./utils.js");
 var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
+var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
 exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
@@ -31,11 +32,18 @@ exports['html'] = function(tiddler, text, fromTitle, toTitle, options) {
 			if (nextEql < 0 || nextEql > attr.end) {
 				continue;
 			}
-			var handler = new AttributeHandler(tiddler, attr.value);
-			var value = attrRelinker(handler, fromTitle, toTitle, options);
+			var value = attrRelinker(attr.value, fromTitle, toTitle, options);
 			if (value === undefined) {
 				continue;
 			}
+			log("attribute", {
+				from: fromTitle,
+				to: toTitle,
+				tiddler: tiddler.fields.title,
+				type: attrRelinker.name,
+				element: this.nextTag.tag,
+				attribute: attributeName
+			});
 			var quote = determineQuote(text, attr);
 			// account for the quote if it's there.
 			var valueStart = attr.end
@@ -80,17 +88,4 @@ function determineQuote(text, attr) {
 		}
 	}
 	return '';
-};
-
-function AttributeHandler(tiddler, value) {
-	this.tiddler = tiddler;
-	this._value = value;
-};
-
-AttributeHandler.prototype.log = function(adjective, from, to) {
-	console.log(`Renaming attribute ${adjective} '${from}' to '${to}' of tiddler '${this.tiddler.fields.title}'`);
-};
-
-AttributeHandler.prototype.value = function() {
-	return this._value;
 };
