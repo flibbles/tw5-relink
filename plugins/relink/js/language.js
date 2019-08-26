@@ -8,12 +8,12 @@ This handles all logging and alerts Relink emits.
 exports.logRelink = function(message, args) {
 	var msg = exports.log[message];
 	if (msg) {
-		for (var key in args) {
-			// This is cheap, but whatevs. To do a proper
-			// rendering would require working through a wiki
-			// object. Too heavy weight for log messages.
-			msg = msg.replace("<<"+key+">>", args[key]);
-		}
+		// This is cheap, but whatevs. To do a proper
+		// rendering would require working through a wiki
+		// object. Too heavy weight for log messages.
+		msg = msg.replace(/<<([^>]+)>>/g, function(match, key) {
+			return args[key] || ("<<"+key+">>");
+		});
 		console.log(msg);
 	} else {
 		console.warn("No such log message: " + message);
