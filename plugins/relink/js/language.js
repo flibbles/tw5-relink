@@ -30,7 +30,7 @@ exports.log = {
 	"attribute": "Renaming '<<from>>' to '<<to>>' in <<<element>> <<attribute>> /> attribute of tiddler '<<tiddler>>'",
 	"attribute-placeholder": "Renaming '<<from>>' to '<<to>>' in <<<element>> <<attribute>> /> attribute of tiddler '<<tiddler>>' %cby creating placeholder macros",
 	"field": "Renaming '<<from>>' to '<<to>>' in <<field>> of tiddler '<<tiddler>>'",
-	"import": "Renaming '<<from>>' to '<<to>>' in \\import filter operand of tiddler '<<tiddler>>'",
+	"import": "Renaming '<<from>>' to '<<to>>' in \\import filter of tiddler '<<tiddler>>'",
 	"macrodef": "Renaming '<<from>>' to '<<to>>' in <<macro>> definition of tiddler '<<tiddler>>'",
 	"prettylink": "Renaming '<<from>>' to '<<to>>' in prettylink of tiddler '<<tiddler>>'",
 	"prettylink-placeholder": "Renaming '<<from>>' to '<<to>>' in prettylink of tiddler '<<tiddler>>' %cby creating placeholder macros",

@@ -114,7 +114,9 @@ it('import pragma', function() {
 		w.addTiddler(utils.operatorConf("title"));
 		return w;
 	};
-	testText("\\import [title[from here]]\nstuff.", {wiki: wiki()});
+	var log = [];
+	testText("\\import [title[from here]]\nstuff.",{wiki: wiki(),log: log});
+	expect(log).toEqual(["Renaming 'from here' to 'to there' in \\import filter of tiddler 'test'"]);
 	testText("\\import [title[from here]]\n\n\nstuff.", {wiki: wiki()});
 	testText("\\import     [title[from here]]   \nstuff.", {wiki: wiki()});
 	testText("\\import [[from here]]\r\nstuff.", {wiki: wiki()});
