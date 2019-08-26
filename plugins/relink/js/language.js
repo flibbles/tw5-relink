@@ -33,7 +33,8 @@ exports.log = {
 	"import": "Renaming '<<from>>' to '<<to>>' in \\import filter of tiddler '<<tiddler>>'",
 	"macrodef": "Renaming '<<from>>' to '<<to>>' in <<macro>> definition of tiddler '<<tiddler>>'",
 	"prettylink": "Renaming '<<from>>' to '<<to>>' in prettylink of tiddler '<<tiddler>>'",
-	"prettylink-placeholder": "Renaming '<<from>>' to '<<to>>' in prettylink of tiddler '<<tiddler>>' %cby creating placeholder macros",
+	"prettylink-placeholder": "Renaming '<<from>>' to '<<to>>' in prettylink of tiddler '<<tiddler>>' %cby converting it into a widget and creating placeholder macros",
+	"prettylink-widget": "Renaming '<<from>>' to '<<to>>' in prettylink of tiddler '<<tiddler>>' %cby converting it into a widget",
 	"transclude": "Renaming '<<from>>' to '<<to>>' in transclusion of tiddler '<<tiddler>>'",
 	"wikilink": "Renaming '<<from>>' to '<<to>>' in CamelCase link of tiddler '<<tiddler>>'",
 	"wikilink-pretty": "Renaming '<<from>>' to '<<to>>' in CamelCase link of tiddler '<<tiddler>>' %cby converting it into a prettylink"

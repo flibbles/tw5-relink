@@ -67,18 +67,33 @@ it('prettylinks', function() {
 
 	// Tricky renames
 	var macro = utils.placeholder;
-	function tricky(to, caption) {
-		log = [];
-		caption = caption ? caption+"|" : "";
-		var expected = macro(1,to)
-		             + macro("pretty-1", `[[${caption}$(relink-1)$]]`)
-		             + "Link to <<relink-pretty-1>>.";
-		testText(`Link to [[${caption}from here]].`,expected, {to: to, log: log});
-	};
-	tricky("to [bracks]");
-	expect(log).toEqual(["%cRenaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test' %cby creating placeholder macros"]);
-	tricky("to [bracks]", "caption");
-	tricky("to [[brackets]] here");
+	// single bracket on the end can disqualify prettylinks
+	log = [];
+	testText("Link to [[caption|from here]].",
+	         "Link to <$link to='to [bracks]'>caption</$link>.",
+	         {to: "to [bracks]", log: log});
+	expect(log).toEqual(["%cRenaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test' %cby converting it into a widget"]);
+	// double brackets in middle can also disqualify prettylinks
+	testText("Link to [[caption|from here]].",
+	         "Link to <$link to='bracks [[in]] middle'>caption</$link>.",
+	         {to: "bracks [[in]] middle"});
+	// without a caption, we have to go straight to placeholders weird,
+	// or we might desync the link with its caption with later name changes.
+	log = [];
+	testText("Link to [[from here]].",
+	         macro(1, "to [bracks]") +
+	         "Link to <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link>.",
+	         {to: "to [bracks]", log: log});
+	expect(log).toEqual(["%cRenaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test' %cby converting it into a widget and creating placeholder macros"]);
+	// We also have to go to to placeholders if title doesn't work for
+	// prettylinks or widgets.
+	log = [];
+	var to = 'Has apost\' [[bracks]] and "quotes"';
+	testText("Link to [[caption|from here]].",
+	         macro(1, to) +
+	         "Link to <$link to=<<relink-1>>>caption</$link>.",
+	         {to: to, log: log});
+	expect(log).toEqual(["%cRenaming 'from here' to '"+to+"' in prettylink of tiddler 'test' %cby converting it into a widget and creating placeholder macros"]);
 });
 
 it('wikilinks', function() {

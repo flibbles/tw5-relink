@@ -30,11 +30,14 @@ exports['prettylink'] = function(tiddler, text, fromTitle, toTitle, options) {
 		log("prettylink", logArguments);
 		return prettyLink(toTitle, caption);
 	} else {
-		log("prettylink-placeholder", logArguments);
-		var ph = this.parser.getPlaceholderFor(toTitle);
-		var link = prettyLink("$("+ph+")$", caption);
-		var macro = this.parser.getPlaceholderFor(link, 'pretty');
-		return "<<" + macro + ">>";
+		if (caption) {
+			log("prettylink-widget", logArguments);
+			return `<$link to='${toTitle}'>${caption}</$link>`;
+		} else {
+			log("prettylink-placeholder", logArguments);
+			var ph = this.parser.getPlaceholderFor(toTitle);
+			return `<$link to=<<${ph}>>><$text text=<<${ph}>>/></$link>`;
+		}
 	}
 };
 
