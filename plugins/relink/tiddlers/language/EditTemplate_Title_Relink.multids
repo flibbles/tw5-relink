@@ -1,3 +1,0 @@
-title: $:/language/EditTemplate/Title/Relink/
-
-Prompt: Use //Relink// to update ''<$text text=<<fromTitle>>/>'' to ''<$text text=<<toTitle>>/>'' across all other tiddlers

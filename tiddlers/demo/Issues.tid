@@ -13,3 +13,4 @@ These are issues that I'm working to correct as soon as I can, but Relink handle
 * If `\define relink-??()` is encountered after pragmas should no longer be parsed, this is still relinked if its title matches the fromTitle. I'm not actually sure I should prevent this. It's a weird use case, but I think the user will still probably want it replaced.
 * Relink should respect `\rules` pragma. It actually might already, but I need to test this.
 * If an attribute contains a filter which cannot be renamed in place, Relink probably muffs up creating a placeholder macro. Gotta test.
+* Relink should list the correct tiddlers to be updated in the Title notification. Right now, it's using backlink. It'll probably need its own filter.
