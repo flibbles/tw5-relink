@@ -27,7 +27,7 @@ exports['prettylink'] = function(tiddler, text, fromTitle, toTitle, options) {
 		to: toTitle,
 		tiddler: tiddler.fields.title
 	};
-	if (isSafe(toTitle)) {
+	if (utils.canBePretty(toTitle)) {
 		log("prettylink", logArguments);
 		return prettyLink(toTitle, caption);
 	} else if (caption === undefined) {

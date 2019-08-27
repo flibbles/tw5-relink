@@ -12,6 +12,7 @@ but not:
 \*/
 
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
+var utils = require("./utils.js");
 
 exports['wikilink'] = function(tiddler, text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
@@ -24,11 +25,14 @@ exports['wikilink'] = function(tiddler, text, fromTitle, toTitle, options) {
 		if (toTitle.match(this.matchRegExp) && toTitle[0] !== '~') {
 			log("wikilink", logArguments);
 			return toTitle;
-		} else {
+		} else if (utils.canBePretty(toTitle)) {
 			log("wikilink-pretty", logArguments);
 			return "[[" + toTitle + "]]";
+		} else {
+			var ph = this.parser.getPlaceholderFor(toTitle);
+			log("wikilink-placeholder", logArguments);
+			return `<$link to=<<${ph}>>><$text text=<<${ph}>>/></$link>`;
 		}
 	}
 	return undefined;
 };
-

@@ -37,5 +37,6 @@ exports.log = {
 	"prettylink-widget": "Renaming '<<from>>' to '<<to>>' in prettylink of tiddler '<<tiddler>>' %cby converting it into a widget",
 	"transclude": "Renaming '<<from>>' to '<<to>>' in transclusion of tiddler '<<tiddler>>'",
 	"wikilink": "Renaming '<<from>>' to '<<to>>' in CamelCase link of tiddler '<<tiddler>>'",
+	"wikilink-placeholder": "Renaming '<<from>>' to '<<to>>' in CamelCase link of tiddler '<<tiddler>>' %cby converting it into a widget and creating placeholder macros",
 	"wikilink-pretty": "Renaming '<<from>>' to '<<to>>' in CamelCase link of tiddler '<<tiddler>>' %cby converting it into a prettylink"
 };

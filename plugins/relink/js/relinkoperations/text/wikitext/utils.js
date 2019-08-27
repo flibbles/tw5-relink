@@ -35,3 +35,8 @@ exports.wrapAttributeValue = function(value, preference) {
 	return undefined;
 };
 
+/**Return true if value can be used inside a prettylink.
+ */
+exports.canBePretty = function(value) {
+	return value.indexOf("]]") < 0 && value[value.length-1] !== ']';
+};
