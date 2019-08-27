@@ -49,13 +49,33 @@ it('handles having no rules at all', function() {
 it('handles managed rules inside unmanaged rules', function() {
 	testText("List\n\n* [[from here]]\n* Item\n");
 	testText("''[[from here]]''");
-	testText("<!--\n\n[[from here]]-->", {ignored: true});
+});
+
+it('comments', function() {
+	testText("<!--[[from here]]-->", {ignored: true});
+	testText("<!--\n\n[[from here]]\n\n-->", {ignored: true});
+
+	var inline = "Inline <!-- [[from here]] --> inline";
+	var block = "<!--\n\n[[from here]]\n\n-->";
+	// TODO: This commented-out test should work. Unfortunately, it
+	// requires the WikiRelinker to process rule categories
+	// (inline, block, pragma) separately, and at appropriate times.
+	// This would basically require rewriting the WikiParser. The
+	// alternative is to get Jeremy to make a few small changes to the
+	// WikiParser which would allow its behavior to be more easily
+	// modified through inheritance.
+	//testText("\\rules except commentinline\n"+inline);
+	testText("\\rules except commentblock\n"+inline, {ignored: true});
+	testText("\\rules except commentinline\n"+block, {ignored: true});
+	testText("\\rules except commentblock\n"+block, {ignored: true});
+	testText("\\rules except commentinline commentblock\n"+block);
 });
 
 it('prettylinks', function() {
 	var log = [];
 	testText("Link to [[from here]].", {log: log});
 	expect(log).toEqual(["Renaming 'from here' to 'to there' in prettylink of tiddler 'test'"]);
+	testText("\\rules except prettylink\nLink to [[from here]].", {ignored: true});
 	testText("Link to [[description|from here]].");
 	testText("Link to [[weird]desc|from here]].");
 	testText("Link to [[it is from here|from here]].", "Link to [[it is from here|to there]].");
@@ -139,6 +159,7 @@ it('import pragma', function() {
 	var log = [];
 	testText("\\import [title[from here]]\nstuff.",{wiki: wiki(),log: log});
 	expect(log).toEqual(["Renaming 'from here' to 'to there' in \\import filter of tiddler 'test'"]);
+	testText("\\rules except prettylink\n\\import [[from here]]\nstuff.", {ignored: true});
 	testText("\\import [title[from here]]\n\n\nstuff.", {wiki: wiki()});
 	testText("\\import     [title[from here]]   \nstuff.", {wiki: wiki()});
 	testText("\\import [[from here]]\r\nstuff.", {wiki: wiki()});
@@ -146,7 +167,7 @@ it('import pragma', function() {
 	         "\\import [[to there]]\nstuff.", {from: "from", wiki: wiki()});
 });
 
-it('transcludes', function() {
+it('transclude', function() {
 	var log = [];
 	testText("{{from here}}", {log: log})
 	expect(log).toEqual(["Renaming 'from here' to 'to there' in transclusion of tiddler 'test'"]);
@@ -160,6 +181,14 @@ it('transcludes', function() {
 	testText("Before {{  from here  ||  from here  }} After")
 	testText("Before {{||  from here  }} After")
 	testText("{{elsewhere}}", {ignored: true})
+});
+
+it('transclude obeys rules', function() {
+	testText("\\rules except transcludeinline\nInline {{from here}} inline", {ignored: true});
+	testText("\\rules except transcludeblock\nInline {{from here}} inline");
+	testText("\\rules except transcludeinline\n{{from here}}");
+	testText("\\rules except transcludeblock\n{{from here}}");
+	testText("\\rules except transcludeinline transcludeblock\n{{from here}}", {ignored: true});
 });
 
 });

@@ -18,7 +18,7 @@ $tw.modules.applyMethods('relinkwikitextrule', rules);
 function WikiRelinker(text, toTitle, options) {
 	WikiParser.call(this, null, text, options);
 	this.toTitle = toTitle;
-	this.inlineRules = this.inlineRules.concat(this.pragmaRules);
+	this.inlineRules = this.blockRules.concat(this.pragmaRules, this.inlineRules);
 	// We work through relinkRules so we can change it later.
 	// relinkRules is inlineRules so it gets touched up by amendRules().
 	this.relinkRules = this.inlineRules;
