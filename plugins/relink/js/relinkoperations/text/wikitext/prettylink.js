@@ -10,10 +10,11 @@ Handles replacement in wiki text inline rules, like,
 \*/
 
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
+var utils = require("./utils.js");
 
 exports['prettylink'] = function(tiddler, text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
-	var caption, m = this.match;
+	var caption, quoted, m = this.match;
 	if (m[2] === fromTitle) {
 		// format is [[caption|MyTiddler]]
 		caption = m[1];
@@ -29,15 +30,20 @@ exports['prettylink'] = function(tiddler, text, fromTitle, toTitle, options) {
 	if (isSafe(toTitle)) {
 		log("prettylink", logArguments);
 		return prettyLink(toTitle, caption);
+	} else if (caption === undefined) {
+		// If we don't have a caption, we have to resort to placeholders
+		// anyway to prevent link/caption desync from later relinks.
+		// It doesn't matter whether the toTitle is quotable
+		log("prettylink-placeholder", logArguments);
+		var ph = this.parser.getPlaceholderFor(toTitle);
+		return `<$link to=<<${ph}>>><$text text=<<${ph}>>/></$link>`;
+	} else if (quoted = utils.wrapAttributeValue(toTitle)) {
+		log("prettylink-widget", logArguments);
+		return `<$link to=${quoted}>${caption}</$link>`;
 	} else {
-		if (caption) {
-			log("prettylink-widget", logArguments);
-			return `<$link to='${toTitle}'>${caption}</$link>`;
-		} else {
-			log("prettylink-placeholder", logArguments);
-			var ph = this.parser.getPlaceholderFor(toTitle);
-			return `<$link to=<<${ph}>>><$text text=<<${ph}>>/></$link>`;
-		}
+		log("prettylink-placeholder", logArguments);
+		var ph = this.parser.getPlaceholderFor(toTitle);
+		return `<$link to=<<${ph}>>>${caption}</$link>`;
 	}
 };
 
