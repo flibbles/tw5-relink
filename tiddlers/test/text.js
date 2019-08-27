@@ -121,28 +121,4 @@ it('import pragma', function() {
 	         "\\import [[to there]]\nstuff.", {from: "from", wiki: wiki()});
 });
 
-it('transclude', function() {
-	var log = [];
-	testText("{{from here}}", {log: log})
-	expect(log).toEqual(["Renaming 'from here' to 'to there' in transclusion of tiddler 'test'"]);
-	testText("Before {{from here}} After")
-	testText("Before {{from here||template}} After")
-	testText("Before {{title||from here}} After")
-	testText("Before {{||from here}} After")
-	testText("Before {{from here||from here}} After")
-	testText("Before\n\n{{from here||template}}\n\nAfter")
-	testText("Before {{  from here  }} After")
-	testText("Before {{  from here  ||  from here  }} After")
-	testText("Before {{||  from here  }} After")
-	testText("{{elsewhere}}", {ignored: true})
-});
-
-it('transclude obeys rules', function() {
-	testText("\\rules except transcludeinline\nInline {{from here}} inline", {ignored: true});
-	testText("\\rules except transcludeblock\nInline {{from here}} inline");
-	testText("\\rules except transcludeinline\n{{from here}}");
-	testText("\\rules except transcludeblock\n{{from here}}");
-	testText("\\rules except transcludeinline transcludeblock\n{{from here}}", {ignored: true});
-});
-
 });
