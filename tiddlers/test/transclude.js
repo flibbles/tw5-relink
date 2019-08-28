@@ -47,6 +47,11 @@ it('transcludes', function() {
 	testText("Before {{from here##index||template}} After");
 	testText("Before {{title!!field||from here}} After");
 	testText("Before {{title##index||from here}} After");
+	testText("{{from here}}", {to: "to!there"});
+	testText("{{from here}}", {to: "to#there"});
+	//Templates can have ## and !! even though the title cannot
+	testText("{{title||from here}}", {to: "to!!there"});
+	testText("{{title||from here}}", {to: "to##there"});
 });
 
 it('preserves pretty whitespace', function() {
@@ -66,6 +71,8 @@ it('rightly judges unpretty', function() {
 		         {to: to});
 	};
 	testUnpretty("has { curly");
+	testUnpretty("has !! bangs");
+	testUnpretty("has ## hashes");
 	testUnpretty("other } curly");
 	testUnpretty("bar | bar");
 });

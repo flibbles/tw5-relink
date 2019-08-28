@@ -27,7 +27,9 @@ function transclude(tiddler, text, fromTitle, toTitle, options) {
 	var trimmedRef = $tw.utils.trim(reference);
 	var ref = $tw.utils.parseTextReference(trimmedRef);
 	// This block takes care of 99% of all cases
-	if (canBePretty(toTitle)) {
+	if (canBePretty(toTitle) &&
+		// title part has one extra restriction
+	    (ref.title !== fromTitle || !doubleBangOrHash(toTitle))) {
 		var modified = false;
 		if (ref.title === fromTitle) {
 			modified = true;
@@ -100,6 +102,10 @@ function transclude(tiddler, text, fromTitle, toTitle, options) {
 function canBePretty(value) {
 	return value.indexOf('}') < 0 && value.indexOf('{') < 0 && value.indexOf('|') < 0;
 };
+
+function doubleBangOrHash(value) {
+	return value.indexOf("!!") >= 0 || value.indexOf("##") >= 0;
+}
 
 /**Returns attributes for a transclude widget.
  * only field or index should be used, not both, but both will return
