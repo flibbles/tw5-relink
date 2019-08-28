@@ -1,4 +1,5 @@
 title: BilboBaggins
+weapon: Sting
 
 \import Frodo
 
@@ -14,4 +15,4 @@ This tiddler is used to test CamelCase wikilinks.
 
 <<rename Glóin>>
 
-<<rename 'Gandalf the Gray'>>
+<<rename 'Gandalf the Gray' "staff">>

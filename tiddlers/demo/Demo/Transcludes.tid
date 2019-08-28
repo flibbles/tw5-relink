@@ -4,3 +4,5 @@ description: Relink handles both the tiddler and the template tiddler. If the ne
 {{Frodo||Templates/Hello}}
 
 {{Frodo}}
+
+Weapon of choice: {{Frodo!!weapon}}
