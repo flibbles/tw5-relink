@@ -99,6 +99,14 @@ it('ignores unrecognized custom field settings', function() {
 	testField("ignore", {type: "bizarre", ignored: true, from: "ignore"});
 });
 
+it('removes unnecessary brackets in custom list', function() {
+	// The decision to remove brackets may be controversial, but since
+	// list and tag automatically remove brackets on their own, I might
+	// as well be consistent.
+	testField("A [[from here]] B", "A to B", {type: "list", to: "to"});
+	testField("A [[from]] B", "A to B",{type:"list", from:"from", to:"to"});
+});
+
 /**This is legacy support. The 'title' field type used to be called 'field'
  * But field was unhelpful. What's it mean when a field is set to 'field'?
  */

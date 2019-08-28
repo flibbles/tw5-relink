@@ -1,4 +1,5 @@
 title: $:/config/flibbles/relink/
 
 fields/example-filter: filter
+fields/example-list: list
 fields/example-single: title

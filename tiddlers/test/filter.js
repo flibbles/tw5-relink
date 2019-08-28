@@ -37,7 +37,7 @@ it('nonquotes', function() {
 	testFilter("A from B", "A to B", {from: 'from', to: 'to'});
 });
 
-it('keeps brackets', function() {
+it('keeps brackets if unnecessarily there', function() {
 	testFilter("A [[from]] B", "A [[to]] B", {from: 'from', to: 'to'});
 });
 
