@@ -48,6 +48,6 @@ projects.
 
 ## How to test
 
-Make sure you have `tiddlywiki` available on your PATH. From the project root directory, type:
+Make sure you have `tiddlywiki` available on your PATH. Then from the project root directory, type:
 
-Then run: `tiddlywiki --build test`
+`tiddlywiki --build test`
