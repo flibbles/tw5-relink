@@ -15,7 +15,7 @@ var utils = require("./utils.js");
 
 function transclude(tiddler, text, fromTitle, toTitle, options) {
 	var m = this.match,
-		title = m[1],
+		reference = m[1],
 		template = m[2],
 		quoted,
 		logArguments = {
@@ -24,13 +24,17 @@ function transclude(tiddler, text, fromTitle, toTitle, options) {
 			tiddler: tiddler.fields.title
 		};
 	this.parser.pos = this.matchRegExp.lastIndex;
+	var trimmedRef = $tw.utils.trim(reference);
+	var ref = $tw.utils.parseTextReference(trimmedRef);
+	// This block takes care of 99% of all cases
 	if (canBePretty(toTitle)) {
-		// This block takes care of 99% of all cases
 		var modified = false;
-		if ($tw.utils.trim(title) === fromTitle) {
+		if (ref.title === fromTitle) {
 			modified = true;
+			ref.title = toTitle;
+			var refString = referenceToString(ref);
 			// preserve user's whitespace
-			title = title.replace(fromTitle, toTitle);
+			reference = reference.replace(trimmedRef, refString);
 		}
 		if ($tw.utils.trim(template) === fromTitle) {
 			modified = true;
@@ -39,11 +43,12 @@ function transclude(tiddler, text, fromTitle, toTitle, options) {
 		}
 		if (modified) {
 			log("transclude", logArguments);
-			return prettyTransclude(title, template);
+			return prettyTransclude(reference, template);
 		}
 		return undefined;
 	}
-	if ($tw.utils.trim(title) === fromTitle) {
+	// Now for the 1%...
+	if (ref.title === fromTitle) {
 		var resultTitle = utils.wrapAttributeValue(toTitle);
 		if (resultTitle === undefined) {
 			var ph = this.parser.getPlaceholderFor(toTitle);
@@ -55,9 +60,11 @@ function transclude(tiddler, text, fromTitle, toTitle, options) {
 		if ($tw.utils.trim(template) === fromTitle) {
 			// Now for this bizarre-ass use-case, where both the
 			// title and template are being replaced.
-			return `<$tiddler tiddler=${resultTitle}><$transclude tiddler=${resultTitle}/></$tiddler>`;
+			var attrs = transcludeAttributes.call(this, ref.field, ref.index);
+			return `<$tiddler tiddler=${resultTitle}><$transclude tiddler=${resultTitle}${attrs}/></$tiddler>`;
 		} else {
-			return `<$tiddler tiddler=${resultTitle}>${prettyTransclude(undefined, template)}</$tiddler>`;
+			ref.title = undefined;
+			return `<$tiddler tiddler=${resultTitle}>${prettyTransclude(ref, template)}</$tiddler>`;
 		}
 	}
 	if ($tw.utils.trim(template) === fromTitle) {
@@ -69,17 +76,18 @@ function transclude(tiddler, text, fromTitle, toTitle, options) {
 			resultTemplate = "<<"+ph+">>";
 			message = "transclude-placeholder";
 		}
-		if (title) {
-			var resultTitle = utils.wrapAttributeValue(title);
+		if (ref.title) {
+			var resultTitle = utils.wrapAttributeValue(ref.title);
 			if (resultTitle === undefined) {
 				// This is one of the rare cases were we need
 				// to placeholder a title OTHER than the one
 				// we're changing.
-				var ph = this.parser.getPlaceholderFor(title);
+				var ph = this.parser.getPlaceholderFor(ref.title);
 				resultTitle = "<<"+ph+">>";
 				message = "transclude-placeholder";
 			}
-			rtn = `<$tiddler tiddler=${resultTitle}><$transclude tiddler=${resultTemplate}/></$tiddler>`;
+			var attrs = transcludeAttributes.call(this, ref.field, ref.index);
+			rtn = `<$tiddler tiddler=${resultTitle}><$transclude tiddler=${resultTemplate}${attrs}/></$tiddler>`;
 		} else {
 			rtn = `<$transclude tiddler=${resultTemplate}/>`;
 		}
@@ -93,7 +101,33 @@ function canBePretty(value) {
 	return value.indexOf('}') < 0 && value.indexOf('{') < 0 && value.indexOf('|') < 0;
 };
 
+/**Returns attributes for a transclude widget.
+ * only field or index should be used, not both, but both will return
+ * the intuitive (albeit useless) result.
+ */
+function transcludeAttributes(field, index) {
+	return rtn = [
+		wrapAttribute.call(this, "field", field),
+		wrapAttribute.call(this, "index", index)
+	].join('');
+};
+
+function wrapAttribute(name, value) {
+	if (value) {
+		var wrappedValue = utils.wrapAttributeValue(value, "'");
+		if (wrappedValue === undefined) {
+			var ph = this.parser.getPlaceholderFor(value, name);
+			wrappedValue = "<<" + ph + ">>";
+		}
+		return ` ${name}=${wrappedValue}`;
+	}
+	return '';
+};
+
 function prettyTransclude(textReference, template) {
+	if (typeof textReference !== "string") {
+		textReference = referenceToString(textReference);
+	}
 	if (!textReference) {
 		textReference = '';
 	}
@@ -102,6 +136,16 @@ function prettyTransclude(textReference, template) {
 	} else {
 		return `{{${textReference}}}`;
 	}
+};
+
+function referenceToString(textReference) {
+	var title = textReference.title || '';
+	if (textReference.field) {
+		return title + "!!" + textReference.field;
+	} else if (textReference.index) {
+		return title + "##" + textReference.index;
+	}
+	return title;
 };
 
 exports['transcludeinline'] = exports['transcludeblock'] = transclude;
