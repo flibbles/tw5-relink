@@ -55,6 +55,11 @@ function relinkTiddler(fromTitle, toTitle, options) {
 					if (e instanceof CannotRelinkError) {
 						failures.push(title);
 					} else {
+						// Should we test for instanceof Error instead?: yes
+						// Does that work in the testing environment?: no
+						if (e.message) {
+							e.message = e.message + "\nWhen relinking '" + title + "'";
+						}
 						throw e;
 					}
 				}

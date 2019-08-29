@@ -53,6 +53,32 @@ it("touches eligible tiddlers", function() {
 	expect($tw.utils.hop(t.fields, 'modified')).toBe(true);
 });
 
+it("handles errors with at least some grace", function() {
+	function thrower(exception, expected) {
+		var oldParseStringArray = $tw.utils.parseStringArray;
+		var wiki = new $tw.Wiki();
+		var e;
+		wiki.addTiddlers([
+			{title: "tiddlertest", test: "A"},
+			fieldConf("test", "list")
+		]);
+		try {
+			$tw.utils.parseStringArray = function() {
+				throw new Error(exception);
+			};
+			wiki.renameTiddler("anything","something",{wiki: wiki});
+		} catch (thrown) {
+			e = thrown;
+		} finally {
+			$tw.utils.parseStringArray = oldParseStringArray;
+		}
+		expect(e).toBeDefined();
+		expect(e.message).toEqual(expected);
+	};
+	//thrower("Ping", "Ping\nError relinking 'tiddlertest'");
+	thrower('Boom', "Boom\nWhen relinking 'tiddlertest'");
+});
+
 it('still relinks tags', function() {
 	var log = [];
 	var t = testTags("[[from here]] another",
