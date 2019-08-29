@@ -5,6 +5,8 @@ Utilities for test.
 
 \*/
 
+var language = require('$:/plugins/flibbles/relink/js/language.js');
+
 /**Most common test method.
  * Given a list of fields, it creates a test tiddler, and then performs a
  * rename of a dummy tiddler (default: "from here" -> "to there") and
@@ -25,13 +27,16 @@ exports.relink = function(fields, options) {
 	var from = options.from || "from here";
 	var to = options.to || "to there";
 	wiki.addTiddler({title: from});
-	options.log.push.apply(options.log,exports.collectLogs(function() {
-		var tiddler = new $tw.Tiddler({title: "test"}, fields);
-		var title = tiddler.fields.title;
-		wiki.addTiddler(tiddler);
-		wiki.renameTiddler(from, to, options);
-		relinkedTiddler = wiki.getTiddler(title);
-	}, options));
+	var logs = exports.collectLogs(function() {
+		options.fails = exports.collectFailures(function() {
+			var tiddler = new $tw.Tiddler({title: "test"}, fields);
+			var title = tiddler.fields.title;
+			wiki.addTiddler(tiddler);
+			wiki.renameTiddler(from, to, options);
+			relinkedTiddler = wiki.getTiddler(title);
+		});
+	}, options);
+	options.log.push.apply(options.log, logs);
 	return relinkedTiddler;
 };
 
@@ -80,6 +85,18 @@ exports.collectLogs = function(scope, options) {
 	return logMessages;
 };
 
+exports.collectFailures = function(scope) {
+	var oldReport = language.reportFailures,
+		failures = [];
+	language.reportFailures= function (list) { failures.push.apply(failures, list); };
+	try {
+		scope.call();
+	} finally {
+		language.reportFailures = oldReport;
+	}
+	return failures;
+};
+
 /**Returns the placeholder pragma
  *
  * There are times when Relink can't relink in place, so it has to resort
@@ -98,4 +115,4 @@ exports.operatorConf = function(operator, value) {
 	}
 	var prefix = "$:/config/flibbles/relink/operators/";
 	return {title: prefix + operator, text: value};
-}
+};

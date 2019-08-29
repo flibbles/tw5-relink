@@ -8,8 +8,10 @@ var utils = require("test/utils");
 
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
+	var failCount = options.fails || 0;
 	var t = utils.relink({text: text}, options);
 	expect(t.fields.text).toEqual(expected);
+	expect(options.fails.length).toEqual(failCount, "Incorrect number of failures");
 };
 
 describe("text", function() {

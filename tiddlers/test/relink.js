@@ -21,7 +21,11 @@ function testField(value, expected, options) {
 	}
 	options.wiki.addTiddler(fieldConf(field, type));
 	var t = relink({[field]: value}, options);
-	expect(t.fields[field].toString()).toEqual(expected.toString());
+	var output = t.fields[field];
+	if (typeof output === "object") {
+		output = Array.prototype.slice.call(output);
+	}
+	expect(output).toEqual(expected);
 	return t;
 };
 
@@ -61,6 +65,48 @@ it('still relinks lists', function() {
 	var t = testList("[[from here]] another",
 	                 ['to there', 'another'], {log: log});
 	expect(log).toEqual(["Renaming 'from here' to 'to there' in list field of tiddler 'test'"]);
+});
+
+it('lists work with strange titles', function() {
+	function works(title, wrapped) {
+		//var expected = wrapped ? "A [["+title+"]] B" : "A "+title+" B";
+		var expected = ["A", title, "B"];
+		testList("A [[from here]] B", expected, {to: title});
+	};
+	works("weird]]");
+	works("weird ]]");
+	works("weird ]]");
+	works("weird[[");
+	works("weird [[");
+	works("X[[Z]]Y");
+	works("X [[ Z ]]Y", true);
+
+	var thisFuckingValue = "weird ]]\xA0value";
+	works(thisFuckingValue);
+	// Just got to test that the crazy value is actually something
+	// Tiddlywiki supports.  Seriously, when do these come up?
+	var list = ["A", thisFuckingValue, "A tiddler", "B"];
+	var strList = $tw.utils.stringifyList(list);
+	var output = $tw.utils.parseStringArray(strList);
+	expect(output).toEqual(list);
+});
+
+it('lists recognize impossibly strange titles', function() {
+	function fails(title) {
+		var options = {to: title, ignore: true,
+		               field: "example", type: "list"};
+		var list = "A [[from here]] B";
+		testField(list, list, options);
+		expect(options.fails.length).toEqual(1);
+	};
+	fails("X and]] Y");
+	fails("]] X");
+});
+
+it("lists don't fail when toTitle not in list", function() {
+	var options = {to: "X and]] Y", field: "list", type: "list"};
+	testField("A B C", ["A", "B", "C"], options);
+	expect(options.fails.length).toEqual(0);
 });
 
 /** I have chosen not to respect dontRenameInTags and dontRenameInLists

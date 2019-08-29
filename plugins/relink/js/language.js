@@ -26,6 +26,13 @@ exports.logRelink = function(message, args) {
 	}
 };
 
+exports.failureAlert = "Relink was unable to update the following tiddlers due to the complexity of the title:";
+
+exports.reportFailures = function(failureList) {
+	var reportList = failureList.map(function(f) {return "\n   " + f});
+	alert(exports.failureAlert + reportList);
+};
+
 exports.log = {
 	"attribute": "Renaming '<<from>>' to '<<to>>' in <<<element>> <<attribute>> /> attribute of tiddler '<<tiddler>>'",
 	"attribute-placeholder": "Renaming '<<from>>' to '<<to>>' in <<<element>> <<attribute>> /> attribute of tiddler '<<tiddler>>' %cby creating placeholder macros",

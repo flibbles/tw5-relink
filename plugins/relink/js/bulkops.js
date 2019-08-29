@@ -13,6 +13,9 @@ way to ensure this runs after the old relinkTiddler method is applied.
 /*global $tw: false */
 "use strict";
 
+var language = require('$:/plugins/flibbles/relink/js/language.js');
+var CannotRelinkError = require('$:/plugins/flibbles/relink/js/CannotRelinkError');
+
 exports.name = "redefine-relinkTiddler";
 exports.synchronous = true;
 // load-modules is when wikimethods are applied in
@@ -31,23 +34,35 @@ function relinkTiddler(fromTitle, toTitle, options) {
 	toTitle = (toTitle || "").trim();
 	options = options || {};
 	options.wiki = this;
+	var failures = [];
 	if(fromTitle && toTitle && fromTitle !== toTitle) {
 		this.each((tiddler,title) => {
 			var type = tiddler.fields.type || "";
 			// Don't touch plugins or JavaScript modules
 			if(!tiddler.fields["plugin-type"] && type !== "application/javascript") {
-				var changes = {};
-				for (var operation in relinkOperations) {
-					relinkOperations[operation](tiddler, fromTitle, toTitle, changes, options);
-				}
-				// If any fields changed, update tiddler
-				if(Object.keys(changes).length > 0) {
-					var newTiddler = new $tw.Tiddler(tiddler,changes,this.getModificationFields())
-					newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
-					this.addTiddler(newTiddler);
+				try {
+					var changes = {};
+					for (var operation in relinkOperations) {
+						relinkOperations[operation](tiddler, fromTitle, toTitle, changes, options);
+					}
+					// If any fields changed, update tiddler
+					if(Object.keys(changes).length > 0) {
+						var newTiddler = new $tw.Tiddler(tiddler,changes,this.getModificationFields())
+						newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
+						this.addTiddler(newTiddler);
+					}
+				} catch (e) {
+					if (e instanceof CannotRelinkError) {
+						failures.push(title);
+					} else {
+						throw e;
+					}
 				}
 			}
 		});
+	}
+	if (failures.length > 0) {
+		language.reportFailures(failures);
 	}
 };
 
