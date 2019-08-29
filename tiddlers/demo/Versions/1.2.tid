@@ -6,3 +6,13 @@ created: 20190825193402541
 * Added support for ~WikiLinks
 * prettylinks can support more difficult renames, such as `tiddler with [[brackets]]`
 * Support for the `\import` pragma
+
+!! v1.2.1
+
+* Made logging consistent and more clear.
+* Demo site explains relink placeholders.
+* Prompt about tiddlers that won't be renamed when renaming tiddlers is now fixed, but a better fix is incoming.
+* Prettylinks and CamelCase links handle strange titles better
+* Transcludes handle field and indexes ( `{{tiddler!!field }}` ). It also handles edge cases better.
+* Lists will alert when they cannot relink, instead of bungling the operation
+* Better error handling

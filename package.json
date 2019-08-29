@@ -1,6 +1,6 @@
 {
   "name": "tw5-relink",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Relink - flexibility when relinking renamed tiddlers in Tiddlywiki5",
   "config": {
     "plugin_dir": "/usr/local/lib/node_modules/tiddlywiki/plugins/flibbles"
