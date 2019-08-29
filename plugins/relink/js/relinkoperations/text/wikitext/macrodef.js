@@ -10,7 +10,9 @@ that we may have previously install.
 
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 
-exports['macrodef'] = function(tiddler, text, fromTitle, toTitle, options) {
+exports.name = "macrodef";
+
+exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var m = this.match;
 	// This macro is not available should we need to make one.

@@ -8,10 +8,9 @@ ignore their contents.
 
 \*/
 
-function ruleHandler(tiddler, text, fromTitle, toTitle, options) {
+exports.name = ["commentinline", "commentblock"];
+
+exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	this.parser.pos = this.endMatchRegExp.lastIndex;
 	return undefined;
 };
-
-// I don't use block parsing, but I want to cover both just in case.
-exports['commentinline'] = exports['commentblock'] = ruleHandler;

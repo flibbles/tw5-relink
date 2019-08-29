@@ -13,7 +13,9 @@ This renames both the tiddler and the template field.
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var utils = require("./utils.js");
 
-function transclude(tiddler, text, fromTitle, toTitle, options) {
+exports.name = ['transcludeinline', 'transcludeblock'];
+
+exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	var m = this.match,
 		reference = m[1],
 		template = m[2],
@@ -62,7 +64,7 @@ function transclude(tiddler, text, fromTitle, toTitle, options) {
 		if ($tw.utils.trim(template) === fromTitle) {
 			// Now for this bizarre-ass use-case, where both the
 			// title and template are being replaced.
-			var attrs = transcludeAttributes.call(this, ref.field, ref.index);
+			var attrs = this.transcludeAttributes(ref.field, ref.index);
 			return `<$tiddler tiddler=${resultTitle}><$transclude tiddler=${resultTitle}${attrs}/></$tiddler>`;
 		} else {
 			ref.title = undefined;
@@ -88,7 +90,7 @@ function transclude(tiddler, text, fromTitle, toTitle, options) {
 				resultTitle = "<<"+ph+">>";
 				message = "transclude-placeholder";
 			}
-			var attrs = transcludeAttributes.call(this, ref.field, ref.index);
+			var attrs = this.transcludeAttributes(ref.field, ref.index);
 			rtn = `<$tiddler tiddler=${resultTitle}><$transclude tiddler=${resultTemplate}${attrs}/></$tiddler>`;
 		} else {
 			rtn = `<$transclude tiddler=${resultTemplate}/>`;
@@ -111,14 +113,14 @@ function doubleBangOrHash(value) {
  * only field or index should be used, not both, but both will return
  * the intuitive (albeit useless) result.
  */
-function transcludeAttributes(field, index) {
+exports.transcludeAttributes = function(field, index) {
 	return rtn = [
-		wrapAttribute.call(this, "field", field),
-		wrapAttribute.call(this, "index", index)
+		this.wrapAttribute("field", field),
+		this.wrapAttribute("index", index)
 	].join('');
 };
 
-function wrapAttribute(name, value) {
+exports.wrapAttribute = function(name, value) {
 	if (value) {
 		var wrappedValue = utils.wrapAttributeValue(value, "'");
 		if (wrappedValue === undefined) {
@@ -153,5 +155,3 @@ function referenceToString(textReference) {
 	}
 	return title;
 };
-
-exports['transcludeinline'] = exports['transcludeblock'] = transclude;

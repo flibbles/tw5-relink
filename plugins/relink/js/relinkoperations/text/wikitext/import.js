@@ -10,7 +10,9 @@ var settings = require("$:/plugins/flibbles/relink/js/settings.js");
 var log = require("$:/plugins/flibbles/relink/js/language.js").logRelink;
 var filterRelinker = settings.getRelinker('filter');
 
-exports['import'] = function(tiddler, text, fromTitle, toTitle, options) {
+exports.name = "import";
+
+exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	// In this one case, I'll let the parser parse out the filter and move
 	// the ptr.
 	var start = this.matchRegExp.lastIndex;

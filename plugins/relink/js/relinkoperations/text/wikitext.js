@@ -13,10 +13,30 @@ var type = 'text/vnd.tiddlywiki';
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
 
 var rules = Object.create(null);
-$tw.modules.applyMethods('relinkwikitextrule', rules);
+
+$tw.modules.forEachModuleOfType("relinkwikitextrule", function(title, exports) {
+	var names = exports.name;
+	if (typeof names === "string") {
+		names = [names];
+	}
+	for (var i = 0; i < names.length; i++) {
+		rules[names[i]] = exports;
+	}
+});
 
 function WikiRelinker(text, toTitle, options) {
 	WikiParser.call(this, null, text, options);
+	if (!this.relinkMethodsInjected) {
+		$tw.utils.each([this.pragmaRuleClasses, this.blockRuleClasses, this.inlineRuleClasses], function(classList) {
+			for (var name in classList) {
+				if (rules[name]) {
+					delete rules[name].name;
+					$tw.utils.extend(classList[name].prototype, rules[name]);
+				}
+			}
+		});
+		WikiRelinker.prototype.relinkMethodsInjected = true;
+	}
 	this.toTitle = toTitle;
 	this.inlineRules = this.blockRules.concat(this.pragmaRules, this.inlineRules);
 	// We work through relinkRules so we can change it later.
@@ -76,9 +96,8 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 		parser = new WikiRelinker(text, toTitle, options),
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
-		var name = matchingRule.rule.name;
-		if (rules[name]) {
-			var newSegment = rules[name].call(matchingRule.rule, tiddler, text, fromTitle, toTitle, options);
+		if (matchingRule.rule.relink) {
+			var newSegment = matchingRule.rule.relink(tiddler, text, fromTitle, toTitle, options);
 			if (newSegment !== undefined) {
 				builder.push(text.substring(buildIndex, matchingRule.matchIndex));
 				builder.push(newSegment);
