@@ -28,7 +28,7 @@ function testTextAndLog(text, toTitle, expected, but) {
 	expect(log).toEqual([msg]);
 };
 
-describe("prettylink", function() {
+describe("transcludes", function() {
 
 it('transcludes', function() {
 	var log = [];
