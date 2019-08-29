@@ -27,6 +27,18 @@ it('simple', function() {
 	var log = [];
 	testText("{{{[[from here]]}}}", {log: log});
 	expect(log).toEqual([logMessage("to there")]);
+	testText("{{{[[from here]]|tooltip}}}");
+	testText("{{{[[from here]]||Template}}}");
+	testText("{{{[[title]]||from here}}}");
+	testText("{{{[[from here]]|tooltip||Template}}}");
+	testText("{{{[[from here]]|tooltip||Template}}}.class.class");
+	testText("{{{[[from here]]|tooltip||Template}}width:40;}.class.class");
+});
+
+it('preserves pretty whitespace', function() {
+	testText("{{{   [[from here]]   }}}");
+	testText("{{{   [[from here]]   ||  Template  }}}");
+	testText("{{{   [[from here]]   ||  from here  }}}");
 });
 
 });

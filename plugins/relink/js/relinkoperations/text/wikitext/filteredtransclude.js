@@ -31,10 +31,40 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			tiddler: tiddler.fields.title
 		};
 	this.parser.pos = this.matchRegExp.lastIndex;
+	var modified = false;
+	if ($tw.utils.trim(template) === fromTitle) {
+		// preserves user-inputted whitespace
+		template = template.replace(fromTitle, toTitle);
+		modified = true;
+	}
 	var relinkedFilter = filterHandler(filter, fromTitle, toTitle, options);
 	if (relinkedFilter !== undefined) {
 		log("filteredtransclude", logArguments);
-		return text.replace(filter, relinkedFilter);
+		filter = relinkedFilter;
+		modified = true;
+	}
+	if (modified) {
+		return prettyFilteredTransclude(filter, tooltip, template, style, classes);
 	}
 	return undefined;
+};
+
+function prettyFilteredTransclude(filter, tooltip, template, style, classes) {
+	if (tooltip === undefined) {
+		tooltip = '';
+	} else {
+		tooltip = "|" + tooltip;
+	}
+	if (template === undefined) {
+		template = '';
+	} else {
+		template = "||" + template;
+	}
+	if (classes === undefined) {
+		classes = '';
+	} else {
+		classes = "." + classes;
+	}
+	style = style || '';
+	return `{{{${filter}${tooltip}${template}}}${style}}${classes}`;
 };
