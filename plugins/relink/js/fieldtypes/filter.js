@@ -82,7 +82,7 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 				p++;
 			}
 			if(match[2]) { // Opening square bracket
-				p =parseFilterOperation(relinker,fromTitle,toTitle,filterString,p,whitelist);
+				p =parseFilterOperation(relinker,fromTitle,toTitle,filterString,p,whitelist,options);
 			} else if(match[3] || match[4] || match[5] || match[6]) { // Double quoted string, single quoted string, or noquote
 				var preference = undefined;
 				if (match[3]) {
@@ -144,7 +144,7 @@ function wrapTitle(value, preference) {
 	return undefined;
 }
 
-function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whitelist) {
+function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whitelist, options) {
 	var nextBracketPos, operator;
 	// Skip the starting square bracket
 	if(filterString.charAt(p++) !== "[") {

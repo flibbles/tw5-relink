@@ -33,7 +33,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		} else {
 			var ph = this.parser.getPlaceholderFor(toTitle);
 			log("wikilink-placeholder", logArguments);
-			return `<$link to=${ph}><$text text=${ph}/></$link>`;
+			return `<$link to=<<${ph}>>><$text text=<<${ph}>>/></$link>`;
 		}
 	}
 	return undefined;

@@ -62,7 +62,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		var wrappedValue = utils.wrapAttributeValue(value, "'");
 		if (wrappedValue === undefined) {
 			var category = treatAsTitle ? undefined : name;
-			wrappedValue = parser.getPlaceholderFor(value,category);
+			wrappedValue = "<<"+parser.getPlaceholderFor(value,category)+">>";
 			message = "filteredtransclude-placeholder";
 		}
 		return ` ${name}=${wrappedValue}`;

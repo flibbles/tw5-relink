@@ -55,7 +55,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	if (ref.title === fromTitle) {
 		var resultTitle = utils.wrapAttributeValue(toTitle);
 		if (resultTitle === undefined) {
-			resultTitle = this.parser.getPlaceholderFor(toTitle);
+			resultTitle = "<<"+this.parser.getPlaceholderFor(toTitle)+">>";
 			log("transclude-placeholder", logArguments);
 		} else {
 			log("transclude-widget", logArguments);
@@ -75,7 +75,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		var message = "transclude-widget";
 		var rtn;
 		if (resultTemplate === undefined) {
-			resultTemplate = this.parser.getPlaceholderFor(toTitle);
+			resultTemplate = "<<"+this.parser.getPlaceholderFor(toTitle)+">>";
 			message = "transclude-placeholder";
 		}
 		if (ref.title) {
@@ -84,7 +84,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				// This is one of the rare cases were we need
 				// to placeholder a title OTHER than the one
 				// we're changing.
-				resultTitle = this.parser.getPlaceholderFor(ref.title);
+				resultTitle = "<<"+this.parser.getPlaceholderFor(ref.title)+">>";
 				message = "transclude-placeholder";
 			}
 			var attrs = this.transcludeAttributes(ref.field, ref.index);
@@ -121,7 +121,7 @@ function wrapAttribute(wikiRelinker, name, value) {
 	if (value) {
 		var wrappedValue = utils.wrapAttributeValue(value, "'");
 		if (wrappedValue === undefined) {
-			wrappedValue = wikiRelinker.getPlaceholderFor(value, name);
+			wrappedValue = "<<"+wikiRelinker.getPlaceholderFor(value, name)+">>";
 		}
 		return ` ${name}=${wrappedValue}`;
 	}
