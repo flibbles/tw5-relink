@@ -17,6 +17,7 @@ exports.name = ['filteredtranscludeinline', 'filteredtranscludeblock'];
 
 var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
+var utils = require("./utils.js");
 
 exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	var m = this.match;
@@ -39,17 +40,33 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	}
 	var relinkedFilter = filterHandler(filter, fromTitle, toTitle, options);
 	if (relinkedFilter !== undefined) {
-		log("filteredtransclude", logArguments);
 		filter = relinkedFilter;
 		modified = true;
 	}
 	if (modified) {
-		return prettyFilteredTransclude(filter, tooltip, template, style, classes);
+		if (canBePretty(filter) && canBePrettyTemplate(template)) {
+			log("filteredtransclude", logArguments);
+			return prettyList(filter, tooltip, template, style, classes);
+		} else {
+			log("filteredtransclude-widget", logArguments);
+			return widgetList(this.parser, filter, tooltip, template, style, classes);
+		}
 	}
 	return undefined;
 };
 
-function prettyFilteredTransclude(filter, tooltip, template, style, classes) {
+function canBePretty(filter) {
+	return filter.indexOf('|') < 0 && filter.indexOf('}}') < 0;
+};
+
+function canBePrettyTemplate(template) {
+	return !template || (
+		template.indexOf('|') < 0
+		&& template.indexOf('{') < 0
+		&& template.indexOf('}') < 0);
+};
+
+function prettyList(filter, tooltip, template, style, classes) {
 	if (tooltip === undefined) {
 		tooltip = '';
 	} else {
@@ -67,4 +84,19 @@ function prettyFilteredTransclude(filter, tooltip, template, style, classes) {
 	}
 	style = style || '';
 	return `{{{${filter}${tooltip}${template}}}${style}}${classes}`;
+};
+
+function widgetList(wikiRelinker, filter, tooltip, template, style, classes) {
+	if (classes !== undefined) {
+		classes = classes.split('.').join(' ');
+	}
+	return [
+		"<$list",
+		utils.wrapAttribute(wikiRelinker, "filter", filter),
+		utils.wrapAttribute(wikiRelinker, "tooltip", tooltip),
+		utils.wrapAttribute(wikiRelinker, "template", template),
+		utils.wrapAttribute(wikiRelinker, "style", style),
+		utils.wrapAttribute(wikiRelinker, "itemClass", classes),
+		"/>"
+	].join('');
 };

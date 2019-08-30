@@ -115,21 +115,9 @@ function doubleBangOrHash(value) {
  */
 exports.transcludeAttributes = function(field, index) {
 	return rtn = [
-		this.wrapAttribute("field", field),
-		this.wrapAttribute("index", index)
+		utils.wrapAttribute(this.parser, "field", field),
+		utils.wrapAttribute(this.parser, "index", index)
 	].join('');
-};
-
-exports.wrapAttribute = function(name, value) {
-	if (value) {
-		var wrappedValue = utils.wrapAttributeValue(value, "'");
-		if (wrappedValue === undefined) {
-			var ph = this.parser.getPlaceholderFor(value, name);
-			wrappedValue = "<<" + ph + ">>";
-		}
-		return ` ${name}=${wrappedValue}`;
-	}
-	return '';
 };
 
 function prettyTransclude(textReference, template) {
