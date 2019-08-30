@@ -7,11 +7,6 @@ Tests the new relinking wiki methods.
 var utils = require("test/utils");
 var relink = utils.relink;
 
-function fieldConf(field, type) {
-	var prefix =  "$:/config/flibbles/relink/fields/";
-	return {title: prefix + field, text: type};
-};
-
 function testField(value, expected, options) {
 	[value, expected, options] = utils.prepArgs(value, expected, options);
 	var field = options.field || "test";
@@ -19,7 +14,7 @@ function testField(value, expected, options) {
 	if (type === undefined) {
 		type = "title";
 	}
-	options.wiki.addTiddler(fieldConf(field, type));
+	options.wiki.addTiddler(utils.fieldConf(field, type));
 	var t = relink({[field]: value}, options);
 	var output = t.fields[field];
 	if (typeof output === "object") {
@@ -60,7 +55,7 @@ it("handles errors with at least some grace", function() {
 		var e;
 		wiki.addTiddlers([
 			{title: "tiddlertest", test: "A"},
-			fieldConf("test", "list")
+			utils.fieldConf("test", "list")
 		]);
 		try {
 			$tw.utils.parseStringArray = function() {

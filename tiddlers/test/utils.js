@@ -55,7 +55,7 @@ exports.prepArgs = function(input, expected, options) {
 		} else {
 			var from = options.from || "from here";
 			var to = options.to || "to there";
-			expected = input.replace(new RegExp(from, "g"), to);
+			expected = input.split(from).join(to);
 		}
 	}
 	options = options || {};
@@ -115,4 +115,9 @@ exports.operatorConf = function(operator, value) {
 	}
 	var prefix = "$:/config/flibbles/relink/operators/";
 	return {title: prefix + operator, text: value};
+};
+
+exports.fieldConf = function(field, type) {
+	var prefix =  "$:/config/flibbles/relink/fields/";
+	return {title: prefix + field, text: type};
 };

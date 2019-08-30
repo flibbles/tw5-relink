@@ -12,9 +12,8 @@ describe("filter fields", function() {
 
 function testFilter(filter, expected, options) {
 	[filter, expected, options] = utils.prepArgs(filter, expected, options);
-	var title = "$:/config/flibbles/relink/fields/customFilter";
 	options.wiki.addTiddlers([
-		{title: title, text: "filter"},
+		utils.fieldConf("customFilter", "filter"),
 		operatorConf("title"),
 		operatorConf("tag")
 	]);
@@ -37,8 +36,8 @@ it('nonquotes', function() {
 	testFilter("A from B", "A to B", {from: 'from', to: 'to'});
 });
 
-it('keeps brackets if unnecessarily there', function() {
-	testFilter("A [[from]] B", "A [[to]] B", {from: 'from', to: 'to'});
+it('loses brackets even if unnecessarily there', function() {
+	testFilter("A [[from]] B", "A to B", {from: 'from', to: 'to'});
 });
 
 it('added spaces', function() {
@@ -48,8 +47,8 @@ it('added spaces', function() {
 
 it('removed spaces', function() {
 	testFilter("A [[from here]] B", "A to B",{to: 'to'});
-	testFilter("A [[from here]]B", "A [[to]]B",{to: 'to'});
-	testFilter("A[[from here]] B", "A[[to]] B",{to: 'to'});
+	testFilter("A [[from here]]B", "A to B",{to: 'to'});
+	testFilter("A[[from here]] B", "A to B",{to: 'to'});
 	testFilter("[[from here]] B", "to B",{to: 'to'});
 	testFilter("A [[from here]]", "A to",{to: 'to'});
 	testFilter("[[from here]]", "to",{to: 'to'});
@@ -67,6 +66,17 @@ it('runs', function() {
 it('title operator', function() {
 	testFilter("A [title[from here]] B");
 	testFilter("A [title[from]] B", {from: 'from'});
+});
+
+it('tricky titles', function() {
+	testFilter("A [[from here]] B",     'A "a\' ]b" B',  {to: 'a\' ]b'});
+	testFilter("A [[from here]] B",     "A 'a\" ]b' B",  {to: 'a\" ]b'});
+	testFilter("A [[from here]] B",     "A a\"\'b B",   {to: 'a\"\'b'});
+	testFilter("A [[from here]] B",     "A [[a\" \'b]] B",{to: 'a\" \'b'});
+	testFilter("A [title[from here]] B","A [title[a\" \'b]] B", {to: 'a\" \'b'});
+	testFilter("A [title[from here]] B","A [title[simple]] B", {to: 'simple'});
+	testFilter('A "from here" B', 'A [[a\' \"b]] B', {to: 'a\' "b'});
+	testFilter("A 'from here' B", 'A [[a\' \"b]] B', {to: 'a\' "b'});
 });
 
 it('ignores other operators', function() {

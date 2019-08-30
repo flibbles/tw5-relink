@@ -7,59 +7,59 @@ This specifies logic for updating filters to reflect title changes.
 
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
+function FilterRelinker(text) {
+	this.text = text;
+	this.pos = 0;
+	this.builder = [];
+};
+
+FilterRelinker.prototype.add = function(index, value) {
+	this.builder.push(this.text.substring(this.pos, index));
+	this.builder.push(value);
+	//console.log("ADDING:", value
+};
+
+FilterRelinker.prototype.results = function() {
+	if (this.builder.length > 0) {
+		this.builder.push(this.text.substr(this.pos));
+		return this.builder.join('');
+	}
+	return undefined;
+};
+
 exports.filter = function(filter, fromTitle, toTitle, options) {
 	var indices;
 	if (filter && filter.indexOf(fromTitle) >= 0) {
+		var relinker = new FilterRelinker(filter);
 		try {
-			var managedOperators = settings.getOperators(options);
-			var indices = scanFilter(filter,fromTitle,managedOperators);
+			var indices = scanFilter(filter,relinker,fromTitle,toTitle,options);
 		} catch (err) {
 			// Not really anything to do. It's a bad filter.
 			// Move on.
 		}
-		if (indices && indices.length > 0) {
-			for (var i = indices.length-1; i>=0; i--) {
-				var index = indices[i];
-				var to = toTitle;
-				var fromLength = fromTitle.length;
-				var fromSpace = fromTitle.indexOf(' ') >= 0;
-				var toSpace = toTitle.indexOf(' ') >= 0;
-				if (toSpace && !fromSpace) {
-					var prev = filter[index-1];
-					if (prev!=='[' && prev !== "'" && prev !== '"') {
-						to = `[[${to}]]`;
-					}
-				}
-				if (fromSpace && !toSpace) {
-					if (index >=2
-					&& filter.substr(index-2, fromTitle.length+4) === `[[${fromTitle}]]`
-					&& (index == 2 || filter[index-3]===' ')
-					&& (filter[index+fromLength+2]===' ' || index+fromLength+2 >= filter.length)) {
-						index -= 2;
-						fromLength += 4;
-					}
-				}
-				filter = filter.slice(0, index) + to + filter.slice(index + fromLength);
-			}
-			return filter;
-		}
+		var results = relinker.results();
+		return results;
 	}
 	return undefined;
 };
 
 // Returns an array of indices to replace
-function scanFilter(filterString, title, whitelist) {
-	var results = [], // Array of indexes on where to splice
-		p = 0, // Current position in the filter string
+function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
+	var whitelist = settings.getOperators(options);
+	var p = 0, // Current position in the filter string
 		match;
-	var whitespaceRegExp = /(\s+)/mg,
-		operandRegExp = /((?:\+|\-)?)(?:(\[)|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+))/mg;
+	var whitespaceRegExp = /\s+/mg,
+		operandRegExp = /((?:\+|\-)?)(?:(\[[^\[])|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+)|(?:\[\[([^\]]+)\]\]))/mg;
 	while(p < filterString.length) {
 		// Skip any whitespace
 		whitespaceRegExp.lastIndex = p;
 		match = whitespaceRegExp.exec(filterString);
 		if(match && match.index === p) {
 			p = p + match[0].length;
+		} else if (p != 0) {
+			// enforce whitespace between runs
+			relinker.add(p, ' ');
+			relinker.pos = p;
 		}
 		// Match the start of the operation
 		if(p < filterString.length) {
@@ -72,24 +72,55 @@ function scanFilter(filterString, title, whitelist) {
 				p++;
 			}
 			if(match[2]) { // Opening square bracket
-				p =parseFilterOperation(results,title,filterString,p,whitelist);
-			} else if(match[3] || match[4] || match[5]) { // Double quoted string, single quoted string, or noquote
-				var val = match[3] || match[4] || match[5];
-				if (whitelist.title && val === title) {
-					if (match[5]) {
-						results.push(p);
-					} else {
-						results.push(p+1);
-					}
+				p =parseFilterOperation(relinker,fromTitle,toTitle,filterString,p,whitelist);
+			} else if(match[3] || match[4] || match[5] || match[6]) { // Double quoted string, single quoted string, or noquote
+				var preference = undefined;
+				if (match[3]) {
+					preference = '"';
+				} else if (match[4]) {
+					preference = "'";
+				} else if (match[5]) {
+					preference = '';
 				}
-				p = match.index + match[0].length;
+				var val = match[3] || match[4] || match[5] || match[6];
+				if (val === fromTitle) {
+					relinker.add(p, wrapTitle(toTitle, preference));
+					relinker.pos = operandRegExp.lastIndex;
+				}
+				p = operandRegExp.lastIndex;
 			}
 		}
 	}
-	return results;
 };
 
-function parseFilterOperation(indexes, title, filterString, p, whitelist) {
+function wrapTitle(value, preference) {
+	var choices = {
+		"": function(v) {return !/[\s\[\]]/.test(v); },
+		"[": function(v) {return v.indexOf(']') < 0; },
+		"'": function(v) {return v.indexOf("'") < 0; },
+		'"': function(v) {return v.indexOf('"') < 0; }
+	};
+	var wrappers = {
+		"": function(v) {return v; },
+		"[": function(v) {return "[["+v+"]]"; },
+		"'": function(v) {return "'"+v+"'"; },
+		'"': function(v) {return '"'+v+'"'; }
+	};
+	if (choices[preference]) {
+		if (choices[preference](value)) {
+			return wrappers[preference](value);
+		}
+	}
+	for (var quote in choices) {
+		if (choices[quote](value)) {
+			return wrappers[quote](value);
+		}
+	}
+	// No quotes will work on this
+	return undefined;
+}
+
+function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whitelist) {
 	var nextBracketPos, operator;
 	// Skip the starting square bracket
 	if(filterString.charAt(p++) !== "[") {
@@ -154,10 +185,11 @@ function parseFilterOperation(indexes, title, filterString, p, whitelist) {
 		if (!operator.skip) {
 			var operand = filterString.substring(p,nextBracketPos);
 			// Check if this is a relevant operator
-			if (operand === title) {
+			if (operand === fromTitle) {
 				if (whitelist[operator.operator]
 				|| (whitelist.title && (operator.operator === "field" && operator.suffix === "title"))) {
-					indexes.push(p);
+					relinker.add(p, toTitle);
+					relinker.pos = nextBracketPos;
 				}
 			}
 		}

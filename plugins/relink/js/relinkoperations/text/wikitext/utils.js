@@ -16,7 +16,7 @@ Utility methods for the wikitext relink rules.
  */
 exports.wrapAttributeValue = function(value, preference) {
 	var choices = {
-		"": function(v) {return !/([\/\s<>"'=])/.test(value); },
+		"": function(v) {return !/([\/\s<>"'=])/.test(v); },
 		"'": function(v) {return v.indexOf("'") < 0; },
 		'"': function(v) {return v.indexOf('"') < 0; },
 		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';}

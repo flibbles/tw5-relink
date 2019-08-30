@@ -115,12 +115,15 @@ it('import pragma', function() {
 	var log = [];
 	testText("\\import [title[from here]]\nstuff.",{wiki: wiki(),log: log});
 	expect(log).toEqual(["Renaming 'from here' to 'to there' in \\import filter of tiddler 'test'"]);
-	testText("\\rules except prettylink\n\\import [[from here]]\nstuff.", {ignored: true});
-	testText("\\import [title[from here]]\n\n\nstuff.", {wiki: wiki()});
-	testText("\\import     [title[from here]]   \nstuff.", {wiki: wiki()});
-	testText("\\import [[from here]]\r\nstuff.", {wiki: wiki()});
-	testText("\\import from\nstuff.",
-	         "\\import [[to there]]\nstuff.", {from: "from", wiki: wiki()});
+	testText("\\rules except prettylink\n\\import [[from here]]\nnot prettylink.");
+	testText("\\import [[from|here]]\ndon't parse as prettylink.",
+	         {from: "from|here"});
+	testText("\\import [title[from here]]\n\n\nnewlines.", {wiki: wiki()});
+	testText("\\import   [title[from here]]  \nwhitespace.",{wiki: wiki()});
+	testText("\\import [[from here]]\r\nwindows return.", {wiki: wiki()});
+	testText("\\import from\nsingle to double.",
+	         "\\import [[to there]]\nsingle to double.",
+	         {from: "from", wiki: wiki()});
 });
 
 });
