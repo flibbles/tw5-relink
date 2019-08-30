@@ -18,7 +18,8 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	var start = this.matchRegExp.lastIndex;
 	var parseTree = this.parse();
 	var filter = parseTree[0].attributes.filter.value;
-	var value = filterRelinker(filter, fromTitle, toTitle, options);
+	var extendedOptions = Object.assign({placeholder: this.parser},options);
+	var value = filterRelinker(filter, fromTitle, toTitle, extendedOptions);
 	if (value !== undefined) {
 		log("import", {
 			from: fromTitle,

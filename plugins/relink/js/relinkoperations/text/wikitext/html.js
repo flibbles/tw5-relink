@@ -34,7 +34,8 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			if (nextEql < 0 || nextEql > attr.end) {
 				continue;
 			}
-			var value = attrRelinker(attr.value, fromTitle, toTitle, options);
+			var extendedOptions = Object.assign({placeholder: this.parser}, options);
+			var value = attrRelinker(attr.value, fromTitle, toTitle, extendedOptions);
 			if (value === undefined) {
 				continue;
 			}

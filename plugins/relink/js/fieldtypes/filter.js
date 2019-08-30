@@ -17,7 +17,6 @@ function FilterRelinker(text) {
 FilterRelinker.prototype.add = function(index, value) {
 	this.builder.push(this.text.substring(this.pos, index));
 	this.builder.push(value);
-	//console.log("ADDING:", value
 };
 
 FilterRelinker.prototype.results = function() {
@@ -96,7 +95,10 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 				if (val === fromTitle) {
 					var newVal = wrapTitle(toTitle, preference);
 					if (newVal === undefined) {
-						throw new CannotRelinkError();
+						if (!options.placeholder) {
+							throw new CannotRelinkError();
+						}
+						newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]";
 					}
 					if (newVal[0] != '[') {
 						// not bracket enclosed
@@ -200,13 +202,20 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 				var operand = filterString.substring(p,nextBracketPos);
 				// Check if this is a relevant operator
 				if (operand === fromTitle) {
+					var wrapped;
 					if (!canBePrettyOperand(toTitle)) {
-						throw new CannotRelinkError();
+						if (!options.placeholder) {
+							throw new CannotRelinkError();
+						}
+						var ph = options.placeholder.getPlaceholderFor(toTitle);
+						wrapped = "<"+ph+">";
+					} else {
+						wrapped = "["+toTitle+"]";
 					}
 					if (whitelist[operator.operator]
 					|| (operator.suffix && whitelist[operator.operator + ":" + operator.suffix])) {
-						relinker.add(p, toTitle);
-						relinker.pos = nextBracketPos;
+						relinker.add(p-1, wrapped);
+						relinker.pos = nextBracketPos+1;
 					}
 				}
 				break;

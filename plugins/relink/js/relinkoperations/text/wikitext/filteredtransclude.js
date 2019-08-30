@@ -39,7 +39,8 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		template = template.replace(fromTitle, toTitle);
 		modified = true;
 	}
-	var relinkedFilter = filterHandler(filter, fromTitle, toTitle, options);
+	var extendedOptions = Object.assign({placeholder: this.parser}, options);
+	var relinkedFilter = filterHandler(filter, fromTitle, toTitle, extendedOptions);
 	if (relinkedFilter !== undefined) {
 		filter = relinkedFilter;
 		modified = true;

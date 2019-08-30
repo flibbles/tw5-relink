@@ -10,16 +10,29 @@ var operatorConf = utils.operatorConf;
 
 describe("filter fields", function() {
 
-function testFilter(filter, expected, options) {
-	[filter, expected, options] = utils.prepArgs(filter, expected, options);
-	options.wiki.addTiddlers([
+function addSettings(wiki) {
+	wiki.addTiddlers([
 		utils.fieldConf("customFilter", "filter"),
 		operatorConf("title"),
 		operatorConf("field:title"),
 		operatorConf("tag")
 	]);
+};
+
+function testFilter(filter, expected, options) {
+	[filter, expected, options] = utils.prepArgs(filter, expected, options);
+	addSettings(options.wiki);
 	var t = relink({customFilter: filter}, options);
 	expect(t.fields.customFilter).toBe(expected);
+};
+
+function testText(text, expected, options) {
+	[text, expected, options] = utils.prepArgs(text, expected, options);
+	var failCount = options.fails || 0;
+	addSettings(options.wiki);
+	var t = utils.relink({text: text}, options);
+	expect(t.fields.text).toEqual(expected);
+	expect(options.fails.length).toEqual(failCount, "Incorrect number of failures");
 };
 
 it('relinks and logs', function() {
@@ -49,7 +62,7 @@ it('added spaces', function() {
 it('spaces around brackets', function() {
 	testFilter("A [[from here]] B", "A to B",{to: 'to'});
 	testFilter("A\n[[from here]]\nB", "A\nto\nB",{to: 'to'});
-	testFilter("A [[from here]]B", "A to B",{to: 'to', debug: true});
+	testFilter("A [[from here]]B", "A to B",{to: 'to'});
 	testFilter("A[[from here]] B", "A to B",{to: 'to'});
 	testFilter("[[from here]] B", "to B",{to: 'to'});
 	testFilter("A [[from here]]", "A to",{to: 'to'});
@@ -155,13 +168,33 @@ it('ignores non-title tag configurations', function() {
 
 it('field failures', function() {
 	function fails(filter, toTitle) {
-		var options = {to: toTitle, ignored: true, debug: true};
+		var options = {to: toTitle, ignored: true};
 		testFilter(filter, options);
 		expect(options.fails.length).toEqual(1);
 	};
 	fails("[tag[from here]]", "brackets]there");
 	fails("[[from here]]", "A\"bad'stupid]title");
+	fails("[{from here}]", "A\"bad'stupid}title");
 	fails("[tag{from here}]", "brackets}there");
+	fails("[tag{from here!!field}]", "brackets}there");
+});
+
+it('resorts to placeholders when possible', function() {
+	var ph = utils.placeholder;
+	var to = "bad[]name";
+	testText("\\import [tag[from here]prefix[A]]\n",
+	         ph(1,to)+"\\import [tag<relink-1>prefix[A]]\n", {to: to});
+	to = "worse[]\"\"\'\'name";
+	testText("\\import [[from here]]\n",
+	         ph(1,to)+"\\import [<relink-1>]\n", {to: to});
+	testText("\\import from\n",
+	         ph(1,to)+"\\import [<relink-1>]\n", {to: to, from: "from"});
+	testText("\\import from\n",
+	         ph(1,to)+"\\import [<relink-1>]\n", {to: to, from: "from"});
+	testText("\\import +'from here'\n",
+	         ph(1,to)+"\\import +[<relink-1>]\n", {to: to});
+	testText("\\import [![from here]]\n",
+	         ph(1,to)+"\\import [!<relink-1>]\n", {to: to});
 });
 
 /** This is legacy support. Originally, the value of the configuration tiddlers
