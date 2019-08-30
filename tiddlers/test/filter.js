@@ -47,6 +47,7 @@ it('added spaces', function() {
 
 it('spaces around brackets', function() {
 	testFilter("A [[from here]] B", "A to B",{to: 'to'});
+	testFilter("A\n[[from here]]\nB", "A\nto\nB",{to: 'to'});
 	testFilter("A [[from here]]B", "A to B",{to: 'to', debug: true});
 	testFilter("A[[from here]] B", "A to B",{to: 'to'});
 	testFilter("[[from here]] B", "to B",{to: 'to'});
@@ -54,6 +55,7 @@ it('spaces around brackets', function() {
 	testFilter("[[from here]]", "to",{to: 'to'});
 	testFilter("A[[B]]C [[from here]]");
 	testFilter("A [[from here]] B");
+	testFilter("A\n[[from here]]\nB");
 	testFilter("A[[from here]] B");
 	testFilter("A [[from here]]B");
 	testFilter("A[[from here]]B");
@@ -85,6 +87,15 @@ it('tricky titles', function() {
 	testFilter("A [title[from here]] B","A [title[simple]] B", {to: 'simple'});
 	testFilter('A "from here" B', 'A [[a\' \"b]] B', {to: 'a\' "b'});
 	testFilter("A 'from here' B", 'A [[a\' \"b]] B', {to: 'a\' "b'});
+});
+
+it('supports expression prefixes', function() {
+	testFilter("A +[[from here]] B");
+	testFilter("A -from B", {from: "from", to: "to"});
+	testFilter("A ~from B", "A ~[[to there]] B", {from: "from"});
+	testFilter("A =[[from here]] B", "A =to B", {to: "to"});
+	testFilter("A [[B]]+from", {from: "from", to: "to"});
+	testFilter("A [[from here]]+B", "A to +B", {to: "to"});
 });
 
 it('ignores other operators', function() {

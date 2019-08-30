@@ -50,7 +50,7 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 		match, noPrecedingWordBarrier,
 		wordBarrierRequired=false;
 	var whitespaceRegExp = /\s+/mg,
-		operandRegExp = /((?:\+|\-)?)(?:(\[[^\[])|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+)|(?:\[\[([^\]]+)\]\]))/mg;
+		operandRegExp = /((?:\+|\-|~|=)?)(?:(\[[^\[])|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+)|(?:\[\[([^\]]+)\]\]))/mg;
 	while(p < filterString.length) {
 		// Skip any whitespace
 		whitespaceRegExp.lastIndex = p;
@@ -95,7 +95,7 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 						// not bracket enclosed
 						// this requires whitespace
 						// arnound it
-						if (noPrecedingWordBarrier) {
+						if (noPrecedingWordBarrier && !match[1]) {
 							relinker.add(p, ' ');
 							relinker.pos = p;
 						}
