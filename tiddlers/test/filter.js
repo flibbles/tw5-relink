@@ -123,10 +123,12 @@ it('ignores regular expressions', function() {
 	testFilter("A [title/from/] B", {ignored: true, from: "from"});
 });
 
-// In theory, we could have support for this, but not now.
-it('ignores transclusion', function() {
-	testFilter("A [title{from}] B", {ignored: true, from: "from"});
-	testFilter("A [{from}] B", {ignored: true, from: "from"});
+it('handles transclusion for all operands', function() {
+	testFilter("A [title{from}] B", {from: "from"});
+	testFilter("A [{from}] B", {from: "from"});
+	testFilter("A [anything{from}] B", {from: "from"});
+	testFilter("A [anything{from!!field}] B", {from: "from"});
+	testFilter("A [anything{from##index}] B", {from: "from"});
 });
 
 it('field:title operator', function() {
@@ -159,7 +161,7 @@ it('field failures', function() {
 	};
 	fails("[tag[from here]]", "brackets]there");
 	fails("[[from here]]", "A\"bad'stupid]title");
-	//fails("[tag{from here}]", "brackets}there");
+	fails("[tag{from here}]", "brackets}there");
 });
 
 /** This is legacy support. Originally, the value of the configuration tiddlers

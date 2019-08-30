@@ -180,18 +180,40 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 		p = nextBracketPos + 1;
 		switch (bracket) {
 			case "{": // Curly brackets
-				operator.skip = true;
 				nextBracketPos = filterString.indexOf("}",p);
+				var operand = filterString.substring(p,nextBracketPos);
+				var ref = $tw.utils.parseTextReference(operand);
+				if (ref.title === fromTitle) {
+					if(!canBePrettyIndirect(toTitle)) {
+						throw new CannotRelinkError();
+					}
+					ref.title = toTitle;
+					var newRef = referenceToString(ref);
+					// We don't check the whitelist.
+					// All indirect operands convert.
+					relinker.add(p, newRef);
+					relinker.pos = nextBracketPos;
+				}
 				break;
 			case "[": // Square brackets
 				nextBracketPos = filterString.indexOf("]",p);
+				var operand = filterString.substring(p,nextBracketPos);
+				// Check if this is a relevant operator
+				if (operand === fromTitle) {
+					if (!canBePrettyOperand(toTitle)) {
+						throw new CannotRelinkError();
+					}
+					if (whitelist[operator.operator]
+					|| (operator.suffix && whitelist[operator.operator + ":" + operator.suffix])) {
+						relinker.add(p, toTitle);
+						relinker.pos = nextBracketPos;
+					}
+				}
 				break;
 			case "<": // Angle brackets
-				operator.skip = true;
 				nextBracketPos = filterString.indexOf(">",p);
 				break;
 			case "/": // regexp brackets
-				operator.skip = true;
 				var rex = /^((?:[^\\\/]*|\\.)*)\/(?:\(([mygi]+)\))?/g,
 					rexMatch = rex.exec(filterString.substring(p));
 				if(rexMatch) {
@@ -206,20 +228,6 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 		if(nextBracketPos === -1) {
 			throw "Missing closing bracket in filter expression";
 		}
-		if (!operator.skip) {
-			var operand = filterString.substring(p,nextBracketPos);
-			// Check if this is a relevant operator
-			if (operand === fromTitle) {
-				if (!canBePrettyOperand(toTitle)) {
-					throw new CannotRelinkError();
-				}
-				if (whitelist[operator.operator]
-				|| (operator.suffix && whitelist[operator.operator + ":" + operator.suffix])) {
-					relinker.add(p, toTitle);
-					relinker.pos = nextBracketPos;
-				}
-			}
-		}
 		p = nextBracketPos + 1;
 
 	} while(filterString.charAt(p) !== "]");
@@ -233,4 +241,19 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 
 function canBePrettyOperand(value) {
 	return value.indexOf(']') < 0;
+};
+
+function canBePrettyIndirect(value) {
+	return value.indexOf('}') < 0;
+};
+
+// TODO: This exact function occurs in a couple places. Centralize it.
+function referenceToString(textReference) {
+	var title = textReference.title || '';
+	if (textReference.field) {
+		return title + "!!" + textReference.field;
+	} else if (textReference.index) {
+		return title + "##" + textReference.index;
+	}
+	return title;
 };
