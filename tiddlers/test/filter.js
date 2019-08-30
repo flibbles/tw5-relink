@@ -15,6 +15,7 @@ function testFilter(filter, expected, options) {
 	options.wiki.addTiddlers([
 		utils.fieldConf("customFilter", "filter"),
 		operatorConf("title"),
+		operatorConf("field:title"),
 		operatorConf("tag")
 	]);
 	var t = relink({customFilter: filter}, options);
@@ -92,10 +93,19 @@ it('tricky titles', function() {
 it('supports expression prefixes', function() {
 	testFilter("A +[[from here]] B");
 	testFilter("A -from B", {from: "from", to: "to"});
+	testFilter("[tag[A]] -from C", "[tag[A]] -'X[\"]Y' C", {from: "from", to: "X[\"]Y"});
 	testFilter("A ~from B", "A ~[[to there]] B", {from: "from"});
 	testFilter("A =[[from here]] B", "A =to B", {to: "to"});
 	testFilter("A [[B]]+from", {from: "from", to: "to"});
 	testFilter("A [[from here]]+B", "A to +B", {to: "to"});
+});
+
+it('supports operator negator on titles', function() {
+	testFilter("A [![from here]]");
+	testFilter("A [!title[from here]]");
+	testFilter("A [tag[something]!title[from here]]");
+	// Doesn't try to collapse the brackets or anything
+	testFilter("A [![from here]]", {to: "to"});
 });
 
 it('ignores other operators', function() {
@@ -121,6 +131,8 @@ it('ignores transclusion', function() {
 
 it('field:title operator', function() {
 	testFilter("A [field:title[from here]] B");
+	testFilter("A [!field:title[from here]] B");
+	testFilter("A [tag[something]!field:title[from here]] B");
 });
 
 it('tag operator', function() {

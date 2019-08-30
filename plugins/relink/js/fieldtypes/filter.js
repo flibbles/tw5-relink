@@ -204,7 +204,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 			// Check if this is a relevant operator
 			if (operand === fromTitle) {
 				if (whitelist[operator.operator]
-				|| (whitelist.title && (operator.operator === "field" && operator.suffix === "title"))) {
+				|| (operator.suffix && whitelist[operator.operator + ":" + operator.suffix])) {
 					relinker.add(p, toTitle);
 					relinker.pos = nextBracketPos;
 				}
