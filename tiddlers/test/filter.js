@@ -45,13 +45,21 @@ it('added spaces', function() {
 	testFilter("from", "[[to there]]",{from: 'from'});
 });
 
-it('removed spaces', function() {
+it('spaces around brackets', function() {
 	testFilter("A [[from here]] B", "A to B",{to: 'to'});
-	testFilter("A [[from here]]B", "A to B",{to: 'to'});
+	testFilter("A [[from here]]B", "A to B",{to: 'to', debug: true});
 	testFilter("A[[from here]] B", "A to B",{to: 'to'});
 	testFilter("[[from here]] B", "to B",{to: 'to'});
 	testFilter("A [[from here]]", "A to",{to: 'to'});
 	testFilter("[[from here]]", "to",{to: 'to'});
+	testFilter("A[[B]]C [[from here]]");
+	testFilter("A [[from here]] B");
+	testFilter("A[[from here]] B");
+	testFilter("A [[from here]]B");
+	testFilter("A[[from here]]B");
+	testFilter("   [[from here]]   ");
+	testFilter("A[[from here]]B", "A \"to [it's]\" B",{to: "to [it's]"});
+	testFilter("A[[from here]]B", "A 'to [\"it\"]' B",{to: 'to ["it"]'});
 });
 
 it('multiples', function() {

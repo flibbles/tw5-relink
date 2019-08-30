@@ -47,19 +47,25 @@ exports.filter = function(filter, fromTitle, toTitle, options) {
 function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 	var whitelist = settings.getOperators(options);
 	var p = 0, // Current position in the filter string
-		match;
+		match, noPrecedingWordBarrier,
+		wordBarrierRequired=false;
 	var whitespaceRegExp = /\s+/mg,
 		operandRegExp = /((?:\+|\-)?)(?:(\[[^\[])|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+)|(?:\[\[([^\]]+)\]\]))/mg;
 	while(p < filterString.length) {
 		// Skip any whitespace
 		whitespaceRegExp.lastIndex = p;
 		match = whitespaceRegExp.exec(filterString);
+		noPrecedingWordBarrier = false;
 		if(match && match.index === p) {
 			p = p + match[0].length;
 		} else if (p != 0) {
-			// enforce whitespace between runs
-			relinker.add(p, ' ');
-			relinker.pos = p;
+			if (wordBarrierRequired) {
+				relinker.add(p, ' ');
+				relinker.pos = p;
+				wordBarrierRequired = false;
+			} else {
+				noPrecedingWordBarrier = true;
+			}
 		}
 		// Match the start of the operation
 		if(p < filterString.length) {
@@ -84,7 +90,18 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 				}
 				var val = match[3] || match[4] || match[5] || match[6];
 				if (val === fromTitle) {
-					relinker.add(p, wrapTitle(toTitle, preference));
+					var newVal = wrapTitle(toTitle, preference);
+					if (newVal[0] != '[') {
+						// not bracket enclosed
+						// this requires whitespace
+						// arnound it
+						if (noPrecedingWordBarrier) {
+							relinker.add(p, ' ');
+							relinker.pos = p;
+						}
+						wordBarrierRequired = true;
+					}
+					relinker.add(p, newVal);
 					relinker.pos = operandRegExp.lastIndex;
 				}
 				p = operandRegExp.lastIndex;
