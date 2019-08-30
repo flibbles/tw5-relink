@@ -75,4 +75,19 @@ it('unpretty (degrades to widget)', function() {
 	             "<$list filter='bar|' tooltip='tooltip' template='Template' style='width:50;' itemClass='A B'/>");
 });
 
+it('unpretty and unquotable', function() {
+	var ph = utils.placeholder;
+	function test(to, text, expected) {
+		var log = [];
+		testText(text, expected, {to: to, log: log});
+		expect(log).toEqual([logMessage(to, "by converting it into a widget and creating placeholder macros")]);
+	};
+	var weird = 'a\'|" """x';
+	//test(`{{{[[""""'']] [[from here]]}}}`
+	//test(weird, `{{{[[from here]]}}}`, ph(1,weird) + "<$list filter='[<relink-1>]'
+	var tooltip = `"tooltips's"`;
+	test(weird, "{{{Title||from here}}}", ph(1,weird) + "<$list filter='Title' template=<<relink-1>>/>");
+	test("bar|bar", "{{{Title|"+tooltip+"||from here}}}", ph("tooltip-1",tooltip) + "<$list filter='Title' tooltip=<<relink-tooltip-1>> template='bar|bar'/>");
+});
+
 });

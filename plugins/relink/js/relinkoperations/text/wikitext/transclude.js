@@ -55,8 +55,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	if (ref.title === fromTitle) {
 		var resultTitle = utils.wrapAttributeValue(toTitle);
 		if (resultTitle === undefined) {
-			var ph = this.parser.getPlaceholderFor(toTitle);
-			resultTitle = "<<"+ph+">>";
+			resultTitle = this.parser.getPlaceholderFor(toTitle);
 			log("transclude-placeholder", logArguments);
 		} else {
 			log("transclude-widget", logArguments);
@@ -76,8 +75,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		var message = "transclude-widget";
 		var rtn;
 		if (resultTemplate === undefined) {
-			var ph = this.parser.getPlaceholderFor(toTitle);
-			resultTemplate = "<<"+ph+">>";
+			resultTemplate = this.parser.getPlaceholderFor(toTitle);
 			message = "transclude-placeholder";
 		}
 		if (ref.title) {
@@ -86,8 +84,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				// This is one of the rare cases were we need
 				// to placeholder a title OTHER than the one
 				// we're changing.
-				var ph = this.parser.getPlaceholderFor(ref.title);
-				resultTitle = "<<"+ph+">>";
+				resultTitle = this.parser.getPlaceholderFor(ref.title);
 				message = "transclude-placeholder";
 			}
 			var attrs = this.transcludeAttributes(ref.field, ref.index);
@@ -115,9 +112,20 @@ function doubleBangOrHash(value) {
  */
 exports.transcludeAttributes = function(field, index) {
 	return rtn = [
-		utils.wrapAttribute(this.parser, "field", field),
-		utils.wrapAttribute(this.parser, "index", index)
+		wrapAttribute(this.parser, "field", field),
+		wrapAttribute(this.parser, "index", index)
 	].join('');
+};
+
+function wrapAttribute(wikiRelinker, name, value) {
+	if (value) {
+		var wrappedValue = utils.wrapAttributeValue(value, "'");
+		if (wrappedValue === undefined) {
+			wrappedValue = wikiRelinker.getPlaceholderFor(value, name);
+		}
+		return ` ${name}=${wrappedValue}`;
+	}
+	return '';
 };
 
 function prettyTransclude(textReference, template) {

@@ -5,21 +5,6 @@ Utility methods for the wikitext relink rules.
 
 \*/
 
-/**converts attribute name and value into appendable string, or emptystring
- * requires the WikiRelinker in case it needs to make a placeholder.
- */
-exports.wrapAttribute = function(wikiRelinker, name, value) {
-	if (value) {
-		var wrappedValue = exports.wrapAttributeValue(value, "'");
-		if (wrappedValue === undefined) {
-			var ph = wikiRelinker.getPlaceholderFor(value, name);
-			wrappedValue = "<<" + ph + ">>";
-		}
-		return ` ${name}=${wrappedValue}`;
-	}
-	return '';
-};
-
 /**Finds an appropriate quote mark for a given value.
  *
  *Tiddlywiki doesn't have escape characters for attribute values. Instead,

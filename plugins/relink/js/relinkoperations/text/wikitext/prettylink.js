@@ -38,14 +38,14 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		// It doesn't matter whether the toTitle is quotable
 		log("prettylink-placeholder", logArguments);
 		var ph = this.parser.getPlaceholderFor(toTitle);
-		return `<$link to=<<${ph}>>><$text text=<<${ph}>>/></$link>`;
+		return `<$link to=${ph}><$text text=${ph}/></$link>`;
 	} else if (quoted = utils.wrapAttributeValue(toTitle)) {
 		log("prettylink-widget", logArguments);
 		return `<$link to=${quoted}>${caption}</$link>`;
 	} else {
 		log("prettylink-placeholder", logArguments);
 		var ph = this.parser.getPlaceholderFor(toTitle);
-		return `<$link to=<<${ph}>>>${caption}</$link>`;
+		return `<$link to=${ph}>${caption}</$link>`;
 	}
 };
 

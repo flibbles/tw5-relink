@@ -59,8 +59,8 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			} else {
 				// The value was unquotable. We need to make
 				// a macro in order to replace it.
-				var holder = this.parser.getPlaceholderFor(value);
-				builder.push("<<", holder, ">>");
+				var macro =this.parser.getPlaceholderFor(value);
+				builder.push(macro);
 				log("attribute-placeholder", logArguments);
 			}
 			buildIndex = valueStart

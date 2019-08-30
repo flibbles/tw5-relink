@@ -55,7 +55,7 @@ WikiRelinker.prototype.parseBlocks = function() {};
 WikiRelinker.prototype.getPlaceholderFor = function(value, category) {
 	var placeholder = this.reverseMap[value];
 	if (placeholder) {
-		return placeholder;
+		return "<<" + placeholder + ">>";
 	}
 	var number = 0;
 	var prefix = "relink-"
@@ -69,7 +69,7 @@ WikiRelinker.prototype.getPlaceholderFor = function(value, category) {
 	this.placeholders[placeholder] = value;
 	this.reverseMap[value] = placeholder;
 	this.reserve(placeholder);
-	return placeholder;
+	return "<<" + placeholder + ">>";
 };
 
 WikiRelinker.prototype.reserve = function(macro) {

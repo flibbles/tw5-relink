@@ -26,12 +26,13 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		template = m[3],
 		style = m[4],
 		classes = m[5],
+		parser = this.parser,
 		logArguments = {
 			from: fromTitle,
 			to: toTitle,
 			tiddler: tiddler.fields.title
 		};
-	this.parser.pos = this.matchRegExp.lastIndex;
+	parser.pos = this.matchRegExp.lastIndex;
 	var modified = false;
 	if ($tw.utils.trim(template) === fromTitle) {
 		// preserves user-inputted whitespace
@@ -43,16 +44,40 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		filter = relinkedFilter;
 		modified = true;
 	}
-	if (modified) {
-		if (canBePretty(filter) && canBePrettyTemplate(template)) {
-			log("filteredtransclude", logArguments);
-			return prettyList(filter, tooltip, template, style, classes);
-		} else {
-			log("filteredtransclude-widget", logArguments);
-			return widgetList(this.parser, filter, tooltip, template, style, classes);
-		}
+	if (!modified) {
+		return undefined;
 	}
-	return undefined;
+	if (canBePretty(filter) && canBePrettyTemplate(template)) {
+		log("filteredtransclude", logArguments);
+		return prettyList(filter, tooltip, template, style, classes);
+	}
+	var message = "filteredtransclude-widget";
+	if (classes !== undefined) {
+		classes = classes.split('.').join(' ');
+	}
+	function wrap(name, value, treatAsTitle) {
+		if (!value) {
+			return '';
+		}
+		var wrappedValue = utils.wrapAttributeValue(value, "'");
+		if (wrappedValue === undefined) {
+			var category = treatAsTitle ? undefined : name;
+			wrappedValue = parser.getPlaceholderFor(value,category);
+			message = "filteredtransclude-placeholder";
+		}
+		return ` ${name}=${wrappedValue}`;
+	};
+	var widget = [
+		"<$list",
+		wrap("filter", filter),
+		wrap("tooltip", tooltip),
+		wrap("template", template, true),
+		wrap("style", style),
+		wrap("itemClass", classes),
+		"/>"
+	].join('');
+	log(message, logArguments);
+	return widget;
 };
 
 function canBePretty(filter) {
@@ -84,19 +109,4 @@ function prettyList(filter, tooltip, template, style, classes) {
 	}
 	style = style || '';
 	return `{{{${filter}${tooltip}${template}}}${style}}${classes}`;
-};
-
-function widgetList(wikiRelinker, filter, tooltip, template, style, classes) {
-	if (classes !== undefined) {
-		classes = classes.split('.').join(' ');
-	}
-	return [
-		"<$list",
-		utils.wrapAttribute(wikiRelinker, "filter", filter),
-		utils.wrapAttribute(wikiRelinker, "tooltip", tooltip),
-		utils.wrapAttribute(wikiRelinker, "template", template),
-		utils.wrapAttribute(wikiRelinker, "style", style),
-		utils.wrapAttribute(wikiRelinker, "itemClass", classes),
-		"/>"
-	].join('');
 };
