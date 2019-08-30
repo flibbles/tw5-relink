@@ -9,6 +9,7 @@ var utils = require("test/utils");
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var failCount = options.fails || 0;
+	options.wiki.addTiddler(utils.operatorConf("title"));
 	var t = utils.relink({text: text}, options);
 	expect(t.fields.text).toEqual(expected);
 	expect(options.fails.length).toEqual(failCount, "Incorrect number of failures");
@@ -104,6 +105,12 @@ it('placeholders', function() {
 	expect(log).toEqual([`Renaming '${from}' to '${to}' in relink-1 definition of tiddler 'test'`]);
 	// Works with Windows newlines
 	testText(macro(1,from,"\r\n")+content, {from: from, to: to});
+	testText(macro("filter-1","[title[from here]]")+content);
+	log = [];
+	testText(macro("filter-1","[title[from here]]")+content,
+	         macro(1,"to[]this")+macro("filter-1","[title<relink-1>]")+content,
+	         {log: log, to: "to[]this"});
+	expect(log).toEqual([`%cRenaming 'from here' to 'to[]this' in relink-filter-1 definition of tiddler 'test' %cby creating more placeholder macros`]);
 });
 
 it('import pragma', function() {
