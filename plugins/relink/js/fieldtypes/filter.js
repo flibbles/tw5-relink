@@ -5,6 +5,7 @@ This specifies logic for updating filters to reflect title changes.
 /**Returns undefined if no change was made.
  */
 
+var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
 function FilterRelinker(text) {
@@ -34,6 +35,9 @@ exports.filter = function(filter, fromTitle, toTitle, options) {
 		try {
 			var indices = scanFilter(filter,relinker,fromTitle,toTitle,options);
 		} catch (err) {
+			if (err instanceof CannotRelinkError) {
+				throw err;
+			}
 			// Not really anything to do. It's a bad filter.
 			// Move on.
 		}
@@ -91,6 +95,9 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 				var val = match[3] || match[4] || match[5] || match[6];
 				if (val === fromTitle) {
 					var newVal = wrapTitle(toTitle, preference);
+					if (newVal === undefined) {
+						throw new CannotRelinkError();
+					}
 					if (newVal[0] != '[') {
 						// not bracket enclosed
 						// this requires whitespace
@@ -113,7 +120,7 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 function wrapTitle(value, preference) {
 	var choices = {
 		"": function(v) {return !/[\s\[\]]/.test(v); },
-		"[": function(v) {return v.indexOf(']') < 0; },
+		"[": canBePrettyOperand,
 		"'": function(v) {return v.indexOf("'") < 0; },
 		'"': function(v) {return v.indexOf('"') < 0; }
 	};
@@ -203,6 +210,9 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 			var operand = filterString.substring(p,nextBracketPos);
 			// Check if this is a relevant operator
 			if (operand === fromTitle) {
+				if (!canBePrettyOperand(toTitle)) {
+					throw new CannotRelinkError();
+				}
 				if (whitelist[operator.operator]
 				|| (operator.suffix && whitelist[operator.operator + ":" + operator.suffix])) {
 					relinker.add(p, toTitle);
@@ -220,3 +230,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 	// Return the parsing position
 	return p;
 }
+
+function canBePrettyOperand(value) {
+	return value.indexOf(']') < 0;
+};

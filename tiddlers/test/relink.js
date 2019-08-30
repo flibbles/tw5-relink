@@ -114,10 +114,10 @@ it('lists work with strange titles', function() {
 
 it('lists recognize impossibly strange titles', function() {
 	function fails(title) {
-		var options = {to: title, ignore: true,
+		var options = {to: title, ignored: true,
 		               field: "example", type: "list"};
 		var list = "A [[from here]] B";
-		testField(list, list, options);
+		testField(list, options);
 		expect(options.fails.length).toEqual(1);
 	};
 	fails("X and]] Y");

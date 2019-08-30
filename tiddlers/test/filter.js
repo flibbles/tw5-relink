@@ -151,6 +151,17 @@ it('ignores non-title tag configurations', function() {
 	testFilter("[[A]] [bad[A]]", "[[to there]] [bad[A]]", {from: "A", wiki: wiki});
 });
 
+it('field failures', function() {
+	function fails(filter, toTitle) {
+		var options = {to: toTitle, ignored: true, debug: true};
+		testFilter(filter, options);
+		expect(options.fails.length).toEqual(1);
+	};
+	fails("[tag[from here]]", "brackets]there");
+	fails("[[from here]]", "A\"bad'stupid]title");
+	//fails("[tag{from here}]", "brackets}there");
+});
+
 /** This is legacy support. Originally, the value of the configuration tiddlers
  *  was set to "yes" because I didn't think it really mattered, but it turns
  *  out it may actually be other values one day, so I'm switching it to title
