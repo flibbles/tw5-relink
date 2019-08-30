@@ -99,6 +99,7 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 							throw new CannotRelinkError();
 						}
 						newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]";
+						options.usedPlaceholder = true;
 					}
 					if (newVal[0] != '[') {
 						// not bracket enclosed
@@ -209,6 +210,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 						}
 						var ph = options.placeholder.getPlaceholderFor(toTitle);
 						wrapped = "<"+ph+">";
+						options.usedPlaceholder = true;
 					} else {
 						wrapped = "["+toTitle+"]";
 					}

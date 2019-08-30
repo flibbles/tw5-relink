@@ -41,6 +41,10 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	}
 	var extendedOptions = Object.assign({placeholder: this.parser}, options);
 	var relinkedFilter = filterHandler(filter, fromTitle, toTitle, extendedOptions);
+	var message = "filteredtransclude";
+	if (extendedOptions.usedPlaceholder) {
+		message = "filteredtransclude-placeholder";
+	}
 	if (relinkedFilter !== undefined) {
 		filter = relinkedFilter;
 		modified = true;
@@ -49,10 +53,10 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		return undefined;
 	}
 	if (canBePretty(filter) && canBePrettyTemplate(template)) {
-		log("filteredtransclude", logArguments);
+		log(message, logArguments);
 		return prettyList(filter, tooltip, template, style, classes);
 	}
-	var message = "filteredtransclude-widget";
+	message = message + "-widget";
 	if (classes !== undefined) {
 		classes = classes.split('.').join(' ');
 	}
@@ -64,7 +68,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		if (wrappedValue === undefined) {
 			var category = treatAsTitle ? undefined : name;
 			wrappedValue = "<<"+parser.getPlaceholderFor(value,category)+">>";
-			message = "filteredtransclude-placeholder";
+			message = "filteredtransclude-placeholder-widget";
 		}
 		return ` ${name}=${wrappedValue}`;
 	};

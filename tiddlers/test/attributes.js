@@ -19,6 +19,8 @@ function testText(text, expected, options) {
 	options.wiki.addTiddlers([
 		attrConf("$link", "to", "title"),
 		attrConf("$list", "filter", "filter"),
+		utils.operatorConf("title"),
+		utils.operatorConf("tag")
 	]);
 	var t = utils.relink({text: text}, options);
 	expect(t.fields.text).toEqual(expected);
@@ -103,6 +105,15 @@ it('uses macros for literally unquotable titles', function() {
 	// If the first placeholder is taken, take the next
 	testText(macro(1,to)+link(1)+"<$link to='from here'/>",
 	         macro(2,to2)+macro(1,to)+link(1)+link(2), {to: to2});
+});
+
+it('detects when internal list uses macros', function() {
+	var log = [];
+	var to = "bad[]name";
+	testText("<$list filter='[tag[from here]]'/>",
+	         utils.placeholder(1,to)+"<$list filter='[tag<relink-1>]'/>",
+	         {to: to, log: log});
+	expect(log).toEqual(["%cRenaming 'from here' to '"+to+"' in <$list filter /> attribute of tiddler 'test' %cby creating placeholder macros"]);
 });
 
 it('ignores blank attribute configurations', function() {

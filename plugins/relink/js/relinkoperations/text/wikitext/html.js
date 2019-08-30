@@ -39,6 +39,10 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			if (value === undefined) {
 				continue;
 			}
+			var logMessage = "attribute";
+			if (extendedOptions.usedPlaceholder) {
+				logMessage = "attribute-placeholder";
+			}
 			var quote = determineQuote(text, attr);
 			// account for the quote if it's there.
 			var valueStart = attr.end
@@ -56,14 +60,14 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			var quotedValue = utils.wrapAttributeValue(value,quote);
 			if (quotedValue !== undefined) {
 				builder.push(quotedValue);
-				log("attribute", logArguments);
 			} else {
 				// The value was unquotable. We need to make
 				// a macro in order to replace it.
 				var macro = "<<"+this.parser.getPlaceholderFor(value)+">>";
 				builder.push(macro);
-				log("attribute-placeholder", logArguments);
+				logMessage = "attribute-placeholder";
 			}
+			log(logMessage, logArguments);
 			buildIndex = valueStart
 			           + attr.value.length
 			           + (quote.length*2);

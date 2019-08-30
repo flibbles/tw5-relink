@@ -124,6 +124,13 @@ it('import pragma', function() {
 	testText("\\import from\nsingle to double.",
 	         "\\import [[to there]]\nsingle to double.",
 	         {from: "from", wiki: wiki()});
+
+	log = [];
+	var to = "bad\"\"\'\'[]name";
+	testText("\\import [[from here]]\nstuff",
+	         utils.placeholder(1,to)+"\\import [<relink-1>]\nstuff",
+	         {wiki: wiki(), log: log, to: to});
+	expect(log).toEqual(["%cRenaming 'from here' to '"+to+"' in \\import filter of tiddler 'test' %cby creating placeholder macros"]);
 });
 
 });

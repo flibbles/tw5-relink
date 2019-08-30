@@ -77,14 +77,19 @@ it('unpretty (degrades to widget)', function() {
 
 it('unpretty and unquotable', function() {
 	var ph = utils.placeholder;
-	function test(to, text, expected) {
+	function test(to, text, expected, message) {
 		var log = [];
+		var message = message ||  "by converting it into a widget and creating placeholder macros";
 		testText(text, expected, {to: to, log: log});
-		expect(log).toEqual([logMessage(to, "by converting it into a widget and creating placeholder macros")]);
+		expect(log).toEqual([logMessage(to,message)]);
 	};
 	var weird = 'a\'|" """x';
 	//test(`{{{[[""""'']] [[from here]]}}}`
-	//test(weird, `{{{[[from here]]}}}`, ph(1,weird) + "<$list filter='[<relink-1>]'
+	//test(weird, `{{{[[from here]]}}}`, ph(1,weird) + "<$list filter='[<relink-1>]'");
+	test("bad[]title",
+	     "{{{[title[from here]]}}}",
+	     ph(1, "bad[]title")+"{{{[title<relink-1>]}}}",
+	     "by creating placeholder macros");
 	var tooltip = `"tooltips's"`;
 	test(weird, "{{{Title||from here}}}", ph(1,weird) + "<$list filter='Title' template=<<relink-1>>/>");
 	test("bar|bar", "{{{Title|"+tooltip+"||from here}}}", ph("tooltip-1",tooltip) + "<$list filter='Title' tooltip=<<relink-tooltip-1>> template='bar|bar'/>");
