@@ -142,6 +142,7 @@ it('handles transclusion for all operands', function() {
 	testFilter("A [anything{from}] B", {from: "from"});
 	testFilter("A [anything{from!!field}] B", {from: "from"});
 	testFilter("A [anything{from##index}] B", {from: "from"});
+	testFilter("[[Title]addsuffix{from!!field}]", {from: "from", debug: true});
 });
 
 it('field:title operator', function() {

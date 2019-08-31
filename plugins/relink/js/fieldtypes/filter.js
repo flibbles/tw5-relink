@@ -53,7 +53,7 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 		match, noPrecedingWordBarrier,
 		wordBarrierRequired=false;
 	var whitespaceRegExp = /\s+/mg,
-		operandRegExp = /((?:\+|\-|~|=)?)(?:(\[[^\[])|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+)|(?:\[\[([^\]]+)\]\]))/mg;
+		operandRegExp = /((?:\+|\-|~|=)?)(?:(\[)|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+))/mg;
 	while(p < filterString.length) {
 		// Skip any whitespace
 		whitespaceRegExp.lastIndex = p;
@@ -81,8 +81,18 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 				p++;
 			}
 			if(match[2]) { // Opening square bracket
-				p =parseFilterOperation(relinker,fromTitle,toTitle,filterString,p,whitelist,options);
-			} else if(match[3] || match[4] || match[5] || match[6]) { // Double quoted string, single quoted string, or noquote
+				var standaloneTitle = /\[\[([^\]]+)\]\]/g;
+				standaloneTitle.lastIndex = p;
+				var alone = standaloneTitle.exec(filterString);
+				if (!alone || alone.index != p) {
+					p =parseFilterOperation(relinker,fromTitle,toTitle,filterString,p,whitelist,options);
+					continue;
+				} else {
+					match[6] = alone[1];
+					operandRegExp.lastIndex = standaloneTitle.lastIndex;
+				}
+			}
+			if(match[3] || match[4] || match[5] || match[6]) { // Double quoted string, single quoted string, or noquote
 				var preference = undefined;
 				if (match[3]) {
 					preference = '"';

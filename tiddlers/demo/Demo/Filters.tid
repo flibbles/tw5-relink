@@ -1,3 +1,3 @@
-description: Filters in whitelisted fields and attributes will be updated as well. However, Relink only updates the operands of whitelisted filter operators. This includes `tag` and `title`, but you can add or remove any operators you want to the list.
+description: Filters in whitelisted fields and attributes will be updated as well. However, Relink only updates the operands of whitelisted filter operators. This includes `tag` and `title`, but you can add or remove any operators you want to the list.<br>''Note'': Indirect operands are always updated, since regardless of their operator, they may reference tiddlers.
 
-{{{Frodo [tag[Frodo]]}}}
+{{{Frodo [tag[Frodo]] [[Weapon: ]addsuffix{Frodo!!weapon}]}}}
