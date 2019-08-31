@@ -1,0 +1,7 @@
+created: 20190831010508611
+
+!! v1.3.0
+
+* Support for filtered transcludes (e.g. `{{{[tag[MyTiddler]]}}}`)
+* Support for indirect filter operands (e.g. `[get{MyTiddler##index}]`)
+* Filters in general should be a lot more robust
