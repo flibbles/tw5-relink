@@ -84,6 +84,17 @@ it('field attributes fun with quotes', function() {
 	testQuote("from", `""""begins" with quote; has apos'"""`, {from: "from", to: `"begins" with quote; has apos'`});
 });
 
+it('supports indirect attribute values', function() {
+	testText("<$link to={{from here}}/>");
+	testText("<$link to={{from here!!field}}/>");
+	testText("<$link to={{from here##index}}/>");
+	testText("<$link to   =   {{from here!!field}} />");
+	var to = "title}withBracket";
+	var options = {to: to, ignored: true};
+	testText("<$link to={{from here}} />", options);
+	expect(options.fails.length).toEqual(1);
+});
+
 it('uses macros for literally unquotable titles', function() {
 	var macro = utils.placeholder;
 	function link(number) {

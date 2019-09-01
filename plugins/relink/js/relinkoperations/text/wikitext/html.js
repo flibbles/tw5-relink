@@ -13,6 +13,8 @@ var utils = require("./utils.js");
 var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
+var referenceHandler = settings.getRelinker('reference');
+var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
 
 exports.name = "html";
 
@@ -34,16 +36,42 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			if (nextEql < 0 || nextEql > attr.end) {
 				continue;
 			}
-			var extendedOptions = Object.assign({placeholder: this.parser}, options);
-			var value = attrRelinker(attr.value, fromTitle, toTitle, extendedOptions);
-			if (value === undefined) {
+			var logMessage = "attribute";
+			var value, quote;
+			if (attr.type === "string") {
+				var extendedOptions = Object.assign({placeholder: this.parser}, options);
+				value = attrRelinker(attr.value, fromTitle, toTitle, extendedOptions);
+				if (value === undefined) {
+					continue;
+				}
+				if (extendedOptions.usedPlaceholder) {
+					logMessage = "attribute-placeholder";
+				}
+				quote = determineQuote(text, attr);
+				var quoted = utils.wrapAttributeValue(value,quote);
+				if (quoted === undefined) {
+					// The value was unquotable. We need to make
+					// a macro in order to replace it.
+					quoted = "<<"+this.parser.getPlaceholderFor(value)+">>";
+					logMessage = "attribute-placeholder";
+				}
+				value = quoted;
+			} else if (attr.type === "indirect") {
+				if (toTitle.indexOf("}") >= 0) {
+					// Impossible replacement
+					throw new CannotRelinkError();
+				}
+				quote = "{{";
+				var ref = $tw.utils.parseTextReference(attr.textReference);
+				if (ref.title !== fromTitle) {
+					continue;
+				}
+				ref.title = toTitle;
+				attr.value = attr.textReference;
+				value = "{{"+referenceToString(ref)+"}}";
+			} else {
 				continue;
 			}
-			var logMessage = "attribute";
-			if (extendedOptions.usedPlaceholder) {
-				logMessage = "attribute-placeholder";
-			}
-			var quote = determineQuote(text, attr);
 			// account for the quote if it's there.
 			var valueStart = attr.end
 			               - (quote.length*2)
@@ -57,20 +85,9 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				element: this.nextTag.tag,
 				attribute: attributeName
 			};
-			var quotedValue = utils.wrapAttributeValue(value,quote);
-			if (quotedValue !== undefined) {
-				builder.push(quotedValue);
-			} else {
-				// The value was unquotable. We need to make
-				// a macro in order to replace it.
-				var macro = "<<"+this.parser.getPlaceholderFor(value)+">>";
-				builder.push(macro);
-				logMessage = "attribute-placeholder";
-			}
+			builder.push(value);
 			log(logMessage, logArguments);
-			buildIndex = valueStart
-			           + attr.value.length
-			           + (quote.length*2);
+			buildIndex = attr.end;
 		}
 	}
 	this.parser.pos = this.nextTag.end;
@@ -79,6 +96,16 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		return builder.join('');
 	}
 	return undefined;
+};
+
+function referenceToString(textReference) {
+	var title = textReference.title || '';
+	if (textReference.field) {
+		return title + "!!" + textReference.field;
+	} else if (textReference.index) {
+		return title + "##" + textReference.index;
+	}
+	return title;
 };
 
 /**Givin some text, and an attribute within that text, this returns
