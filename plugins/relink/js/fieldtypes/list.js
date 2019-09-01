@@ -6,11 +6,13 @@ TiddlerA [[Tiddler with spaces]] [[Another Title]]
 
 var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
 
+exports.name = "list";
+
 /**Returns undefined if no change was made.
  * Parameter: value can literally be a list. This can happen for builtin
  *            types 'list' and 'tag'. In those cases, we also return list.
  */
-exports.list = function(value, fromTitle, toTitle, options) {
+exports.relink = function(value, fromTitle, toTitle, options) {
 	var isModified = false,
 		actualList = false,
 		list;

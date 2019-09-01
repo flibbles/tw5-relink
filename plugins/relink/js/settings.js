@@ -6,20 +6,22 @@ This handles the fetching and distribution of relink settings.
 \*/
 
 var fieldTypes = Object.create(null);
-$tw.modules.applyMethods('relinkfieldtype', fieldTypes);
 
-// TODO: This is temporary until I get a better setup
-// In reality, I should have the fieldType modules supply more than just a
-// function. They should specify their name. and Allow for a possible delinker.
-for (var type in fieldTypes) {
-	fieldTypes[type].name = type;
-}
+$tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
+	fieldTypes[exports.name] = exports;
+	// For legacy reasons, some of the field types can go by other names
+	if (exports.aliases) {
+		$tw.utils.each(exports.aliases, function(alias) {
+			fieldTypes[alias] = exports;
+		});
+	}
+});
 
 /**Returns a specific relinker.
  * This is useful for wikitext rules which need to parse a filter or a list
  */
 exports.getRelinker = function(name) {
-	return fieldTypes[name];
+	return fieldTypes[name].relink;
 };
 
 exports.getFields = function(options) {
@@ -54,13 +56,13 @@ exports.factories = {
 			var elem = root(key);
 			var attr = key.substr(elem.length+1);
 			attributes[elem] = attributes[elem] || Object.create(null);
-			attributes[elem][attr] = relinker;
+			attributes[elem][attr] = relinker.relink;
 		}
 	},
 	fields: function(fields, tiddler, name) {
 		var relinker = fieldTypes[tiddler.fields.text];
 		if (relinker) {
-			fields[name] = relinker;
+			fields[name] = relinker.relink;
 		}
 	},
 	/* The config tiddlers require "title" as text. ("yes" for legacy)

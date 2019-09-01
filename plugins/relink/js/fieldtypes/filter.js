@@ -27,7 +27,9 @@ FilterRelinker.prototype.results = function() {
 	return undefined;
 };
 
-exports.filter = function(filter, fromTitle, toTitle, options) {
+exports.name = "filter";
+
+exports.relink = function(filter, fromTitle, toTitle, options) {
 	if (!filter || filter.indexOf(fromTitle) < 0) {
 		return undefined;
 	}
