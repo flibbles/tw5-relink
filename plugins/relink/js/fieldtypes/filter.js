@@ -56,6 +56,7 @@ exports.filter = function(filter, fromTitle, toTitle, options) {
 		}
 		// Match the start of the operation
 		if(p < filter.length) {
+			var val;
 			operandRegExp.lastIndex = p;
 			match = operandRegExp.exec(filter);
 			if(!match || match.index !== p) {
@@ -66,10 +67,14 @@ exports.filter = function(filter, fromTitle, toTitle, options) {
 				p++;
 			}
 			if(match[2]) { // Opening square bracket
+				// We check if this is a standalone title,
+				// like `[[MyTitle]]`. We treat those like
+				// `"MyTitle"` or `MyTitle`. Not like a run.
 				var standaloneTitle = /\[\[([^\]]+)\]\]/g;
 				standaloneTitle.lastIndex = p;
 				var alone = standaloneTitle.exec(filter);
 				if (!alone || alone.index != p) {
+					// It's a legit run
 					p =parseFilterOperation(relinker,fromTitle,toTitle,filter,p,whitelist,options);
 					if (p === undefined) {
 						// The filter is malformed
@@ -77,45 +82,49 @@ exports.filter = function(filter, fromTitle, toTitle, options) {
 						return undefined;
 					}
 					continue;
-				} else {
-					match[6] = alone[1];
-					operandRegExp.lastIndex = standaloneTitle.lastIndex;
 				}
+				bracketTitle = alone[1];
+				operandRegExp.lastIndex = standaloneTitle.lastIndex;
+				val = alone[1];
+			} else {
+				// standalone Double quoted string, single
+				// quoted string, or noquote ahead.
+				val = match[3] || match[4] || match[5];
 			}
-			if(match[3] || match[4] || match[5] || match[6]) { // Double quoted string, single quoted string, or noquote
-				var preference = undefined;
-				if (match[3]) {
-					preference = '"';
-				} else if (match[4]) {
-					preference = "'";
-				} else if (match[5]) {
-					preference = '';
-				}
-				var val = match[3] || match[4] || match[5] || match[6];
-				if (val === fromTitle) {
-					var newVal = wrapTitle(toTitle, preference);
-					if (newVal === undefined) {
-						if (!options.placeholder) {
-							throw new CannotRelinkError();
-						}
-						newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]";
-						options.usedPlaceholder = true;
-					}
-					if (newVal[0] != '[') {
-						// not bracket enclosed
-						// this requires whitespace
-						// arnound it
-						if (noPrecedingWordBarrier && !match[1]) {
-							relinker.add(p, ' ');
-							relinker.pos = p;
-						}
-						wordBarrierRequired = true;
-					}
-					relinker.add(p, newVal);
-					relinker.pos = operandRegExp.lastIndex;
-				}
-				p = operandRegExp.lastIndex;
+			// From here on, we're dealing with a standalone title
+			// expression. like `"MyTitle"` or `[[MyTitle]]`
+			// We're much more flexible about relinking these.
+			var preference = undefined;
+			if (match[3]) {
+				preference = '"';
+			} else if (match[4]) {
+				preference = "'";
+			} else if (match[5]) {
+				preference = '';
 			}
+			if (val === fromTitle) {
+				var newVal = wrapTitle(toTitle, preference);
+				if (newVal === undefined) {
+					if (!options.placeholder) {
+						throw new CannotRelinkError();
+					}
+					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]";
+					options.usedPlaceholder = true;
+				}
+				if (newVal[0] != '[') {
+					// not bracket enclosed
+					// this requires whitespace
+					// arnound it
+					if (noPrecedingWordBarrier && !match[1]) {
+						relinker.add(p, ' ');
+						relinker.pos = p;
+					}
+					wordBarrierRequired = true;
+				}
+				relinker.add(p, newVal);
+				relinker.pos = operandRegExp.lastIndex;
+			}
+			p = operandRegExp.lastIndex;
 		}
 	}
 	return relinker.results();
