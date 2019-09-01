@@ -11,6 +11,7 @@ This renames both the tiddler and the template field.
 \*/
 
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
+var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var utils = require("./utils.js");
 
 exports.name = ['transcludeinline', 'transcludeblock'];
@@ -36,7 +37,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		if (ref.title === fromTitle) {
 			modified = true;
 			ref.title = toTitle;
-			var refString = referenceToString(ref);
+			var refString = refHandler.toString(ref);
 			// preserve user's whitespace
 			reference = reference.replace(trimmedRef, refString);
 		}

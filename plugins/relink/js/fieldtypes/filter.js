@@ -6,6 +6,7 @@ This specifies logic for updating filters to reflect title changes.
  */
 
 var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
+var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 
 function FilterRelinker(text) {
@@ -205,7 +206,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 						throw new CannotRelinkError();
 					}
 					ref.title = toTitle;
-					var newRef = referenceToString(ref);
+					var newRef = refHandler.toString(ref);
 					// We don't check the whitelist.
 					// All indirect operands convert.
 					relinker.add(p, newRef);
@@ -216,24 +217,29 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 				nextBracketPos = filterString.indexOf("]",p);
 				var operand = filterString.substring(p,nextBracketPos);
 				// Check if this is a relevant operator
-				if (operand === fromTitle) {
-					var wrapped;
-					if (!canBePrettyOperand(toTitle)) {
-						if (!options.placeholder) {
-							throw new CannotRelinkError();
-						}
-						var ph = options.placeholder.getPlaceholderFor(toTitle);
-						wrapped = "<"+ph+">";
-						options.usedPlaceholder = true;
-					} else {
-						wrapped = "["+toTitle+"]";
-					}
-					if (whitelist[operator.operator]
-					|| (operator.suffix && whitelist[operator.operator + ":" + operator.suffix])) {
-						relinker.add(p-1, wrapped);
-						relinker.pos = nextBracketPos+1;
-					}
+				var handler = fieldType(whitelist, operator);
+				if (!handler) {
+					// This operator isn't managed. Bye.
+					break;
 				}
+				var result = handler(operand, fromTitle, toTitle, options);
+				if (!result) {
+					// The fromTitle wasn't in the operand.
+					break;
+				}
+				var wrapped;
+				if (!canBePrettyOperand(result)) {
+					if (!options.placeholder) {
+						throw new CannotRelinkError();
+					}
+					var ph = options.placeholder.getPlaceholderFor(result);
+					wrapped = "<"+ph+">";
+					options.usedPlaceholder = true;
+				} else {
+					wrapped = "["+result+"]";
+				}
+				relinker.add(p-1, wrapped);
+				relinker.pos = nextBracketPos+1;
 				break;
 			case "<": // Angle brackets
 				nextBracketPos = filterString.indexOf(">",p);
@@ -267,21 +273,17 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 	return p;
 }
 
+// Returns the relinker needed for a given operator, or returns undefined.
+function fieldType(whitelist, operator) {
+	return whitelist[operator.operator] ||
+	       (operator.suffix &&
+	        whitelist[operator.operator + ":" + operator.suffix]);
+};
+
 function canBePrettyOperand(value) {
 	return value.indexOf(']') < 0;
 };
 
 function canBePrettyIndirect(value) {
 	return value.indexOf('}') < 0;
-};
-
-// TODO: This exact function occurs in a couple places. Centralize it.
-function referenceToString(textReference) {
-	var title = textReference.title || '';
-	if (textReference.field) {
-		return title + "!!" + textReference.field;
-	} else if (textReference.index) {
-		return title + "##" + textReference.index;
-	}
-	return title;
 };

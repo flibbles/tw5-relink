@@ -15,7 +15,8 @@ function addSettings(wiki) {
 		utils.fieldConf("customFilter", "filter"),
 		operatorConf("title"),
 		operatorConf("field:title"),
-		operatorConf("tag")
+		operatorConf("tag"),
+		operatorConf("list", "reference")
 	]);
 };
 
@@ -153,6 +154,12 @@ it('field:title operator', function() {
 
 it('tag operator', function() {
 	testFilter("A [tag[from here]] B");
+});
+
+it('manages reference types as operands', function() {
+	testFilter("A [list[from here]] B", {debug: true});
+	testFilter("A [list[from here!!field]] B");
+	testFilter("A [list[from here##index]] B");
 });
 
 it('ignores blank tag configurations', function() {

@@ -65,14 +65,10 @@ exports.factories = {
 			fields[name] = relinker.relink;
 		}
 	},
-	/* The config tiddlers require "title" as text. ("yes" for legacy)
-	 * This is so shadow because in theory, we may need to support other
-	 * field types. I know there are TextReferences in some, and enlist
-	 * is a list. We may need to support that some day.
-	 */
 	operators: function(operators, tiddler, name) {
-		if (tiddler.fields.text === "title" || tiddler.fields.text === "yes") {
-			operators[name] = true;
+		var relinker = fieldTypes[tiddler.fields.text];
+		if (relinker) {
+			operators[name] = relinker.relink;
 		}
 	}
 };

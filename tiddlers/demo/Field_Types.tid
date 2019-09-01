@@ -42,3 +42,19 @@ If Relink is configured to consider a certain field or attribute as a filter, it
 For example, take `<$list filter="[[MyTiddler]] [tag[MyTiddler]!has[draft.of]]" />` and say //MyTiddler// is updated to //NewTiddler//. As long as the ''filter'' attribute of the widget ''$list'' is whitelisted (it is by default), and `[tag[]]` and `[title[]]` are whitelisted (they are by default), that widget would become:
 
 `<$list filter="[[NewTiddler]] [tag[NewTiddler]!has[draft.of]]" />`
+
+!!! Reference
+
+This is a [[TextReference, as described here|https://tiddlywiki.com/static/TextReference.html]].
+
+The tiddler portion of the TextReference is checked and possibly relinked. So if `FirstTiddler` were renamed to `SecondTiddler`, then a TextReference like
+
+`FirstTiddler!!MyField`
+
+would become
+
+`SecondTiddler!!MyField`
+
+You probably won't use this one very often. Generally, when you want to make a TextReference, you do so through transclusion (e.g. `{{FirstTiddler!!MyField}}`), and those will already be relinked for you, but there are some cases where a literal value is expected to be a TextReference.
+
+...namely, the filter operator `list`. That's it.

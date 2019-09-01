@@ -15,4 +15,4 @@ exports.relink = function(value, fromTitle, toTitle, options) {
 };
 
 // This is legacy support for when 'title' was known as 'field'
-exports.aliases = ['field'];
+exports.aliases = ['field', 'yes'];
