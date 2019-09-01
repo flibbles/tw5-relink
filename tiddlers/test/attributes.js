@@ -85,6 +85,16 @@ it('supports indirect attribute values', function() {
 	expect(results.fails.length).toEqual(1);
 });
 
+//TODO: This scenario is actually possible, but it's not necessary for
+//      the major release.
+it('fails on bad indirect attributes', function() {
+	var r;
+	r = testText("<$link to={{from here}}/>", {ignored: true, to: "E!!E"});
+	expect(r.fails.length).toEqual(1);
+	r = testText("<$link to={{from here}}/>", {ignored: true, to: "T##T"});
+	expect(r.fails.length).toEqual(1);
+});
+
 it('supports filter attribute values', function() {
 	testText("<$link to={{{[[from here]]}}}/>");
 	testText("<$link to=   {{{[[from here]]}}}    />");

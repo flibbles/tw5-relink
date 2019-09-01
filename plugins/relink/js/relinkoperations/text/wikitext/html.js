@@ -87,6 +87,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			continue;
 		}
 		// account for the quote if it's there.
+		// We count backwards from the end to preserve whitespace
 		var valueStart = attr.end
 		               - (quote.length*2)
 		               - attr.value.length;
