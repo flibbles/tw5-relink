@@ -22,73 +22,74 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	var managedElement = settings.getAttributes(options)[this.nextTag.tag],
 		builder = [],
 		buildIndex = this.nextTag.start;
-	if (managedElement) {
-		for (var attributeName in this.nextTag.attributes) {
-			var attrRelinker = managedElement[attributeName];
-			if (!attrRelinker) {
-				continue;
-			}
-			var attr = this.nextTag.attributes[attributeName];
-			var nextEql = text.indexOf('=', attr.start);
-			// This is the rare case of changing tiddler
-			// "true" to something else when "true" is
-			// implicit, like <$link to /> We ignore those.
-			if (nextEql < 0 || nextEql > attr.end) {
-				continue;
-			}
-			var logMessage = "attribute";
-			var value, quote;
-			if (attr.type === "string") {
-				var extendedOptions = Object.assign({placeholder: this.parser}, options);
-				value = attrRelinker(attr.value, fromTitle, toTitle, extendedOptions);
-				if (value === undefined) {
-					continue;
-				}
-				if (extendedOptions.usedPlaceholder) {
-					logMessage = "attribute-placeholder";
-				}
-				quote = determineQuote(text, attr);
-				var quoted = utils.wrapAttributeValue(value,quote);
-				if (quoted === undefined) {
-					// The value was unquotable. We need to make
-					// a macro in order to replace it.
-					quoted = "<<"+this.parser.getPlaceholderFor(value)+">>";
-					logMessage = "attribute-placeholder";
-				}
-				value = quoted;
-			} else if (attr.type === "indirect") {
-				if (toTitle.indexOf("}") >= 0) {
-					// Impossible replacement
-					throw new CannotRelinkError();
-				}
-				quote = "{{";
-				var ref = $tw.utils.parseTextReference(attr.textReference);
-				if (ref.title !== fromTitle) {
-					continue;
-				}
-				ref.title = toTitle;
-				attr.value = attr.textReference;
-				value = "{{"+referenceToString(ref)+"}}";
-			} else {
-				continue;
-			}
-			// account for the quote if it's there.
-			var valueStart = attr.end
-			               - (quote.length*2)
-			               - attr.value.length;
-			builder.push(text.substring(buildIndex, valueStart));
-			var logArguments = {
-				from: fromTitle,
-				to: toTitle,
-				tiddler: tiddler.fields.title,
-				type: attrRelinker.name,
-				element: this.nextTag.tag,
-				attribute: attributeName
-			};
-			builder.push(value);
-			log(logMessage, logArguments);
-			buildIndex = attr.end;
+	for (var attributeName in this.nextTag.attributes) {
+		var attr = this.nextTag.attributes[attributeName];
+		var nextEql = text.indexOf('=', attr.start);
+		// This is the rare case of changing tiddler
+		// "true" to something else when "true" is
+		// implicit, like <$link to /> We ignore those.
+		if (nextEql < 0 || nextEql > attr.end) {
+			continue;
 		}
+		var value, quote, logMessage = "attribute";
+		if (attr.type === "string") {
+			if (!managedElement) {
+				// We don't manage this element. Bye.
+				continue;
+			}
+			var relinker = managedElement[attributeName];
+			if (!relinker) {
+				// We don't manage this attribute. Bye.
+				continue;
+			}
+			var extendedOptions = Object.assign({placeholder: this.parser}, options);
+			value = relinker(attr.value, fromTitle, toTitle, extendedOptions);
+			if (value === undefined) {
+				continue;
+			}
+			if (extendedOptions.usedPlaceholder) {
+				logMessage = "attribute-placeholder";
+			}
+			quote = determineQuote(text, attr);
+			var quoted = utils.wrapAttributeValue(value,quote);
+			if (quoted === undefined) {
+				// The value was unquotable. We need to make
+				// a macro in order to replace it.
+				quoted = "<<"+this.parser.getPlaceholderFor(value)+">>";
+				logMessage = "attribute-placeholder";
+			}
+			value = quoted;
+		} else if (attr.type === "indirect") {
+			if (toTitle.indexOf("}") >= 0) {
+				// Impossible replacement
+				throw new CannotRelinkError();
+			}
+			quote = "{{";
+			var ref = $tw.utils.parseTextReference(attr.textReference);
+			if (ref.title !== fromTitle) {
+				continue;
+			}
+			ref.title = toTitle;
+			attr.value = attr.textReference;
+			value = "{{"+referenceToString(ref)+"}}";
+		} else {
+			continue;
+		}
+		// account for the quote if it's there.
+		var valueStart = attr.end
+		               - (quote.length*2)
+		               - attr.value.length;
+		builder.push(text.substring(buildIndex, valueStart));
+		var logArguments = {
+			from: fromTitle,
+			to: toTitle,
+			tiddler: tiddler.fields.title,
+			element: this.nextTag.tag,
+			attribute: attributeName
+		};
+		builder.push(value);
+		log(logMessage, logArguments);
+		buildIndex = attr.end;
 	}
 	this.parser.pos = this.nextTag.end;
 	if (builder.length > 0) {

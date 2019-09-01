@@ -28,15 +28,17 @@ exports.relink = function(fields, options) {
 	results.from = options.from || "from here";
 	results.to = options.to || "to there";
 	wiki.addTiddler({title: results.from});
-	results.log = exports.collectLogs(function() {
-		results.fails = exports.collectFailures(function() {
-			var tiddler = new $tw.Tiddler({title: "test"}, fields);
-			var title = tiddler.fields.title;
-			wiki.addTiddler(tiddler);
-			wiki.renameTiddler(results.from, results.to, options);
-			results.tiddler = wiki.getTiddler(title);
-		});
-	}, options);
+	results.log = exports.collect("log", function() {
+	results.warn = exports.collect("warn", function() {
+	results.fails = exports.collectFailures(function() {
+		var tiddler = new $tw.Tiddler({title: "test"}, fields);
+		var title = tiddler.fields.title;
+		wiki.addTiddler(tiddler);
+		wiki.renameTiddler(results.from, results.to, options);
+		results.tiddler = wiki.getTiddler(title);
+	});
+	});
+	});
 	return results;
 };
 
@@ -63,26 +65,23 @@ exports.prepArgs = function(input, expected, options) {
 	return [input, expected, options];
 };
 
-/**Runs the given scope while swallowing any log messages.
+/**Runs the given scope while swallowing any console messages of a given type.
+ * param output: "log", "warn", "error", ...
  * Options:
  *   debug: if true, then this function doesn't divert messages.
  *          Useful to see output.
  * returns: Array of the emitted log messages.
  */
-exports.collectLogs = function(scope, options) {
-	options = options || {};
-	var oldLog = console.log,
-		logMessages = [];
-	console.log = function (message) { logMessages.push(message); };
-	if (options.debug) {
-		console.log = oldLog;
-	}
+exports.collect = function(output, scope) {
+	var oldOutput = console[output],
+		messages = [];
+	console[output] = function (message) { messages.push(message); };
 	try {
 		scope.call();
 	} finally {
-		console.log = oldLog;
+		console[output] = oldOutput;
 	}
-	return logMessages;
+	return messages;
 };
 
 exports.collectFailures = function(scope) {

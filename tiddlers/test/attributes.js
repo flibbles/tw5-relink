@@ -89,6 +89,8 @@ it('supports indirect attribute values', function() {
 	testText("<$link to={{from here!!field}}/>");
 	testText("<$link to={{from here##index}}/>");
 	testText("<$link to   =   {{from here!!field}} />");
+	// Works on otherwise unmanaged attributes too
+	var r = testText("<$text text={{from here!!field}} />");
 	var to = "title}withBracket";
 	var options = {to: to, ignored: true};
 	var results = testText("<$link to={{from here}} />", options);
