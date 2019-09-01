@@ -14,6 +14,7 @@ var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
+var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
 var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
 
 exports.name = "html";
@@ -72,6 +73,16 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			ref.title = toTitle;
 			attr.value = attr.textReference;
 			value = "{{"+refHandler.toString(ref)+"}}";
+		} else if (attr.type === "filtered") {
+			var extendedOptions = Object.assign({placeholder: this.parser}, options);
+			var filter = filterHandler(attr.filter, fromTitle, toTitle, extendedOptions);
+			if (!canBeFilterValue(filter)) {
+				// Although I think we can actually do this one.
+				throw new CannotRelinkError();
+			}
+			attr.value = attr.filter;
+			value = "{{{" + filter + "}}}";
+			quote = "{{{";
 		} else {
 			continue;
 		}
@@ -97,6 +108,10 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		return builder.join('');
 	}
 	return undefined;
+};
+
+function canBeFilterValue(value) {
+	return value.indexOf("}}}") < 0 && !value.endsWith('}}');
 };
 
 /**Givin some text, and an attribute within that text, this returns

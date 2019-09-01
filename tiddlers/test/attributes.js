@@ -85,6 +85,12 @@ it('supports indirect attribute values', function() {
 	expect(results.fails.length).toEqual(1);
 });
 
+it('supports filter attribute values', function() {
+	testText("<$link to={{{[[from here]]}}}/>");
+	testText("<$link to=   {{{[[from here]]}}}    />");
+	testText("<$link to={{{[[from here]]}}}/>", {to: "to {}there"});
+});
+
 it('uses macros for literally unquotable titles', function() {
 	var macro = utils.placeholder;
 	function link(number) {
