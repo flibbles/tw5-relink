@@ -28,36 +28,20 @@ FilterRelinker.prototype.results = function() {
 };
 
 exports.filter = function(filter, fromTitle, toTitle, options) {
-	var indices;
-	if (filter && filter.indexOf(fromTitle) >= 0) {
-		var relinker = new FilterRelinker(filter);
-		try {
-			var indices = scanFilter(filter,relinker,fromTitle,toTitle,options);
-		} catch (err) {
-			if (err instanceof CannotRelinkError) {
-				throw err;
-			}
-			// Not really anything to do. It's a bad filter.
-			// Move on.
-		}
-		var results = relinker.results();
-		return results;
+	if (!filter || filter.indexOf(fromTitle) < 0) {
+		return undefined;
 	}
-	return undefined;
-};
-
-// Returns an array of indices to replace
-function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
+	var relinker = new FilterRelinker(filter);
 	var whitelist = settings.getOperators(options);
 	var p = 0, // Current position in the filter string
 		match, noPrecedingWordBarrier,
 		wordBarrierRequired=false;
 	var whitespaceRegExp = /\s+/mg,
 		operandRegExp = /((?:\+|\-|~|=)?)(?:(\[)|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+))/mg;
-	while(p < filterString.length) {
+	while(p < filter.length) {
 		// Skip any whitespace
 		whitespaceRegExp.lastIndex = p;
-		match = whitespaceRegExp.exec(filterString);
+		match = whitespaceRegExp.exec(filter);
 		noPrecedingWordBarrier = false;
 		if(match && match.index === p) {
 			p = p + match[0].length;
@@ -71,11 +55,12 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 			}
 		}
 		// Match the start of the operation
-		if(p < filterString.length) {
+		if(p < filter.length) {
 			operandRegExp.lastIndex = p;
-			match = operandRegExp.exec(filterString);
+			match = operandRegExp.exec(filter);
 			if(!match || match.index !== p) {
-				throw "Bad Filter";
+				// It's a bad filter
+				return undefined;
 			}
 			if(match[1]) { // prefix
 				p++;
@@ -83,9 +68,14 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 			if(match[2]) { // Opening square bracket
 				var standaloneTitle = /\[\[([^\]]+)\]\]/g;
 				standaloneTitle.lastIndex = p;
-				var alone = standaloneTitle.exec(filterString);
+				var alone = standaloneTitle.exec(filter);
 				if (!alone || alone.index != p) {
-					p =parseFilterOperation(relinker,fromTitle,toTitle,filterString,p,whitelist,options);
+					p =parseFilterOperation(relinker,fromTitle,toTitle,filter,p,whitelist,options);
+					if (p === undefined) {
+						// The filter is malformed
+						// We do nothing.
+						return undefined;
+					}
 					continue;
 				} else {
 					match[6] = alone[1];
@@ -128,6 +118,7 @@ function scanFilter(filterString, relinker, fromTitle, toTitle, options) {
 			}
 		}
 	}
+	return relinker.results();
 };
 
 function wrapTitle(value, preference) {
@@ -161,7 +152,8 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 	var nextBracketPos, operator;
 	// Skip the starting square bracket
 	if(filterString.charAt(p++) !== "[") {
-		throw "Missing [ in filter expression";
+		// Missing [ in filter expression
+		return undefined;
 	}
 	// Process each operator in turn
 	do {
@@ -173,7 +165,8 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 		// Get the operator name
 		nextBracketPos = filterString.substring(p).search(/[\[\{<\/]/);
 		if(nextBracketPos === -1) {
-			throw "Missing [ in filter expression";
+			// Missing [ in filter expression
+			return undefined;
 		}
 		nextBracketPos += p;
 		var bracket = filterString.charAt(nextBracketPos);
@@ -241,20 +234,23 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 					nextBracketPos = p + rex.lastIndex - 1;
 				}
 				else {
-					throw "Unterminated regular expression in filter expression";
+					// Unterminated regular expression
+					return undefined;
 				}
 				break;
 		}
 
 		if(nextBracketPos === -1) {
-			throw "Missing closing bracket in filter expression";
+			// Missing closing bracket in filter expression
+			// return undefined;
 		}
 		p = nextBracketPos + 1;
 
 	} while(filterString.charAt(p) !== "]");
 	// Skip the ending square bracket
 	if(filterString.charAt(p++) !== "]") {
-		throw "Missing ] in filter expression";
+		// Missing ] in filter expression
+		return undefined;
 	}
 	// Return the parsing position
 	return p;
