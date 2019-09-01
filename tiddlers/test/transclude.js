@@ -31,8 +31,7 @@ function testTextAndLog(text, toTitle, expected, but) {
 describe("transcludes", function() {
 
 it('transcludes', function() {
-	var results = testText("{{from here}}")
-	expect(results.log).toEqual([logMessage("to there")]);
+	testTextAndLog("{{from here}}", "to", "{{to}}");
 	testText("Before {{from here}} After")
 	testText("Before {{from here!!field}} After", {debug: true})
 	testText("Before {{from here##index}} After")
