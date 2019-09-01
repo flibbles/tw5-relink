@@ -9,7 +9,6 @@ var utils = require("test/utils");
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var failCount = options.fails || 0;
-	options.wiki.addTiddler(utils.operatorConf("title"));
 	var results = utils.relink({text: text}, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
 	expect(results.fails.length).toEqual(failCount, "Incorrect number of failures");

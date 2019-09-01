@@ -10,19 +10,9 @@ var operatorConf = utils.operatorConf;
 
 describe("filter fields", function() {
 
-function addSettings(wiki) {
-	wiki.addTiddlers([
-		utils.fieldConf("customFilter", "filter"),
-		operatorConf("title"),
-		operatorConf("field:title"),
-		operatorConf("tag"),
-		operatorConf("list", "reference")
-	]);
-};
-
 function testFilter(filter, expected, options) {
 	[filter, expected, options] = utils.prepArgs(filter, expected, options);
-	addSettings(options.wiki);
+	options.wiki.addTiddler(utils.fieldConf("customFilter", "filter"));
 	var results = relink({customFilter: filter}, options);
 	expect(results.tiddler.fields.customFilter).toBe(expected);
 	return results;
@@ -31,7 +21,6 @@ function testFilter(filter, expected, options) {
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var failCount = options.fails || 0;
-	addSettings(options.wiki);
 	var results = utils.relink({text: text}, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
 	expect(results.fails.length).toEqual(failCount, "Incorrect number of failures");

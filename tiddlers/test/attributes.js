@@ -8,20 +8,8 @@ var utils = require("test/utils");
 
 describe("attributes", function() {
 
-function attrConf(element, attribute, type) {
-	var prefix = "$:/config/flibbles/relink/attributes/";
-	return {title: prefix + element + "/" + attribute, text: type};
-};
-
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
-	var prefix = "$:/config/flibbles/relink/attributes/";
-	options.wiki.addTiddlers([
-		attrConf("$link", "to", "title"),
-		attrConf("$list", "filter", "filter"),
-		utils.operatorConf("title"),
-		utils.operatorConf("tag")
-	]);
 	var results = utils.relink({text: text}, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
 	return results;
@@ -129,7 +117,7 @@ it('detects when internal list uses macros', function() {
 
 it('ignores blank attribute configurations', function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddlers(attrConf("$transclude", "tiddler", ""));
+	wiki.addTiddlers(utils.attrConf("$transclude", "tiddler", ""));
 	testText(`<$link to="A" /><$transclude tiddler="A" />`,
 	         `<$link to="to there" /><$transclude tiddler="A" />`,
 	         {wiki: wiki, from: "A"});
@@ -137,7 +125,7 @@ it('ignores blank attribute configurations', function() {
 
 it('ignores unrecognized attribute configurations', function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler(attrConf("$transclude", "tiddler", "kablam"));
+	wiki.addTiddler(utils.attrConf("$transclude", "tiddler", "kablam"));
 	testText(`<$link to="A" /><$transclude tiddler="A" />`,
 	         `<$link to="to there" /><$transclude tiddler="A" />`,
 	         {wiki: wiki, from: "A"});
@@ -148,17 +136,12 @@ it('ignores unrecognized attribute configurations', function() {
  */
 it('supports "field" attribute configuration', function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler(attrConf("$transclude", "tiddler", "field"));
+	wiki.addTiddler(utils.attrConf("$transclude", "tiddler", "field"));
 	testText(`<$transclude tiddler="from here" />`, {wiki: wiki});
 });
 
 it('filter attributes', function() {
-	var prefix = "$:/config/flibbles/relink/";
 	var wiki = new $tw.Wiki();
-	wiki.addTiddlers([
-		attrConf("$list", "filter", "filter"),
-		{title: prefix + "operators/title", text: "yes"}
-	]);
 	testText(`<$list filter="A [[from here]] B" />`, {wiki: wiki});
 	testText(`<$list nothing="A [[from here]] B" />`, {wiki: wiki, ignored: true});
 });

@@ -25,6 +25,14 @@ exports.relink = function(fields, options) {
 	var results = {};
 	var relinkedTiddler;
 	var wiki = options.wiki || new $tw.Wiki();
+	wiki.addTiddlers([
+		exports.attrConf("$link", "to", "title"),
+		exports.attrConf("$list", "filter", "filter"),
+		exports.operatorConf("title"),
+		exports.operatorConf("field:title"),
+		exports.operatorConf("tag"),
+		exports.operatorConf("list", "reference")
+	]);
 	results.from = options.from || "from here";
 	results.to = options.to || "to there";
 	wiki.addTiddler({title: results.from});
@@ -104,6 +112,11 @@ exports.collectFailures = function(scope) {
 exports.placeholder = function(number, value, newline) {
 	newline = newline || '\n'
 	return `\\define relink-${number}() ${value}${newline}`;
+};
+
+exports.attrConf = function(element, attribute, type) {
+	var prefix = "$:/config/flibbles/relink/attributes/";
+	return {title: prefix + element + "/" + attribute, text: type};
 };
 
 /**Returns a configuration tiddler for a filter operator.
