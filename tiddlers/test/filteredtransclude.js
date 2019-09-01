@@ -9,8 +9,9 @@ var utils = require("test/utils");
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	options.wiki.addTiddler(utils.operatorConf("title"));
-	var t = utils.relink({text: text}, options);
-	expect(t.fields.text).toEqual(expected);
+	var results = utils.relink({text: text}, options);
+	expect(results.tiddler.fields.text).toEqual(expected);
+	return results;
 };
 
 function logMessage(toThere, but) {
@@ -24,9 +25,8 @@ function logMessage(toThere, but) {
 describe("filtered transcludes", function() {
 
 it('pretty', function() {
-	var log = [];
-	testText("{{{[[from here]]}}}", {log: log});
-	expect(log).toEqual([logMessage("to there")]);
+	var r = testText("{{{[[from here]]}}}");
+	expect(r.log).toEqual([logMessage("to there")]);
 	testText("Inline {{{[[from here]]}}} List");
 	testText("Block\n\n{{{[[from here]]}}}\n\nList");
 	testText("{{{[[from here]]|tooltip}}}");
@@ -62,9 +62,9 @@ it('rightly judges unpretty', function() {
 
 it('unpretty (degrades to widget)', function() {
 	function test(to, text, expected) {
-		var log = [];
-		testText(text, expected, {to: to, log: log});
-		expect(log).toEqual([logMessage(to, "by converting it into a widget")]);
+		var results = testText(text, expected, {to: to});
+		var message = logMessage(to, "by converting it into a widget");
+		expect(results.log).toEqual([message]);
 	};
 	test("bar|here", "{{{[[from here]]}}}", "<$list filter='bar|here'/>");
 	test("bar|here", "{{{[[from here]]}}}", "<$list filter='bar|here'/>");
@@ -78,10 +78,9 @@ it('unpretty (degrades to widget)', function() {
 it('unpretty and unquotable', function() {
 	var ph = utils.placeholder;
 	function test(to, text, expected, message) {
-		var log = [];
 		var message = message ||  "by converting it into a widget and creating placeholder macros";
-		testText(text, expected, {to: to, log: log});
-		expect(log).toEqual([logMessage(to,message)]);
+		var results = testText(text, expected, {to: to});
+		expect(results.log).toEqual([logMessage(to,message)]);
 	};
 	var weird = 'a\'|" """x';
 	//test(`{{{[[""""'']] [[from here]]}}}`

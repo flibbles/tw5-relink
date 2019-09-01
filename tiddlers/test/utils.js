@@ -22,22 +22,22 @@ var language = require('$:/plugins/flibbles/relink/js/language.js');
 exports.relink = function(fields, options) {
 	options = options || {};
 	options.log = options.log || [];
+	var results = {};
 	var relinkedTiddler;
 	var wiki = options.wiki || new $tw.Wiki();
-	var from = options.from || "from here";
-	var to = options.to || "to there";
-	wiki.addTiddler({title: from});
-	var logs = exports.collectLogs(function() {
-		options.fails = exports.collectFailures(function() {
+	results.from = options.from || "from here";
+	results.to = options.to || "to there";
+	wiki.addTiddler({title: results.from});
+	results.log = exports.collectLogs(function() {
+		results.fails = exports.collectFailures(function() {
 			var tiddler = new $tw.Tiddler({title: "test"}, fields);
 			var title = tiddler.fields.title;
 			wiki.addTiddler(tiddler);
-			wiki.renameTiddler(from, to, options);
-			relinkedTiddler = wiki.getTiddler(title);
+			wiki.renameTiddler(results.from, results.to, options);
+			results.tiddler = wiki.getTiddler(title);
 		});
 	}, options);
-	options.log.push.apply(options.log, logs);
-	return relinkedTiddler;
+	return results;
 };
 
 /**Prepares arguments for a common testing pattern.

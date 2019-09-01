@@ -22,14 +22,14 @@ function testText(text, expected, options) {
 		utils.operatorConf("title"),
 		utils.operatorConf("tag")
 	]);
-	var t = utils.relink({text: text}, options);
-	expect(t.fields.text).toEqual(expected);
+	var results = utils.relink({text: text}, options);
+	expect(results.tiddler.fields.text).toEqual(expected);
+	return results;
 };
 
 it('field attributes', function() {
-	var log = [];
-	testText('<$link to="from here">caption</$link>', {log: log});
-	expect(log).toEqual(["Renaming 'from here' to 'to there' in <$link to /> attribute of tiddler 'test'"]);
+	var r = testText('<$link to="from here">caption</$link>');
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in <$link to /> attribute of tiddler 'test'"]);
 	testText('<$link to="from here">\n\ncaption</$link>\n\n');
 	testText(`<$link to='from here'>caption</$link>`);
 	testText(`<$link to='from here' />`);
@@ -91,8 +91,8 @@ it('supports indirect attribute values', function() {
 	testText("<$link to   =   {{from here!!field}} />");
 	var to = "title}withBracket";
 	var options = {to: to, ignored: true};
-	testText("<$link to={{from here}} />", options);
-	expect(options.fails.length).toEqual(1);
+	var results = testText("<$link to={{from here}} />", options);
+	expect(results.fails.length).toEqual(1);
 });
 
 it('uses macros for literally unquotable titles', function() {
@@ -103,9 +103,8 @@ it('uses macros for literally unquotable titles', function() {
 	var to = 'End\'s with "quotes"';
 	var to2 = 'Another\'"quotes"';
 	var expectedLink = '<$link to=<<relink-1>>/>';
-	var log = [];
-	testText("<$link to='from here'/>", macro(1,to)+link(1), {to: to, log: log});
-	expect(log).toEqual(["%cRenaming 'from here' to '"+to+"' in <$link to /> attribute of tiddler 'test' %cby creating placeholder macros"]);
+	var r = testText("<$link to='from here'/>", macro(1,to)+link(1), {to: to});
+	expect(r.log).toEqual(["%cRenaming 'from here' to '"+to+"' in <$link to /> attribute of tiddler 'test' %cby creating placeholder macros"]);
 	testText("Before <$link to='from here'/> After",
 	         macro(1,to)+"Before "+link(1)+" After", {to: to});
 	// It'll prefer triple-quotes, but it should still resort to macros.
@@ -119,12 +118,11 @@ it('uses macros for literally unquotable titles', function() {
 });
 
 it('detects when internal list uses macros', function() {
-	var log = [];
 	var to = "bad[]name";
-	testText("<$list filter='[tag[from here]]'/>",
-	         utils.placeholder(1,to)+"<$list filter='[tag<relink-1>]'/>",
-	         {to: to, log: log});
-	expect(log).toEqual(["%cRenaming 'from here' to '"+to+"' in <$list filter /> attribute of tiddler 'test' %cby creating placeholder macros"]);
+	var r = testText("<$list filter='[tag[from here]]'/>",
+	                 utils.placeholder(1,to)+"<$list filter='[tag<relink-1>]'/>",
+	                 {to: to});
+	expect(r.log).toEqual(["%cRenaming 'from here' to '"+to+"' in <$list filter /> attribute of tiddler 'test' %cby creating placeholder macros"]);
 });
 
 it('ignores blank attribute configurations', function() {

@@ -8,8 +8,9 @@ var utils = require("test/utils");
 
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
-	var t = utils.relink({text: text}, options);
-	expect(t.fields.text).toEqual(expected);
+	var results = utils.relink({text: text}, options);
+	expect(results.tiddler.fields.text).toEqual(expected);
+	return results;
 };
 
 function logMessage(toThere, but) {
@@ -23,17 +24,15 @@ function logMessage(toThere, but) {
 // Tests text like testText, but it also checks log message
 function testTextAndLog(text, toTitle, expected, but) {
 	var msg = logMessage(toTitle, but);
-	var log = [];
-	testText(text, expected, {to: toTitle, log: log});
-	expect(log).toEqual([msg]);
+	var results = testText(text, expected, {to: toTitle});
+	expect(results.log).toEqual([msg]);
 };
 
 describe("transcludes", function() {
 
 it('transcludes', function() {
-	var log = [];
-	testText("{{from here}}", {log: log})
-	expect(log).toEqual([logMessage("to there")]);
+	var results = testText("{{from here}}")
+	expect(results.log).toEqual([logMessage("to there")]);
 	testText("Before {{from here}} After")
 	testText("Before {{from here!!field}} After", {debug: true})
 	testText("Before {{from here##index}} After")

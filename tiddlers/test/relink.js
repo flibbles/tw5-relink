@@ -15,13 +15,13 @@ function testField(value, expected, options) {
 		type = "title";
 	}
 	options.wiki.addTiddler(utils.fieldConf(field, type));
-	var t = relink({[field]: value}, options);
-	var output = t.fields[field];
+	var results = relink({[field]: value}, options);
+	var output = results.tiddler.fields[field];
 	if (typeof output === "object") {
 		output = Array.prototype.slice.call(output);
 	}
 	expect(output).toEqual(expected);
-	return t;
+	return results;
 };
 
 function testTags(value, expectedArray, options) {
@@ -37,15 +37,15 @@ function testList(value, expectedArray, options) {
 describe('relink', function() {
 
 it("doesn't touch ineligible tiddlers", function() {
-	var t = testTags("nothing here",["nothing", "here"]);
-	expect($tw.utils.hop(t.fields, 'modified')).toBe(false);
-	t = testList("nothing here", ["nothing", "here"]);
-	expect($tw.utils.hop(t.fields, 'modified')).toBe(false);
+	var results = testTags("nothing here",["nothing", "here"]);
+	expect($tw.utils.hop(results.tiddler.fields, 'modified')).toBe(false);
+	results = testList("nothing here", ["nothing", "here"]);
+	expect($tw.utils.hop(results.tiddler.fields, 'modified')).toBe(false);
 });
 
 it("touches eligible tiddlers", function() {
-	var t = testTags("[[from here]]", ["to there"]);
-	expect($tw.utils.hop(t.fields, 'modified')).toBe(true);
+	var results = testTags("[[from here]]", ["to there"]);
+	expect($tw.utils.hop(results.tiddler.fields, 'modified')).toBe(true);
 });
 
 it("handles errors with at least some grace", function() {
@@ -75,17 +75,13 @@ it("handles errors with at least some grace", function() {
 });
 
 it('still relinks tags', function() {
-	var log = [];
-	var t = testTags("[[from here]] another",
-	                 ['to there', 'another'], {log: log});
-	expect(log).toEqual(["Renaming 'from here' to 'to there' in tags of tiddler 'test'"]);
+	var r = testTags("[[from here]] another", ['to there', 'another']);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in tags of tiddler 'test'"]);
 });
 
 it('still relinks lists', function() {
-	var log = [];
-	var t = testList("[[from here]] another",
-	                 ['to there', 'another'], {log: log});
-	expect(log).toEqual(["Renaming 'from here' to 'to there' in list field of tiddler 'test'"]);
+	var r = testList("[[from here]] another", ['to there', 'another']);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in list field of tiddler 'test'"]);
 });
 
 it('lists work with strange titles', function() {
@@ -117,8 +113,8 @@ it('lists recognize impossibly strange titles', function() {
 		var options = {to: title, ignored: true,
 		               field: "example", type: "list"};
 		var list = "A [[from here]] B";
-		testField(list, options);
-		expect(options.fails.length).toEqual(1);
+		var results = testField(list, options);
+		expect(results.fails.length).toEqual(1);
 	};
 	fails("X and]] Y");
 	fails("]] X");
@@ -126,8 +122,8 @@ it('lists recognize impossibly strange titles', function() {
 
 it("lists don't fail when toTitle not in list", function() {
 	var options = {to: "X and]] Y", field: "list", type: "list"};
-	testField("A B C", ["A", "B", "C"], options);
-	expect(options.fails.length).toEqual(0);
+	var results = testField("A B C", ["A", "B", "C"], options);
+	expect(results.fails.length).toEqual(0);
 });
 
 /** I have chosen not to respect dontRenameInTags and dontRenameInLists
@@ -147,15 +143,13 @@ it('still respects dontRenameInLists', function() {
 */
 
 it('relinks custom field', function() {
-	var log = [];
-	var t = testField("from here", {log: log});
-	expect(log).toEqual(["Renaming 'from here' to 'to there' in test field of tiddler 'test'"]);
+	var r = testField("from here");
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in test field of tiddler 'test'"]);
 });
 
 it('relinks custom list', function() {
-	var log = [];
-	var t = testField("A [[from here]] B", {type: "list", log: log});
-	expect(log).toEqual(["Renaming 'from here' to 'to there' in test field of tiddler 'test'"]);
+	var r = testField("A [[from here]] B", {type: "list"});
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in test field of tiddler 'test'"]);
 });
 
 it('ignores blank custom field settings', function() {

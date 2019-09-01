@@ -23,23 +23,23 @@ function addSettings(wiki) {
 function testFilter(filter, expected, options) {
 	[filter, expected, options] = utils.prepArgs(filter, expected, options);
 	addSettings(options.wiki);
-	var t = relink({customFilter: filter}, options);
-	expect(t.fields.customFilter).toBe(expected);
+	var results = relink({customFilter: filter}, options);
+	expect(results.tiddler.fields.customFilter).toBe(expected);
+	return results;
 };
 
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var failCount = options.fails || 0;
 	addSettings(options.wiki);
-	var t = utils.relink({text: text}, options);
-	expect(t.fields.text).toEqual(expected);
-	expect(options.fails.length).toEqual(failCount, "Incorrect number of failures");
+	var results = utils.relink({text: text}, options);
+	expect(results.tiddler.fields.text).toEqual(expected);
+	expect(results.fails.length).toEqual(failCount, "Incorrect number of failures");
 };
 
 it('relinks and logs', function() {
-	var log = [];
-	testFilter("A [[from here]] B", {log: log});
-	expect(log).toEqual(["Renaming 'from here' to 'to there' in customFilter field of tiddler 'test'"]);
+	var r = testFilter("A [[from here]] B");
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in customFilter field of tiddler 'test'"]);
 });
 
 it('quotes', function() {
@@ -177,8 +177,8 @@ it('ignores non-title tag configurations', function() {
 it('field failures', function() {
 	function fails(filter, toTitle) {
 		var options = {to: toTitle, ignored: true};
-		testFilter(filter, options);
-		expect(options.fails.length).toEqual(1);
+		var results = testFilter(filter, options);
+		expect(results.fails.length).toEqual(1);
 	};
 	fails("[tag[from here]]", "brackets]there");
 	fails("[[from here]]", "A\"bad'stupid]title");
