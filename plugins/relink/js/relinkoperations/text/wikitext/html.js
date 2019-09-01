@@ -13,7 +13,7 @@ var utils = require("./utils.js");
 var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
-var referenceHandler = settings.getRelinker('reference');
+var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
 
 exports.name = "html";
@@ -71,7 +71,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			}
 			ref.title = toTitle;
 			attr.value = attr.textReference;
-			value = "{{"+referenceToString(ref)+"}}";
+			value = "{{"+refHandler.toString(ref)+"}}";
 		} else {
 			continue;
 		}
@@ -97,16 +97,6 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		return builder.join('');
 	}
 	return undefined;
-};
-
-function referenceToString(textReference) {
-	var title = textReference.title || '';
-	if (textReference.field) {
-		return title + "!!" + textReference.field;
-	} else if (textReference.index) {
-		return title + "##" + textReference.index;
-	}
-	return title;
 };
 
 /**Givin some text, and an attribute within that text, this returns
