@@ -176,16 +176,24 @@ it('supports "field" field settings', function() {
 });
 
 it('can filter for all impossible tiddlers', function() {
-	var wiki = new $tw.Wiki(), result;
-	wiki.addTiddlers(utils.setupTiddlers());
-	wiki.addTiddlers([
-		{title: "from"},
-		{title: "A", list: "from"},
-		{title: "B"},
-		{title: "C", text: "[[from]]"}
-	]);
-	result = wiki.filterTiddlers("'bad]] t' +[relink:impossible[from]]");
-	expect(result).toEqual(["A"]);
+	function test(filter, expected) {
+		var wiki = new $tw.Wiki(), result, log;
+		wiki.addTiddlers(utils.setupTiddlers());
+		wiki.addTiddlers([
+			{title: "$:/plugins/flibbles/relink/language/Error/RelinkFilterOperator", text: "This text is pulled"},
+			{title: "from"},
+			{title: "A", list: "from"},
+			{title: "B"},
+			{title: "C", text: "[[from]]"}
+		]);
+		log = utils.collect("log", function() {
+			result = wiki.filterTiddlers(filter);
+		});
+		expect(result).toEqual(expected);
+		expect(log).toEqual([]);
+	};
+	test("'bad]] t' +[relink:impossible[from]]", ["A"]);
+	test("[relink:nonexistent[]]", ["This text is pulled"]);
 });
 
 });

@@ -64,13 +64,3 @@ exports.relinkTiddlerDryRun = function(fromTitle, toTitle, options) {
 	});
 	return results;
 };
-
-/**Returns a list of tiddlers that Relink would fail to update.
- */
-exports.relinkTiddlerFailures = function(fromTitle, toTitle, options) {
-	return this.eachRelinkableTiddler(
-			fromTitle,
-			toTitle,
-			Object.assign({quiet: true}, options),
-			function(changes, tiddler, title) {});
-};

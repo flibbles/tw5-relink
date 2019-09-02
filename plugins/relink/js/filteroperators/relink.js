@@ -11,6 +11,8 @@ This filter acts as a namespace for several small, simple filters, such as
 /*global $tw: false */
 "use strict";
 
+var language = require('$:/plugins/flibbles/relink/js/language.js');
+
 var relinkFilterOperators;
 
 function getRelinkFilterOperators() {
@@ -30,7 +32,7 @@ exports.relink = function(source,operator,options) {
 		newOperator.suffix = suffixPair[1];
 		return relinkFilterOperator(source, newOperator, options);
 	} else {
-		return [$tw.language.getString("Error/RelinkFilterOperator")];
+		return [language.getString("Error/RelinkFilterOperator", options)];
 	}
 };
 
