@@ -9156,7 +9156,7 @@ Error message and password prompt
 <div title="$:/isEncrypted">
 <pre>no</pre>
 </div>
-<div author="Flibbles" core-version="&gt;=5.1.14" created="20190902020915207" dependents="" description="Relink - flexibility when relinking renamed tiddlers" list="readme configuration" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink" type="application/json" version="1.4.0">
+<div author="Flibbles" core-version="&gt;=5.1.14" created="20190902022109690" dependents="" description="Relink - flexibility when relinking renamed tiddlers" list="readme configuration" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink" type="application/json" version="1.4.1">
 <pre>{
     &quot;tiddlers&quot;: {
         &quot;$:/plugins/flibbles/relink/js/CannotRelinkError.js&quot;: {
@@ -9996,12 +9996,8 @@ Feel free to change my name.
 <div caption="Known Issues" tags="Relink" title="Issues">
 <pre>These are issues that I'm working to correct as soon as I can, but Relink handles the majority of all cases, so I'm making it available before it's 100% perfect.
 
-* ~TextReferences aren't managed. This is stuff like `Title!!field`. These are used in a few places, like the `list` filtered operator.
-** Related: Indirect attributes aren't supported (e.g. `&lt;$set name=&quot;Something&quot; value={{tiddler!!field}} /&gt;`)
 * Macrocalls are not managed (e.g. `&lt;&lt;macro MyTiddler&gt;&gt;`, or `&lt;$macrocall $name=&quot;macro&quot; tiddler=&quot;MyTiddler&quot;`). This'll involve another whole customizable whitelist.
 * If `\define relink-??()` is encountered after pragmas should no longer be parsed, this is still relinked if its title matches the fromTitle. I'm not actually sure I should prevent this. It's a weird use case, but I think the user will still probably want it replaced.
-* If an attribute contains a filter which cannot be renamed in place, Relink probably muffs up creating a placeholder macro. Gotta test.
-* Relink should list the correct tiddlers to be updated in the Title notification. Right now, it's using backlink. It'll probably need its own filter.
 </pre>
 </div>
 <div caption="Links" tags="Documentation WikiText" title="Links">
@@ -10249,7 +10245,7 @@ td.relink-text pre {
 * Filters in general should be a lot more robust
 </pre>
 </div>
-<div caption="v1.4" title="Versions/1.4">
+<div caption="v1.4" created="20190902020915207" title="Versions/1.4">
 <pre>!! v1.4.0
 
 * Support for indirect attribute values
@@ -10259,6 +10255,10 @@ td.relink-text pre {
 * Revamped the popup that appears while renaming tiddlers. Now it accurately lists any tiddlers Relink will be unable to fix.
 * Added a TiddlerInfo tab which lists all tiddlers that reference the given one.
 * //Relink// now should handle all relinking except for macros, which I'm not sure yet how or if I should tackle.
+
+!! v1.4.1
+
+* Forgot to remove the old &quot;Known Issues&quot; from the list
 </pre>
 </div>
 
