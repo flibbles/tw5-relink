@@ -15,6 +15,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 <$list filter="[all[shadows+tiddlers]prefix<prefix-ops>!has[draft.of]has[text]]">
 <tr>
 <td><$list variable="listItem" filter="[<currentTiddler>removeprefix<prefix-ops>]"><<listItem>></$list></td>
+<td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 </tr>
 </$list>
@@ -27,7 +28,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
          aria-label={{$(lingo-base)$NewOperator/Caption}}>
 <$set name="tiddlerName"
       filter="[<prefix-ops>addsuffix{$(state-base)$operator-name}]">
-<$action-setfield $tiddler=<<tiddlerName>> text="title" />
+<$action-setfield $tiddler=<<tiddlerName>> text={{$:/config/flibbles/relink/settings/default-type}} />
 </$set>
 <$action-deletetiddler $tiddler="$(state-base)$operator-name" />
 <$text text={{$(lingo-base)$NewOperator/Caption}}/>
