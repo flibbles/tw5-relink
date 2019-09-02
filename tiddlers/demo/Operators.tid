@@ -5,12 +5,20 @@ title: Operators
 \rules except wikilink
 Whenever a filter is processed by Relink, whether in a field or an attribute<!-- or a filtered transclude expression -->, it will only update the operands of whitelisted operators.
 
-`tag` and `title` are whitelisted by default. That means on rename //MyTiddler// -> //New Tiddler//:
+''Suffixes'' can optionally be a part of a whitelist configuration. Let's say you whitelist the operator `myOperator:mySuffix`. The only instances of //myOperator//'s which will be updated are when they have the suffix //mySuffix//.
 
-`[title[MyTiddler]] [tag[MyTiddler]]`
+However, if you whitelisted just `myOperator`, then its operand will update regardless of whether it's `[myOperator[myTitle]]` or `[myOperator:someSuffix[myTitle]]` or whatever. The suffix is ignored.
+
+`[field:title[]]` is another good example. It's a default configuration which will only update //field// if it's suffix is set to //title//.
+
+!!! Defaults
+
+`tag`, `title`, and `field:title` are whitelisted by default. That means on rename //MyTiddler// -> //New Tiddler//:
+
+`[title[MyTiddler]] [tag[MyTiddler]!field:title[MyTiddler]]`
 
 becomes
 
-`[title[New Tiddler]] [tag[New Tiddler]]`
+`[title[New Tiddler]] [tag[New Tiddler]!field:title[New Tiddler]]`
 
-''Title'' is special. If it's whitelisted, then it includes all shorthands for title. All runs of the filter: `[title[MyTiddler]] [[MyTiddler]] [field:title[MyTiddler]] MyTiddler "MyTiddler" 'MyTiddler'` would all be changed on a rename of //MyTiddler//.
+''Title'' is special. If it's whitelisted, then it includes all shorthands for title. All runs of the filter: `[title[MyTiddler]] [[MyTiddler]] MyTiddler "MyTiddler" 'MyTiddler'` would all be changed on a rename of //MyTiddler//.
