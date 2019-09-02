@@ -23,7 +23,7 @@ exports['fields'] = function(tiddler, fromTitle, toTitle, changes, options) {
 				to: toTitle,
 				tiddler: tiddler.fields.title,
 				field: descriptor(field)
-			});
+			}, options);
 			changes[field] = value;
 		}
 	});

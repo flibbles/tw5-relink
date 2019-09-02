@@ -47,7 +47,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			template = template.replace(fromTitle, toTitle);
 		}
 		if (modified) {
-			log("transclude", logArguments);
+			log("transclude", logArguments, options);
 			return prettyTransclude(reference, template);
 		}
 		return undefined;
@@ -57,9 +57,9 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		var resultTitle = utils.wrapAttributeValue(toTitle);
 		if (resultTitle === undefined) {
 			resultTitle = "<<"+this.parser.getPlaceholderFor(toTitle)+">>";
-			log("transclude-placeholder", logArguments);
+			log("transclude-placeholder", logArguments, options);
 		} else {
-			log("transclude-widget", logArguments);
+			log("transclude-widget", logArguments, options);
 		}
 		if ($tw.utils.trim(template) === fromTitle) {
 			// Now for this bizarre-ass use-case, where both the
@@ -93,7 +93,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		} else {
 			rtn = `<$transclude tiddler=${resultTemplate}/>`;
 		}
-		log(message, logArguments);
+		log(message, logArguments, options);
 		return rtn;
 	}
 	return undefined;

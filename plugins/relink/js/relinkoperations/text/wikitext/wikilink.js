@@ -25,14 +25,14 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			tiddler: tiddler.fields.title
 		};
 		if (toTitle.match(this.matchRegExp) && toTitle[0] !== '~') {
-			log("wikilink", logArguments);
+			log("wikilink", logArguments, options);
 			return toTitle;
 		} else if (utils.canBePretty(toTitle)) {
-			log("wikilink-pretty", logArguments);
+			log("wikilink-pretty", logArguments, options);
 			return "[[" + toTitle + "]]";
 		} else {
 			var ph = this.parser.getPlaceholderFor(toTitle);
-			log("wikilink-placeholder", logArguments);
+			log("wikilink-placeholder", logArguments, options);
 			return `<$link to=<<${ph}>>><$text text=<<${ph}>>/></$link>`;
 		}
 	}

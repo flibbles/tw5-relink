@@ -30,20 +30,20 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		tiddler: tiddler.fields.title
 	};
 	if (utils.canBePretty(toTitle)) {
-		log("prettylink", logArguments);
+		log("prettylink", logArguments, options);
 		return prettyLink(toTitle, caption);
 	} else if (caption === undefined) {
 		// If we don't have a caption, we have to resort to placeholders
 		// anyway to prevent link/caption desync from later relinks.
 		// It doesn't matter whether the toTitle is quotable
-		log("prettylink-placeholder", logArguments);
+		log("prettylink-placeholder", logArguments, options);
 		var ph = this.parser.getPlaceholderFor(toTitle);
 		return `<$link to=<<${ph}>>><$text text=<<${ph}>>/></$link>`;
 	} else if (quoted = utils.wrapAttributeValue(toTitle)) {
-		log("prettylink-widget", logArguments);
+		log("prettylink-widget", logArguments, options);
 		return `<$link to=${quoted}>${caption}</$link>`;
 	} else {
-		log("prettylink-placeholder", logArguments);
+		log("prettylink-placeholder", logArguments, options);
 		var ph = this.parser.getPlaceholderFor(toTitle);
 		return `<$link to=<<${ph}>>>${caption}</$link>`;
 	}

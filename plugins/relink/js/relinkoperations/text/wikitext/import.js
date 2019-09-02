@@ -26,7 +26,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			from: fromTitle,
 			to: toTitle,
 			tiddler: tiddler.fields.title
-		});
+		}, options);
 		var newline = text.substring(start+filter.length, this.parser.pos);
 		return "\\import " + value + newline;
 	}

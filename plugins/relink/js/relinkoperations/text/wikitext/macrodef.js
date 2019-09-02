@@ -40,7 +40,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 						to: toTitle,
 						tiddler: tiddler.fields.title,
 						macro: m[1]
-					});
+					}, options);
 					this.parser.pos += match[0].length;
 					return `\\define ${m[1]}() ${relinkedFilter}${match[2]}`;
 				}
@@ -52,7 +52,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 						to: toTitle,
 						tiddler: tiddler.fields.title,
 						macro: m[1]
-					});
+					}, options);
 					this.parser.pos += match[0].length;
 					return `\\define ${m[1]}() ${toTitle}${match[2]}`;
 				}

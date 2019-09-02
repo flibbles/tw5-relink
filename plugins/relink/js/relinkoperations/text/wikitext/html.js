@@ -100,7 +100,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			attribute: attributeName
 		};
 		builder.push(value);
-		log(logMessage, logArguments);
+		log(logMessage, logArguments, options);
 		buildIndex = attr.end;
 	}
 	this.parser.pos = this.nextTag.end;

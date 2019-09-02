@@ -53,7 +53,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		return undefined;
 	}
 	if (canBePretty(filter) && canBePrettyTemplate(template)) {
-		log(message, logArguments);
+		log(message, logArguments, options);
 		return prettyList(filter, tooltip, template, style, classes);
 	}
 	message = message + "-widget";
@@ -81,7 +81,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		wrap("itemClass", classes),
 		"/>"
 	].join('');
-	log(message, logArguments);
+	log(message, logArguments, options);
 	return widget;
 };
 

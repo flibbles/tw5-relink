@@ -5,9 +5,9 @@ This handles all logging and alerts Relink emits.
 
 \*/
 
-exports.logRelink = function(message, args) {
+exports.logRelink = function(message, args, options) {
 	var raw = exports.log[message];
-	if (raw) {
+	if (raw && !options.quiet) {
 		// This is cheap, but whatevs. To do a proper
 		// rendering would require working through a wiki
 		// object. Too heavy weight for log messages.
@@ -24,6 +24,12 @@ exports.logRelink = function(message, args) {
 	} else {
 		console.warn("No such log message: " + message);
 	}
+};
+
+exports.getString = function(title, options) {
+	title = "$:/plugins/flibbles/relink/language/" + title;
+	return options.wiki.renderTiddler("text/plain", title,
+	                                  {variables: options.variables});
 };
 
 exports.failureAlert = "Relink was unable to update the following tiddlers due to the complexity of the title:";

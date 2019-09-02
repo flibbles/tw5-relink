@@ -175,14 +175,18 @@ it('supports "field" field settings', function() {
 	testField("from here", {type: "field"});
 });
 
-/*
-it('relinks installed tiddlerfield list', function() {
-	var log = [];
-	var t = relink({"testlist": "[[from here]] another"}, {log: log});
-	expect(t.fields.testlist.slice(0)).toEqual(['to there', 'another']);
-	expect(log).toEqual(["Renaming 'from here' to 'to there' in testlist field of tiddler 'test'"]);
+it('can filter for all impossible tiddlers', function() {
+	var wiki = new $tw.Wiki(), result;
+	wiki.addTiddlers(utils.setupTiddlers());
+	wiki.addTiddlers([
+		{title: "from"},
+		{title: "A", list: "from"},
+		{title: "B"},
+		{title: "C", text: "[[from]]"}
+	]);
+	result = wiki.filterTiddlers("'bad]] t' +[relink:impossible[from]]");
+	expect(result).toEqual(["A"]);
 });
-*/
 
 });
 

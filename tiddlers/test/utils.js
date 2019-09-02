@@ -25,14 +25,7 @@ exports.relink = function(fields, options) {
 	var results = {};
 	var relinkedTiddler;
 	var wiki = options.wiki || new $tw.Wiki();
-	wiki.addTiddlers([
-		exports.attrConf("$link", "to", "title"),
-		exports.attrConf("$list", "filter", "filter"),
-		exports.operatorConf("title"),
-		exports.operatorConf("field:title"),
-		exports.operatorConf("tag"),
-		exports.operatorConf("list", "reference")
-	]);
+	wiki.addTiddlers(exports.setupTiddlers());
 	results.from = options.from || "from here";
 	results.to = options.to || "to there";
 	wiki.addTiddler({title: results.from});
@@ -48,6 +41,21 @@ exports.relink = function(fields, options) {
 	});
 	});
 	return results;
+};
+
+/** Returns a list of fields that can be added to a wiki for a default config.
+ */
+exports.setupTiddlers = function() {
+	return [
+		exports.attrConf("$link", "to", "title"),
+		exports.attrConf("$list", "filter", "filter"),
+		exports.fieldConf("list", "list"),
+		exports.fieldConf("tags", "list"),
+		exports.operatorConf("title"),
+		exports.operatorConf("field:title"),
+		exports.operatorConf("tag"),
+		exports.operatorConf("list", "reference")
+	];
 };
 
 /**Prepares arguments for a common testing pattern.
