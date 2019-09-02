@@ -13,3 +13,9 @@ created: 20190902020915207
 !! v1.4.1
 
 * Forgot to remove the old "Known Issues" from the list
+
+!! v1.4.2
+
+* Exposed Field Type dropdown on Operators whitelist
+* Put "title" at first of dropdown list, since it's the default
+* Demo improvements and documentation updates
