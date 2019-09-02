@@ -16,13 +16,35 @@ $tw.modules.applyMethods('relinkoperator', relinkOperations);
  * Returns a list of tiddlers it would fail to update.
  */
 exports.eachRelinkableTiddler = function(fromTitle, toTitle, options, method) {
+	var data = this.getRelinkableTiddlers(fromTitle, toTitle, options);
+	for (var title in data.changes) {
+		method(data.changes[title], this.getTiddler(title), title);
+	}
+	return data.failures;
+};
+
+/** Returns a pair like this,
+ *  { changes: {...}, failures: [] }
+ */
+exports.getRelinkableTiddlers = function(fromTitle, toTitle, options) {
+	var cache = this.getGlobalCache("relink-"+fromTitle, function() {
+		return Object.create(null);
+	});
+	if (!cache[toTitle]) {
+		cache[toTitle] = getFreshRelinkableTiddlers(this, fromTitle, toTitle, options);
+	}
+	return cache[toTitle];
+};
+
+function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 	options = options || {};
-	options.wiki = options.wiki || this;
+	options.wiki = options.wiki || wiki;
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var failures = [];
+	var changeList = Object.create(null);
 	if(fromTitle && toTitle && fromTitle !== toTitle) {
-		this.each((tiddler,title) => {
+		wiki.each((tiddler,title) => {
 			var type = tiddler.fields.type || "";
 			// Don't touch plugins or JavaScript modules
 			if(!tiddler.fields["plugin-type"] && type !== "application/javascript") {
@@ -33,7 +55,7 @@ exports.eachRelinkableTiddler = function(fromTitle, toTitle, options, method) {
 					}
 					// If any fields changed, update tiddler
 					if(Object.keys(changes).length > 0) {
-						method(changes, tiddler, title);
+						changeList[title] = changes;
 					}
 				} catch (e) {
 					if (e instanceof CannotRelinkError) {
@@ -50,7 +72,7 @@ exports.eachRelinkableTiddler = function(fromTitle, toTitle, options, method) {
 			}
 		});
 	}
-	return failures;
+	return {changes: changeList, failures: failures};
 };
 
 /**Returns a list of tiddlers that would be renamed by a relink operations.
