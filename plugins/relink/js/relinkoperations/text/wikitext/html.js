@@ -10,6 +10,7 @@ should be changed.
 \*/
 
 var utils = require("./utils.js");
+var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
@@ -21,8 +22,7 @@ exports.name = "html";
 
 exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	var managedElement = settings.getAttributes(options)[this.nextTag.tag],
-		builder = [],
-		buildIndex = this.nextTag.start;
+		builder = new Rebuilder(text, this.nextTag.start);
 	for (var attributeName in this.nextTag.attributes) {
 		var attr = this.nextTag.attributes[attributeName];
 		var nextEql = text.indexOf('=', attr.start);
@@ -91,7 +91,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		var valueStart = attr.end
 		               - (quote.length*2)
 		               - attr.value.length;
-		builder.push(text.substring(buildIndex, valueStart));
+		builder.add(value, valueStart, attr.end);
 		var logArguments = {
 			from: fromTitle,
 			to: toTitle,
@@ -99,16 +99,10 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			element: this.nextTag.tag,
 			attribute: attributeName
 		};
-		builder.push(value);
 		log(logMessage, logArguments, options);
-		buildIndex = attr.end;
 	}
 	this.parser.pos = this.nextTag.end;
-	if (builder.length > 0) {
-		builder.push(text.substring(buildIndex, this.nextTag.end));
-		return builder.join('');
-	}
-	return undefined;
+	return builder.results(this.nextTag.end);
 };
 
 function canBeFilterValue(value) {

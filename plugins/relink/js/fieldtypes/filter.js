@@ -8,25 +8,7 @@ This specifies logic for updating filters to reflect title changes.
 var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
-
-function FilterRelinker(text) {
-	this.text = text;
-	this.pos = 0;
-	this.builder = [];
-};
-
-FilterRelinker.prototype.add = function(index, value) {
-	this.builder.push(this.text.substring(this.pos, index));
-	this.builder.push(value);
-};
-
-FilterRelinker.prototype.results = function() {
-	if (this.builder.length > 0) {
-		this.builder.push(this.text.substr(this.pos));
-		return this.builder.join('');
-	}
-	return undefined;
-};
+var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 
 exports.name = "filter";
 
@@ -34,7 +16,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 	if (!filter || filter.indexOf(fromTitle) < 0) {
 		return undefined;
 	}
-	var relinker = new FilterRelinker(filter);
+	var relinker = new Rebuilder(filter);
 	var whitelist = settings.getOperators(options);
 	var p = 0, // Current position in the filter string
 		match, noPrecedingWordBarrier,
@@ -50,8 +32,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 			p = p + match[0].length;
 		} else if (p != 0) {
 			if (wordBarrierRequired) {
-				relinker.add(p, ' ');
-				relinker.pos = p;
+				relinker.add(' ', p, p);
 				wordBarrierRequired = false;
 			} else {
 				noPrecedingWordBarrier = true;
@@ -119,13 +100,11 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 					// this requires whitespace
 					// arnound it
 					if (noPrecedingWordBarrier && !match[1]) {
-						relinker.add(p, ' ');
-						relinker.pos = p;
+						relinker.add(' ', p, p);
 					}
 					wordBarrierRequired = true;
 				}
-				relinker.add(p, newVal);
-				relinker.pos = operandRegExp.lastIndex;
+				relinker.add(newVal,p,operandRegExp.lastIndex);
 			}
 			p = operandRegExp.lastIndex;
 		}
@@ -209,8 +188,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 					var newRef = refHandler.toString(ref);
 					// We don't check the whitelist.
 					// All indirect operands convert.
-					relinker.add(p, newRef);
-					relinker.pos = nextBracketPos;
+					relinker.add(newRef,p,nextBracketPos);
 				}
 				break;
 			case "[": // Square brackets
@@ -238,8 +216,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 				} else {
 					wrapped = "["+result+"]";
 				}
-				relinker.add(p-1, wrapped);
-				relinker.pos = nextBracketPos+1;
+				relinker.add(wrapped, p-1, nextBracketPos+1);
 				break;
 			case "<": // Angle brackets
 				nextBracketPos = filterString.indexOf(">",p);

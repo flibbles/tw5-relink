@@ -74,6 +74,19 @@
 				},
 				"type": "application/javascript"
 			}
+		},
+		{
+			"path": "./utils",
+			"filesRegExp": "^.*\\.js$",
+			"isTiddlerFile": true,
+			"fields": {
+				"module-type": "library",
+				"title": {
+					"source": "filename",
+					"prefix": "$:/plugins/flibbles/relink/js/utils/"
+				},
+				"type": "application/javascript"
+			}
 		}
 	]
 }
