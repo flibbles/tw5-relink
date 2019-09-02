@@ -6,8 +6,11 @@ This handles all logging and alerts Relink emits.
 \*/
 
 exports.logRelink = function(message, args, options) {
+	if (options.quiet) {
+		return;
+	}
 	var raw = exports.log[message];
-	if (raw && !options.quiet) {
+	if (raw) {
 		// This is cheap, but whatevs. To do a proper
 		// rendering would require working through a wiki
 		// object. Too heavy weight for log messages.
@@ -36,7 +39,7 @@ exports.failureAlert = "Relink was unable to update the following tiddlers due t
 
 exports.reportFailures = function(failureList) {
 	var reportList = failureList.map(function(f) {return "\n   " + f});
-	alert(exports.failureAlert + reportList);
+	console.warn(exports.failureAlert + reportList);
 };
 
 exports.log = {

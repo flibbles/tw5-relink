@@ -16,6 +16,8 @@ $tw.modules.applyMethods('relinkoperator', relinkOperations);
  * Returns a list of tiddlers it would fail to update.
  */
 exports.eachRelinkableTiddler = function(fromTitle, toTitle, options, method) {
+	options = options || {};
+	options.wiki = options.wiki || this;
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var failures = [];

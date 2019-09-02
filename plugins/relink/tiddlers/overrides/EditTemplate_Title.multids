@@ -1,4 +1,4 @@
 title: $:/language/EditTemplate/Title/
 
-References/Prompt: The following references to this tiddler will be automatically updated:
+References/Prompt: The following references to this tiddler will not be automatically updated by //Relink// due to the complexity of the new title:
 Relink/Prompt: Use //Relink// to update ''<$text text=<<fromTitle>>/>'' to ''<$text text=<<toTitle>>/>'' across all other tiddlers
