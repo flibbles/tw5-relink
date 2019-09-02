@@ -1,0 +1,7 @@
+caption: {{$:/plugins/flibbles/relink/language/TiddlerInfo/References/Caption}}
+tags: $:/tags/TiddlerInfo
+title: $:/plugins/flibbles/relink/ui/TiddlerInfo/References
+
+\define lingo-base() $:/plugins/flibbles/relink/language/TiddlerInfo/
+<$list filter="[relink:references<currentTiddler>!title[$:/StoryList]sort[title]]" emptyMessage=<<lingo References/Empty>> template="$:/core/ui/ListItemTemplate">
+</$list>
