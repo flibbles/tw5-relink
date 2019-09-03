@@ -24,16 +24,20 @@ exports.getRelinker = function(name) {
 	return fieldTypes[name].relink;
 };
 
+exports.getAttributes = function(options) {
+	return getSettings(options).attributes;
+};
+
 exports.getFields = function(options) {
 	return getSettings(options).fields;
 };
 
-exports.getOperators = function(options) {
-	return getSettings(options).operators;
+exports.getMacros = function(options) {
+	return getSettings(options).macros;
 };
 
-exports.getAttributes = function(options) {
-	return getSettings(options).attributes;
+exports.getOperators = function(options) {
+	return getSettings(options).operators;
 };
 
 /**Factories define methods that create settings given config tiddlers.
@@ -63,6 +67,15 @@ exports.factories = {
 		var relinker = fieldTypes[tiddler.fields.text];
 		if (relinker) {
 			fields[name] = relinker.relink;
+		}
+	},
+	macros: function(macros, tiddler, key) {
+		var relinker = fieldTypes[tiddler.fields.text];
+		if (relinker) {
+			var name = root(key);
+			var arg = key.substr(name.length+1);
+			macros[name] = macros[name] || Object.create(null);
+			macros[name][arg] = relinker.relink;
 		}
 	},
 	operators: function(operators, tiddler, name) {

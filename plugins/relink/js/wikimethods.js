@@ -88,3 +88,25 @@ exports.relinkTiddlerDryRun = function(fromTitle, toTitle, options) {
 	});
 	return results;
 };
+
+var ImportVariablesWidget = require("$:/core/modules/widgets/importvariables.js").importvariables;
+
+exports.relinkGlobalMacros = function() {
+	if (!this._relinkWidget) {
+		var treeNode = { attributes: {
+			"filter": {
+				type: "string",
+				value: "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]"
+			}
+		}};
+		var importWidget = new ImportVariablesWidget(treeNode, {wiki: this});
+		importWidget.computeAttributes();
+		importWidget.execute();
+		var rtn = importWidget;
+		while (rtn.children.length > 0) {
+			rtn = rtn.children[0];
+		}
+		this._relinkWidget = rtn;
+	}
+	return this._relinkWidget;
+};

@@ -127,17 +127,25 @@ exports.attrConf = function(element, attribute, type) {
 	return {title: prefix + element + "/" + attribute, text: type};
 };
 
-/**Returns a configuration tiddler for a filter operator.
- */
-exports.operatorConf = function(operator, value) {
-	if (value === undefined) {
-		value = "title";
-	}
-	var prefix = "$:/config/flibbles/relink/operators/";
-	return {title: prefix + operator, text: value};
-};
-
 exports.fieldConf = function(field, type) {
 	var prefix =  "$:/config/flibbles/relink/fields/";
 	return {title: prefix + field, text: type};
+};
+
+exports.macroConf = function(macro, argument, type) {
+	if (type === undefined) {
+		type = "title";
+	}
+	var prefix =  "$:/config/flibbles/relink/macros/";
+	return {title: prefix + macro + "/" + argument, text: type};
+};
+
+/**Returns a configuration tiddler for a filter operator.
+ */
+exports.operatorConf = function(operator, type) {
+	if (type === undefined) {
+		type = "title";
+	}
+	var prefix = "$:/config/flibbles/relink/operators/";
+	return {title: prefix + operator, text: type};
 };
