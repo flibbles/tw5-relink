@@ -34,11 +34,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		}
 		var value, quote, logMessage = "attribute";
 		if (attr.type === "string") {
-			if (!managedElement) {
-				// We don't manage this element. Bye.
-				continue;
-			}
-			var relinker = managedElement[attributeName];
+			var relinker = getAttributeHandler(this.nextTag, attributeName, options);
 			if (!relinker) {
 				// We don't manage this attribute. Bye.
 				continue;
@@ -103,6 +99,25 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	}
 	this.parser.pos = this.nextTag.end;
 	return builder.results(this.nextTag.end);
+};
+
+/** Returns the field handler for the given attribute of the given widget.
+ *  If this returns undefined, it means we don't handle it. So skip.
+ */
+function getAttributeHandler(widget, attributeName, options) {
+	if (widget.tag === "$macrocall") {
+		var nameAttr = widget.attributes["$name"];
+		var macro = settings.getMacros(options)[nameAttr.value];
+		if (macro) {
+			return macro[attributeName];
+		}
+	} else {
+		var element = settings.getAttributes(options)[widget.tag];
+		if (element) {
+			return element[attributeName];
+		}
+	}
+	return undefined;
 };
 
 function canBeFilterValue(value) {

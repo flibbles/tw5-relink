@@ -60,6 +60,11 @@ it('quotation', function() {
 	test('c""" ]d', '\'c""" ]d\'');
 });
 
+it('$macrocall', function() {
+	testText("<$macrocall $name=test A=stuff Btitle='from here' Clist='[[from here]]' Dref='from here##index' />");
+	testText("\n\n<$macrocall $name=test\n\nBtitle='from here'/>\n\n");
+});
+
 it('keeps up to date with macro changes', function() {
 	var wiki = new $tw.Wiki();
 	var t = testText("Macro <<test stuff 'from here'>>.", {wiki: wiki});
