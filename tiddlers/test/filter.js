@@ -132,7 +132,7 @@ it('handles transclusion for all operands', function() {
 	testFilter("A [anything{from}] B", {from: "from"});
 	testFilter("A [anything{from!!field}] B", {from: "from"});
 	testFilter("A [anything{from##index}] B", {from: "from"});
-	testFilter("[[Title]addsuffix{from!!field}]", {from: "from", debug: true});
+	testFilter("[[Title]addsuffix{from!!field}]", {from: "from"});
 });
 
 it('field:title operator', function() {
@@ -146,7 +146,7 @@ it('tag operator', function() {
 });
 
 it('manages reference types as operands', function() {
-	testFilter("A [list[from here]] B", {debug: true});
+	testFilter("A [list[from here]] B");
 	testFilter("A [list[from here!!field]] B");
 	testFilter("A [list[from here##index]] B");
 });

@@ -33,7 +33,7 @@ describe("transcludes", function() {
 it('transcludes', function() {
 	testTextAndLog("{{from here}}", "to", "{{to}}");
 	testText("Before {{from here}} After")
-	testText("Before {{from here!!field}} After", {debug: true})
+	testText("Before {{from here!!field}} After")
 	testText("Before {{from here##index}} After")
 	testText("Before {{from here||template}} After")
 	testText("Before {{title||from here}} After")

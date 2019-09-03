@@ -54,8 +54,10 @@ it("handles getting no options at all", function() {
 		{title: "X"},
 		{title: "A", text: "[[X]]"}
 	]);
-	// Just ensuring that this doesn't throw.
-	wiki.renameTiddler("X", "Y");
+	utils.collect("log", function() {
+		// Just ensuring that this doesn't throw.
+		wiki.renameTiddler("X", "Y");
+	});
 	expect(wiki.getTiddler("A").fields.text).toEqual("[[Y]]");
 });
 
