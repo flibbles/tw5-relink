@@ -78,7 +78,11 @@ function getManagedParamIndex(macroName, managedArg, params, options) {
 			if (params[i].name === undefined) {
 				if (anonI === expectedIndex) {
 					return i;
-				} else {
+				}
+				anonI++;
+			} else {
+				var indexOfOther = indexOfParamDef(macroName, params[i].name, options);
+				if (indexOfOther < expectedIndex) {
 					anonI++;
 				}
 			}

@@ -22,8 +22,12 @@ function testText(text, expected, options) {
 
 describe("macro", function() {
 
-it('macro', function() {
-	//var t = testText("Macro <<test stuff 'from here' '[[from here]]' '[tag[from here]]'>>.");
+it('argument orders', function() {
+	testText("Macro <<test stuff 'from here' '[[from here]]' '[tag[from here]]'>>.");
+	testText("Macro <<test stuff Clist:'[[from here]]' 'from here'>>.");
+	testText("Macro <<test Btitle:'from here' stuff '[[from here]]'>>.");
+	testText("Macro <<test Clist:'[[from here]]' stuff 'from here'>>.");
+	testText("Macro <<test Dfilter:'[tag[from here]]' Clist:'[[from here]]' stuff 'from here'>>.");
 });
 
 it('keeps up to date with macro changes', function() {
