@@ -34,7 +34,10 @@ it('argument orders', function() {
 it('core javascript macros', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("jsontiddlers", "filter", "filter"));
+	wiki.addTiddler(utils.macroConf("testmodulemacro", "param", "filter"));
 	testText("<<jsontiddlers '[title[from here]]'>>", {wiki: wiki});
+	// look in macro-module.js for the custom macro module we're calling
+	testText("<<testmodulemacro '[title[from here]]'>>", {wiki: wiki});
 });
 
 it('whitespace', function() {
