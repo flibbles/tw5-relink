@@ -11,6 +11,7 @@ and tries to swap it out if it is.
 
 var type = 'text/vnd.tiddlywiki';
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
+var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 
 var rules = Object.create(null);
 
@@ -91,17 +92,14 @@ WikiRelinker.prototype.getPreamble = function() {
 
 exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var text = tiddler.fields.text,
-		builder = [],
-		buildIndex = 0,
+		builder = new Rebuilder(text),
 		parser = new WikiRelinker(text, toTitle, options),
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		if (matchingRule.rule.relink) {
 			var newSegment = matchingRule.rule.relink(tiddler, text, fromTitle, toTitle, options);
 			if (newSegment !== undefined) {
-				builder.push(text.substring(buildIndex, matchingRule.matchIndex));
-				builder.push(newSegment);
-				buildIndex = parser.pos;
+				builder.add(newSegment, matchingRule.matchIndex, parser.pos);
 			}
 		} else {
 			if (matchingRule.rule.matchRegExp !== undefined) {
@@ -115,12 +113,8 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 			}
 		}
 	}
-	if (builder.length > 0) {
-		var preamble = parser.getPreamble();
-		if (preamble) {
-			builder.unshift(preamble);
-		}
-		builder.push(text.substr(buildIndex));
-		changes.text = builder.join('');
+	if (builder.changed()) {
+		builder.prepend(parser.getPreamble());
+		changes.text = builder.results();
 	}
 };
