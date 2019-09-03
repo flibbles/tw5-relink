@@ -31,6 +31,12 @@ it('argument orders', function() {
 	testText("Macro <<test Dref:'from here!!f' Clist:'[[from here]]' stuff 'from here'>>.");
 });
 
+it('core javascript macros', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("jsontiddlers", "filter", "filter"));
+	testText("<<jsontiddlers '[title[from here]]'>>", {wiki: wiki});
+});
+
 it('whitespace', function() {
 	testText("Macro <<test\n  d\n  'from here'\n  '[[from here]]'\n>>.");
 	testText("<<test\r\nd\r\n'from here'\r\n'[[from here]]'\r\n>>\r\n");

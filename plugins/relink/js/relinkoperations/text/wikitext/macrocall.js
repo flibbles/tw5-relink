@@ -97,10 +97,17 @@ function indexOfParamDef(macroName, paramName, options) {
 	var globals = options.wiki.relinkGlobalMacros();
 	var def = globals.variables[macroName];
 	if (!def) {
+		// Check with the macro modules
+		if ($tw.utils.hop($tw.macros, macroName)) {
+			def = $tw.macros[macroName];
+		}
+	}
+	if (!def) {
 		console.warn(`Cannot find macro definition for ${macroName}, and Relink needs it.`);
 	} else {
-		for (var i = 0; i < def.params.length; i++) {
-			if (def.params[i].name === paramName) {
+		var params = def.params || [];
+		for (var i = 0; i < params.length; i++) {
+			if (params[i].name === paramName) {
 				return i;
 			}
 		}
