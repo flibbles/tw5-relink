@@ -43,7 +43,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			continue;
 		}
 		quote = determineQuote(paramString, param.end);
-		var quoted = utils.wrapAttributeValue(value, quote);
+		var quoted = utils.wrapAttributeValue(value, quote, ['', "'", '"', '[[', '"""']);
 		param.newValue = quoted;
 		param.quote = quote;
 		modified = true;

@@ -14,21 +14,31 @@ Utility methods for the wikitext relink rules.
  *
  * return: Returns the wrapped value, or undefined if it's impossible to wrap
  */
-exports.wrapAttributeValue = function(value, preference) {
+exports.wrapAttributeValue = function(value, preference, whitelist) {
+	whitelist = whitelist || ["", "'", '"', '"""'];
 	var choices = {
 		"": function(v) {return !/([\/\s<>"'=])/.test(v); },
 		"'": function(v) {return v.indexOf("'") < 0; },
 		'"': function(v) {return v.indexOf('"') < 0; },
-		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';}
+		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';},
+		"[[": exports.canBePrettyOperand
+	};
+	var wrappers = {
+		"": function(v) {return v; },
+		"'": function(v) {return "'"+v+"'"; },
+		'"': function(v) {return '"'+v+'"'; },
+		'"""': function(v) {return '"""'+v+'"""'; },
+		"[[": function(v) {return "[["+v+"]]"; }
 	};
 	if (choices[preference]) {
 		if (choices[preference](value)) {
-			return preference + value + preference;
+			return wrappers[preference](value);
 		}
 	}
-	for (var quote in choices) {
+	for (var i = 0; i < whitelist.length; i++) {
+		var quote = whitelist[i];
 		if (choices[quote](value)) {
-			return quote + value + quote;
+			return wrappers[quote](value);
 		}
 	}
 	// No quotes will work on this
@@ -39,4 +49,8 @@ exports.wrapAttributeValue = function(value, preference) {
  */
 exports.canBePretty = function(value) {
 	return value.indexOf("]]") < 0 && value[value.length-1] !== ']';
+};
+
+exports.canBePrettyOperand = function(value) {
+	return value.indexOf(']') < 0;
 };
