@@ -102,11 +102,18 @@ exports.relinkGlobalMacros = function() {
 		var importWidget = new ImportVariablesWidget(treeNode, {wiki: this});
 		importWidget.computeAttributes();
 		importWidget.execute();
-		var rtn = importWidget;
-		while (rtn.children.length > 0) {
-			rtn = rtn.children[0];
-		}
-		this._relinkWidget = rtn;
+		// These two functions neuter the widget, so it never tries
+		// to render.
+		importWidget.findNextSiblingDomNode = function() {};
+		importWidget.renderChildren = function() {};
+		this.addEventListener("change", function(changes) {
+			importWidget.refresh(changes);
+		});
+		this._relinkWidget = importWidget;
 	}
-	return this._relinkWidget;
+	var rtn = this._relinkWidget;
+	while (rtn.children.length > 0) {
+		rtn = rtn.children[0];
+	}
+	return rtn;
 };
