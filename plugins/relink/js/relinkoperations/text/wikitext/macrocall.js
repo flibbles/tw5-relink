@@ -26,7 +26,8 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		// We don't manage this macro. Bye.
 		return undefined;
 	}
-	var params = parseParams(paramString);
+	var offset = this.match[0].indexOf(this.match[2]);
+	var params = parseParams(paramString, offset);
 	for (var managedArg in managedMacro) {
 		var index = getManagedParamIndex(macroName, managedArg, params, options);
 		if (index < 0) {
@@ -42,20 +43,19 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		if (value === undefined) {
 			continue;
 		}
-		quote = determineQuote(paramString, param.end);
+		quote = determineQuote(this.match[0], param.end);
 		var quoted = utils.wrapAttributeValue(value, quote, ['', "'", '"', '[[', '"""']);
 		param.newValue = quoted;
 		param.quote = quote;
 		modified = true;
 	}
 	if (modified) {
-		var paramIndex = this.match[0].indexOf(this.match[2]);
 		var builder = new Rebuilder(this.match[0]);
 		for (var i = 0; i < params.length; i++) {
 			var param = params[i];
 			if (param.newValue) {
-				var valueStart = paramIndex + param.end - (param.value.length + param.quote.length * 2);
-				builder.add(param.newValue, valueStart, paramIndex + param.end);
+				var valueStart = param.end - (param.value.length + param.quote.length * 2);
+				builder.add(param.newValue, valueStart, param.end);
 			}
 		}
 		return builder.results();
@@ -115,7 +115,7 @@ function indexOfParamDef(macroName, paramName, options) {
 	return -1;
 };
 
-function parseParams(paramString) {
+function parseParams(paramString, pos) {
 	var params = [],
 		reParam = /\s*(?:([A-Za-z0-9\-_]+)\s*:)?(?:\s*(?:"""([\s\S]*?)"""|"([^"]*)"|'([^']*)'|\[\[([^\]]*)\]\]|([^"'\s]+)))/mg,
 		paramMatch = reParam.exec(paramString);
@@ -128,7 +128,8 @@ function parseParams(paramString) {
 			paramInfo.name = paramMatch[1];
 		}
 		paramInfo.match = paramMatch;
-		paramInfo.end = reParam.lastIndex;
+		//paramInfo.start = pos;
+		paramInfo.end = reParam.lastIndex + pos;
 		params.push(paramInfo);
 		// Find the next match
 		paramMatch = reParam.exec(paramString);
