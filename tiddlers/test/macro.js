@@ -31,6 +31,13 @@ it('argument orders', function() {
 	testText("Macro <<test Dref:'from here!!f' Clist:'[[from here]]' stuff 'from here'>>.");
 });
 
+it("the '>' character", function() {
+	// It's a tricky character. Allowed in some places, but not others
+	// Allowed in standalone macrocalls
+	testText("Macro <<test stuff My>val>>.", {from: "My>val", to: "to"});
+	testText("Macro <<test stuff 'from here'>>.", "Macro <<test stuff 'My>val'>>.", {to: "My>val"} );
+});
+
 it("doesn't choke if attribute string == macro name", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("jsontiddlers", "filter", "filter"));
