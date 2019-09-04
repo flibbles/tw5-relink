@@ -17,49 +17,70 @@ exports.name = ["macrocallinline", "macrocallblock"];
 exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	// Get all the details of the match
 	var macroName = this.match[1],
-		paramString = this.match[2];
-	var modified = false;
+		paramString = this.match[2],
+		macroText = this.match[0];
 	// Move past the macro call
 	this.parser.pos = this.matchRegExp.lastIndex;
+	var start = this.matchRegExp.lastIndex - this.match[0].length;
 	var managedMacro = settings.getMacros(options)[macroName];
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
 		return undefined;
 	}
 	var offset = macroName.length+2;
-	offset = $tw.utils.skipWhiteSpace(this.match[0], offset);
-	var params = parseParams(paramString, offset);
+	offset = $tw.utils.skipWhiteSpace(macroText, offset);
+	var params = parseParams(paramString, offset+start);
+	var macroInfo = {
+		name: macroName,
+		start: start,
+		end: this.matchRegExp.lastIndex,
+		params: params
+	};
+	return exports.relinkMacroInvocation(tiddler, text, macroInfo, this.parser, fromTitle, toTitle, options);
+};
+
+/**Processes the given macro,
+ * macro: {name:, params:, start:, end:}
+ * each parameters: {name:, end:, value:}
+ */
+exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle, toTitle, options) {
+	var managedMacro = settings.getMacros(options)[macro.name];
+	var modified = false;
+	if (!managedMacro) {
+		// We don't manage this macro. Bye.
+		return undefined;
+	}
 	for (var managedArg in managedMacro) {
-		var index = getManagedParamIndex(macroName, managedArg, params, options);
+		var index = getManagedParamIndex(macro.name, managedArg, macro.params, options);
 		if (index < 0) {
 			// this arg either was not supplied, or we can't find
 			// the definition, so we can't tie it to an anonymous
 			// argument. Either way, move on to the next.
 			continue;
 		}
-		var param = params[index];
+		var param = macro.params[index];
 		var relinker = managedMacro[managedArg];
-		var extendedOptions = Object.assign({placeholder: this.parser}, options);
+		var extendedOptions = Object.assign({placeholder: parser}, options);
 		value = relinker(param.value, fromTitle, toTitle, extendedOptions);
 		if (value === undefined) {
 			continue;
 		}
-		quote = determineQuote(this.match[0], param.end);
+		quote = determineQuote(text, param.end);
 		var quoted = utils.wrapAttributeValue(value, quote, ['', "'", '"', '[[', '"""']);
 		param.newValue = quoted;
 		param.quote = quote;
 		modified = true;
 	}
 	if (modified) {
-		var builder = new Rebuilder(this.match[0]);
-		for (var i = 0; i < params.length; i++) {
-			var param = params[i];
+		var builder = new Rebuilder(text, macro.start);
+		for (var i = 0; i < macro.params.length; i++) {
+			var param = macro.params[i];
 			if (param.newValue) {
 				var valueStart = param.end - (param.value.length + param.quote.length * 2);
 				builder.add(param.newValue, valueStart, param.end);
 			}
 		}
-		return builder.results();
+		return builder.results(macro.end);
 	}
 	return undefined;
 };
@@ -128,7 +149,6 @@ function parseParams(paramString, pos) {
 		if(paramMatch[1]) {
 			paramInfo.name = paramMatch[1];
 		}
-		paramInfo.match = paramMatch;
 		//paramInfo.start = pos;
 		paramInfo.end = reParam.lastIndex + pos;
 		params.push(paramInfo);
