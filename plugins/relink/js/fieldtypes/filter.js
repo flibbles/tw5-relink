@@ -5,7 +5,7 @@ This specifies logic for updating filters to reflect title changes.
 /**Returns undefined if no change was made.
  */
 
-var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
+var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").CannotRelinkError;
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");

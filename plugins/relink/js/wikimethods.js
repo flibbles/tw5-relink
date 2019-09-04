@@ -5,7 +5,7 @@ Introduces some utility methods used by Relink.
 
 \*/
 
-var CannotRelinkError = require('$:/plugins/flibbles/relink/js/CannotRelinkError');
+var errors = require('$:/plugins/flibbles/relink/js/errors');
 
 var relinkOperations = Object.create(null);
 $tw.modules.applyMethods('relinkoperator', relinkOperations);
@@ -58,7 +58,7 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 						changeList[title] = changes;
 					}
 				} catch (e) {
-					if (e instanceof CannotRelinkError) {
+					if (e instanceof errors.RelinkError) {
 						failures.push(title);
 					} else {
 						// Should we test for instanceof Error instead?: yes

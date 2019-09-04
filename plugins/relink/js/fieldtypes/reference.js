@@ -7,7 +7,7 @@ tiddlerTitle!!field
 tiddlerTitle##propertyIndex
 \*/
 
-var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
+var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").CannotRelinkError;
 
 exports.name = "reference";
 

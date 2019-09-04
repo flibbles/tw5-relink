@@ -17,7 +17,7 @@ var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
 var macrocall = require("./macrocall.js");
-var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
+var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").CannotRelinkError;
 
 exports.name = "html";
 

@@ -4,7 +4,7 @@ This manages replacing titles that occur within stringLists, like,
 TiddlerA [[Tiddler with spaces]] [[Another Title]]
 \*/
 
-var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
+var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").CannotRelinkError;
 
 exports.name = "list";
 

@@ -17,6 +17,7 @@ function testText(text, expected, options) {
 	]);
 	var results = utils.relink({text: text}, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
+	expect(results.fails.length).toEqual(options.fails || 0);
 	return results;
 };
 
@@ -83,6 +84,22 @@ it('unquotable titles', function() {
 	// This one is tricky because an unrelated attribute can't be quoted
 	// the way it was in a macro invocation
 	testText('X<<test A:g>t "from here">>Y', ph(1,to)+"X<$macrocall $name=test A='g>t' Btitle=<<relink-1>>/>Y", {to: to});
+});
+
+it('undefined macros', function() {
+	// Relink will try it's best to tolerate macro settings that have
+	// no coreesponding macro definition, but it'll fail if there's a
+	// chance it's not relinking when it should.
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("undef", "param", "title"));
+	testText("<<undef something>> [[from here]]", {wiki: wiki});
+	testText("<<undef param:'from here'>>", {wiki: wiki});
+	testText("<<undef A B C D param:'from here'>>", {wiki: wiki});
+	testText("<<undef 'from here'>>", {wiki: wiki,ignored: true,fails: 1});
+	var to = `to''[]there"`;
+	testText("<<undef param:'from here'>>", utils.placeholder(1,to)+"<$macrocall $name=undef param=<<relink-1>>/>", {wiki: wiki, to: to});
+	testText("<<undef something param:'from here'>>",
+	         {wiki: wiki, to: to, ignored: true, fails: 1});
 });
 
 it('$macrocall', function() {

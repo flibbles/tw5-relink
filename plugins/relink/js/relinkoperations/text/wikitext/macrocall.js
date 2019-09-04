@@ -11,6 +11,7 @@ var utils = require("./utils.js");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
+var CannotFindMacroDefError = require("$:/plugins/flibbles/relink/js/errors.js").CannotFindMacroDefError;
 
 exports.name = ["macrocallinline", "macrocallblock"];
 
@@ -49,6 +50,15 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 	var downgrade = false;
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
+		return undefined;
+	}
+	if (macro.params.every(function(p) {
+		return p.value.indexOf(fromTitle) < 0;
+	})) {
+		// We cut early if the fromTitle doesn't even appear
+		// anywhere in the title. This is to avoid any headache
+		// about finding macro definitions (and any resulting
+		// exceptions if there isn't even a title to replace.
 		return undefined;
 	}
 	for (var managedArg in managedMacro) {
@@ -193,7 +203,7 @@ function getDefinition(macroName, options) {
 		if ($tw.utils.hop($tw.macros, macroName)) {
 			def = $tw.macros[macroName];
 		} else {
-			throw "Cannot find definition for ${macroName}. Make sure your macro whitelist is configured properly, and that you're macro is globally defined, or defined in all the places it's used.";
+			throw new CannotFindMacroDefError(macroName);
 		}
 	}
 	return def;
