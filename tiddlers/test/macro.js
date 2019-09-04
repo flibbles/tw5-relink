@@ -36,6 +36,7 @@ it("the '>' character", function() {
 	// Allowed in standalone macrocalls
 	testText("Macro <<test stuff My>val>>.", {from: "My>val", to: "to"});
 	testText("Macro <<test stuff 'from here'>>.", "Macro <<test stuff 'My>val'>>.", {to: "My>val"} );
+	testText("Macro <<test stuff from>>.", "Macro <<test stuff 'My>val'>>.", {from: "from", to: "My>val"});
 });
 
 it("doesn't choke if attribute string == macro name", function() {
