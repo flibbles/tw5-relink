@@ -46,6 +46,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle, toTitle, options) {
 	var managedMacro = settings.getMacros(options)[macro.name];
 	var modified = false;
+	var downgrade = false;
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
 		return undefined;
@@ -67,20 +68,37 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 		}
 		quote = determineQuote(text, param.end);
 		var quoted = utils.wrapAttributeValue(value, quote, ['', "'", '"', '[[', '"""']);
-		param.newValue = quoted;
-		param.quote = quote;
+		if (quoted === undefined) {
+			var ph = parser.getPlaceholderFor(toTitle);
+			param.newValue = "<<"+ph+">>";
+			param.quote = "<<";
+			downgrade = true;
+		} else {
+			param.newValue = quoted;
+			param.quote = quote;
+		}
 		modified = true;
 	}
 	if (modified) {
-		var builder = new Rebuilder(text, macro.start);
-		for (var i = 0; i < macro.params.length; i++) {
-			var param = macro.params[i];
-			if (param.newValue) {
-				var valueStart = param.end - (param.value.length + param.quote.length * 2);
-				builder.add(param.newValue, valueStart, param.end);
+		if (downgrade) {
+			var names = getParamNames(macro.name, macro.params, options);
+			var attrs = [];
+			for (var i = 0; i < macro.params.length; i++) {
+				var p = macro.params[i];
+				attrs.push(` ${names[i]}=${p.newValue || p.value}`);
 			}
+			return `<$macrocall $name=${utils.wrapAttributeValue(macro.name)}${attrs.join('')}/>`;
+		} else {
+			var builder = new Rebuilder(text, macro.start);
+			for (var i = 0; i < macro.params.length; i++) {
+				var param = macro.params[i];
+				if (param.newValue) {
+					var valueStart = param.end - (param.value.length + param.quote.length * 2);
+					builder.add(param.newValue, valueStart, param.end);
+				}
+			}
+			return builder.results(macro.end);
 		}
-		return builder.results(macro.end);
 	}
 	return undefined;
 };
@@ -116,25 +134,63 @@ function getManagedParamIndex(macroName, managedArg, params, options) {
 // Looks up the definition of a macro, and figures out what the expected index
 // is for the given parameter.
 function indexOfParamDef(macroName, paramName, options) {
+	var def = getDefinition(macroName, options);
+	var params = def.params || [];
+	for (var i = 0; i < params.length; i++) {
+		if (params[i].name === paramName) {
+			return i;
+		}
+	}
+	return -1;
+};
+
+function getParamNames(macroName, params, options) {
+	var used = Object.create(null);
+	var rtn = new Array(params.length);
+	var anonsExist = false;
+	var i;
+	for (i = 0; i < params.length; i++) {
+		var name = params[i].name;
+		if (name) {
+			rtn[i] = name;
+			used[name] = true;
+		} else {
+			anonsExist = true;
+		}
+	}
+	if (anonsExist) {
+		var defParams = getDefinition(macroName, options).params || [];
+		var defPtr = 0;
+		for (i = 0; i < params.length; i++) {
+			if (rtn[i] === undefined) {
+				while(defPtr < defParams.length && used[defParams[defPtr].name]) {
+					defPtr++;
+				}
+				if (defPtr >= defParams.length) {
+					break;
+				}
+				rtn[i] = defParams[defPtr].name;
+				used[defParams[defPtr].name] = true;
+			}
+		}
+	}
+	return rtn;
+};
+
+/** Returns undefined if the definition cannot be found.
+ */
+function getDefinition(macroName, options) {
 	var globals = options.wiki.relinkGlobalMacros();
 	var def = globals.variables[macroName];
 	if (!def) {
 		// Check with the macro modules
 		if ($tw.utils.hop($tw.macros, macroName)) {
 			def = $tw.macros[macroName];
+		} else {
+			throw "Cannot find definition for ${macroName}. Make sure your macro whitelist is configured properly, and that you're macro is globally defined, or defined in all the places it's used.";
 		}
 	}
-	if (!def) {
-		console.warn(`Cannot find macro definition for ${macroName}, and Relink needs it.`);
-	} else {
-		var params = def.params || [];
-		for (var i = 0; i < params.length; i++) {
-			if (params[i].name === paramName) {
-				return i;
-			}
-		}
-	}
-	return -1;
+	return def;
 };
 
 function parseParams(paramString, pos) {

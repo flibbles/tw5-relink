@@ -75,6 +75,12 @@ it('quotation', function() {
 	test('c""" ]d', '\'c""" ]d\'');
 });
 
+it('unquotable titles', function() {
+	var to = `to''[]there"`;
+	var ph = utils.placeholder;
+	testText("Macro <<test stuff 'from here'>>.", ph(1,to)+"Macro <$macrocall $name=test A=stuff Btitle=<<relink-1>>/>.", {to: to});
+});
+
 it('$macrocall', function() {
 	testText("<$macrocall $name=test A=stuff Btitle='from here' Clist='[[from here]]' Dref='from here##index' />");
 	testText("\n\n<$macrocall $name=test\n\nBtitle='from here'/>\n\n");
