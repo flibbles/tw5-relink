@@ -26,7 +26,8 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		// We don't manage this macro. Bye.
 		return undefined;
 	}
-	var offset = this.match[0].indexOf(this.match[2]);
+	var offset = macroName.length+2;
+	offset = $tw.utils.skipWhiteSpace(this.match[0], offset);
 	var params = parseParams(paramString, offset);
 	for (var managedArg in managedMacro) {
 		var index = getManagedParamIndex(macroName, managedArg, params, options);

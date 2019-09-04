@@ -31,6 +31,13 @@ it('argument orders', function() {
 	testText("Macro <<test Dref:'from here!!f' Clist:'[[from here]]' stuff 'from here'>>.");
 });
 
+it("doesn't choke if attribute string == macro name", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("jsontiddlers", "filter", "filter"));
+	testText("<<jsontiddlers jsontiddlers>>", "<<jsontiddlers to>>",
+	         {wiki: wiki, from: "jsontiddlers", to: "to"});
+});
+
 it('core javascript macros', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("jsontiddlers", "filter", "filter"));
