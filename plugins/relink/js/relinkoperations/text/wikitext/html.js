@@ -16,6 +16,7 @@ var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
+var macrocall = require("./macrocall.js");
 var CannotRelinkError = require("$:/plugins/flibbles/relink/js/CannotRelinkError.js");
 
 exports.name = "html";
@@ -79,6 +80,17 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			attr.value = attr.filter;
 			value = "{{{" + filter + "}}}";
 			quote = "{{{";
+		} else if (attr.type === "macro") {
+			var macro = attr.value;
+			value = macrocall.relinkMacroInvocation(tiddler, text, macro, this.parser, fromTitle, toTitle, options);
+			if (value === undefined) {
+				continue;
+			}
+			// TODO: Let's not hack like this. attr.value is
+			// expected to be a string of the unquoted value below.
+			// Make this better when I can.
+			attr.value.length = (macro.end-macro.start)-4;
+			quote = "<<";
 		} else {
 			continue;
 		}

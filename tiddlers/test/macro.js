@@ -79,6 +79,12 @@ it('$macrocall', function() {
 	testText("\n\n<$macrocall $name=test\n\nBtitle='from here'/>\n\n");
 });
 
+it('attribute invocations', function() {
+	testText("Before <$a b=<<test stuff 'from here'>>/> After");
+	testText("Before <$a b   =    <<test stuff 'from here'>> /> After");
+	testText("Before <$a b\n=\n<<test stuff 'from here'>>\n/> After");
+});
+
 it('keeps up to date with macro changes', function() {
 	var wiki = new $tw.Wiki();
 	var t = testText("Macro <<test stuff 'from here'>>.", {wiki: wiki});
