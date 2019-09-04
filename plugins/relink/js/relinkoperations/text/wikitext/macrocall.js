@@ -85,7 +85,13 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 			var attrs = [];
 			for (var i = 0; i < macro.params.length; i++) {
 				var p = macro.params[i];
-				attrs.push(` ${names[i]}=${p.newValue || p.value}`);
+				var val;
+				if (p.newValue) {
+					val = p.newValue;
+				} else {
+					val = utils.wrapAttributeValue(p.value);
+				}
+				attrs.push(` ${names[i]}=${val}`);
 			}
 			return `<$macrocall $name=${utils.wrapAttributeValue(macro.name)}${attrs.join('')}/>`;
 		} else {

@@ -79,6 +79,10 @@ it('unquotable titles', function() {
 	var to = `to''[]there"`;
 	var ph = utils.placeholder;
 	testText("Macro <<test stuff 'from here'>>.", ph(1,to)+"Macro <$macrocall $name=test A=stuff Btitle=<<relink-1>>/>.", {to: to});
+
+	// This one is tricky because an unrelated attribute can't be quoted
+	// the way it was in a macro invocation
+	testText('X<<test A:g>t "from here">>Y', ph(1,to)+"X<$macrocall $name=test A='g>t' Btitle=<<relink-1>>/>Y", {to: to});
 });
 
 it('$macrocall', function() {
