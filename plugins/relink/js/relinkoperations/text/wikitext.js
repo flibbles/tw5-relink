@@ -84,6 +84,9 @@ WikiRelinker.prototype.getVariableWidget = function() {
 	if (!this.widget) {
 		this.widget = this.wiki.relinkGlobalMacros();
 	}
+	while (this.widget.children.length > 0) {
+		this.widget = this.widget.children[0];
+	}
 	return this.widget;
 };
 

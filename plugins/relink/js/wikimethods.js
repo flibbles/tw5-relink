@@ -119,6 +119,6 @@ exports.relinkGenerateVariableWidget = function(filter, parent) {
 	// These two functions neuter the widget, so it never tries
 	// to render.
 	importWidget.findNextSiblingDomNode = function() {};
-	importWidget.renderChildren = function() {};
+	importWidget.renderChildren(this.parentDomNode);
 	return importWidget;
 };
