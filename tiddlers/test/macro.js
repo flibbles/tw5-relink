@@ -83,6 +83,8 @@ it('quotation of originalValue', function() {
 	testText("<<test Btitle:from>>", "<<test Btitle:'to there'>>", {from: "from"});
 	testText("<<test Btitle:    from    >>", {from: "from", to: "to"});
 	testText('<<test Btitle:"""from here""">>');
+	// Trick title. Old param parser choked on this.
+	testText('<<test Btitle:from]] >>', {from: "from]]", to: "tothere"});
 });
 
 it('unquotable titles', function() {

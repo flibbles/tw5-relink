@@ -76,7 +76,7 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 		if (value === undefined) {
 			continue;
 		}
-		quote = determineQuote(text, param.end);
+		quote = determineQuote(text, param);
 		var quoted = utils.wrapAttributeValue(value, quote, ['', "'", '"', '[[', '"""']);
 		if (quoted === undefined) {
 			var ph = parser.getPlaceholderFor(value,handler.name);
@@ -234,8 +234,8 @@ function parseParams(paramString, pos) {
 /**Givin some text, and an attribute within that text, this returns
  * what type of quotation that attribute is using.
  */
-function determineQuote(text, end) {
-	var pos = end-1;
+function determineQuote(text, param) {
+	var pos = param.end-1;
 	if (text.startsWith("'", pos)) {
 		return "'";
 	}
@@ -246,7 +246,7 @@ function determineQuote(text, end) {
 			return '"';
 		}
 	}
-	if (text.startsWith(']]', pos-1)) {
+	if (text.startsWith(']]', pos-1) && text.startsWith('[[', (pos-param.value.length)-3)) {
 		return "[[";
 	}
 	return '';
