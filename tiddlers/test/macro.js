@@ -146,6 +146,16 @@ it('imported macros', function() {
 
 });
 
+it('slashes in macro name', function() {
+	// non/attr is a legal macro name, but not a legal
+	// unquoted attribute
+	// Also, it might goof up our settings system
+	var wiki = new $tw.Wiki();
+	var to = `to''[]there"`;
+	wiki.addTiddler(utils.macroConf("non/attr", "param", "title"));
+	testText('X<<non/attr param:"from here">>Y', utils.placeholder(1,to)+"X<$macrocall $name='non/attr' param=<<relink-1>>/>Y", {to: to, wiki: wiki});
+});
+
 it('$macrocall', function() {
 	testText("<$macrocall $name=test A=stuff Btitle='from here' Clist='[[from here]]' Dref='from here##index' />");
 	testText("\n\n<$macrocall $name=test\n\nBtitle='from here'/>\n\n");

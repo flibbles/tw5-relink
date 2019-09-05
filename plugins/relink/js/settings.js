@@ -72,7 +72,9 @@ exports.factories = {
 	macros: function(macros, tiddler, key) {
 		var relinker = fieldTypes[tiddler.fields.text];
 		if (relinker) {
-			var name = root(key);
+			// We take the last index, not the first, because macro
+			// parameters can't have slashes, but macroNames can.
+			var name = dir(key);
 			var arg = key.substr(name.length+1);
 			macros[name] = macros[name] || Object.create(null);
 			macros[name][arg] = relinker;
@@ -123,9 +125,20 @@ function compileSettings(wiki) {
 	return settings;
 };
 
+/* Returns first bit of a path. path/to/tiddler -> path
+ */
 function root(string) {
 	var index = string.indexOf('/');
 	if (index >= 0) {
 		return string.substr(0, index);
 	}
 };
+
+/* Returns all but the last bit of a path. path/to/tiddler -> path/to
+ */
+function dir(string) {
+	var index = string.lastIndexOf('/');
+	if (index >= 0) {
+		return string.substr(0, index);
+	}
+}
