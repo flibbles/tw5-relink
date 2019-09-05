@@ -19,7 +19,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	var parseTree = this.parse();
 	var filter = parseTree[0].attributes.filter.value;
 	var extendedOptions = Object.assign({placeholder: this.parser},options);
-	var value = filterRelinker(filter, fromTitle, toTitle, extendedOptions);
+	var value = filterRelinker.relink(filter, fromTitle, toTitle, extendedOptions);
 	if (value !== undefined) {
 		var message = extendedOptions.usedPlaceholder ? "import-placeholder" : "import";
 		log(message, {

@@ -40,7 +40,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		modified = true;
 	}
 	var extendedOptions = Object.assign({placeholder: this.parser}, options);
-	var relinkedFilter = filterHandler(filter, fromTitle, toTitle, extendedOptions);
+	var relinkedFilter = filterHandler.relink(filter, fromTitle, toTitle, extendedOptions);
 	var message = "filteredtransclude";
 	if (extendedOptions.usedPlaceholder) {
 		message = "filteredtransclude-placeholder";

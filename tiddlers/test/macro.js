@@ -84,6 +84,12 @@ it('unquotable titles', function() {
 	// This one is tricky because an unrelated attribute can't be quoted
 	// the way it was in a macro invocation
 	testText('X<<test A:g>t "from here">>Y', ph(1,to)+"X<$macrocall $name=test A='g>t' Btitle=<<relink-1>>/>Y", {to: to});
+
+	// Even if the toTitle is okay. It can make a list unquotable
+	var apos = "M[]'s";
+	testText('X<<test Clist: \'[[from here]] C"\'>>Y',
+	         ph("list-1",apos+' C"')+'X<$macrocall $name=test Clist=<<relink-list-1>>/>Y',
+	         {to: apos});
 });
 
 it('undefined macros', function() {

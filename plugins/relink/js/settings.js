@@ -21,7 +21,7 @@ $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
  * This is useful for wikitext rules which need to parse a filter or a list
  */
 exports.getRelinker = function(name) {
-	return fieldTypes[name].relink;
+	return fieldTypes[name];
 };
 
 exports.getAttributes = function(options) {
@@ -60,13 +60,13 @@ exports.factories = {
 			var elem = root(key);
 			var attr = key.substr(elem.length+1);
 			attributes[elem] = attributes[elem] || Object.create(null);
-			attributes[elem][attr] = relinker.relink;
+			attributes[elem][attr] = relinker;
 		}
 	},
 	fields: function(fields, tiddler, name) {
 		var relinker = fieldTypes[tiddler.fields.text];
 		if (relinker) {
-			fields[name] = relinker.relink;
+			fields[name] = relinker;
 		}
 	},
 	macros: function(macros, tiddler, key) {
@@ -75,13 +75,13 @@ exports.factories = {
 			var name = root(key);
 			var arg = key.substr(name.length+1);
 			macros[name] = macros[name] || Object.create(null);
-			macros[name][arg] = relinker.relink;
+			macros[name][arg] = relinker;
 		}
 	},
 	operators: function(operators, tiddler, name) {
 		var relinker = fieldTypes[tiddler.fields.text];
 		if (relinker) {
-			operators[name] = relinker.relink;
+			operators[name] = relinker;
 		}
 	}
 };

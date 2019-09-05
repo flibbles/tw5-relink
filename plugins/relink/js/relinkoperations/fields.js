@@ -14,9 +14,9 @@ var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 
 exports['fields'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = settings.getFields(options);
-	$tw.utils.each(fields, function(relinker, field) {
+	$tw.utils.each(fields, function(handler, field) {
 		var input = tiddler.fields[field];
-		var value = relinker(input, fromTitle, toTitle, options);
+		var value = handler.relink(input, fromTitle, toTitle, options);
 		if (value !== undefined) {
 			log("field", {
 				from: fromTitle,

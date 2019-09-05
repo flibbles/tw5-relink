@@ -200,7 +200,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 					// This operator isn't managed. Bye.
 					break;
 				}
-				var result = handler(operand, fromTitle, toTitle, options);
+				var result = handler.relink(operand, fromTitle, toTitle, options);
 				if (!result) {
 					// The fromTitle wasn't in the operand.
 					break;

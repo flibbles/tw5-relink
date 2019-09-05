@@ -60,7 +60,9 @@ WikiRelinker.prototype.getPlaceholderFor = function(value, category) {
 	}
 	var number = 0;
 	var prefix = "relink-"
-	if (category) {
+	if (category && category !== "title") {
+		// I don't like "relink-title-1". "relink-1" should be for
+		// titles. lists, and filters can have descriptors though.
 		prefix += category + "-";
 	}
 	do {

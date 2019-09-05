@@ -70,16 +70,16 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 			continue;
 		}
 		var param = macro.params[index];
-		var relinker = managedMacro[managedArg];
+		var handler = managedMacro[managedArg];
 		var extendedOptions = Object.assign({placeholder: parser}, options);
-		value = relinker(param.value, fromTitle, toTitle, extendedOptions);
+		value = handler.relink(param.value, fromTitle, toTitle, extendedOptions);
 		if (value === undefined) {
 			continue;
 		}
 		quote = determineQuote(text, param.end);
 		var quoted = utils.wrapAttributeValue(value, quote, ['', "'", '"', '[[', '"""']);
 		if (quoted === undefined) {
-			var ph = parser.getPlaceholderFor(toTitle);
+			var ph = parser.getPlaceholderFor(value,handler.name);
 			param.newValue = "<<"+ph+">>";
 			param.quote = "<<";
 			downgrade = true;

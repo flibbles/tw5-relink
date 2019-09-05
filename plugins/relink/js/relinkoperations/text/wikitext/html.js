@@ -35,13 +35,13 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		}
 		var value, quote, logMessage = "attribute";
 		if (attr.type === "string") {
-			var relinker = getAttributeHandler(this.nextTag, attributeName, options);
-			if (!relinker) {
+			var handler = getAttributeHandler(this.nextTag, attributeName, options);
+			if (!handler) {
 				// We don't manage this attribute. Bye.
 				continue;
 			}
 			var extendedOptions = Object.assign({placeholder: this.parser}, options);
-			value = relinker(attr.value, fromTitle, toTitle, extendedOptions);
+			value = handler.relink(attr.value, fromTitle, toTitle, extendedOptions);
 			if (value === undefined) {
 				continue;
 			}
@@ -53,7 +53,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			if (quoted === undefined) {
 				// The value was unquotable. We need to make
 				// a macro in order to replace it.
-				quoted = "<<"+this.parser.getPlaceholderFor(value)+">>";
+				quoted = "<<"+this.parser.getPlaceholderFor(value,handler.name)+">>";
 				logMessage = "attribute-placeholder";
 			}
 			value = quoted;
@@ -72,7 +72,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			value = "{{"+refHandler.toString(ref)+"}}";
 		} else if (attr.type === "filtered") {
 			var extendedOptions = Object.assign({placeholder: this.parser}, options);
-			var filter = filterHandler(attr.filter, fromTitle, toTitle, extendedOptions);
+			var filter = filterHandler.relink(attr.filter, fromTitle, toTitle, extendedOptions);
 			if (!canBeFilterValue(filter)) {
 				// Although I think we can actually do this one.
 				throw new CannotRelinkError();
