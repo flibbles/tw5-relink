@@ -112,8 +112,8 @@ it('unpretty and unquotable', function() {
 	test("{{from here||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>><$transclude tiddler=<<relink-1>>/></$tiddler>.");
 	test("{{from here!!field||Template}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{!!field||Template}}</$tiddler>.");
 	test("{{from here##index||Template}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{##index||Template}}</$tiddler>.");
-	test("{{title##index||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=title><$transclude tiddler=<<relink-1>> index='index'/></$tiddler>.");
-	test("{{title!!field||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=title><$transclude tiddler=<<relink-1>> field='field'/></$tiddler>.");
+	test("{{title##index||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=title><$transclude tiddler=<<relink-1>> index=index/></$tiddler>.");
+	test("{{title!!field||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=title><$transclude tiddler=<<relink-1>> field=field/></$tiddler>.");
 	var other = "a'\"";
 	var index = "'apos' and \"quotes\"";
 	// Double placeholder insanity. What kind of

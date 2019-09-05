@@ -116,7 +116,7 @@ exports.transcludeAttributes = function(field, index) {
 
 function wrapAttribute(wikiRelinker, name, value) {
 	if (value) {
-		var wrappedValue = utils.wrapAttributeValue(value, "'");
+		var wrappedValue = utils.wrapAttributeValue(value);
 		if (wrappedValue === undefined) {
 			wrappedValue = "<<"+wikiRelinker.getPlaceholderFor(value, name)+">>";
 		}

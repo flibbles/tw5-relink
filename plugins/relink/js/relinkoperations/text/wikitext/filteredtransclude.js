@@ -64,7 +64,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		if (!value) {
 			return '';
 		}
-		var wrappedValue = utils.wrapAttributeValue(value, "'");
+		var wrappedValue = utils.wrapAttributeValue(value);
 		if (wrappedValue === undefined) {
 			var category = treatAsTitle ? undefined : name;
 			wrappedValue = "<<"+parser.getPlaceholderFor(value,category)+">>";
