@@ -37,7 +37,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		end: this.matchRegExp.lastIndex,
 		params: params
 	};
-	return exports.relinkMacroInvocation(tiddler, text, macroInfo, this.parser, fromTitle, toTitle, options);
+	return this.relinkMacroInvocation(tiddler, text, macroInfo, this.parser, fromTitle, toTitle, options);
 };
 
 /**Processes the given macro,
@@ -62,7 +62,7 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 		return undefined;
 	}
 	for (var managedArg in managedMacro) {
-		var index = getManagedParamIndex(macro.name, managedArg, macro.params, options);
+		var index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);
 		if (index < 0) {
 			// this arg either was not supplied, or we can't find
 			// the definition, so we can't tie it to an anonymous
@@ -91,7 +91,7 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 	}
 	if (modified) {
 		if (downgrade) {
-			var names = getParamNames(macro.name, macro.params, options);
+			var names = getParamNames(macro.name, macro.params, parser, options);
 			var attrs = [];
 			for (var i = 0; i < macro.params.length; i++) {
 				var p = macro.params[i];
@@ -119,14 +119,14 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 	return undefined;
 };
 
-function getManagedParamIndex(macroName, managedArg, params, options) {
+function getParamIndexWithinMacrocall(macroName, param, params, parser, options) {
 	var index, i;
 	for (i = 0; i < params.length; i++) {
-		if (params[i].name === managedArg) {
+		if (params[i].name === param) {
 			return i;
 		}
 	}
-	var expectedIndex = indexOfParamDef(macroName, managedArg, options);
+	var expectedIndex = indexOfParameterDef(macroName, param, parser, options);
 	// We've got to skip over all the named parameter instances.
 	if (expectedIndex >= 0) {
 		var anonI = 0;
@@ -137,7 +137,7 @@ function getManagedParamIndex(macroName, managedArg, params, options) {
 				}
 				anonI++;
 			} else {
-				var indexOfOther = indexOfParamDef(macroName, params[i].name, options);
+				var indexOfOther = indexOfParameterDef(macroName, params[i].name, parser, options);
 				if (indexOfOther < expectedIndex) {
 					anonI++;
 				}
@@ -149,8 +149,8 @@ function getManagedParamIndex(macroName, managedArg, params, options) {
 
 // Looks up the definition of a macro, and figures out what the expected index
 // is for the given parameter.
-function indexOfParamDef(macroName, paramName, options) {
-	var def = getDefinition(macroName, options);
+function indexOfParameterDef(macroName, paramName, parser, options) {
+	var def = getDefinition(macroName, parser, options);
 	var params = def.params || [];
 	for (var i = 0; i < params.length; i++) {
 		if (params[i].name === paramName) {
@@ -160,7 +160,7 @@ function indexOfParamDef(macroName, paramName, options) {
 	return -1;
 };
 
-function getParamNames(macroName, params, options) {
+function getParamNames(macroName, params, parser, options) {
 	var used = Object.create(null);
 	var rtn = new Array(params.length);
 	var anonsExist = false;
@@ -175,7 +175,7 @@ function getParamNames(macroName, params, options) {
 		}
 	}
 	if (anonsExist) {
-		var defParams = getDefinition(macroName, options).params || [];
+		var defParams = getDefinition(macroName, parser, options).params || [];
 		var defPtr = 0;
 		for (i = 0; i < params.length; i++) {
 			if (rtn[i] === undefined) {
@@ -195,9 +195,9 @@ function getParamNames(macroName, params, options) {
 
 /** Returns undefined if the definition cannot be found.
  */
-function getDefinition(macroName, options) {
-	var globals = options.wiki.relinkGlobalMacros();
-	var def = globals.variables[macroName];
+function getDefinition (macroName, parser, options) {
+	var variableContainer = parser.getVariableWidget();
+	var def = variableContainer.variables[macroName];
 	if (!def) {
 		// Check with the macro modules
 		if ($tw.utils.hop($tw.macros, macroName)) {
@@ -245,6 +245,9 @@ function determineQuote(text, end) {
 		} else {
 			return '"';
 		}
+	}
+	if (text.startsWith(']]', pos-1)) {
+		return "[[";
 	}
 	return '';
 };

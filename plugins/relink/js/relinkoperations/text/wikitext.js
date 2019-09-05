@@ -46,6 +46,7 @@ function WikiRelinker(text, toTitle, options) {
 	this.placeholders = Object.create(null);
 	this.reverseMap = Object.create(null);
 	this.knownMacros = Object.create(null);
+	this.widget = undefined;
 };
 
 WikiRelinker.prototype = Object.create(WikiParser.prototype);
@@ -73,6 +74,17 @@ WikiRelinker.prototype.getPlaceholderFor = function(value, category) {
 	this.reverseMap[value] = placeholder;
 	this.reserve(placeholder);
 	return placeholder;
+};
+
+WikiRelinker.prototype.addWidget = function(widget) {
+	this.widget = widget;
+};
+
+WikiRelinker.prototype.getVariableWidget = function() {
+	if (!this.widget) {
+		this.widget = this.wiki.relinkGlobalMacros();
+	}
+	return this.widget;
 };
 
 WikiRelinker.prototype.reserve = function(macro) {

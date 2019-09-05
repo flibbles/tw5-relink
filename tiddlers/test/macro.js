@@ -63,7 +63,7 @@ it('whitespace', function() {
 	testText("Macro\n\n<<test stuff 'from here' '[[from here]]'>>\n\n");
 });
 
-it('quotation', function() {
+it('quotation for new value', function() {
 	function test(value, quotedOut) {
 		testText("<<test Btitle:from>>",
 		         "<<test Btitle:"+quotedOut+">>",
@@ -74,6 +74,15 @@ it('quotation', function() {
 	test('c"""\' d', '[[c"""\' d]]');
 	test('c"""\' d', '[[c"""\' d]]');
 	test('c""" ]d', '\'c""" ]d\'');
+});
+
+it('quotation of originalValue', function() {
+	testText("<<test Btitle:'from here'>>");
+	testText("<<test Btitle:[[from here]]>>");
+	testText('<<test Btitle:"from here">>');
+	testText("<<test Btitle:from>>", "<<test Btitle:'to there'>>", {from: "from"});
+	testText("<<test Btitle:    from    >>", {from: "from", to: "to"});
+	testText('<<test Btitle:"""from here""">>');
 });
 
 it('unquotable titles', function() {
@@ -106,6 +115,33 @@ it('undefined macros', function() {
 	testText("<<undef param:'from here'>>", utils.placeholder(1,to)+"<$macrocall $name=undef param=<<relink-1>>/>", {wiki: wiki, to: to});
 	testText("<<undef something param:'from here'>>",
 	         {wiki: wiki, to: to, ignored: true, fails: 1});
+});
+
+it('imported macros', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.macroConf("other", "param", "title"),
+		{title: "otherTiddler", text: "\\define other(A, param) X\n"},
+		{title: "newTest", text: "\\define test(Dref) X\n"}
+	]);
+	testText("\\import otherTiddler\n\n<<other Z [[from here]]>>",
+	         {wiki: wiki});
+	// If macro not imported. Arguments aren't resolved
+	testText("<<other Z [[from here]]>>",
+	         {wiki: wiki, ignored: true, fails: 1});
+	// But arguments can be resolved anyway if they're named
+	testText("<<other Z param:[[from here]]>>", {wiki: wiki});
+	//imported takes priority over global
+	testText("\\import newTest\n\n<<test 'from here##index'>>",
+	         {wiki: wiki});
+	//imported doesn't take priority if it's not imported though
+	testText("<<test Z 'from here'>>", {wiki: wiki});
+	//And importing something else doesn't goof up the lookup chain
+	testText("\\import otherTiddler\n\n<<test Z 'from here'>>", {wiki: wiki});
+	// LAST TEST. Renaming the imported tiddler still imports it
+	testText("\\import otherTiddler\n\n<<other Z otherTiddler>>",
+	         {wiki: wiki, from: "otherTiddler", to: "tothere"});
+
 });
 
 it('$macrocall', function() {

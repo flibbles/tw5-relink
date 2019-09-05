@@ -93,19 +93,7 @@ var ImportVariablesWidget = require("$:/core/modules/widgets/importvariables.js"
 
 exports.relinkGlobalMacros = function() {
 	if (!this._relinkWidget) {
-		var treeNode = { attributes: {
-			"filter": {
-				type: "string",
-				value: "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]"
-			}
-		}};
-		var importWidget = new ImportVariablesWidget(treeNode, {wiki: this});
-		importWidget.computeAttributes();
-		importWidget.execute();
-		// These two functions neuter the widget, so it never tries
-		// to render.
-		importWidget.findNextSiblingDomNode = function() {};
-		importWidget.renderChildren = function() {};
+		var importWidget = this.relinkGenerateVariableWidget( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
 		this.addEventListener("change", function(changes) {
 			importWidget.refresh(changes);
 		});
@@ -116,4 +104,21 @@ exports.relinkGlobalMacros = function() {
 		rtn = rtn.children[0];
 	}
 	return rtn;
+};
+
+exports.relinkGenerateVariableWidget = function(filter, parent) {
+	var treeNode = { attributes: {
+		"filter": {
+			type: "string",
+			value: filter
+		}
+	}};
+	var importWidget = new ImportVariablesWidget(treeNode,{parentWidget: parent, wiki: this});
+	importWidget.computeAttributes();
+	importWidget.execute();
+	// These two functions neuter the widget, so it never tries
+	// to render.
+	importWidget.findNextSiblingDomNode = function() {};
+	importWidget.renderChildren = function() {};
+	return importWidget;
 };

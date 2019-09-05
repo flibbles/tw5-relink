@@ -28,7 +28,11 @@ exports.relink = function(fields, options) {
 	wiki.addTiddlers(exports.setupTiddlers());
 	results.from = options.from || "from here";
 	results.to = options.to || "to there";
-	wiki.addTiddler({title: results.from});
+	if (!wiki.getTiddler(results.from)) {
+		// There are a couple tests that add the "from" tiddler
+		// themselves. So we want to make sure not to override them.
+		wiki.addTiddler({title: results.from});
+	}
 	results.log = exports.collect("log", function() {
 	results.warn = exports.collect("warn", function() {
 	results.fails = exports.collectFailures(function() {
