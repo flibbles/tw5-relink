@@ -121,7 +121,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		log(logMessage, logArguments, options);
 	}
 	if (importFilterAttr) {
-		var importFilter = computeAttribute(importFilterAttr, options);
+		var importFilter = computeAttribute(importFilterAttr, this.parser, options);
 		var parentWidget = this.parser.getVariableWidget();
 		var varHolder = options.wiki.relinkGenerateVariableWidget(importFilter, parentWidget);
 		this.parser.addWidget(varHolder);
@@ -149,14 +149,16 @@ function getAttributeHandler(widget, attributeName, options) {
 	return undefined;
 };
 
-function computeAttribute(attribute, options) {
+function computeAttribute(attribute, parser, options) {
 	var value;
 	if(attribute.type === "filtered") {
 		value = options.wiki.filterTiddlers(attribute.filter,options.wiki)[0] || "";
 	} else if(attribute.type === "indirect") {
-		value = options.wiki.getTextReference(attribute.textReference,"",self.getVariable("currentTiddler"));
+		var parentWidget = parser.getVariableWidget();
+		value = options.wiki.getTextReference(attribute.textReference,"",parentWidget.getVariable("currentTiddler"));
 	} else if(attribute.type === "macro") {
-		value = self.getVariable(attribute.value.name,{params: attribute.value.params});
+		var parentWidget = parser.getVariableWidget();
+		value = parentWidget.getVariable(attribute.value.name,{params: attribute.value.params});
 	} else { // String attribute
 		value = attribute.value;
 	}

@@ -119,40 +119,44 @@ it('undefined macros', function() {
 	         {wiki: wiki, to: to, ignored: true, fails: 1});
 });
 
-it('imported macros', function() {
-	var wiki = new $tw.Wiki();
-	var otherTiddler = {title: "otherTiddler", text: "\\define other(A, param) X\n"};
-	wiki.addTiddlers([
-		utils.macroConf("other", "param", "title"),
-		utils.attrConf("$importvariables", "filter", "filter"),
-		otherTiddler,
-		{title: "newTest", text: "\\define test(Dref) X\n"}
-	]);
-	testText("\\import otherTiddler\n\n<<other Z [[from here]]>>",
-	         {wiki: wiki});
-	testText("<$importvariables filter='otherTiddler'><<other Z [[from here]]>></$importvariables>",
-	         {wiki: wiki});
+it.only('imported macros', function() {
+	function test(text, options) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddlers([
+			utils.macroConf("other", "param", "title"),
+			utils.macroConf("ptr", "tiddler", "title"),
+			utils.attrConf("$importvariables", "filter", "filter"),
+			{title: "otherTiddler", text: "\\define other(A, param) X\n"},
+			{title: "ptr", tags: "$:/tags/Macro", text: "\\define ptr(tiddler) $tiddler$\n"},
+			{title: "otherRef", pointer: "otherTiddler"},
+			{title: "newTest", text: "\\define test(Dref) X\n"}
+		]);
+		options = Object.assign({wiki: wiki}, options);
+		testText(text, options);
+	};
+	test("\\import otherTiddler\n\n<<other Z [[from here]]>>");
+	test("<$importvariables filter='otherTiddler'><<other Z [[from here]]>></$importvariables>");
+	test("<$importvariables filter={{otherRef!!pointer}}><<other Z [[from here]]>></$importvariables>");
+	test("<$importvariables filter=<<ptr otherTiddler>>><<other Z [[from here]]>></$importvariables>");
 	// If macro not imported. Arguments aren't resolved
-	testText("<<other Z [[from here]]>>",
-	         {wiki: wiki, ignored: true, fails: 1});
+	test("<<other Z [[from here]]>>", {ignored: true, fails: 1});
 	// But arguments can be resolved anyway if they're named
-	testText("<<other Z param:[[from here]]>>", {wiki: wiki});
+	test("<<other Z param:[[from here]]>>");
 	//imported takes priority over global
-	testText("\\import newTest\n\n<<test 'from here##index'>>",{wiki:wiki});
-	testText("<$importvariables filter=newTest><<test 'from here##index'>></$importvariables>",
-	         {wiki: wiki});
+	test("\\import newTest\n\n<<test 'from here##index'>>");
+	test("<$importvariables filter=newTest><<test 'from here##index'>></$importvariables>");
 	//imported doesn't take priority if it's not imported though
-	testText("<<test Z 'from here'>>", {wiki: wiki});
+	test("<<test Z 'from here'>>");
 	//And importing something else doesn't goof up the lookup chain
-	testText("\\import otherTiddler\n\n<<test Z 'from here'>>", {wiki: wiki});
-	testText("<$importvariables filter='otherTiddler'>\n\n<<test Z 'from here'>>\n\n</$importvariables>", {wiki: wiki});
-	// LAST TEST. Renaming the imported tiddler still imports it
-	testText("\\import otherTiddler\n\n<<other Z otherTiddler>>",
-	         {wiki: wiki, from: "otherTiddler", to: "tothere"});
-	// reset it to test again
-	wiki.addTiddler(otherTiddler);
-	testText("<$importvariables filter='otherTiddler'><<other Z otherTiddler>></$importvariables>",
-	         {wiki: wiki, from: "otherTiddler", to: "toThereAgain"});
+	test("\\import otherTiddler\n\n<<test Z 'from here'>>");
+	test("<$importvariables filter='otherTiddler'>\n\n<<test Z 'from here'>>\n\n</$importvariables>");
+
+	// These are for when the importvariables needs updating before it
+	// can be referenced. A rare scenario, but it could happen.
+	test("\\import otherTiddler\n\n<<other Z otherTiddler>>", {from: "otherTiddler", to: "tothere"});
+	test("<$importvariables filter='otherTiddler'><<other Z otherTiddler>></$importvariables>", {from: "otherTiddler", to: "toThereAgain"});
+	test("<$importvariables filter={{otherRef!!pointer}}><<other Z otherRef>></$importvariables>", {from: "otherRef", to: "toThereAgain"});
+	//test("<$importvariables filter=<<ptr otherTiddler>>><<other Z otherTiddler>></$importvariables>", {from: "otherTiddler", to: "toThereAgain"});
 });
 
 it('slashes in macro name', function() {
