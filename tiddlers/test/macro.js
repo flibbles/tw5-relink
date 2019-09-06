@@ -173,6 +173,8 @@ it('local macros', function() {
 		testText(text, options);
 	};
 	test("\\define method(A, Btitle, C) stuff\n\n<<method X 'from here'>>");
+	// Can override existing macros
+	test("\\define test(Dref) stuff\n\n<<test 'from here##index'>>");
 });
 
 it('slashes in macro name', function() {
