@@ -163,6 +163,18 @@ it('imported macros', function() {
 	test("<$importvariables filter=<<ptr otherTiddler>>><<other Z otherTiddler>></$importvariables>", {from: "otherTiddler", to: "toThereAgain"});
 });
 
+it('local macros', function() {
+	function test(text, options) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddlers([
+			utils.macroConf("method", "Btitle", "title")
+		]);
+		options = Object.assign({wiki: wiki}, options);
+		testText(text, options);
+	};
+	test("\\define method(A, Btitle, C) stuff\n\n<<method X 'from here'>>");
+});
+
 it('slashes in macro name', function() {
 	// non/attr is a legal macro name, but not a legal
 	// unquoted attribute

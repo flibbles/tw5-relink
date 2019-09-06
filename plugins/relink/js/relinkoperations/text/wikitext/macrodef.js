@@ -14,6 +14,13 @@ var settings = require("$:/plugins/flibbles/relink/js/settings");
 exports.name = "macrodef";
 
 exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
+	var setParseTreeNode = this.parse();
+	var parentWidget = this.parser.getVariableWidget();
+	var setWidget = parentWidget.makeChildWidget(setParseTreeNode[0]);
+	setWidget.computeAttributes();
+	setWidget.execute();
+	this.parser.addWidget(setWidget);
+	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var m = this.match;
 	// This macro is not available should we need to make one.
