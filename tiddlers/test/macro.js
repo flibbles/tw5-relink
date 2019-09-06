@@ -119,7 +119,7 @@ it('undefined macros', function() {
 	         {wiki: wiki, to: to, ignored: true, fails: 1});
 });
 
-it.only('imported macros', function() {
+it('imported macros', function() {
 	function test(text, options) {
 		var wiki = new $tw.Wiki();
 		wiki.addTiddlers([

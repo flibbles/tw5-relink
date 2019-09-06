@@ -43,11 +43,12 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 /**Processes the given macro,
  * macro: {name:, params:, start:, end:}
  * each parameters: {name:, end:, value:}
+ * Macro invocation returned is the same, but relinked, and may have new keys:
+ * parameters: {type: macro}
  */
 exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle, toTitle, options) {
 	var managedMacro = settings.getMacros(options)[macro.name];
 	var modified = false;
-	var downgrade = false;
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
 		return undefined;
@@ -82,7 +83,7 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 			var ph = parser.getPlaceholderFor(value,handler.name);
 			param.newValue = "<<"+ph+">>";
 			param.quote = "<<";
-			downgrade = true;
+			param.type = "macro";
 		} else {
 			param.newValue = quoted;
 			param.quote = quote;
@@ -90,33 +91,48 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 		modified = true;
 	}
 	if (modified) {
-		if (downgrade) {
-			var names = getParamNames(macro.name, macro.params, parser, options);
-			var attrs = [];
-			for (var i = 0; i < macro.params.length; i++) {
-				var p = macro.params[i];
-				var val;
-				if (p.newValue) {
-					val = p.newValue;
-				} else {
-					val = utils.wrapAttributeValue(p.value);
-				}
-				attrs.push(` ${names[i]}=${val}`);
-			}
-			return `<$macrocall $name=${utils.wrapAttributeValue(macro.name)}${attrs.join('')}/>`;
-		} else {
-			var builder = new Rebuilder(text, macro.start);
-			for (var i = 0; i < macro.params.length; i++) {
-				var param = macro.params[i];
-				if (param.newValue) {
-					var valueStart = param.end - (param.value.length + param.quote.length * 2);
-					builder.add(param.newValue, valueStart, param.end);
-				}
-			}
-			return builder.results(macro.end);
-		}
+		return this.macroToString(macro, text, this.parser, options);
 	}
 	return undefined;
+};
+
+/**Given a macro object ({name:, params:, start: end:}), and the text where
+ * it was parsed from, returns a new macro that maintains any syntactic
+ * structuring.
+ */
+exports.macroToString = function(macro, text, parser, options) {
+	var mustBeWidget = false;
+	for (var i = 0; i < macro.params.length; i++) {
+		if (macro.params[i].type === "macro") {
+			mustBeWidget = true;
+			break;
+		}
+	}
+	if (mustBeWidget) {
+		var names = getParamNames(macro.name, macro.params, parser, options);
+		var attrs = [];
+		for (var i = 0; i < macro.params.length; i++) {
+			var p = macro.params[i];
+			var val;
+			if (p.newValue) {
+				val = p.newValue;
+			} else {
+				val = utils.wrapAttributeValue(p.value);
+			}
+			attrs.push(` ${names[i]}=${val}`);
+		}
+		return `<$macrocall $name=${utils.wrapAttributeValue(macro.name)}${attrs.join('')}/>`;
+	} else {
+		var builder = new Rebuilder(text, macro.start);
+		for (var i = 0; i < macro.params.length; i++) {
+			var param = macro.params[i];
+			if (param.newValue) {
+				var valueStart = param.end - (param.value.length + param.quote.length * 2);
+				builder.add(param.newValue, valueStart, param.end);
+			}
+		}
+		return builder.results(macro.end);
+	}
 };
 
 function getParamIndexWithinMacrocall(macroName, param, params, parser, options) {
