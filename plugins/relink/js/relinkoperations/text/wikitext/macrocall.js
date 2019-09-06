@@ -105,19 +105,21 @@ exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle
 	return undefined;
 };
 
+exports.mustBeAWidget = function(macro) {
+	for (var i = 0; i < macro.params.length; i++) {
+		if (macro.params[i].type === "macro") {
+			return true;
+		}
+	}
+	return false
+};
+
 /**Given a macro object ({name:, params:, start: end:}), and the text where
  * it was parsed from, returns a new macro that maintains any syntactic
  * structuring.
  */
 exports.macroToString = function(macro, text, parser, options) {
-	var mustBeWidget = false;
-	for (var i = 0; i < macro.params.length; i++) {
-		if (macro.params[i].type === "macro") {
-			mustBeWidget = true;
-			break;
-		}
-	}
-	if (mustBeWidget) {
+	if (exports.mustBeAWidget(macro)) {
 		var names = getParamNames(macro.name, macro.params, parser, options);
 		var attrs = [];
 		for (var i = 0; i < macro.params.length; i++) {

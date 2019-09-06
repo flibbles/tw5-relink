@@ -99,6 +99,9 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			if (newMacro === undefined) {
 				continue;
 			}
+			if (macrocall.mustBeAWidget(newMacro)) {
+				throw new CannotRelinkError();
+			}
 			attr.value = newMacro;
 			// TODO: Let's not hack like this. attr.value is
 			// expected to be a string of the unquoted value below.
