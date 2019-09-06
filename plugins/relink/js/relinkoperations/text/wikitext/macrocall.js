@@ -37,16 +37,21 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		end: this.matchRegExp.lastIndex,
 		params: params
 	};
-	return this.relinkMacroInvocation(tiddler, text, macroInfo, this.parser, fromTitle, toTitle, options);
+	var results = this.relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, options);
+	if (results) {
+		return this.macroToString(results, text, this.parser, options);
+	} else {
+		return undefined;
+	}
 };
 
 /**Processes the given macro,
  * macro: {name:, params:, start:, end:}
  * each parameters: {name:, end:, value:}
  * Macro invocation returned is the same, but relinked, and may have new keys:
- * parameters: {type: macro}
+ * parameters: {type: macro, start:, newValue: (quoted replacement value)}
  */
-exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle, toTitle, options) {
+exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle, options) {
 	var managedMacro = settings.getMacros(options)[macro.name];
 	var modified = false;
 	if (!managedMacro) {
@@ -62,6 +67,8 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 		// exceptions if there isn't even a title to replace.
 		return undefined;
 	}
+	var outMacro = Object.assign({}, macro);
+	outMacro.params = macro.params.slice();
 	for (var managedArg in managedMacro) {
 		var index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);
 		if (index < 0) {
@@ -73,25 +80,27 @@ exports.relinkMacroInvocation = function(tiddler, text, macro, parser, fromTitle
 		var param = macro.params[index];
 		var handler = managedMacro[managedArg];
 		var extendedOptions = Object.assign({placeholder: parser}, options);
-		value = handler.relink(param.value, fromTitle, toTitle, extendedOptions);
+		var value = handler.relink(param.value, fromTitle, toTitle, extendedOptions);
 		if (value === undefined) {
 			continue;
 		}
-		quote = determineQuote(text, param);
+		var quote = determineQuote(text, param);
 		var quoted = utils.wrapAttributeValue(value, quote, ['', "'", '"', '[[', '"""']);
+		var newParam = Object.assign({}, param);
 		if (quoted === undefined) {
 			var ph = parser.getPlaceholderFor(value,handler.name);
-			param.newValue = "<<"+ph+">>";
-			param.quote = "<<";
-			param.type = "macro";
+			newParam.newValue = "<<"+ph+">>";
+			newParam.type = "macro";
 		} else {
-			param.newValue = quoted;
-			param.quote = quote;
+			newParam.start = newParam.end - (newParam.value.length + (quote.length*2));
+			newParam.value = value;
+			newParam.newValue = quoted;
 		}
+		outMacro.params[index] = newParam;
 		modified = true;
 	}
 	if (modified) {
-		return this.macroToString(macro, text, this.parser, options);
+		return outMacro;
 	}
 	return undefined;
 };
@@ -127,8 +136,7 @@ exports.macroToString = function(macro, text, parser, options) {
 		for (var i = 0; i < macro.params.length; i++) {
 			var param = macro.params[i];
 			if (param.newValue) {
-				var valueStart = param.end - (param.value.length + param.quote.length * 2);
-				builder.add(param.newValue, valueStart, param.end);
+				builder.add(param.newValue, param.start, param.end);
 			}
 		}
 		return builder.results(macro.end);

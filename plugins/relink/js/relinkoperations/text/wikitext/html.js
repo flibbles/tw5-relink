@@ -92,16 +92,17 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
 			oldValue = attr.value;
-			var value = macrocall.relinkMacroInvocation(tiddler, text, macro, this.parser, fromTitle, toTitle, options);
-			if (value === undefined) {
+			var newMacro = macrocall.relinkMacroInvocation(macro, text, this.parser, fromTitle, toTitle, options);
+			if (newMacro === undefined) {
 				continue;
 			}
+			attr.value = newMacro;
 			// TODO: Let's not hack like this. attr.value is
 			// expected to be a string of the unquoted value below.
 			// Make this better when I can.
 			oldValue.length = (macro.end-macro.start)-4;
 			quote = "<<";
-			attr.quotedValue = value;
+			attr.quotedValue = macrocall.macroToString(newMacro, text, this.parser, options);
 		} else {
 			continue;
 		}
