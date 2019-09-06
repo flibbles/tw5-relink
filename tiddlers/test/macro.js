@@ -121,12 +121,16 @@ it('undefined macros', function() {
 
 it('imported macros', function() {
 	var wiki = new $tw.Wiki();
+	var otherTiddler = {title: "otherTiddler", text: "\\define other(A, param) X\n"};
 	wiki.addTiddlers([
 		utils.macroConf("other", "param", "title"),
-		{title: "otherTiddler", text: "\\define other(A, param) X\n"},
+		utils.attrConf("$importvariables", "filter", "filter"),
+		otherTiddler,
 		{title: "newTest", text: "\\define test(Dref) X\n"}
 	]);
 	testText("\\import otherTiddler\n\n<<other Z [[from here]]>>",
+	         {wiki: wiki});
+	testText("<$importvariables filter='otherTiddler'><<other Z [[from here]]>></$importvariables>",
 	         {wiki: wiki});
 	// If macro not imported. Arguments aren't resolved
 	testText("<<other Z [[from here]]>>",
@@ -134,16 +138,21 @@ it('imported macros', function() {
 	// But arguments can be resolved anyway if they're named
 	testText("<<other Z param:[[from here]]>>", {wiki: wiki});
 	//imported takes priority over global
-	testText("\\import newTest\n\n<<test 'from here##index'>>",
+	testText("\\import newTest\n\n<<test 'from here##index'>>",{wiki:wiki});
+	testText("<$importvariables filter=newTest><<test 'from here##index'>></$importvariables>",
 	         {wiki: wiki});
 	//imported doesn't take priority if it's not imported though
 	testText("<<test Z 'from here'>>", {wiki: wiki});
 	//And importing something else doesn't goof up the lookup chain
 	testText("\\import otherTiddler\n\n<<test Z 'from here'>>", {wiki: wiki});
+	testText("<$importvariables filter='otherTiddler'>\n\n<<test Z 'from here'>>\n\n</$importvariables>", {wiki: wiki});
 	// LAST TEST. Renaming the imported tiddler still imports it
 	testText("\\import otherTiddler\n\n<<other Z otherTiddler>>",
 	         {wiki: wiki, from: "otherTiddler", to: "tothere"});
-
+	// reset it to test again
+	wiki.addTiddler(otherTiddler);
+	testText("<$importvariables filter='otherTiddler'><<other Z otherTiddler>></$importvariables>",
+	         {wiki: wiki, from: "otherTiddler", to: "toThereAgain"});
 });
 
 it('slashes in macro name', function() {

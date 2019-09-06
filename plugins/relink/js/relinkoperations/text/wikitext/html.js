@@ -24,6 +24,7 @@ exports.name = "html";
 exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	var managedElement = settings.getAttributes(options)[this.nextTag.tag],
 		builder = new Rebuilder(text, this.nextTag.start);
+	var importFilterAttr;
 	for (var attributeName in this.nextTag.attributes) {
 		var attr = this.nextTag.attributes[attributeName];
 		var nextEql = text.indexOf('=', attr.start);
@@ -33,7 +34,10 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		if (nextEql < 0 || nextEql > attr.end) {
 			continue;
 		}
-		var value, quote, logMessage = "attribute";
+		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
+			importFilterAttr = attr;
+		}
+		var oldValue, quote, logMessage = "attribute";
 		if (attr.type === "string") {
 			var handler = getAttributeHandler(this.nextTag, attributeName, options);
 			if (!handler) {
@@ -41,7 +45,8 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				continue;
 			}
 			var extendedOptions = Object.assign({placeholder: this.parser}, options);
-			value = handler.relink(attr.value, fromTitle, toTitle, extendedOptions);
+			oldValue = attr.value;
+			var value = handler.relink(attr.value, fromTitle, toTitle, extendedOptions);
 			if (value === undefined) {
 				continue;
 			}
@@ -49,48 +54,54 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				logMessage = "attribute-placeholder";
 			}
 			quote = determineQuote(text, attr);
-			var quoted = utils.wrapAttributeValue(value,quote);
-			if (quoted === undefined) {
+			attr.quotedValue = utils.wrapAttributeValue(value,quote);
+			if (attr.quotedValue === undefined) {
 				// The value was unquotable. We need to make
 				// a macro in order to replace it.
-				quoted = "<<"+this.parser.getPlaceholderFor(value,handler.name)+">>";
+				value = this.parser.getPlaceholderFor(value,handler.name)
+				attr.type = "macro";
+				attr.quotedValue = "<<"+value+">>";
 				logMessage = "attribute-placeholder";
 			}
-			value = quoted;
+			attr.value = value;
 		} else if (attr.type === "indirect") {
 			if (toTitle.indexOf("}") >= 0) {
 				// Impossible replacement
 				throw new CannotRelinkError();
 			}
+			oldValue = attr.textReference;
 			quote = "{{";
 			var ref = $tw.utils.parseTextReference(attr.textReference);
 			if (ref.title !== fromTitle) {
 				continue;
 			}
 			ref.title = toTitle;
-			attr.value = attr.textReference;
-			value = "{{"+refHandler.toString(ref)+"}}";
+			attr.textReference = refHandler.toString(ref);
+			attr.quotedValue = "{{"+attr.textReference+"}}";
 		} else if (attr.type === "filtered") {
 			var extendedOptions = Object.assign({placeholder: this.parser}, options);
+			oldValue = attr.filter
 			var filter = filterHandler.relink(attr.filter, fromTitle, toTitle, extendedOptions);
 			if (!canBeFilterValue(filter)) {
 				// Although I think we can actually do this one.
 				throw new CannotRelinkError();
 			}
-			attr.value = attr.filter;
-			value = "{{{" + filter + "}}}";
+			attr.filter = filter;
+			attr.quotedValue = "{{{" + filter + "}}}";
 			quote = "{{{";
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
-			value = macrocall.relinkMacroInvocation(tiddler, text, macro, this.parser, fromTitle, toTitle, options);
+			oldValue = attr.value;
+			var value = macrocall.relinkMacroInvocation(tiddler, text, macro, this.parser, fromTitle, toTitle, options);
 			if (value === undefined) {
 				continue;
 			}
 			// TODO: Let's not hack like this. attr.value is
 			// expected to be a string of the unquoted value below.
 			// Make this better when I can.
-			attr.value.length = (macro.end-macro.start)-4;
+			oldValue.length = (macro.end-macro.start)-4;
 			quote = "<<";
+			attr.quotedValue = value;
 		} else {
 			continue;
 		}
@@ -98,8 +109,8 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		// We count backwards from the end to preserve whitespace
 		var valueStart = attr.end
 		               - (quote.length*2)
-		               - attr.value.length;
-		builder.add(value, valueStart, attr.end);
+		               - oldValue.length;
+		builder.add(attr.quotedValue, valueStart, attr.end);
 		var logArguments = {
 			from: fromTitle,
 			to: toTitle,
@@ -108,6 +119,12 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			attribute: attributeName
 		};
 		log(logMessage, logArguments, options);
+	}
+	if (importFilterAttr) {
+		var importFilter = computeAttribute(importFilterAttr, options);
+		var parentWidget = this.parser.getVariableWidget();
+		var varHolder = options.wiki.relinkGenerateVariableWidget(importFilter, parentWidget);
+		this.parser.addWidget(varHolder);
 	}
 	this.parser.pos = this.nextTag.end;
 	return builder.results(this.nextTag.end);
@@ -132,6 +149,20 @@ function getAttributeHandler(widget, attributeName, options) {
 	return undefined;
 };
 
+function computeAttribute(attribute, options) {
+	var value;
+	if(attribute.type === "filtered") {
+		value = options.wiki.filterTiddlers(attribute.filter,options.wiki)[0] || "";
+	} else if(attribute.type === "indirect") {
+		value = options.wiki.getTextReference(attribute.textReference,"",self.getVariable("currentTiddler"));
+	} else if(attribute.type === "macro") {
+		value = self.getVariable(attribute.value.name,{params: attribute.value.params});
+	} else { // String attribute
+		value = attribute.value;
+	}
+	return value;
+};
+
 function canBeFilterValue(value) {
 	return value.indexOf("}}}") < 0 && !value.endsWith('}}');
 };
@@ -151,5 +182,7 @@ function determineQuote(text, attr) {
 			return '"';
 		}
 	}
+	// TODO: When merging this with the other determineQuote, attributes
+	// wrapped in brackets actually have the brackets as part of the ittle
 	return '';
 };
