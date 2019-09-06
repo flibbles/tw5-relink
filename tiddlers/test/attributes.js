@@ -42,6 +42,13 @@ it('field attributes', function() {
 	testText(`<$link to=<<from>> />`, {from: "from", ignored: true});
 });
 
+it('properly ignored when not to be relinked', function() {
+	testText(`<$link to="from here XXX" />`, {ignored: true});
+	testText(`<$link to={{index!!from here}} />`, {ignored: true});
+	testText(`<$link to={{{[get[from here]]}}} />`, {ignored: true});
+	testText(`<$link to=<<from here>> />`, {ignored: true});
+});
+
 it('field attributes with true', function() {
 	testText(`<$link trueAttr to="from here">caption</$link>`);
 	testText(`<$link to />`);

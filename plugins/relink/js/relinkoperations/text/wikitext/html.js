@@ -82,6 +82,9 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			var extendedOptions = Object.assign({placeholder: this.parser}, options);
 			oldValue = attr.filter
 			var filter = filterHandler.relink(attr.filter, fromTitle, toTitle, extendedOptions);
+			if (filter === undefined) {
+				continue;
+			}
 			if (!canBeFilterValue(filter)) {
 				// Although I think we can actually do this one.
 				throw new CannotRelinkError();
@@ -153,10 +156,11 @@ function getAttributeHandler(widget, attributeName, options) {
 function computeAttribute(attribute, parser, options) {
 	var value;
 	if(attribute.type === "filtered") {
-		value = options.wiki.filterTiddlers(attribute.filter,options.wiki)[0] || "";
+		var parentWidget = parser.getVariableWidget();
+		value = options.wiki.filterTiddlers(attribute.filter,parentWidget)[0] || "";
 	} else if(attribute.type === "indirect") {
 		var parentWidget = parser.getVariableWidget();
-		value = options.wiki.getTextReference(attribute.textReference,"",parentWidget.getVariable("currentTiddler"));
+		value = options.wiki.getTextReference(attribute.textReference,"",parentWidget.variables.currentTiddler.value);
 	} else if(attribute.type === "macro") {
 		var parentWidget = parser.getVariableWidget();
 		value = parentWidget.getVariable(attribute.value.name,{params: attribute.value.params});

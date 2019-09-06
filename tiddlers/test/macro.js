@@ -15,7 +15,8 @@ function testText(text, expected, options) {
 		{title: "testMacro", tags: "$:/tags/Macro",
 		 text: "\\define test(A, Btitle, Clist, Dref) stuff\n"}
 	]);
-	var results = utils.relink({text: text}, options);
+	var fields = Object.assign({text: text}, options.fields);
+	var results = utils.relink(fields, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
 	expect(results.fails.length).toEqual(options.fails || 0);
 	return results;
@@ -137,6 +138,8 @@ it('imported macros', function() {
 	test("\\import otherTiddler\n\n<<other Z [[from here]]>>");
 	test("<$importvariables filter='otherTiddler'><<other Z [[from here]]>></$importvariables>");
 	test("<$importvariables filter={{otherRef!!pointer}}><<other Z [[from here]]>></$importvariables>");
+	test("<$importvariables filter={{{[all[current]get[pointer]]}}}><<other Z [[from here]]>></$importvariables>", {fields: {pointer: "otherTiddler"}});
+	test("<$importvariables filter={{!!pointer}}><<other Z [[from here]]>></$importvariables>", {fields: {pointer: "otherTiddler"}});
 	test("<$importvariables filter=<<ptr otherTiddler>>><<other Z [[from here]]>></$importvariables>");
 	// If macro not imported. Arguments aren't resolved
 	test("<<other Z [[from here]]>>", {ignored: true, fails: 1});

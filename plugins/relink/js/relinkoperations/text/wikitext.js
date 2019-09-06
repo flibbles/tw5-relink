@@ -12,6 +12,7 @@ and tries to swap it out if it is.
 var type = 'text/vnd.tiddlywiki';
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
+var Widget = require("$:/core/modules/widgets/widget.js").widget;
 
 var rules = Object.create(null);
 
@@ -25,7 +26,7 @@ $tw.modules.forEachModuleOfType("relinkwikitextrule", function(title, exports) {
 	}
 });
 
-function WikiRelinker(text, toTitle, options) {
+function WikiRelinker(text, title, toTitle, options) {
 	WikiParser.call(this, null, text, options);
 	if (!this.relinkMethodsInjected) {
 		$tw.utils.each([this.pragmaRuleClasses, this.blockRuleClasses, this.inlineRuleClasses], function(classList) {
@@ -38,6 +39,7 @@ function WikiRelinker(text, toTitle, options) {
 		});
 		WikiRelinker.prototype.relinkMethodsInjected = true;
 	}
+	this.title = title;
 	this.toTitle = toTitle;
 	this.inlineRules = this.blockRules.concat(this.pragmaRules, this.inlineRules);
 	// We work through relinkRules so we can change it later.
@@ -78,14 +80,18 @@ WikiRelinker.prototype.getPlaceholderFor = function(value, category) {
 
 WikiRelinker.prototype.addWidget = function(widget) {
 	this.widget = widget;
+	while (this.widget.children.length > 0) {
+		this.widget = this.widget.children[0];
+	}
 };
 
 WikiRelinker.prototype.getVariableWidget = function() {
 	if (!this.widget) {
 		this.widget = this.wiki.relinkGlobalMacros();
-	}
-	while (this.widget.children.length > 0) {
-		this.widget = this.widget.children[0];
+		var parentWidget = new Widget({}, {parentWidget: this.widget});
+		parentWidget.setVariable("currentTiddler", this.title);
+		var widget = new Widget({}, {parentWidget: parentWidget});
+		this.addWidget(widget);
 	}
 	return this.widget;
 };
@@ -110,7 +116,7 @@ WikiRelinker.prototype.getPreamble = function() {
 exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var text = tiddler.fields.text,
 		builder = new Rebuilder(text),
-		parser = new WikiRelinker(text, toTitle, options),
+		parser = new WikiRelinker(text, tiddler.fields.title, toTitle, options),
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		if (matchingRule.rule.relink) {
