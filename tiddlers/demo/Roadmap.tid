@@ -9,9 +9,11 @@ This page is meant more for the developer so they don't forget what's left to do
 * Add in form validation for //add// fields in configuration.
 * I think the code is supposed to be in the `./plugins/flibbles/relink` dir, not the `./plugins/relink` dir.
 * Macros cached after encountering `<$importvariables>` should be popped after encountering `</$importvariables>`.
+* Possibly remove the package.json file. This isn't an npm package. It isn't something any other coder would need except for me, the author.
 * Improve documentation on README to be more clear.
 * Add documentation for WikiText patterns like filtered transcludes.
 * There are TODOs scattered throughout the code which need to be addressed.
+* Upgrade demo site to Tiddlywiki v5.1.20. This'll involve upgrading on my local machine.
 * Document the filters included with //Relink//.
 * Make the demo template show text and result side-by-side rather than top and bottom.
 * Change the popup list that occurs during rename to list tiddlers that //will// change as well as ones that can't be relinked.
