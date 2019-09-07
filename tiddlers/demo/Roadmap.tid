@@ -6,9 +6,11 @@ This page is meant more for the developer so they don't forget what's left to do
 * Split whitelists into neat categories based on plugin
 * Add nice [[Examples]] link on all documentation pages which goes to correct Demo tab.
 * Add in form validation for //add// fields in configuration.
+* I think the code is supposed to be in the `./plugins/flibbles/relink` dir, not the `./plugins/relink` dir.
 * Macros cached after encountering `<$importvariables>` should be popped after encountering `</$importvariables>`.
 * Improve documentation on README to be more clear.
 * Add documentation for WikiText patterns like filtered transcludes.
+* There are TODOs scattered throughout the code which need to be addressed.
 * Document the filters included with //Relink//.
 * Make the demo template show text and result side-by-side rather than top and bottom.
 * Change the popup list that occurs during rename to list tiddlers that //will// change as well as ones that can't be relinked.
