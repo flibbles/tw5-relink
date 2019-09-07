@@ -1,8 +1,0 @@
-caption: Known Issues
-tags: Relink
-title: Issues
-
-These are issues that I'm working to correct as soon as I can, but Relink handles the majority of all cases, so I'm making it available before it's 100% perfect.
-
-* Macrocalls are not managed (e.g. `<<macro MyTiddler>>`, or `<$macrocall $name="macro" tiddler="MyTiddler"`). This'll involve another whole customizable whitelist.
-* If `\define relink-??()` is encountered after pragmas should no longer be parsed, this is still relinked if its title matches the fromTitle. I'm not actually sure I should prevent this. It's a weird use case, but I think the user will still probably want it replaced.

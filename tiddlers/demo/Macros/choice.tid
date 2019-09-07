@@ -1,0 +1,10 @@
+tags: $:/tags/Macro
+title: Macros/choice
+
+\define choice(type, item) //$type$ of choice//: ''{{$item$}}''
+
+<$codeblock code={{{[<currentTiddler>get[text]splitbefore[<]removesuffix[<]]}}} />
+
+The choice macro takes a reference for its second parameter called ''item''.
+
+On the <$link to="$:/plugins/flibbles/relink/ui/configuration/Macros">//Relink// macro configuration whitelist</$link>, ''item'' is configured to be managed as a [[TextReference|Field Types]].

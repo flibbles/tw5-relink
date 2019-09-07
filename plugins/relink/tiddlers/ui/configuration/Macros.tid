@@ -1,0 +1,47 @@
+caption: {{$:/plugins/flibbles/relink/language/ui/Macros/Caption}}
+tags: $:/tags/flibbles/relink/Configuration
+title: $:/plugins/flibbles/relink/ui/configuration/Macros
+
+\define prefix-macro() $:/config/flibbles/relink/macros/
+\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
+\define state-base() $:/state/flibbles/relink/
+
+\define body()
+
+{{$:/plugins/flibbles/relink/language/Help/Macros}}
+
+<table><tbody>
+<tr><th>Macro</th><th>Parameter</th><th>Type</th><th>Delete</th></tr>
+<$list filter="[all[shadows+tiddlers]prefix<prefix-macro>!has[draft.of]has[text]]">
+<$set name="parameter"
+      filter="[all[current]removeprefix<prefix-macro>relink:splitafter[/]]">
+<$set name="macro"
+      filter="[all[current]removeprefix<prefix-macro>removesuffix<parameter>removesuffix[/]]">
+<tr>
+<td><$text text=<<macro>> /></td>
+<td><$text text=<<parameter>> /></td>
+<td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
+<td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
+</tr>
+</$set></$set></$list>
+</tbody></table>
+
+<em class="tc-edit">Add a new macro parameter:</em>
+<$edit-text tiddler="$(state-base)$macro-name"
+            tag="input" default="" placeholder="macro" />
+<$edit-text tiddler="$(state-base)$parameter-name"
+            tag="input" default="" placeholder="parameter" />
+<$button tooltip={{$(lingo-base)$NewParameter/Hint}}
+         aria-label={{$(lingo-base)$NewParameter/Caption}}>
+<$set name="tiddlerName"
+      filter="[<prefix-macro>addsuffix{$(state-base)$macro-name}addsuffix[/]addsuffix{$(state-base)$parameter-name}]">
+<$action-setfield $tiddler=<<tiddlerName>>
+                  text={{$:/config/flibbles/relink/settings/default-type}} />
+</$set>
+<$action-deletetiddler $tiddler="$(state-base)$parameter-name" />
+<$action-deletetiddler $tiddler="$(state-base)$macro-name" />
+<$text text={{$(lingo-base)$NewParameter/Caption}}/>
+</$button>
+\end
+
+<<body>>

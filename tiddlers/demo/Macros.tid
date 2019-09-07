@@ -1,0 +1,35 @@
+caption: Macros
+tags: Documentation Construct
+title: Macros
+
+''Relink'' will relink macro parameters, but only if they've been explicitly whitelisted. All appropriate core macro parameters are already whitelisted by default, but you may wish to add your own.
+
+For each parameter, you must specify its [[type|Field Types]].
+
+!!! Details
+
+If you add an entry to the whitelist, like `myMacro`/`myParameter`, that assumes that you have a macro somewhere in your project defined like `\define myMacro(..., myParameter, ...)`, or you have a macro module defining it.
+
+You can either have this macro defined globally through <<tag $:/tags/Macro>>, or have it defined locally inside a specific tidder, or imported through `\import` or the like. All are supported, so long as the macro is defined in any context where it's used.
+
+But actually, defining the macro isn't strictly necessary. //Relink// only needs the macro definition so it can resolve anonymous macros. For example, if you called our example above as,
+
+```
+<<myMacro myParameter:"tiddlerTitle" "some text">>
+```
+And you rename //tiddlerTitle//, Relink doesn't need the definition to figure out how to relink myParameter, even with other parameters there.
+However, if you call it like,
+
+```
+<<myMacro "tiddlerTitle" "some text">>
+```
+Then //Relink// needs to be able to find the definition to figure out which parameter is what. If your definition is:
+
+```
+\define myMacro(text, myParameter) ...
+```
+Then Relink //shouldn't// relink the example, because the second anonymous parameter, //otherValue// corresponds to the parameter `myParameter`. The first parameter, //text// isn't whitelisted. So it won't be touched. Make sense?
+
+''Note'': While you can define your macros locally, the whitelist is global. So  if you have tricky situations, such as multiple variations of the same macro defined for different contexts, or you get super fancy with your `<$importvariables>` widgets, //Relink// will //try its best// to find the proper definition.
+
+At worst, it'll report that it couldn't relink a particular tiddler if it finds an abiguous macrocall.

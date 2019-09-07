@@ -5,7 +5,7 @@ title: Field Types
 \rules except wikilink
 Fields and attributes have types. Depending on the type, Relink will parse them differently.
 
-!!! Title
+!! Title
 
 This is the simplest type. The value is a single tiddler title.
 
@@ -19,7 +19,7 @@ The value of list-after is one tiddler titled "Tiddler A". If "Tiddler A" is ren
 
 `list-after: Tiddler B`
 
-!!! List
+!! List
 
 The value of the field or attribute is treated as a [[string list, as described here|https://tiddlywiki.com/static/Title%2520List.html]].
 
@@ -33,7 +33,7 @@ If //Second Tiddler// were renamed to //New Tiddler//, that field would become,
 
 Relink adds brackets whenever necessary.
 
-!!! Filter
+!! Filter
 
 The value of the field or attribute is treated as a [[filter, as describer here|https://tiddlywiki.com/static/Introduction%2520to%2520filter%2520notation.html]].
 
@@ -43,7 +43,7 @@ For example, take `<$list filter="[[MyTiddler]] [tag[MyTiddler]!has[draft.of]]" 
 
 `<$list filter="[[NewTiddler]] [tag[NewTiddler]!has[draft.of]]" />`
 
-!!! Reference
+!! Reference
 
 This is a [[TextReference, as described here|https://tiddlywiki.com/static/TextReference.html]].
 

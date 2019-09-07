@@ -1,0 +1,24 @@
+title: $:/config/flibbles/relink/macros/
+
+csvtiddlers/filter: filter
+datauri/title: title
+# image-picker/subfilter: subfilter // Not the same as a filter
+jsontiddler/title: title
+jsontiddlers/filter: filter
+list-links/filter: filter
+list-links-draggable/tiddler: title
+list-links-draggable/itemTemplate: title
+list-tagged-draggable/tag: title
+# list-tagged-draggable/subFilter: filter // Subfilter, not the same.
+list-tagged-draggable/itemTemplate: title
+toc/tag: title
+# toc/sort: filter // This is a subfilter, Relink can't safely affect it
+toc/selectedTiddler: title
+toc/template: title
+tabs/buttonTemplate: title
+tabs/default: title
+tabs/tabsList: filter
+tabs/template: title
+tag/tag: title
+tag-pill/tag: title
+timeline/subfilter: filter
