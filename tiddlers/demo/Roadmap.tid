@@ -4,6 +4,7 @@ title: Roadmap
 This page is meant more for the developer so they don't forget what's left to do.
 
 * Split whitelists into neat categories based on plugin
+** Related: create an example third-party plugin to show how that works.
 * Add nice [[Examples]] link on all documentation pages which goes to correct Demo tab.
 * Add in form validation for //add// fields in configuration.
 * I think the code is supposed to be in the `./plugins/flibbles/relink` dir, not the `./plugins/relink` dir.
