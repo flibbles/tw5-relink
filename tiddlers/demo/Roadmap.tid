@@ -11,5 +11,7 @@ This page is meant more for the developer so they don't forget what's left to do
 * Make the demo template show text and result side-by-side rather than top and bottom.
 * Change the popup list that occurs during rename to list tiddlers that //will// change as well as ones that can't be relinked.
 * On relink failure, at least change as many instances as possible rather than giving up on an entire tiddler.
+* Possible issue with `<$importvariables>` widgets being called whose attributes depend on macros defined immediately preceding the widget call. `\define macro() blah\n\n<$importvariables filter=<<blah>> >...`
+** And I need to track variables set in `<$set>` even though those aren't ever involved in relinking. They may be part of an importvariables attribute value.
 * Better application of wikitext rules in WikiRelinking. Pragma first, then block and inline
 ** Right now, if `\define relink-??()` is encountered after pragmas should no longer be parsed, this is still relinked if its title matches the fromTitle. I'm not actually sure I should prevent this. It's a weird use case, but I think the user will still probably want it replaced.
