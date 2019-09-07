@@ -8,8 +8,8 @@ But what about updating a tiddler's text? What about other fields like
 my project?
 
 This is what Relink is for. It expands on TW5's bulk updating to allow for
-any customizable fields to be updated, whether they're lists, filters, or
-single-tiddler fields. In addition, relink parses through the text of all
+any customizable fields to be updated, whether they're lists, filters, macros,
+or single-tiddler fields. In addition, relink parses through the text of all
 relevant tiddlers and updates prettyLinks, transclusions, widgets, and other
 syntax patterns to properly reflect the title change. All of this is fully
 customizable.

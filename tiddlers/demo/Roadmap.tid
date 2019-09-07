@@ -7,6 +7,8 @@ This page is meant more for the developer so they don't forget what's left to do
 * Add nice [[Examples]] link on all documentation pages which goes to correct Demo tab.
 * Add in form validation for //add// fields in configuration.
 * Macros cached after encountering `<$importvariables>` should be popped after encountering `</$importvariables>`.
+* Improve documentation on README to be more clear.
+* Add documentation for WikiText patterns like filtered transcludes.
 * Document the filters included with //Relink//.
 * Make the demo template show text and result side-by-side rather than top and bottom.
 * Change the popup list that occurs during rename to list tiddlers that //will// change as well as ones that can't be relinked.
