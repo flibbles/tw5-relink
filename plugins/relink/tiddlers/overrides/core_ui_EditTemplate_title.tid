@@ -3,34 +3,6 @@ title: $:/core/ui/EditTemplate/title
 
 <$edit-text field="draft.title" class="tc-titlebar tc-edit-texteditor" focus="true" tabindex={{$:/config/EditTabIndex}}/>
 
-<$vars pattern="""[\|\[\]{}]""" bad-chars="""`| [ ] { }`""">
-
-<$list filter="[all[current]regexp:draft.title<pattern>]" variable="listItem">
-
-<div class="tc-message-box">
-
-{{$:/core/images/warning}} {{$:/language/EditTemplate/Title/BadCharacterWarning}}
-
-</div>
-
-</$list>
-
-</$vars>
-
-<$vars pattern="""^[+\-~=]""" bad-chars="""`+ - ~ =`""">
-
-<$list filter="[all[current]regexp:draft.title<pattern>]" variable="listItem">
-
-<div class="tc-message-box">
-
-{{$:/core/images/warning}} {{$:/language/EditTemplate/Title/BadPrefixWarning}}
-
-</div>
-
-</$list>
-
-</$vars>
-
 <$reveal state="!!draft.title" type="nomatch" text={{!!draft.of}} tag="div">
 
 <$list filter="[{!!draft.title}!is[missing]]" variable="listItem">
