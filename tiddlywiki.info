@@ -1,8 +1,5 @@
 {
 	"description": "Testing documentation, and demo framework for tw5-relink",
-	"config": {
-		"wikiTiddlersSubDir": "./test"
-	},
 	"plugins": [
 		"tiddlywiki/jasmine"
 	],
