@@ -5,7 +5,7 @@ This page is meant more for the developer so they don't forget what's left to do
 
 * Split whitelists into neat categories based on plugin
 ** Related: create an example third-party plugin to show how that works.
-* Add nice [[Examples]] link on all documentation pages which goes to correct Demo tab.
+* Make the tab-sensitive demo links actual links, not buttons. Also add links to relink configuration page when appropriate.
 * Add in form validation for //add// fields in configuration.
 * Improve UI in configuration menu. Delete buttons shouldn't get that much space. Maybe have examples for each row in gray.
 * I think the code is supposed to be in the `./plugins/flibbles/relink` dir, not the `./plugins/relink` dir.
@@ -13,12 +13,9 @@ This page is meant more for the developer so they don't forget what's left to do
 * Possibly remove the package.json file. This isn't an npm package. It isn't something any other coder would need except for me, the author.
 * Organize the unit tests better. Especially relink.js. That's kind of a misc test set that should be categorized more logically.
 * Improve documentation on README to be more clear.
-* Add documentation for WikiText patterns like filtered transcludes.
 * There are TODOs scattered throughout the code which need to be addressed.
-* Upgrade demo site to Tiddlywiki v5.1.20. This'll involve upgrading on my local machine.
 * Document the filters included with //Relink//.
 * Make the demo template show text and result side-by-side rather than top and bottom.
-* Change the popup list that occurs during rename to list tiddlers that //will// change as well as ones that can't be relinked.
 * On relink failure, at least change as many instances as possible rather than giving up on an entire tiddler.
 * Possible issue with `<$importvariables>` widgets being called whose attributes depend on macros defined immediately preceding the widget call. `\define macro() blah\n\n<$importvariables filter=<<blah>> >...`
 ** And I need to track variables set in `<$set>` even though those aren't ever involved in relinking. They may be part of an importvariables attribute value.
