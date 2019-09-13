@@ -20,4 +20,6 @@ will updated to:
 ''list:'' <$text text="[[Tiddler A]] [[New Tiddler]]" />
 </pre>
 
-If //Tiddler B// is renamed to //New Tiddler.
+If //Tiddler B// is renamed to //New Tiddler//.
+
+<<link-to-tab Demo Demo/Fields Demo>>

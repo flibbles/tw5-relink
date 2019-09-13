@@ -3,5 +3,7 @@ title: $:/config/flibbles/relink/
 fields/example-filter: filter
 fields/example-list: list
 fields/example-single: title
+macros/link-to-tab/tab: title
+macros/link-to-tab/tiddler: title
 macros/choice/item: reference
 macros/makeLink/title: title

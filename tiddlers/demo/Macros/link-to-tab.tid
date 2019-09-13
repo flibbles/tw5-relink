@@ -1,0 +1,15 @@
+tags: $:/tags/Macro
+title: Macros/link-to-tab
+qualifiers: Demo 1577183281 $:/plugins/flibbles/relink/configuration 678614419
+
+\define link-to-tab(tiddler, tab, caption)
+<$button>
+<$action-setfield $tiddler={{{ [list[Macros/link-to-tab!!qualifiers]after<__tiddler__>addprefix[$:/state/tab-]] }}} text=<<__tab__>>/>
+<$action-navigate $to=<<__tiddler__>>/>
+$caption$
+</$button>
+\end
+
+This creates a button which opens a specific tiddler and a tab within that tiddler. It's used on several documentation pages to link to examples or the //Relink// configuration menu.
+
+Unfortunately, due to the way the `qualify` mechanic works in Tiddlywiki, this macro must maintain a hardcoded list of qualifier hashes, and if you rename the target tiddler, the qualifier doesn't update automatically.

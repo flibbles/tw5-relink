@@ -22,3 +22,5 @@ becomes
 `[title[New Tiddler]] [tag[New Tiddler]!field:title[New Tiddler]]`
 
 ''Title'' is special. If it's whitelisted, then it includes all shorthands for title. All runs of the filter: `[title[MyTiddler]] [[MyTiddler]] MyTiddler "MyTiddler" 'MyTiddler'` would all be changed on a rename of //MyTiddler//.
+
+<<link-to-tab Demo Demo/Filters Demo>>

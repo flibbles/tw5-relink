@@ -33,3 +33,5 @@ Then Relink //shouldn't// relink the example, because the second anonymous param
 ''Note'': While you can define your macros locally, the whitelist is global. So  if you have tricky situations, such as multiple variations of the same macro defined for different contexts, or you get super fancy with your `<$importvariables>` widgets, //Relink// will //try its best// to find the proper definition.
 
 At worst, it'll report that it couldn't relink a particular tiddler if it finds an abiguous macrocall.
+
+<<link-to-tab Demo Demo/Macros Demo>>

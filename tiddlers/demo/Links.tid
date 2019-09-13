@@ -10,4 +10,4 @@ All links which Relink finds that point to the changing title will be updated, h
 [[Displayed Link Title|Tiddler Title]]
 ```
 
-[[Demo]]
+<<link-to-tab Demo Demo/Links Demo>>

@@ -17,3 +17,5 @@ Filters inside of filtered transclusions are also processed. Relink will obey th
 {{{ [tag[MyTiddler]] }}}
 {{{ [tag[MyTiddler]] || Template }}}
 ```
+
+<<link-to-tab Demo Demo/Transcludes Demo>>
