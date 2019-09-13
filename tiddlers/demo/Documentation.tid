@@ -4,11 +4,11 @@ title: Documentation
 
 \rules except wikilink
 
-Relink is already configured to rename tiddler title occurrences across all core attributes, fields, and filter operators. However, it can be customized through a series of whitelists Relink references for each type of construct. Custom constructs can be added, and existing ones can be ignored.
+//Relink// is already configured to rename tiddler title occurrences across all core attributes, fields, and filter operators. However, it can be customized through a series of whitelists //Relink// references for each type of construct. Custom constructs can be added, and existing ones can be ignored.
 
 !! Constructs
 
-The following are configurable through the Relink configuration panel.
+The following are configurable through the //Relink// configuration panel.
 
 {{Construct||Templates/ul}}
 
@@ -17,3 +17,9 @@ The following are configurable through the Relink configuration panel.
 There are also numerous WikiText syntax patterns for which Relink has predefined behavor. Currently, none of these are configurable.
 
 {{WikiText||Templates/ul}}
+
+!! Other Features
+
+Besides relinking tiddlers, //Relink// includes other features.
+
+{{Feature||Templates/ul}}
