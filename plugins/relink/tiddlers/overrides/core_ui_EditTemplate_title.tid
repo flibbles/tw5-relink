@@ -1,6 +1,28 @@
 tags: $:/tags/EditTemplate
 title: $:/core/ui/EditTemplate/title
 
+\define conditional-list(state, prompt, filter)
+<$list filter="[subfilter<__filter__>limit[1]]" variable="listItem">
+
+<$vars stateTiddler=<<qualify "$:/state/edit/$state$">> >
+
+<$reveal type="nomatch" state=<<stateTiddler>> text="show">
+<$button set=<<stateTiddler>> setTo="show" class="tc-btn-invisible">{{$:/core/images/right-arrow}}
+<<lingo [[$prompt$]]>></$button>
+</$reveal>
+<$reveal type="match" state=<<stateTiddler>> text="show">
+<$button set=<<stateTiddler>> setTo="hide" class="tc-btn-invisible">{{$:/core/images/down-arrow}}
+<<lingo [[$prompt$]]>></$button>
+</$reveal>
+
+<$reveal type="match" state=<<stateTiddler>> text="show">
+<$list filter=<<__filter__>> template="$:/core/ui/ListItemTemplate">
+</$list>
+</$reveal>
+
+</$vars>
+\end
+
 <$edit-text field="draft.title" class="tc-titlebar tc-edit-texteditor" focus="true" tabindex={{$:/config/EditTabIndex}}/>
 
 <$reveal state="!!draft.title" type="nomatch" text={{!!draft.of}} tag="div">
@@ -21,27 +43,9 @@ title: $:/core/ui/EditTemplate/title
 
 <$checkbox tiddler="$:/config/RelinkOnRename" field="text" checked="yes" unchecked="no" default="no"> {{$:/language/EditTemplate/Title/Relink/Prompt}}</$checkbox>
 
-<$list filter="[{!!draft.title}relink:impossible<fromTitle>limit[1]]" variable="listItem">
+<<conditional-list impossibles EditTemplate/Title/Impossibles/Prompt "[{!!draft.title}relink:impossible<fromTitle>]">>
 
-<$vars stateTiddler=<<qualify "$:/state/edit/references">> >
-
-<$reveal type="nomatch" state=<<stateTiddler>> text="show">
-<$button set=<<stateTiddler>> setTo="show" class="tc-btn-invisible">{{$:/core/images/right-arrow}} 
-<<lingo EditTemplate/Title/References/Prompt>></$button>
-</$reveal>
-<$reveal type="match" state=<<stateTiddler>> text="show">
-<$button set=<<stateTiddler>> setTo="hide" class="tc-btn-invisible">{{$:/core/images/down-arrow}} 
-<<lingo EditTemplate/Title/References/Prompt>></$button>
-</$reveal>
-
-<$reveal type="match" state=<<stateTiddler>> text="show">
-<$list filter="[{!!draft.title}relink:impossible<fromTitle>]" template="$:/core/ui/ListItemTemplate">
-</$list>
-</$reveal>
-
-</$vars>
-
-</$list>
+<<conditional-list references EditTemplate/Title/References/Prompt "[relink:references<fromTitle>!title[$:/StoryList]sort[title]]">>
 
 </$vars>
 
