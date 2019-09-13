@@ -2,9 +2,18 @@ caption: Transcludes
 tags: Documentation WikiText
 title: Transcludes
 
-Simple Transclusion patterns areautomatically updated. This includes both the tiddler and the template tiddler.
+Simple Transclusion patterns are automatically updated. This includes both the tiddler and the template tiddler.
 
 ```
 {{MyTiddler}}
 {{MyTiddler||TemplateTiddler}}
+```
+
+!! Filtered Transclusion
+
+Filters inside of filtered transclusions are also processed. Relink will obey the usual whitelist rules for operands in those filters. If the filtered transclusion has a template, that will also be relinked if applicable.
+
+```
+{{{ [tag[MyTiddler]] }}}
+{{{ [tag[MyTiddler]] || Template }}}
 ```
