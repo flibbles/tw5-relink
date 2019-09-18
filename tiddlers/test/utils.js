@@ -26,6 +26,7 @@ exports.relink = function(fields, options) {
 	var relinkedTiddler;
 	var wiki = options.wiki || new $tw.Wiki();
 	wiki.addTiddlers(exports.setupTiddlers());
+	results.wiki = wiki;
 	results.from = options.from || "from here";
 	results.to = options.to || "to there";
 	if (!wiki.getTiddler(results.from)) {

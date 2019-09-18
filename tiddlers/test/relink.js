@@ -9,34 +9,68 @@ var relink = utils.relink;
 
 describe('relink', function() {
 
-function testConfig(relink, /* tiddler objects */) {
-	var wiki = new $tw.Wiki();
-	wiki.addTiddlers([ {title: "from"}, {title: "test", text: "[[from]]"}]);
-	wiki.addTiddlers(Array.prototype.slice.call(arguments, 1));
-	utils.collect("log", function() {
-		// Just ensuring that this doesn't throw.
-		wiki.renameTiddler("from", "to");
-	});
-	var expected = relink ? "[[to]]": "[[from]]";
-	expect(wiki.getTiddler("test").fields.text).toEqual(expected);
+function testConfig(options, /* tiddler objects */) {
+	var text = "[[from here]]", expected;
+	var tiddlerObj = Object.assign({text: text}, options);
+	[text, expected, options] = utils.prepArgs(text, options);
+	options.wiki.addTiddlers(Array.prototype.slice.call(arguments, 1));
+	var results = utils.relink(tiddlerObj, options);
+	expect(results.tiddler.fields.text).toEqual(expected);
 };
 
 it("handles getting no configuration at all", function() {
-	testConfig(true);
+	testConfig();
 });
 
 it("handles inclusive configuration", function() {
-	testConfig(true, utils.toUpdateConf("[all[]]"));
-	testConfig(true, utils.toUpdateConf("[tag[update]]"),
-		{title: "test", tags: "update", text: "[[from]]"});
+	testConfig({}, utils.toUpdateConf("[all[]]"));
+	testConfig({tags: "update"}, utils.toUpdateConf("[tag[update]]"));
 });
 
 it("properly ignores tiddlers outside of to-update", function() {
-	testConfig(false, utils.toUpdateConf("[tag[update]]"));
+	testConfig({ignored: true}, utils.toUpdateConf("[tag[update]]"));
 });
 
 it("to-update handles non-existent tiddlers", function() {
-	testConfig(true, utils.toUpdateConf("test non-existent"));
+	testConfig({}, utils.toUpdateConf("test non-existent"));
+});
+
+var shadowTiddler = "$:/plugins/flibbles/test/tiddler";
+function wikiWithPlugin() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({
+		title: "$:/plugins/flibbles/test",
+		description: "Plugins for shadow tiddler tests",
+		"plugin-type": "plugin",
+		type: "application/json",
+		version: "0.0.0",
+		text: `{
+			"tiddlers": {
+				"${shadowTiddler}": {
+					"text": "Shadow [[from here]]"
+				}
+			}
+		}`
+	});
+	wiki.readPluginInfo();
+	wiki.registerPluginTiddlers("plugin");
+	wiki.unpackPluginTiddlers();
+	return wiki;
+};
+
+it("doesn't touch shadow tiddlers by default", function() {
+	var wiki = wikiWithPlugin();
+	utils.relink({}, {wiki: wiki});
+	var tiddler = wiki.getTiddler(shadowTiddler);
+	expect(tiddler.fields.text).toEqual("Shadow [[from here]]");
+});
+
+it("does touch shadow tiddlers when configured to", function() {
+	var wiki = wikiWithPlugin();
+	wiki.addTiddler(utils.toUpdateConf("[all[tiddlers+shadows]]"));
+	utils.relink({}, {wiki: wiki});
+	var tiddler = wiki.getTiddler(shadowTiddler);
+	expect(tiddler.fields.text).toEqual("Shadow [[to there]]");
 });
 
 it("handles errors with at least some grace", function() {
