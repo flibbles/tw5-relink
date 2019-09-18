@@ -44,12 +44,17 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 	var failures = [];
 	var changeList = Object.create(null);
 	if(fromTitle && toTitle && fromTitle !== toTitle) {
-		wiki.each((tiddler,title) => {
-			var type = tiddler.fields.type || "";
+		var toUpdate = getRelinkFilter(wiki);
+		var tiddlerList = toUpdate.call(wiki); // no source or widget
+		for (var i = 0; i < tiddlerList.length; i++) {
+			var title = tiddlerList[i];
+			var tiddler = wiki.getTiddler(title);
 			// Don't touch plugins or JavaScript modules
-			if(!tiddler.fields["plugin-type"] && type !== "application/javascript") {
+			if(tiddler
+			&& !tiddler.fields["plugin-type"]
+			&& tiddler.fields.type !== "application/javascript") {
 				try {
-					var changes = {};
+					var changes = Object.create(null);
 					for (var operation in relinkOperations) {
 						relinkOperations[operation](tiddler, fromTitle, toTitle, changes, options);
 					}
@@ -70,9 +75,22 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 					}
 				}
 			}
-		});
+		}
 	}
 	return {changes: changeList, failures: failures};
+};
+
+function getRelinkFilter(wiki) {
+	var toUpdate = "$:/config/flibbles/relink/to-update";
+	return wiki.getCacheForTiddler(toUpdate, "relink-toUpdate", function() {
+		var tiddler = wiki.getTiddler(toUpdate);
+		if (tiddler) {
+			var filter = wiki.compileFilter(tiddler.fields.text);
+			return filter;
+		} else {
+			return wiki.allTitles;
+		}
+	});
 };
 
 /**Returns a list of tiddlers that would be renamed by a relink operations.

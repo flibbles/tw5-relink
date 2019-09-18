@@ -9,17 +9,34 @@ var relink = utils.relink;
 
 describe('relink', function() {
 
-it("handles getting no options at all", function() {
+function testConfig(relink, /* tiddler objects */) {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddlers([
-		{title: "X"},
-		{title: "A", text: "[[X]]"}
-	]);
+	wiki.addTiddlers([ {title: "from"}, {title: "test", text: "[[from]]"}]);
+	wiki.addTiddlers(Array.prototype.slice.call(arguments, 1));
 	utils.collect("log", function() {
 		// Just ensuring that this doesn't throw.
-		wiki.renameTiddler("X", "Y");
+		wiki.renameTiddler("from", "to");
 	});
-	expect(wiki.getTiddler("A").fields.text).toEqual("[[Y]]");
+	var expected = relink ? "[[to]]": "[[from]]";
+	expect(wiki.getTiddler("test").fields.text).toEqual(expected);
+};
+
+it("handles getting no configuration at all", function() {
+	testConfig(true);
+});
+
+it("handles inclusive configuration", function() {
+	testConfig(true, utils.toUpdateConf("[all[]]"));
+	testConfig(true, utils.toUpdateConf("[tag[update]]"),
+		{title: "test", tags: "update", text: "[[from]]"});
+});
+
+it("properly ignores tiddlers outside of to-update", function() {
+	testConfig(false, utils.toUpdateConf("[tag[update]]"));
+});
+
+it("to-update handles non-existent tiddlers", function() {
+	testConfig(true, utils.toUpdateConf("test non-existent"));
 });
 
 it("handles errors with at least some grace", function() {

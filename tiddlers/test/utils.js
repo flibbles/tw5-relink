@@ -153,3 +153,7 @@ exports.operatorConf = function(operator, type) {
 	var prefix = "$:/config/flibbles/relink/operators/";
 	return {title: prefix + operator, text: type};
 };
+
+exports.toUpdateConf = function(filter) {
+	return {title: "$:/config/flibbles/relink/to-update", text: filter};
+};
