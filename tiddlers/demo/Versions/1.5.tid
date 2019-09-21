@@ -22,3 +22,7 @@ created: 20190907001619669
 
 * Added ability to alter what tiddlers //Relink// touches through the `$:/config/flibbles/relink/to-update`. [[Documentation here.|Hackability]] (#10)
 * Fixed issue where Relink didn't work at all on IE11 (#9)
+
+!! v1.5.3
+
+* Removed startsWith and endsWith from the project. Also for IE11 support (#9)
