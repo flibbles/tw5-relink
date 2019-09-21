@@ -104,7 +104,7 @@ WikiRelinker.prototype.getPreamble = function() {
 	var results = [];
 	for (var name in this.placeholders) {
 		var val = this.placeholders[name];
-		results.push(`\\define ${name}() ${val}\n`);
+		results.push("\\define "+name+"() "+val+"\n");
 	}
 	if (results.length > 0) {
 		return results.join('');

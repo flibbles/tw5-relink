@@ -49,7 +49,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 					macro: m[1]
 				}, options);
 				this.parser.pos += match[0].length;
-				return `\\define ${m[1]}() ${value}${match[2]}`;
+				return "\\define "+m[1]+"() "+value+match[2];
 			}
 		}
 	}

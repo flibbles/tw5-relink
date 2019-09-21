@@ -65,10 +65,10 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			// Now for this bizarre-ass use-case, where both the
 			// title and template are being replaced.
 			var attrs = this.transcludeAttributes(ref.field, ref.index);
-			return `<$tiddler tiddler=${resultTitle}><$transclude tiddler=${resultTitle}${attrs}/></$tiddler>`;
+			return "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTitle+attrs+"/></$tiddler>";
 		} else {
 			ref.title = undefined;
-			return `<$tiddler tiddler=${resultTitle}>${prettyTransclude(ref, template)}</$tiddler>`;
+			return "<$tiddler tiddler="+resultTitle+">"+prettyTransclude(ref, template)+"</$tiddler>";
 		}
 	}
 	if ($tw.utils.trim(template) === fromTitle) {
@@ -89,9 +89,9 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				message = "transclude-placeholder";
 			}
 			var attrs = this.transcludeAttributes(ref.field, ref.index);
-			rtn = `<$tiddler tiddler=${resultTitle}><$transclude tiddler=${resultTemplate}${attrs}/></$tiddler>`;
+			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
 		} else {
-			rtn = `<$transclude tiddler=${resultTemplate}/>`;
+			rtn = "<$transclude tiddler="+resultTemplate+"/>";
 		}
 		log(message, logArguments, options);
 		return rtn;
@@ -120,7 +120,7 @@ function wrapAttribute(wikiRelinker, name, value) {
 		if (wrappedValue === undefined) {
 			wrappedValue = "<<"+wikiRelinker.getPlaceholderFor(value, name)+">>";
 		}
-		return ` ${name}=${wrappedValue}`;
+		return " "+name+"="+wrappedValue;
 	}
 	return '';
 };
@@ -133,8 +133,8 @@ function prettyTransclude(textReference, template) {
 		textReference = '';
 	}
 	if (template !== undefined) {
-		return `{{${textReference}||${template}}}`;
+		return "{{"+textReference+"||"+template+"}}";
 	} else {
-		return `{{${textReference}}}`;
+		return "{{"+textReference+"}}";
 	}
 };

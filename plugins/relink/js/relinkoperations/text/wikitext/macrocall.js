@@ -130,9 +130,9 @@ exports.macroToString = function(macro, text, parser, options) {
 			} else {
 				val = utils.wrapAttributeValue(p.value);
 			}
-			attrs.push(` ${names[i]}=${val}`);
+			attrs.push(" "+names[i]+"="+val);
 		}
-		return `<$macrocall $name=${utils.wrapAttributeValue(macro.name)}${attrs.join('')}/>`;
+		return "<$macrocall $name="+utils.wrapAttributeValue(macro.name)+attrs.join('')+"/>";
 	} else {
 		var builder = new Rebuilder(text, macro.start);
 		for (var i = 0; i < macro.params.length; i++) {

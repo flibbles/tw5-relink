@@ -70,7 +70,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			wrappedValue = "<<"+parser.getPlaceholderFor(value,category)+">>";
 			message = "filteredtransclude-placeholder-widget";
 		}
-		return ` ${name}=${wrappedValue}`;
+		return " "+name+"="+wrappedValue;
 	};
 	var widget = [
 		"<$list",
@@ -113,5 +113,5 @@ function prettyList(filter, tooltip, template, style, classes) {
 		classes = "." + classes;
 	}
 	style = style || '';
-	return `{{{${filter}${tooltip}${template}}}${style}}${classes}`;
+	return "{{{"+filter+tooltip+template+"}}"+style+"}"+classes;
 };
