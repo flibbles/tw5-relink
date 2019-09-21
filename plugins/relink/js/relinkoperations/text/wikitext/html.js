@@ -174,5 +174,5 @@ function computeAttribute(attribute, parser, options) {
 };
 
 function canBeFilterValue(value) {
-	return value.indexOf("}}}") < 0 && !value.endsWith('}}');
+	return value.indexOf("}}}") < 0 && value.substr(value.length-2) !== '}}';
 };
