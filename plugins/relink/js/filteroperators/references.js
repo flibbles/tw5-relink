@@ -20,7 +20,7 @@ exports.references = function(source,operator,options) {
 	if (fromTitle) {
 		options.wiki.eachRelinkableTiddler(
 			fromTitle, "__relink_dummy__",
-			Object.assign({quiet: true}, options),
+			$tw.utils.extend({quiet: true}, options),
 			function(changes, tiddler, title) {
 				results.push(title);
 			});

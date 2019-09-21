@@ -39,7 +39,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		template = template.replace(fromTitle, toTitle);
 		modified = true;
 	}
-	var extendedOptions = Object.assign({placeholder: this.parser}, options);
+	var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
 	var relinkedFilter = filterHandler.relink(filter, fromTitle, toTitle, extendedOptions);
 	var message = "filteredtransclude";
 	if (extendedOptions.usedPlaceholder) {

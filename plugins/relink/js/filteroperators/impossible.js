@@ -23,7 +23,7 @@ exports.impossible = function(source,operator,options) {
 		source(function(toTiddler, toTitle) {
 			var fails = options.wiki.eachRelinkableTiddler(
 				fromTitle, toTitle,
-				Object.assign({quiet: true}, options),
+				$tw.utils.extend({quiet: true}, options),
 				function(tiddler, title) {});
 			$tw.utils.pushTop(results, fails);
 		});

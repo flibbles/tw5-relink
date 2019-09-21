@@ -28,7 +28,7 @@ exports.relink = function(source,operator,options) {
 	var suffixPair = parseSuffix(operator.suffix);
 	var relinkFilterOperator = getRelinkFilterOperators()[suffixPair[0]];
 	if (relinkFilterOperator) {
-		var newOperator = Object.assign({}, operator);
+		var newOperator = $tw.utils.extend({}, operator);
 		newOperator.suffix = suffixPair[1];
 		return relinkFilterOperator(source, newOperator, options);
 	} else {

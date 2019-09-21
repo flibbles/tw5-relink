@@ -67,7 +67,7 @@ exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle
 		// exceptions if there isn't even a title to replace.
 		return undefined;
 	}
-	var outMacro = Object.assign({}, macro);
+	var outMacro = $tw.utils.extend({}, macro);
 	outMacro.params = macro.params.slice();
 	for (var managedArg in managedMacro) {
 		var index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);
@@ -79,14 +79,14 @@ exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle
 		}
 		var param = macro.params[index];
 		var handler = managedMacro[managedArg];
-		var extendedOptions = Object.assign({placeholder: parser}, options);
+		var extendedOptions = $tw.utils.extend({placeholder: parser}, options);
 		var value = handler.relink(param.value, fromTitle, toTitle, extendedOptions);
 		if (value === undefined) {
 			continue;
 		}
 		var quote = utils.determineQuote(text, param);
 		var quoted = utils.wrapAttributeValue(value, quote, ['', "'", '"', '[[', '"""']);
-		var newParam = Object.assign({}, param);
+		var newParam = $tw.utils.extend({}, param);
 		if (quoted === undefined) {
 			var ph = parser.getPlaceholderFor(value,handler.name);
 			newParam.newValue = "<<"+ph+">>";

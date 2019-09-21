@@ -35,7 +35,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		if (match) {
 			var handler = settings.getRelinker(placeholder[1] || 'title');
 				// This is a filter
-			var extendedOptions = Object.assign({placeholder: this.parser}, options);
+			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
 			var value = handler.relink(match[1], fromTitle, toTitle, extendedOptions);
 			if (value !== undefined) {
 				var message = "macrodef";

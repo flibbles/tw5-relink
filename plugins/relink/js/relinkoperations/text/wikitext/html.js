@@ -44,7 +44,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				// We don't manage this attribute. Bye.
 				continue;
 			}
-			var extendedOptions = Object.assign({placeholder: this.parser}, options);
+			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
 			oldValue = attr.value;
 			var value = handler.relink(attr.value, fromTitle, toTitle, extendedOptions);
 			if (value === undefined) {
@@ -79,7 +79,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			attr.textReference = refHandler.toString(ref);
 			attr.quotedValue = "{{"+attr.textReference+"}}";
 		} else if (attr.type === "filtered") {
-			var extendedOptions = Object.assign({placeholder: this.parser}, options);
+			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
 			oldValue = attr.filter
 			var filter = filterHandler.relink(attr.filter, fromTitle, toTitle, extendedOptions);
 			if (filter === undefined) {

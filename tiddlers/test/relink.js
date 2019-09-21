@@ -111,6 +111,7 @@ it("supports IE11", function() {
 		var text = tiddler.text;
 		expect(text).toNotContain(".startsWith");
 		expect(text).toNotContain(".endsWith");
+		expect(text).toNotContain(".assign");
 	}
 });
 
