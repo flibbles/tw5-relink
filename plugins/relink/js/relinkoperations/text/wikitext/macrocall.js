@@ -84,7 +84,7 @@ exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle
 		if (value === undefined) {
 			continue;
 		}
-		var quote = determineQuote(text, param);
+		var quote = utils.determineQuote(text, param);
 		var quoted = utils.wrapAttributeValue(value, quote, ['', "'", '"', '[[', '"""']);
 		var newParam = Object.assign({}, param);
 		if (quoted === undefined) {
@@ -254,26 +254,4 @@ function parseParams(paramString, pos) {
 		paramMatch = reParam.exec(paramString);
 	}
 	return params;
-};
-
-//TODO: Should be in utils.
-/**Givin some text, and an attribute within that text, this returns
- * what type of quotation that attribute is using.
- */
-function determineQuote(text, param) {
-	var pos = param.end-1;
-	if (text.startsWith("'", pos)) {
-		return "'";
-	}
-	if (text.startsWith('"', pos)) {
-		if (text.startsWith('"""', pos-2)) {
-			return '"""';
-		} else {
-			return '"';
-		}
-	}
-	if (text.startsWith(']]', pos-1) && text.startsWith('[[', (pos-param.value.length)-3)) {
-		return "[[";
-	}
-	return '';
 };

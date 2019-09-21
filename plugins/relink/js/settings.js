@@ -112,7 +112,7 @@ function compileSettings(wiki) {
 		settings[name] = Object.create(null);
 	}
 	wiki.eachShadowPlusTiddlers(function(tiddler, title) {
-		if (title.startsWith(prefix)) {
+		if (title.substr(0, prefix.length) === prefix) {
 			var remainder = title.substr(prefix.length);
 			var category = root(remainder);
 			var factory = exports.factories[category];

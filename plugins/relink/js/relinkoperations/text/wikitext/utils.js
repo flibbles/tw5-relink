@@ -54,3 +54,26 @@ exports.canBePretty = function(value) {
 exports.canBePrettyOperand = function(value) {
 	return value.indexOf(']') < 0;
 };
+
+/**Given some text, and a param or  attribute within that text, this returns
+ * what type of quotation that attribute is using.
+ *
+ * param: An object in the form {end:, ...}
+ */
+exports.determineQuote = function(text, param) {
+	var pos = param.end-1;
+	if (text[pos] === "'") {
+		return "'";
+	}
+	if (text[pos] === '"') {
+		if (text.substr(pos-2, 3) === '"""') {
+			return '"""';
+		} else {
+			return '"';
+		}
+	}
+	if (text.substr(pos-1,2) === ']]' && text.substr((pos-param.value.length)-3, 2) === '[[') {
+		return "[[";
+	}
+	return '';
+};

@@ -53,7 +53,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			if (extendedOptions.usedPlaceholder) {
 				logMessage = "attribute-placeholder";
 			}
-			quote = determineQuote(text, attr);
+			quote = utils.determineQuote(text, attr);
 			attr.quotedValue = utils.wrapAttributeValue(value,quote);
 			if (attr.quotedValue === undefined) {
 				// The value was unquotable. We need to make
@@ -175,24 +175,4 @@ function computeAttribute(attribute, parser, options) {
 
 function canBeFilterValue(value) {
 	return value.indexOf("}}}") < 0 && !value.endsWith('}}');
-};
-
-/**Givin some text, and an attribute within that text, this returns
- * what type of quotation that attribute is using.
- */
-function determineQuote(text, attr) {
-	var pos = attr.end-1;
-	if (text.startsWith("'", pos)) {
-		return "'";
-	}
-	if (text.startsWith('"', pos)) {
-		if (text.startsWith('"""', pos-2)) {
-			return '"""';
-		} else {
-			return '"';
-		}
-	}
-	// TODO: When merging this with the other determineQuote, attributes
-	// wrapped in brackets actually have the brackets as part of the ittle
-	return '';
 };

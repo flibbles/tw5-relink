@@ -77,6 +77,10 @@ it('field attributes fun with quotes', function() {
 
 	// Now for the super advanced quotes!! //
 	testQuote("from", `""""begins" with quote; has apos'"""`, {from: "from", to: `"begins" with quote; has apos'`});
+	// The brackets here should be considered part of the title
+	// This differs from how macro parameters behave
+	testQuote("[[from]]", "to", {from: "[[from]]", to: "to"});
+	testQuote("[[from]]", "[[from]]", {from: "from", to: "to"});
 });
 
 it('supports indirect attribute values', function() {
