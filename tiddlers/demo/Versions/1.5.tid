@@ -17,3 +17,8 @@ created: 20190907001619669
 * Documented filtered transcludes
 * Fixed table header on Operators whitelist page.
 * Updated demo site to Tiddlywiki v5.1.20
+
+!! v1.5.2
+
+* Added ability to alter what tiddlers //Relink// touches through the `$:/config/flibbles/relink/to-update`. [[Documentation here.|Hackability]] (#10)
+* Fixed issue where Relink didn't work at all on IE11 (#9)
