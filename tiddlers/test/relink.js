@@ -99,6 +99,21 @@ it("handles errors with at least some grace", function() {
 	thrower('Boom', "Boom\nWhen relinking 'tiddlertest'");
 });
 
+it("supports IE11", function() {
+	// Also, backticks aren't allowed, but there isn't an easy way
+	// to test for that.
+	var info = $tw.wiki.getPluginInfo("$:/plugins/flibbles/relink");
+	for (var title in info.tiddlers) {
+		var tiddler = info.tiddlers[title];
+		if (tiddler.type !== "application/javascript") {
+			continue;
+		}
+		var text = tiddler.text;
+		expect(text).toNotContain(".startsWith");
+		expect(text).toNotContain(".endsWith");
+	}
+});
+
 it('can filter for all impossible tiddlers', function() {
 	function test(filter, expected) {
 		var wiki = new $tw.Wiki(), result;
