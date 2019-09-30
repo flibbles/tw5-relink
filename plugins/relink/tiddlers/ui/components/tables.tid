@@ -3,7 +3,8 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 \define prefix(category) $:/config/flibbles/relink/$category$/
 \define .make-table(title, subfilter, default-table-state:no)
 
-<$set name="table-state" value=<<qualify """$:/state/flibbles/relink/table-$title$""">>>
+<$list variable="render" filter="[$subfilter$prefix<category-prefix>!has[draft.of]has[text]first[]]">
+<$set name="table-state" value=<<qualify """$:/state/flibbles/relink/tables/$title$""">>>
 <div class="tc-small-icon">
 <$reveal type="nomatch" state=<<table-state>> text="yes" default="""$default-table-state$""">
 <$button class="tc-btn-invisible tc-btn-dropdown" set=<<table-state>> setTo="yes">
@@ -32,18 +33,20 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 </$reveal>
 </div>
 </$set>
+</$list>
 \end
 
 \define tables(category, list-row-macro, header-list)
 <$set name="category-prefix" value=<<prefix $category$>>>
 
+<<.make-table Custom "all[]" yes>>
+
 <<.make-table Core "[$:/plugins/flibbles/relink]plugintiddlers[]!is[tiddler]">>
 
-<$list filter="[all[shadows]prefix<category-prefix>shadowsource[]!title[$:/plugins/flibbles/relink]]">
+<$list filter="[all[shadows]prefix<category-prefix>!is[tiddler]shadowsource[]!title[$:/plugins/flibbles/relink]]">
 
 <$macrocall $name=".make-table" title={{!!description}} subfilter="all[current]plugintiddlers[]!is[tiddler]" />
 
 </$list>
-<<.make-table Custom "all[]" yes>>
 </$set>
 \end
