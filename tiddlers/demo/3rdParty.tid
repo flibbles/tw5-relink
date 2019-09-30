@@ -1,0 +1,21 @@
+description: Example plugin which integrates with //Relink//.
+list: readme
+plugin-type: plugin
+title: $:/plugins/flibbles/3rd-party
+type: application/json
+
+{
+	"tiddlers": {
+		"$:/config/flibbles/relink/macros/3rd/tiddler": {
+			"text": "title"
+		},
+		"$:/plugins/flibbles/3rd-party/readme": {
+			"text": "This plugin doesn't do anything. It only shows how other plugins can integrate with //Relink//. Thereby allowing any macros, widgets, fields, or filter operators they introduce to automatically be configured for //Relink// to handle."
+		},
+		"$:/plugins/flibbles/3rd-party/macro": {
+			"module-type": "macro",
+			"text": "/*\\\n\nExample macro which this plugin has automatically integrated with Relink\n\n\\*/\n\nexports.name = \"3rd\";\n\nexports.params = [\n\t{name: \"tiddler\"}\n];\n\nexports.run = function(tiddler) {\n\treturn \"3rd macro called with: \" + tiddler;\n};",
+			"type": "application/javascript"
+		}
+	}
+}
