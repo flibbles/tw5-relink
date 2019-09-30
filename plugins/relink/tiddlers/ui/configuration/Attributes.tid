@@ -22,11 +22,6 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 
 {{$:/plugins/flibbles/relink/language/Help/Attributes}}
 
-<$macrocall $name=tables
-	category="attributes"
-	header-list="[[Widget/HTML Element]] Attribute Type Delete"
-	list-row-macro="row" />
-
 <em class="tc-edit">Add a new attribute:</em>
 <$edit-text tiddler="$(state-base)$element-name"
             tag="input" default="" placeholder="widget/element" />
@@ -43,6 +38,11 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 <$action-deletetiddler $tiddler="$(state-base)$element-name" />
 <$text text={{$(lingo-base)$NewAttribute/Caption}}/>
 </$button>
+
+<$macrocall $name=tables
+	category="attributes"
+	header-list="[[Widget/HTML Element]] Attribute Type Delete"
+	list-row-macro="row" />
 \end
 
 <<body>>

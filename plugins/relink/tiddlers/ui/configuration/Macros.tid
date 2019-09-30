@@ -22,11 +22,6 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
 
 {{$:/plugins/flibbles/relink/language/Help/Macros}}
 
-<$macrocall $name=tables
-	category="macros"
-	header-list="Macro Parameter Type Delete"
-	list-row-macro="row" />
-
 <em class="tc-edit">Add a new macro parameter:</em>
 <$edit-text tiddler="$(state-base)$macro-name"
             tag="input" default="" placeholder="macro" />
@@ -43,6 +38,11 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
 <$action-deletetiddler $tiddler="$(state-base)$macro-name" />
 <$text text={{$(lingo-base)$NewParameter/Caption}}/>
 </$button>
+
+<$macrocall $name=tables
+	category="macros"
+	header-list="Macro Parameter Type Delete"
+	list-row-macro="row" />
 \end
 
 <<body>>

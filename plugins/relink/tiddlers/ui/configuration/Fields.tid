@@ -16,11 +16,6 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 
 {{$:/plugins/flibbles/relink/language/Help/Fields}}
 
-<$macrocall $name=tables
-	category="fields"
-	header-list="[[Field Name]] [[Field Type]] Delete"
-	list-row-macro="row" />
-
 <em class="tc-edit">Add a new field:</em>
 <$edit-text tiddler="$(state-base)$field-name"
             tag="input" default="" placeholder="field name" />
@@ -34,6 +29,11 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 <$action-deletetiddler $tiddler="$(state-base)$field-name" />
 <$text text={{$(lingo-base)$NewField/Caption}}/>
 </$button>
+
+<$macrocall $name=tables
+	category="fields"
+	header-list="[[Field Name]] [[Field Type]] Delete"
+	list-row-macro="row" />
 \end
 
 <<body>>
