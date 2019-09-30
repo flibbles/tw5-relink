@@ -2,17 +2,12 @@ caption: {{$:/plugins/flibbles/relink/language/ui/Attributes/Caption}}
 tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 
+\import $:/plugins/flibbles/relink/ui/components/tables
 \define prefix-attr() $:/config/flibbles/relink/attributes/
 \define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
 \define state-base() $:/state/flibbles/relink/
 
-\define body()
-
-{{$:/plugins/flibbles/relink/language/Help/Attributes}}
-
-<table><tbody>
-<tr><th>Widget/HTML Element</th><th>Attribute</th><th>Type</th><th>Delete</th></tr>
-<$list filter="[all[shadows+tiddlers]prefix<prefix-attr>!has[draft.of]has[text]]">
+\define row()
 <$set name="element"
       filter="[all[current]removeprefix<prefix-attr>splitbefore[/]removesuffix[/]]">
 <$set name="attribute"
@@ -23,8 +18,16 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 </tr>
-</$set></$set></$list>
-</tbody></table>
+</$set></$set>
+\end
+\define body()
+
+{{$:/plugins/flibbles/relink/language/Help/Attributes}}
+
+<$macrocall $name=tables
+	category="attributes"
+	header-list="[[Widget/HTML Element]] Attribute Type Delete"
+	list-row-macro="row" />
 
 <em class="tc-edit">Add a new attribute:</em>
 <$edit-text tiddler="$(state-base)$element-name"

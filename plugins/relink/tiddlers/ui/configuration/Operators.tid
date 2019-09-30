@@ -2,24 +2,26 @@ caption: {{$:/plugins/flibbles/relink/language/ui/Operators/Caption}}
 tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink/ui/configuration/Operators
 
+\import $:/plugins/flibbles/relink/ui/components/tables
 \define prefix-ops() $:/config/flibbles/relink/operators/
 \define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
 \define state-base() $:/state/flibbles/relink/
 
-\define body()
-
-{{$:/plugins/flibbles/relink/language/Help/Operators}}
-
-<table><tbody>
-<tr><th>Filter Operator</th><th>Operand Type</th><th>Delete</th></tr>
-<$list filter="[all[shadows+tiddlers]prefix<prefix-ops>!has[draft.of]has[text]]">
+\define row()
 <tr>
 <td><$list variable="listItem" filter="[<currentTiddler>removeprefix<prefix-ops>]"><<listItem>></$list></td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 </tr>
-</$list>
-</tbody></table>
+\end
+\define body()
+
+{{$:/plugins/flibbles/relink/language/Help/Operators}}
+
+<$macrocall $name=tables
+	category="operators"
+	header-list="[[Filter Operator]] [[Operand Type]] Delete"
+	list-row-macro="row" />
 
 <em class="tc-edit">Add a new filter operator:</em>
 <$edit-text tiddler="$(state-base)$operator-name"

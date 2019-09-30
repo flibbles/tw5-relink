@@ -2,24 +2,26 @@ caption: {{$:/plugins/flibbles/relink/language/ui/Fields/Caption}}
 tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink/ui/configuration/Fields
 
+\import $:/plugins/flibbles/relink/ui/components/tables
 \define prefix-fields() $:/config/flibbles/relink/fields/
 \define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
 \define state-base() $:/state/flibbles/relink/
 
+\define row(currentSetting)
+<tr>
+<td><$text text={{{[all[current]removeprefix<prefix-fields>]}}} /></td>
+<td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
+<td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
+</tr>
+\end
 \define body()
 
 {{$:/plugins/flibbles/relink/language/Help/Fields}}
 
-<table><tbody>
-<tr><th>Field Name</th><th>Field Type</th><th>Delete</th></tr>
-<$list filter="[all[shadows+tiddlers]prefix<prefix-fields>!has[draft.of]has[text]]">
-<tr>
-<td><$list filter="[all[current]removeprefix<prefix-fields>]"><<currentTiddler>></$list></td>
-<td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
-<td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
-</tr>
-</$list>
-</tbody></table>
+<$macrocall $name=tables
+	category="fields"
+	header-list="[[Field Name]] [[Field Type]] Delete"
+	list-row-macro="row" />
 
 <em class="tc-edit">Add a new field:</em>
 <$edit-text tiddler="$(state-base)$field-name"
