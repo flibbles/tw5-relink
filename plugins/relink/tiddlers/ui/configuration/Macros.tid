@@ -12,12 +12,10 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
       filter="[all[current]removeprefix<prefix-macro>relink:splitafter[/]]">
 <$set name="macro"
       filter="[all[current]removeprefix<prefix-macro>removesuffix<parameter>removesuffix[/]]">
-<tr>
 <td><$text text=<<macro>> /></td>
 <td><$text text=<<parameter>> /></td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
-</tr>
 </$set></$set>
 \end
 \define body()

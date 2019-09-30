@@ -12,12 +12,10 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
       filter="[all[current]removeprefix<prefix-attr>splitbefore[/]removesuffix[/]]">
 <$set name="attribute"
       filter="[all[current]removeprefix<prefix-attr>removeprefix<element>removeprefix[/]]">
-<tr>
 <td><$text text=<<element>> /></td>
 <td><$text text=<<attribute>> /></td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
-</tr>
 </$set></$set>
 \end
 \define body()

@@ -8,11 +8,9 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 \define state-base() $:/state/flibbles/relink/
 
 \define row(currentSetting)
-<tr>
 <td><$text text={{{[all[current]removeprefix<prefix-fields>]}}} /></td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
-</tr>
 \end
 \define body()
 

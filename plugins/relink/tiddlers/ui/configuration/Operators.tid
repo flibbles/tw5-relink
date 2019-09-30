@@ -8,11 +8,9 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 \define state-base() $:/state/flibbles/relink/
 
 \define row()
-<tr>
 <td><$list variable="listItem" filter="[<currentTiddler>removeprefix<prefix-ops>]"><<listItem>></$list></td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
-</tr>
 \end
 \define body()
 
