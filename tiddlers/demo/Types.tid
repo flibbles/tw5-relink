@@ -1,11 +1,12 @@
 caption: Field Types
+list: Title
 tags: Documentation
-title: Field Types
+title: Types
 
 \rules except wikilink
 Fields, attributes, parameters, and operators have types. Depending on the type, Relink will parse them differently.
 
-<$list filter="[tag[Type]]">
+<$list filter="[tag<currentTiddler>]">
 
 !! <<currentTiddler>>
 

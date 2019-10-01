@@ -1,4 +1,4 @@
-tags: Type
+tags: Types
 title: List
 
 The value of the field or attribute is treated as a [[string list, as described here|https://tiddlywiki.com/static/Title%2520List.html]].

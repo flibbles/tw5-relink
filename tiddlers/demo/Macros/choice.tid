@@ -7,4 +7,4 @@ title: Macros/choice
 
 The choice macro takes a reference for its second parameter called ''item''.
 
-On the <$link to="$:/plugins/flibbles/relink/ui/configuration/Macros">//Relink// macro configuration whitelist</$link>, ''item'' is configured to be managed as a [[TextReference|Field Types]].
+On the <$link to="$:/plugins/flibbles/relink/ui/configuration/Macros">//Relink// macro configuration whitelist</$link>, ''item'' is configured to be managed as a [[TextReference|Types]].

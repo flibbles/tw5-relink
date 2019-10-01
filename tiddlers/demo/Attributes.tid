@@ -12,6 +12,6 @@ would update to:
 
 If you have `$list`/`filter` whitelisted and configured as a filter, then the widget `<$list filter="..." />` would have the contents of its filter attribute evaluated, and any whitelisted filter operators inside of it would be considered for updating during a rename operation.
 
-For each element/attribute pair, you must specify its [[type|Field Types]].
+For each element/attribute pair, you must specify its [[type|Types]].
 
 <<link-to-tab Demo Demo/Widgets Demo>>

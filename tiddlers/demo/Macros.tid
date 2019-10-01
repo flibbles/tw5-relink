@@ -4,7 +4,7 @@ title: Macros
 
 ''Relink'' will relink macro parameters, but only if they've been explicitly whitelisted. All appropriate core macro parameters are already whitelisted by default, but you may wish to add your own.
 
-For each parameter, you must specify its [[type|Field Types]].
+For each parameter, you must specify its [[type|Types]].
 
 !!! Details
 

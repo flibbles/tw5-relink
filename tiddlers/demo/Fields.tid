@@ -4,7 +4,7 @@ title: Fields
 
 Configure which tiddler fields Relink will consider for updating. For instance, `list` and `tags` are configured by default, which means whenever a tiddler name updates, Relink will look at the `list` and `tags` field of every tiddler for possible updating.
 
-For each field, you must specify its [[type|Field Types]].
+For each field, you must specify its [[type|Types]].
 
 Example: If the field name `list` is configured as a `list`, that means the following:
 
