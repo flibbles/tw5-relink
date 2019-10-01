@@ -5,9 +5,8 @@ title: Types
 
 Fields, attributes, parameters, and operators have types. Depending on the type, Relink will parse them differently.
 
-<$list filter="[tag<currentTiddler>]">
-
-!! <<currentTiddler>>
-
-{{}}
-</$list>
+<$macrocall $name="tabs"
+	tabsList="[tag<currentTiddler>]"
+	default="Title"
+	class="tc-vertical"
+	template="Templates/Type" />

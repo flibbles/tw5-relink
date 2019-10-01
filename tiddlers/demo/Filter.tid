@@ -1,7 +1,7 @@
 tags: Types
 title: Filter
 
-The value of the field or attribute is treated as a [[filter, as describer here|https://tiddlywiki.com/static/Introduction%2520to%2520filter%2520notation.html]].
+The value of the field or attribute is treated as a [[filter, as described here|https://tiddlywiki.com/static/Introduction%2520to%2520filter%2520notation.html]].
 
 If Relink is configured to consider a certain field or attribute as a filter, it will look at operators and decides whether to update their operand, but only if the given operators are whitelisted. `[tag[]]` and `[title[]]` are whitelisted by default. And as long as `title` is whitelisted, that includes all shorthands for title, such as `[[Example]]`, `[field:title[Example]]`, `"Example"`, `'Example'`, and `Example`.
 
