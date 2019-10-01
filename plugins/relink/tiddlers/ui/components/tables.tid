@@ -37,11 +37,11 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 <<.make-table Custom "all[]!is[shadow]" yes>>
 </$list>
 
+<<.make-table Core "[$:/plugins/flibbles/relink]plugintiddlers[]">>
+
 <$list filter="[all[shadows]prefix<category-prefix>has[text]shadowsource[]!title[$:/plugins/flibbles/relink]]">
 <$macrocall $name=".make-table" title={{!!description}} subfilter="all[current]plugintiddlers[]" />
 </$list>
-
-<<.make-table Core "[$:/plugins/flibbles/relink]plugintiddlers[]">>
 
 </tbody></table>
 </$set></$set>
