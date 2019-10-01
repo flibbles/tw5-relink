@@ -12,7 +12,7 @@ created: 20190825193402541
 * Made logging consistent and more clear.
 * Demo site explains relink placeholders.
 * Prompt about tiddlers that won't be renamed when renaming tiddlers is now fixed, but a better fix is incoming.
-* Prettylinks and CamelCase links handle strange titles better
+* Prettylinks and ~CamelCase links handle strange titles better
 * Transcludes handle field and indexes ( `{{tiddler!!field }}` ). It also handles edge cases better.
 * Lists will alert when they cannot relink, instead of bungling the operation
 * Better error handling

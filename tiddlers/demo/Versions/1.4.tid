@@ -7,7 +7,7 @@ created: 20190902020915207
 * better handling for bad transclusion renames (e.g. `tiddlers with !! bangs`)
 * Added the [[TextReference field type|https://tiddlywiki.com/static/TextReference.html]]. Probably won't be used too much, but Relink is meant to be a total solution.
 * Revamped the popup that appears while renaming tiddlers. Now it accurately lists any tiddlers Relink will be unable to fix.
-* Added a TiddlerInfo tab which lists all tiddlers that reference the given one.
+* Added a ~TiddlerInfo tab which lists all tiddlers that reference the given one.
 * //Relink// now should handle all relinking except for macros, which I'm not sure yet how or if I should tackle.
 
 !! v1.4.1

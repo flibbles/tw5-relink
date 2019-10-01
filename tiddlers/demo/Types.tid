@@ -3,7 +3,6 @@ list: Title
 tags: Documentation
 title: Types
 
-\rules except wikilink
 Fields, attributes, parameters, and operators have types. Depending on the type, Relink will parse them differently.
 
 <$list filter="[tag<currentTiddler>]">

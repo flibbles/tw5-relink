@@ -1,6 +1,8 @@
 tags: Types
 title: Reference
 
+\rules except wikilink
+
 This is a [[TextReference, as described here|https://tiddlywiki.com/static/TextReference.html]].
 
 The tiddler portion of the TextReference is checked and possibly relinked. So if `FirstTiddler` were renamed to `SecondTiddler`, then a TextReference like
