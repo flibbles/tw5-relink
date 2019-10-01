@@ -1,0 +1,49 @@
+tags: Feature
+title: Third Party Plugin Integration
+
+//Relink// has the ability to allow other plugins to integrate seemlessly with it if they so choose. For example, if a plugin you're developing has macros, widgets, fields, or filter operators which could benefit from being relinked, you need only to include a few extra tiddlers with your plugin, and //Relink// will automatically manage your plugins content, assuming //Relink// is installed.
+
+Not only will //Relink// recognize any configuration tiddlers your plugin specifies, it will organize your settings into its own subcategory in the //Relink// whitelists.
+
+!! Configuration Tiddler names
+
+Each relinkable structure type has it's own name structure.
+
+!!! Widgets and elements
+
+Each managed attributes will require its own tiddler.
+Widget name should begin with a '$' if it's a widget. This is probably the case.
+
+```
+$:/config/flibbles/relink/attributes/$element-name$/$attribute-name$
+```
+
+!!! Fields
+
+```
+$:/config/flibbles/relink/fields/$field-name$
+```
+
+!!! Macro Parameters
+Each managed parameter of a macro will require its own tiddler.
+
+```
+$:/config/flibbles/relink/macros/$macro-name$/$parameter-name$
+```
+!!! Filter Operators
+
+```
+$:/config/flibbles/relink/operator/$operator-name$
+```
+
+!! Text
+
+The text of these configuration tiddlers is one word, specifying the [[type|Field Types]] of the parameter/attribute/field/operator. The following values are allowed:
+
+<ul><$list filter="[tag[Type]]">
+<li><$link><$text text={{{[all[current]lowercase[]]}}} /></$link></li>
+</$list></ul>
+
+!! Example
+
+[[An example plugin is included in this demo.|$:/plugins/flibbles/3rd-party]]. It doesn't do anything, but it is integrated with //Relink// for each type of construct.

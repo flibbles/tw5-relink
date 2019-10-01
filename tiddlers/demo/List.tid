@@ -1,0 +1,14 @@
+tags: Type
+title: List
+
+The value of the field or attribute is treated as a [[string list, as described here|https://tiddlywiki.com/static/Title%2520List.html]].
+
+For example the tiddler field `list` is a list by default, so
+
+`list: [[First Tiddler]] [[Second Tiddler]] TiddlerWithoutSpaces`
+
+If //Second Tiddler// were renamed to //New Tiddler//, that field would become,
+
+`list [[First Tiddler]] [[New Tiddler]] TiddlerWithoutSpaces`
+
+Relink adds brackets whenever necessary.

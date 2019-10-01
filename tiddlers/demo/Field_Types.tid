@@ -3,58 +3,11 @@ tags: Documentation
 title: Field Types
 
 \rules except wikilink
-Fields and attributes have types. Depending on the type, Relink will parse them differently.
+Fields, attributes, parameters, and operators have types. Depending on the type, Relink will parse them differently.
 
-!! Title
+<$list filter="[tag[Type]]">
 
-This is the simplest type. The value is a single tiddler title.
+!! <<currentTiddler>>
 
-For example: In `<$link to="Tiddler Name" />`, if the `to` attribute is treated as a title type (which it is by default), then //Tiddler Name// is considered as a single title. The value can contain spaces without any special syntax.
-
-An example of a title field would be
-
-`list-after: Tiddler A`
-
-The value of list-after is one tiddler titled "Tiddler A". If "Tiddler A" is renamed to "Tiddler B", that field would become:
-
-`list-after: Tiddler B`
-
-!! List
-
-The value of the field or attribute is treated as a [[string list, as described here|https://tiddlywiki.com/static/Title%2520List.html]].
-
-For example the tiddler field `list` is a list by default, so
-
-`list: [[First Tiddler]] [[Second Tiddler]] TiddlerWithoutSpaces`
-
-If //Second Tiddler// were renamed to //New Tiddler//, that field would become,
-
-`list [[First Tiddler]] [[New Tiddler]] TiddlerWithoutSpaces`
-
-Relink adds brackets whenever necessary.
-
-!! Filter
-
-The value of the field or attribute is treated as a [[filter, as describer here|https://tiddlywiki.com/static/Introduction%2520to%2520filter%2520notation.html]].
-
-If Relink is configured to consider a certain field or attribute as a filter, it will look at operators and decides whether to update their operand, but only if the given operators are whitelisted. `[tag[]]` and `[title[]]` are whitelisted by default. And as long as `title` is whitelisted, that includes all shorthands for title, such as `[[Example]]`, `[field:title[Example]]`, `"Example"`, `'Example'`, and `Example`.
-
-For example, take `<$list filter="[[MyTiddler]] [tag[MyTiddler]!has[draft.of]]" />` and say //MyTiddler// is updated to //NewTiddler//. As long as the ''filter'' attribute of the widget ''$list'' is whitelisted (it is by default), and `[tag[]]` and `[title[]]` are whitelisted (they are by default), that widget would become:
-
-`<$list filter="[[NewTiddler]] [tag[NewTiddler]!has[draft.of]]" />`
-
-!! Reference
-
-This is a [[TextReference, as described here|https://tiddlywiki.com/static/TextReference.html]].
-
-The tiddler portion of the TextReference is checked and possibly relinked. So if `FirstTiddler` were renamed to `SecondTiddler`, then a TextReference like
-
-`FirstTiddler!!MyField`
-
-would become
-
-`SecondTiddler!!MyField`
-
-You probably won't use this one very often. Generally, when you want to make a TextReference, you do so through transclusion (e.g. `{{FirstTiddler!!MyField}}`), and those will already be relinked for you, but there are some cases where a literal value is expected to be a TextReference.
-
-...namely, the filter operator `list`. That's it.
+{{}}
+</$list>

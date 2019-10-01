@@ -1,0 +1,14 @@
+tags: Type
+title: Title
+
+This is the simplest type. The value is a single tiddler title.
+
+For example: In `<$link to="Tiddler Name" />`, if the `to` attribute is treated as a title type (which it is by default), then //Tiddler Name// is considered as a single title. The value can contain spaces without any special syntax.
+
+An example of a title field would be
+
+`list-after: Tiddler A`
+
+The value of list-after is one tiddler titled "Tiddler A". If "Tiddler A" is renamed to "Tiddler B", that field would become:
+
+`list-after: Tiddler B`
