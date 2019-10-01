@@ -46,4 +46,4 @@ The text of these configuration tiddlers is one word, specifying the [[type|Type
 
 !! Example
 
-[[An example plugin is included in this demo.|$:/plugins/flibbles/3rd-party]]. It doesn't do anything, but it is integrated with //Relink// for each type of construct.
+[[An example plugin is included in this demo|$:/plugins/flibbles/3rd-party]]. It doesn't do anything, but it is integrated with //Relink// for each type of construct it defines.

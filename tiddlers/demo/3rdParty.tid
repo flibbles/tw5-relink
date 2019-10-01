@@ -1,4 +1,4 @@
-description: Example plugin which integrates with //Relink//.
+description: Example plugin which integrates with Relink.
 list: readme
 plugin-type: plugin
 title: $:/plugins/flibbles/3rd-party
@@ -6,15 +6,43 @@ type: application/json
 
 {
 	"tiddlers": {
+		"$:/config/flibbles/relink/attributes/$3rd/editTemplate": {
+			"text": "title"
+		},
+		"$:/config/flibbles/relink/attributes/$3rd/filter": {
+			"text": "filter"
+		},
+		"$:/config/flibbles/relink/attributes/$3rd/history": {
+			"text": "title"
+		},
+		"$:/config/flibbles/relink/attributes/$3rd/template": {
+			"text": "title"
+		},
+		"$:/config/flibbles/relink/fields/3rd": {
+			"text": "list"
+		},
 		"$:/config/flibbles/relink/macros/3rd/tiddler": {
 			"text": "title"
 		},
+		"$:/config/flibbles/relink/operators/3rd": {
+			"text": "title"
+		},
 		"$:/plugins/flibbles/3rd-party/readme": {
-			"text": "This plugin doesn't do anything. It only shows how other plugins can integrate with //Relink//. Thereby allowing any macros, widgets, fields, or filter operators they introduce to automatically be configured for //Relink// to handle."
+			"text": "This plugin doesn't do anything. It only shows how other plugins can integrate with //Relink//. Thereby allowing any macros, widgets, fields, or filter operators they introduce to automatically be configured for //Relink// to handle.\n\nLook at the <$link to='$:/plugins/flibbles/relink/configuration'>//Relink// configuration page</$link> to see how this plugin's configurations are grouped."
 		},
 		"$:/plugins/flibbles/3rd-party/macro": {
 			"module-type": "macro",
 			"text": "/*\\\n\nExample macro which this plugin has automatically integrated with Relink\n\n\\*/\n\nexports.name = \"3rd\";\n\nexports.params = [\n\t{name: \"tiddler\"}\n];\n\nexports.run = function(tiddler) {\n\treturn \"3rd macro called with: \" + tiddler;\n};",
+			"type": "application/javascript"
+		},
+		"$:/plugins/flibbles/3rd-party/operator": {
+			"module-type": "filteroperator",
+			"text": "/*\\\n\nExample filter operator which this plugin has automatically integrated with Relink.\nThis is just a generator that return the third word in the operand tiddler's text.\n\n\\*/\n\nexports[\"3rd\"] = function(source,operator,options) {\n\tvar tiddler = options.wiki.getTiddler(operator.operand);\n\tif (tiddler) {\n\t\tvar match = /\\S+\\s+\\S+\\s+(\\S+)/.exec(tiddler.fields.text);\n\t\tif (match) {\n\t\t\treturn [match[1]];\n\t\t}\n\t}\n\treturn [];\n};",
+			"type": "application/javascript"
+		},
+		"$:/plugins/flibbles/3rd-party/widget": {
+			"module-type": "widget",
+			"text": "/*\\\n\nExample widget. It's just an alternate name for the core $list widget.\n\n\\*/\n\nvar List = require(\"$:/core/modules/widgets/list.js\").list;\n\nexports[\"3rd\"] = List;",
 			"type": "application/javascript"
 		}
 	}
