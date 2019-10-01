@@ -167,6 +167,8 @@ Error message and password prompt
 
 <li>$:/isEncrypted</li>
 
+<li>$:/plugins/flibbles/3rd-party</li>
+
 <li>$:/plugins/flibbles/relink</li>
 
 <li>$:/SiteSubtitle</li>
@@ -217,9 +219,9 @@ Error message and password prompt
 
 <li>Documentation/Operators</li>
 
-<li>Field Types</li>
-
 <li>Fields</li>
+
+<li>Filter</li>
 
 <li>Frodo</li>
 
@@ -228,6 +230,8 @@ Error message and password prompt
 <li>Info Tabs</li>
 
 <li>Links</li>
+
+<li>List</li>
 
 <li>Macros</li>
 
@@ -238,6 +242,8 @@ Error message and password prompt
 <li>Operators</li>
 
 <li>Pragma</li>
+
+<li>Reference</li>
 
 <li>Relink</li>
 
@@ -251,11 +257,19 @@ Error message and password prompt
 
 <li>Templates/now</li>
 
+<li>Templates/Type</li>
+
 <li>Templates/ul</li>
 
 <li>Templates/Version</li>
 
+<li>Third Party Plugin Integration</li>
+
+<li>Title</li>
+
 <li>Transcludes</li>
+
+<li>Types</li>
 
 <li>Versions</li>
 
@@ -9510,7 +9524,53 @@ Error message and password prompt
 <div title="$:/isEncrypted">
 <pre>no</pre>
 </div>
-<div author="Flibbles" core-version="&gt;=5.1.14" created="20190921200305594" dependents="" description="Relink - flexibility when relinking renamed tiddlers" list="readme configuration" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink" type="application/json" version="1.5.3">
+<div description="Example plugin which integrates with Relink." list="readme" plugin-type="plugin" title="$:/plugins/flibbles/3rd-party" type="application/json">
+<pre>{
+	&quot;tiddlers&quot;: {
+		&quot;$:/config/flibbles/relink/attributes/$3rd/editTemplate&quot;: {
+			&quot;text&quot;: &quot;title&quot;
+		},
+		&quot;$:/config/flibbles/relink/attributes/$3rd/filter&quot;: {
+			&quot;text&quot;: &quot;filter&quot;
+		},
+		&quot;$:/config/flibbles/relink/attributes/$3rd/history&quot;: {
+			&quot;text&quot;: &quot;title&quot;
+		},
+		&quot;$:/config/flibbles/relink/attributes/$3rd/template&quot;: {
+			&quot;text&quot;: &quot;title&quot;
+		},
+		&quot;$:/config/flibbles/relink/fields/3rd&quot;: {
+			&quot;text&quot;: &quot;list&quot;
+		},
+		&quot;$:/config/flibbles/relink/macros/3rd/tiddler&quot;: {
+			&quot;text&quot;: &quot;title&quot;
+		},
+		&quot;$:/config/flibbles/relink/operators/3rd&quot;: {
+			&quot;text&quot;: &quot;title&quot;
+		},
+		&quot;$:/plugins/flibbles/3rd-party/readme&quot;: {
+			&quot;text&quot;: &quot;This plugin doesn't do anything. It only shows how other plugins can integrate with //Relink//. Thereby allowing any macros, widgets, fields, or filter operators they introduce to automatically be configured for //Relink// to handle.\n\nLook at the &lt;$link to='$:/plugins/flibbles/relink/configuration'&gt;//Relink// configuration page&lt;/$link&gt; to see how this plugin's configurations are grouped.&quot;
+		},
+		&quot;$:/plugins/flibbles/3rd-party/macro&quot;: {
+			&quot;module-type&quot;: &quot;macro&quot;,
+			&quot;text&quot;: &quot;/*\\\n\nExample macro which this plugin has automatically integrated with Relink\n\n\\*/\n\nexports.name = \&quot;3rd\&quot;;\n\nexports.params = [\n\t{name: \&quot;tiddler\&quot;}\n];\n\nexports.run = function(tiddler) {\n\treturn \&quot;3rd macro called with: \&quot; + tiddler;\n};&quot;,
+			&quot;type&quot;: &quot;application/javascript&quot;
+		},
+		&quot;$:/plugins/flibbles/3rd-party/operator&quot;: {
+			&quot;module-type&quot;: &quot;filteroperator&quot;,
+			&quot;text&quot;: &quot;/*\\\n\nExample filter operator which this plugin has automatically integrated with Relink.\nThis is just a generator that return the third word in the operand tiddler's text.\n\n\\*/\n\nexports[\&quot;3rd\&quot;] = function(source,operator,options) {\n\tvar tiddler = options.wiki.getTiddler(operator.operand);\n\tif (tiddler) {\n\t\tvar match = /\\S+\\s+\\S+\\s+(\\S+)/.exec(tiddler.fields.text);\n\t\tif (match) {\n\t\t\treturn [match[1]];\n\t\t}\n\t}\n\treturn [];\n};&quot;,
+			&quot;type&quot;: &quot;application/javascript&quot;
+		},
+		&quot;$:/plugins/flibbles/3rd-party/widget&quot;: {
+			&quot;module-type&quot;: &quot;widget&quot;,
+			&quot;text&quot;: &quot;/*\\\n\nExample widget. It's just an alternate name for the core $list widget.\n\n\\*/\n\nvar List = require(\&quot;$:/core/modules/widgets/list.js\&quot;).list;\n\nexports[\&quot;3rd\&quot;] = List;&quot;,
+			&quot;type&quot;: &quot;application/javascript&quot;
+		}
+	}
+}
+</pre>
+</div>
+<div author="Flibbles" core-version="&gt;=5.1.14" created="20191001171937468" dependents="" description="Relink - flexibility when relinking renamed tiddlers" list="readme configuration" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink" type="application/json" version="1.5.4">
 <pre>{
     &quot;tiddlers&quot;: {
         &quot;$:/plugins/flibbles/relink/js/bulkops.js&quot;: {
@@ -10069,29 +10129,33 @@ Error message and password prompt
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/ui/components/select-fieldtype&quot;,
             &quot;text&quot;: &quot;&lt;$select tiddler=&lt;&lt;currentTiddler&gt;&gt; default={{$:/config/flibbles/relinke/settings/default-type}} &gt;\n&lt;$list variable=\&quot;option\&quot;\n       filter=\&quot;[[relinkfieldtype]modules[]removeprefix[$:/plugins/flibbles/relink/js/fieldtypes/]removesuffix[.js]move:-100{$:/config/flibbles/relink/settings/default-type}]\&quot;&gt;\n&lt;option&gt;&lt;$text text=&lt;&lt;option&gt;&gt; /&gt;&lt;/option&gt;\n&lt;/$list&gt;\n&lt;/$select&gt;\n&quot;
         },
+        &quot;$:/plugins/flibbles/relink/ui/components/tables&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink/ui/components/tables&quot;,
+            &quot;text&quot;: &quot;\\define prefix(category) $:/config/flibbles/relink/$category$/\n\\define .make-table(title, subfilter, default-table-state:yes)\n\n&lt;$set name=\&quot;table-state\&quot; value=&lt;&lt;qualify \&quot;\&quot;\&quot;$:/state/flibbles/relink/tables/$title$\&quot;\&quot;\&quot;&gt;&gt;&gt;\n&lt;tr&gt;&lt;th colspan=&lt;&lt;column-count&gt;&gt; style=\&quot;text-align:left;\&quot;&gt;\n&lt;$reveal type=\&quot;nomatch\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$button class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot; set=&lt;&lt;table-state&gt;&gt; setTo=\&quot;yes\&quot;&gt;\n{{$:/core/images/right-arrow}}\n&lt;/$button&gt;\n&lt;/$reveal&gt;\n&lt;$reveal type=\&quot;match\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$button class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot; set=&lt;&lt;table-state&gt;&gt; setTo=\&quot;no\&quot;&gt;\n{{$:/core/images/down-arrow}}\n&lt;/$button&gt;\n&lt;/$reveal&gt; ''$title$''\n&lt;/th&gt;&lt;/tr&gt;\n&lt;$list filter=\&quot;[$subfilter$prefix&lt;category-prefix&gt;!has[draft.of]has[text]sort[]]\&quot;&gt;\n&lt;$set name=\&quot;currentSetting\&quot; filter=\&quot;[all[current]removeprefix&lt;category-prefix&gt;]\&quot;&gt;\n&lt;$reveal tag=\&quot;tr\&quot; type=\&quot;match\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$macrocall $name=&lt;&lt;__list-row-macro__&gt;&gt; currentSetting=&lt;&lt;currentSetting&gt;&gt; /&gt;\n&lt;/$reveal&gt;\n&lt;/$set&gt;\n&lt;/$list&gt;\n&lt;/$set&gt;\n\\end\n\n\\define tables(category, list-row-macro, header-list)\n&lt;$set name=\&quot;category-prefix\&quot; value=&lt;&lt;prefix $category$&gt;&gt;&gt;\n&lt;$set name=\&quot;column-count\&quot; filter=\&quot;[enlist&lt;__header-list__&gt;count[]]\&quot;&gt;\n\n&lt;table&gt;&lt;tbody&gt;\n&lt;tr&gt;&lt;$list variable=\&quot;header\&quot; filter=\&quot;[enlist&lt;__header-list__&gt;]\&quot;&gt;&lt;th&gt;&lt;&lt;header&gt;&gt;&lt;/th&gt;&lt;/$list&gt;&lt;/tr&gt;\n\n&lt;$list variable=\&quot;render\&quot; filter=\&quot;[prefix&lt;category-prefix&gt;!has[draft.of]has[text]!is[shadow]first[]]\&quot;&gt;\n&lt;&lt;.make-table Custom \&quot;all[]!is[shadow]\&quot; yes&gt;&gt;\n&lt;/$list&gt;\n\n&lt;$list filter=\&quot;[all[shadows]prefix&lt;category-prefix&gt;has[text]shadowsource[]!title[$:/plugins/flibbles/relink]]\&quot;&gt;\n&lt;$macrocall $name=\&quot;.make-table\&quot; title={{!!description}} subfilter=\&quot;all[current]plugintiddlers[]\&quot; /&gt;\n&lt;/$list&gt;\n\n&lt;&lt;.make-table Core \&quot;[$:/plugins/flibbles/relink]plugintiddlers[]\&quot;&gt;&gt;\n\n&lt;/tbody&gt;&lt;/table&gt;\n&lt;/$set&gt;&lt;/$set&gt;\n\\end\n&quot;
+        },
         &quot;$:/plugins/flibbles/relink/ui/configuration/Attributes&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/ui/configuration/Attributes&quot;,
             &quot;caption&quot;: &quot;{{$:/plugins/flibbles/relink/language/ui/Attributes/Caption}}&quot;,
             &quot;tags&quot;: &quot;$:/tags/flibbles/relink/Configuration&quot;,
-            &quot;text&quot;: &quot;\\define prefix-attr() $:/config/flibbles/relink/attributes/\n\\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/\n\\define state-base() $:/state/flibbles/relink/\n\n\\define body()\n\n{{$:/plugins/flibbles/relink/language/Help/Attributes}}\n\n&lt;table&gt;&lt;tbody&gt;\n&lt;tr&gt;&lt;th&gt;Widget/HTML Element&lt;/th&gt;&lt;th&gt;Attribute&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Delete&lt;/th&gt;&lt;/tr&gt;\n&lt;$list filter=\&quot;[all[shadows+tiddlers]prefix&lt;prefix-attr&gt;!has[draft.of]has[text]]\&quot;&gt;\n&lt;$set name=\&quot;element\&quot;\n      filter=\&quot;[all[current]removeprefix&lt;prefix-attr&gt;splitbefore[/]removesuffix[/]]\&quot;&gt;\n&lt;$set name=\&quot;attribute\&quot;\n      filter=\&quot;[all[current]removeprefix&lt;prefix-attr&gt;removeprefix&lt;element&gt;removeprefix[/]]\&quot;&gt;\n&lt;tr&gt;\n&lt;td&gt;&lt;$text text=&lt;&lt;element&gt;&gt; /&gt;&lt;/td&gt;\n&lt;td&gt;&lt;$text text=&lt;&lt;attribute&gt;&gt; /&gt;&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/button-delete}}&lt;/td&gt;\n&lt;/tr&gt;\n&lt;/$set&gt;&lt;/$set&gt;&lt;/$list&gt;\n&lt;/tbody&gt;&lt;/table&gt;\n\n&lt;em class=\&quot;tc-edit\&quot;&gt;Add a new attribute:&lt;/em&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$element-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;widget/element\&quot; /&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$attribute-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;attribute\&quot; /&gt;\n&lt;$button tooltip={{$(lingo-base)$NewAttribute/Hint}}\n         aria-label={{$(lingo-base)$NewAttribute/Caption}}&gt;\n&lt;$set name=\&quot;tiddlerName\&quot;\n      filter=\&quot;[&lt;prefix-attr&gt;addsuffix{$(state-base)$element-name}addsuffix[/]addsuffix{$(state-base)$attribute-name}]\&quot;&gt;\n&lt;$action-setfield $tiddler=&lt;&lt;tiddlerName&gt;&gt;\n                  text={{$:/config/flibbles/relink/settings/default-type}} /&gt;\n&lt;/$set&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$attribute-name\&quot; /&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$element-name\&quot; /&gt;\n&lt;$text text={{$(lingo-base)$NewAttribute/Caption}}/&gt;\n&lt;/$button&gt;\n\\end\n\n&lt;&lt;body&gt;&gt;\n&quot;
+            &quot;text&quot;: &quot;\\import $:/plugins/flibbles/relink/ui/components/tables\n\\define prefix-attr() $:/config/flibbles/relink/attributes/\n\\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/\n\\define state-base() $:/state/flibbles/relink/\n\n\\define row()\n&lt;$set name=\&quot;element\&quot;\n      filter=\&quot;[all[current]removeprefix&lt;prefix-attr&gt;splitbefore[/]removesuffix[/]]\&quot;&gt;\n&lt;$set name=\&quot;attribute\&quot;\n      filter=\&quot;[all[current]removeprefix&lt;prefix-attr&gt;removeprefix&lt;element&gt;removeprefix[/]]\&quot;&gt;\n&lt;td&gt;&lt;$text text=&lt;&lt;element&gt;&gt; /&gt;&lt;/td&gt;\n&lt;td&gt;&lt;$text text=&lt;&lt;attribute&gt;&gt; /&gt;&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/button-delete}}&lt;/td&gt;\n&lt;/$set&gt;&lt;/$set&gt;\n\\end\n\\define body()\n\n{{$:/plugins/flibbles/relink/language/Help/Attributes}}\n\n&lt;em class=\&quot;tc-edit\&quot;&gt;Add a new attribute:&lt;/em&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$element-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;widget/element\&quot; /&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$attribute-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;attribute\&quot; /&gt;\n&lt;$button tooltip={{$(lingo-base)$NewAttribute/Hint}}\n         aria-label={{$(lingo-base)$NewAttribute/Caption}}&gt;\n&lt;$set name=\&quot;tiddlerName\&quot;\n      filter=\&quot;[&lt;prefix-attr&gt;addsuffix{$(state-base)$element-name}addsuffix[/]addsuffix{$(state-base)$attribute-name}]\&quot;&gt;\n&lt;$action-setfield $tiddler=&lt;&lt;tiddlerName&gt;&gt;\n                  text={{$:/config/flibbles/relink/settings/default-type}} /&gt;\n&lt;/$set&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$attribute-name\&quot; /&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$element-name\&quot; /&gt;\n&lt;$text text={{$(lingo-base)$NewAttribute/Caption}}/&gt;\n&lt;/$button&gt;\n\n&lt;$macrocall $name=tables\n\tcategory=\&quot;attributes\&quot;\n\theader-list=\&quot;[[Widget/HTML Element]] Attribute Type Delete\&quot;\n\tlist-row-macro=\&quot;row\&quot; /&gt;\n\\end\n\n&lt;&lt;body&gt;&gt;\n&quot;
         },
         &quot;$:/plugins/flibbles/relink/ui/configuration/Fields&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/ui/configuration/Fields&quot;,
             &quot;caption&quot;: &quot;{{$:/plugins/flibbles/relink/language/ui/Fields/Caption}}&quot;,
             &quot;tags&quot;: &quot;$:/tags/flibbles/relink/Configuration&quot;,
-            &quot;text&quot;: &quot;\\define prefix-fields() $:/config/flibbles/relink/fields/\n\\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/\n\\define state-base() $:/state/flibbles/relink/\n\n\\define body()\n\n{{$:/plugins/flibbles/relink/language/Help/Fields}}\n\n&lt;table&gt;&lt;tbody&gt;\n&lt;tr&gt;&lt;th&gt;Field Name&lt;/th&gt;&lt;th&gt;Field Type&lt;/th&gt;&lt;th&gt;Delete&lt;/th&gt;&lt;/tr&gt;\n&lt;$list filter=\&quot;[all[shadows+tiddlers]prefix&lt;prefix-fields&gt;!has[draft.of]has[text]]\&quot;&gt;\n&lt;tr&gt;\n&lt;td&gt;&lt;$list filter=\&quot;[all[current]removeprefix&lt;prefix-fields&gt;]\&quot;&gt;&lt;&lt;currentTiddler&gt;&gt;&lt;/$list&gt;&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/button-delete}}&lt;/td&gt;\n&lt;/tr&gt;\n&lt;/$list&gt;\n&lt;/tbody&gt;&lt;/table&gt;\n\n&lt;em class=\&quot;tc-edit\&quot;&gt;Add a new field:&lt;/em&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$field-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;field name\&quot; /&gt;\n&lt;$button tooltip={{$(lingo-base)$NewField/Hint}}\n         aria-label={{$(lingo-base)$NewField/Caption}}&gt;\n&lt;$set name=\&quot;tiddlerName\&quot;\n      filter=\&quot;[&lt;prefix-fields&gt;addsuffix{$(state-base)$field-name}]\&quot;&gt;\n&lt;$action-setfield $tiddler=&lt;&lt;tiddlerName&gt;&gt;\n                  text={{$:/config/flibbles/relink/settings/default-type}} /&gt;\n&lt;/$set&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$field-name\&quot; /&gt;\n&lt;$text text={{$(lingo-base)$NewField/Caption}}/&gt;\n&lt;/$button&gt;\n\\end\n\n&lt;&lt;body&gt;&gt;\n&quot;
+            &quot;text&quot;: &quot;\\import $:/plugins/flibbles/relink/ui/components/tables\n\\define prefix-fields() $:/config/flibbles/relink/fields/\n\\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/\n\\define state-base() $:/state/flibbles/relink/\n\n\\define row(currentSetting)\n&lt;td&gt;&lt;$text text={{{[all[current]removeprefix&lt;prefix-fields&gt;]}}} /&gt;&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/button-delete}}&lt;/td&gt;\n\\end\n\\define body()\n\n{{$:/plugins/flibbles/relink/language/Help/Fields}}\n\n&lt;em class=\&quot;tc-edit\&quot;&gt;Add a new field:&lt;/em&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$field-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;field name\&quot; /&gt;\n&lt;$button tooltip={{$(lingo-base)$NewField/Hint}}\n         aria-label={{$(lingo-base)$NewField/Caption}}&gt;\n&lt;$set name=\&quot;tiddlerName\&quot;\n      filter=\&quot;[&lt;prefix-fields&gt;addsuffix{$(state-base)$field-name}]\&quot;&gt;\n&lt;$action-setfield $tiddler=&lt;&lt;tiddlerName&gt;&gt;\n                  text={{$:/config/flibbles/relink/settings/default-type}} /&gt;\n&lt;/$set&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$field-name\&quot; /&gt;\n&lt;$text text={{$(lingo-base)$NewField/Caption}}/&gt;\n&lt;/$button&gt;\n\n&lt;$macrocall $name=tables\n\tcategory=\&quot;fields\&quot;\n\theader-list=\&quot;[[Field Name]] [[Field Type]] Delete\&quot;\n\tlist-row-macro=\&quot;row\&quot; /&gt;\n\\end\n\n&lt;&lt;body&gt;&gt;\n&quot;
         },
         &quot;$:/plugins/flibbles/relink/ui/configuration/Macros&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/ui/configuration/Macros&quot;,
             &quot;caption&quot;: &quot;{{$:/plugins/flibbles/relink/language/ui/Macros/Caption}}&quot;,
             &quot;tags&quot;: &quot;$:/tags/flibbles/relink/Configuration&quot;,
-            &quot;text&quot;: &quot;\\define prefix-macro() $:/config/flibbles/relink/macros/\n\\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/\n\\define state-base() $:/state/flibbles/relink/\n\n\\define body()\n\n{{$:/plugins/flibbles/relink/language/Help/Macros}}\n\n&lt;table&gt;&lt;tbody&gt;\n&lt;tr&gt;&lt;th&gt;Macro&lt;/th&gt;&lt;th&gt;Parameter&lt;/th&gt;&lt;th&gt;Type&lt;/th&gt;&lt;th&gt;Delete&lt;/th&gt;&lt;/tr&gt;\n&lt;$list filter=\&quot;[all[shadows+tiddlers]prefix&lt;prefix-macro&gt;!has[draft.of]has[text]]\&quot;&gt;\n&lt;$set name=\&quot;parameter\&quot;\n      filter=\&quot;[all[current]removeprefix&lt;prefix-macro&gt;relink:splitafter[/]]\&quot;&gt;\n&lt;$set name=\&quot;macro\&quot;\n      filter=\&quot;[all[current]removeprefix&lt;prefix-macro&gt;removesuffix&lt;parameter&gt;removesuffix[/]]\&quot;&gt;\n&lt;tr&gt;\n&lt;td&gt;&lt;$text text=&lt;&lt;macro&gt;&gt; /&gt;&lt;/td&gt;\n&lt;td&gt;&lt;$text text=&lt;&lt;parameter&gt;&gt; /&gt;&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/button-delete}}&lt;/td&gt;\n&lt;/tr&gt;\n&lt;/$set&gt;&lt;/$set&gt;&lt;/$list&gt;\n&lt;/tbody&gt;&lt;/table&gt;\n\n&lt;em class=\&quot;tc-edit\&quot;&gt;Add a new macro parameter:&lt;/em&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$macro-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;macro\&quot; /&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$parameter-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;parameter\&quot; /&gt;\n&lt;$button tooltip={{$(lingo-base)$NewParameter/Hint}}\n         aria-label={{$(lingo-base)$NewParameter/Caption}}&gt;\n&lt;$set name=\&quot;tiddlerName\&quot;\n      filter=\&quot;[&lt;prefix-macro&gt;addsuffix{$(state-base)$macro-name}addsuffix[/]addsuffix{$(state-base)$parameter-name}]\&quot;&gt;\n&lt;$action-setfield $tiddler=&lt;&lt;tiddlerName&gt;&gt;\n                  text={{$:/config/flibbles/relink/settings/default-type}} /&gt;\n&lt;/$set&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$parameter-name\&quot; /&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$macro-name\&quot; /&gt;\n&lt;$text text={{$(lingo-base)$NewParameter/Caption}}/&gt;\n&lt;/$button&gt;\n\\end\n\n&lt;&lt;body&gt;&gt;\n&quot;
+            &quot;text&quot;: &quot;\\import $:/plugins/flibbles/relink/ui/components/tables\n\\define prefix-macro() $:/config/flibbles/relink/macros/\n\\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/\n\\define state-base() $:/state/flibbles/relink/\n\n\\define row(currentSetting)\n&lt;$set name=\&quot;parameter\&quot;\n      filter=\&quot;[all[current]removeprefix&lt;prefix-macro&gt;relink:splitafter[/]]\&quot;&gt;\n&lt;$set name=\&quot;macro\&quot;\n      filter=\&quot;[all[current]removeprefix&lt;prefix-macro&gt;removesuffix&lt;parameter&gt;removesuffix[/]]\&quot;&gt;\n&lt;td&gt;&lt;$text text=&lt;&lt;macro&gt;&gt; /&gt;&lt;/td&gt;\n&lt;td&gt;&lt;$text text=&lt;&lt;parameter&gt;&gt; /&gt;&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/button-delete}}&lt;/td&gt;\n&lt;/$set&gt;&lt;/$set&gt;\n\\end\n\\define body()\n\n{{$:/plugins/flibbles/relink/language/Help/Macros}}\n\n&lt;em class=\&quot;tc-edit\&quot;&gt;Add a new macro parameter:&lt;/em&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$macro-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;macro\&quot; /&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$parameter-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;parameter\&quot; /&gt;\n&lt;$button tooltip={{$(lingo-base)$NewParameter/Hint}}\n         aria-label={{$(lingo-base)$NewParameter/Caption}}&gt;\n&lt;$set name=\&quot;tiddlerName\&quot;\n      filter=\&quot;[&lt;prefix-macro&gt;addsuffix{$(state-base)$macro-name}addsuffix[/]addsuffix{$(state-base)$parameter-name}]\&quot;&gt;\n&lt;$action-setfield $tiddler=&lt;&lt;tiddlerName&gt;&gt;\n                  text={{$:/config/flibbles/relink/settings/default-type}} /&gt;\n&lt;/$set&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$parameter-name\&quot; /&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$macro-name\&quot; /&gt;\n&lt;$text text={{$(lingo-base)$NewParameter/Caption}}/&gt;\n&lt;/$button&gt;\n\n&lt;$macrocall $name=tables\n\tcategory=\&quot;macros\&quot;\n\theader-list=\&quot;Macro Parameter Type Delete\&quot;\n\tlist-row-macro=\&quot;row\&quot; /&gt;\n\\end\n\n&lt;&lt;body&gt;&gt;\n&quot;
         },
         &quot;$:/plugins/flibbles/relink/ui/configuration/Operators&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/ui/configuration/Operators&quot;,
             &quot;caption&quot;: &quot;{{$:/plugins/flibbles/relink/language/ui/Operators/Caption}}&quot;,
             &quot;tags&quot;: &quot;$:/tags/flibbles/relink/Configuration&quot;,
-            &quot;text&quot;: &quot;\\define prefix-ops() $:/config/flibbles/relink/operators/\n\\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/\n\\define state-base() $:/state/flibbles/relink/\n\n\\define body()\n\n{{$:/plugins/flibbles/relink/language/Help/Operators}}\n\n&lt;table&gt;&lt;tbody&gt;\n&lt;tr&gt;&lt;th&gt;Filter Operator&lt;/th&gt;&lt;th&gt;Operand Type&lt;/th&gt;&lt;th&gt;Delete&lt;/th&gt;&lt;/tr&gt;\n&lt;$list filter=\&quot;[all[shadows+tiddlers]prefix&lt;prefix-ops&gt;!has[draft.of]has[text]]\&quot;&gt;\n&lt;tr&gt;\n&lt;td&gt;&lt;$list variable=\&quot;listItem\&quot; filter=\&quot;[&lt;currentTiddler&gt;removeprefix&lt;prefix-ops&gt;]\&quot;&gt;&lt;&lt;listItem&gt;&gt;&lt;/$list&gt;&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/button-delete}}&lt;/td&gt;\n&lt;/tr&gt;\n&lt;/$list&gt;\n&lt;/tbody&gt;&lt;/table&gt;\n\n&lt;em class=\&quot;tc-edit\&quot;&gt;Add a new filter operator:&lt;/em&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$operator-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;operator name\&quot; /&gt;\n&lt;$button tooltip={{$(lingo-base)$NewOperator/Hint}}\n         aria-label={{$(lingo-base)$NewOperator/Caption}}&gt;\n&lt;$set name=\&quot;tiddlerName\&quot;\n      filter=\&quot;[&lt;prefix-ops&gt;addsuffix{$(state-base)$operator-name}]\&quot;&gt;\n&lt;$action-setfield $tiddler=&lt;&lt;tiddlerName&gt;&gt; text={{$:/config/flibbles/relink/settings/default-type}} /&gt;\n&lt;/$set&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$operator-name\&quot; /&gt;\n&lt;$text text={{$(lingo-base)$NewOperator/Caption}}/&gt;\n&lt;/$button&gt;\n\\end\n\n&lt;&lt;body&gt;&gt;\n&quot;
+            &quot;text&quot;: &quot;\\import $:/plugins/flibbles/relink/ui/components/tables\n\\define prefix-ops() $:/config/flibbles/relink/operators/\n\\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/\n\\define state-base() $:/state/flibbles/relink/\n\n\\define row()\n&lt;td&gt;&lt;$list variable=\&quot;listItem\&quot; filter=\&quot;[&lt;currentTiddler&gt;removeprefix&lt;prefix-ops&gt;]\&quot;&gt;&lt;&lt;listItem&gt;&gt;&lt;/$list&gt;&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}&lt;/td&gt;\n&lt;td&gt;{{||$:/plugins/flibbles/relink/ui/components/button-delete}}&lt;/td&gt;\n\\end\n\\define body()\n\n{{$:/plugins/flibbles/relink/language/Help/Operators}}\n\n&lt;em class=\&quot;tc-edit\&quot;&gt;Add a new filter operator:&lt;/em&gt;\n&lt;$edit-text tiddler=\&quot;$(state-base)$operator-name\&quot;\n            tag=\&quot;input\&quot; default=\&quot;\&quot; placeholder=\&quot;operator name\&quot; /&gt;\n&lt;$button tooltip={{$(lingo-base)$NewOperator/Hint}}\n         aria-label={{$(lingo-base)$NewOperator/Caption}}&gt;\n&lt;$set name=\&quot;tiddlerName\&quot;\n      filter=\&quot;[&lt;prefix-ops&gt;addsuffix{$(state-base)$operator-name}]\&quot;&gt;\n&lt;$action-setfield $tiddler=&lt;&lt;tiddlerName&gt;&gt; text={{$:/config/flibbles/relink/settings/default-type}} /&gt;\n&lt;/$set&gt;\n&lt;$action-deletetiddler $tiddler=\&quot;$(state-base)$operator-name\&quot; /&gt;\n&lt;$text text={{$(lingo-base)$NewOperator/Caption}}/&gt;\n&lt;/$button&gt;\n\n&lt;$macrocall $name=tables\n\tcategory=\&quot;operators\&quot;\n\theader-list=\&quot;[[Filter Operator]] [[Operand Type]] Delete\&quot;\n\tlist-row-macro=\&quot;row\&quot; /&gt;\n\\end\n\n&lt;&lt;body&gt;&gt;\n&quot;
         }
     }
 }</pre>
@@ -10251,7 +10315,7 @@ would update to:
 
 If you have `$list`/`filter` whitelisted and configured as a filter, then the widget `&lt;$list filter=&quot;...&quot; /&gt;` would have the contents of its filter attribute evaluated, and any whitelisted filter operators inside of it would be considered for updating during a rename operation.
 
-For each element/attribute pair, you must specify its [[type|Field Types]].
+For each element/attribute pair, you must specify its [[type|Types]].
 
 &lt;&lt;link-to-tab Demo Demo/Widgets Demo&gt;&gt;
 </pre>
@@ -10259,7 +10323,7 @@ For each element/attribute pair, you must specify its [[type|Field Types]].
 <div title="BilboBaggins" weapon="Sting">
 <pre>\import Frodo
 
-This tiddler is used to test CamelCase wikilinks.
+This tiddler is used to test ~CamelCase wikilinks.
 
 &lt;&lt;rename ThorinOakenshield&gt;&gt;
 
@@ -10377,69 +10441,10 @@ Besides relinking tiddlers, //Relink// includes other features.
 <div title="Documentation/Operators">
 <pre>This tiddler has moved [[here|Operators]].</pre>
 </div>
-<div caption="Field Types" tags="Documentation" title="Field Types">
-<pre>\rules except wikilink
-Fields and attributes have types. Depending on the type, Relink will parse them differently.
-
-!! Title
-
-This is the simplest type. The value is a single tiddler title.
-
-For example: In `&lt;$link to=&quot;Tiddler Name&quot; /&gt;`, if the `to` attribute is treated as a title type (which it is by default), then //Tiddler Name// is considered as a single title. The value can contain spaces without any special syntax.
-
-An example of a title field would be
-
-`list-after: Tiddler A`
-
-The value of list-after is one tiddler titled &quot;Tiddler A&quot;. If &quot;Tiddler A&quot; is renamed to &quot;Tiddler B&quot;, that field would become:
-
-`list-after: Tiddler B`
-
-!! List
-
-The value of the field or attribute is treated as a [[string list, as described here|https://tiddlywiki.com/static/Title%2520List.html]].
-
-For example the tiddler field `list` is a list by default, so
-
-`list: [[First Tiddler]] [[Second Tiddler]] TiddlerWithoutSpaces`
-
-If //Second Tiddler// were renamed to //New Tiddler//, that field would become,
-
-`list [[First Tiddler]] [[New Tiddler]] TiddlerWithoutSpaces`
-
-Relink adds brackets whenever necessary.
-
-!! Filter
-
-The value of the field or attribute is treated as a [[filter, as describer here|https://tiddlywiki.com/static/Introduction%2520to%2520filter%2520notation.html]].
-
-If Relink is configured to consider a certain field or attribute as a filter, it will look at operators and decides whether to update their operand, but only if the given operators are whitelisted. `[tag[]]` and `[title[]]` are whitelisted by default. And as long as `title` is whitelisted, that includes all shorthands for title, such as `[[Example]]`, `[field:title[Example]]`, `&quot;Example&quot;`, `'Example'`, and `Example`.
-
-For example, take `&lt;$list filter=&quot;[[MyTiddler]] [tag[MyTiddler]!has[draft.of]]&quot; /&gt;` and say //MyTiddler// is updated to //NewTiddler//. As long as the ''filter'' attribute of the widget ''$list'' is whitelisted (it is by default), and `[tag[]]` and `[title[]]` are whitelisted (they are by default), that widget would become:
-
-`&lt;$list filter=&quot;[[NewTiddler]] [tag[NewTiddler]!has[draft.of]]&quot; /&gt;`
-
-!! Reference
-
-This is a [[TextReference, as described here|https://tiddlywiki.com/static/TextReference.html]].
-
-The tiddler portion of the TextReference is checked and possibly relinked. So if `FirstTiddler` were renamed to `SecondTiddler`, then a TextReference like
-
-`FirstTiddler!!MyField`
-
-would become
-
-`SecondTiddler!!MyField`
-
-You probably won't use this one very often. Generally, when you want to make a TextReference, you do so through transclusion (e.g. `{{FirstTiddler!!MyField}}`), and those will already be relinked for you, but there are some cases where a literal value is expected to be a TextReference.
-
-...namely, the filter operator `list`. That's it.
-</pre>
-</div>
 <div caption="Fields" tags="Documentation Construct" title="Fields">
 <pre>Configure which tiddler fields Relink will consider for updating. For instance, `list` and `tags` are configured by default, which means whenever a tiddler name updates, Relink will look at the `list` and `tags` field of every tiddler for possible updating.
 
-For each field, you must specify its [[type|Field Types]].
+For each field, you must specify its [[type|Types]].
 
 Example: If the field name `list` is configured as a `list`, that means the following:
 
@@ -10458,6 +10463,16 @@ will updated to:
 If //Tiddler B// is renamed to //New Tiddler//.
 
 &lt;&lt;link-to-tab Demo Demo/Fields Demo&gt;&gt;
+</pre>
+</div>
+<div tags="Types" title="Filter">
+<pre>The value of the field or attribute is treated as a [[filter, as described here|https://tiddlywiki.com/static/Introduction%2520to%2520filter%2520notation.html]].
+
+If Relink is configured to consider a certain field or attribute as a filter, it will look at operators and decides whether to update their operand, but only if the given operators are whitelisted. `[tag[]]` and `[title[]]` are whitelisted by default. And as long as `title` is whitelisted, that includes all shorthands for title, such as `[[Example]]`, `[field:title[Example]]`, `&quot;Example&quot;`, `'Example'`, and `Example`.
+
+For example, take `&lt;$list filter=&quot;[[MyTiddler]] [tag[MyTiddler]!has[draft.of]]&quot; /&gt;` and say //~MyTiddler// is updated to //~NewTiddler//. As long as the ''filter'' attribute of the widget ''$list'' is whitelisted (it is by default), and `[tag[]]` and `[title[]]` are whitelisted (they are by default), that widget would become:
+
+`&lt;$list filter=&quot;[[NewTiddler]] [tag[NewTiddler]!has[draft.of]]&quot; /&gt;`
 </pre>
 </div>
 <div title="Frodo" weapon="Sting">
@@ -10531,10 +10546,24 @@ Should &quot;//Relink// References&quot; replace &quot;References&quot;? Maybe i
 &lt;&lt;link-to-tab Demo Demo/Links Demo&gt;&gt;
 </pre>
 </div>
+<div tags="Types" title="List">
+<pre>The value of the field or attribute is treated as a [[string list, as described here|https://tiddlywiki.com/static/Title%2520List.html]].
+
+For example the tiddler field `list` is a list by default, so
+
+`list: [[First Tiddler]] [[Second Tiddler]] TiddlerWithoutSpaces`
+
+If //Second Tiddler// were renamed to //New Tiddler//, that field would become,
+
+`list [[First Tiddler]] [[New Tiddler]] TiddlerWithoutSpaces`
+
+Relink adds brackets whenever necessary.
+</pre>
+</div>
 <div caption="Macros" tags="Documentation Construct" title="Macros">
 <pre>''Relink'' will relink macro parameters, but only if they've been explicitly whitelisted. All appropriate core macro parameters are already whitelisted by default, but you may wish to add your own.
 
-For each parameter, you must specify its [[type|Field Types]].
+For each parameter, you must specify its [[type|Types]].
 
 !!! Details
 
@@ -10574,7 +10603,7 @@ At worst, it'll report that it couldn't relink a particular tiddler if it finds 
 
 The choice macro takes a reference for its second parameter called ''item''.
 
-On the &lt;$link to=&quot;$:/plugins/flibbles/relink/ui/configuration/Macros&quot;&gt;//Relink// macro configuration whitelist&lt;/$link&gt;, ''item'' is configured to be managed as a [[TextReference|Field Types]].
+On the &lt;$link to=&quot;$:/plugins/flibbles/relink/ui/configuration/Macros&quot;&gt;//Relink// macro configuration whitelist&lt;/$link&gt;, ''item'' is configured to be managed as a [[TextReference|Types]].
 </pre>
 </div>
 <div qualifiers="Demo 1577183281 $:/plugins/flibbles/relink/configuration 678614419" tags="$:/tags/Macro" title="Macros/link-to-tab">
@@ -10631,6 +10660,24 @@ becomes
 : Irrelevant to Relink. Ignored.
 </pre>
 </div>
+<div tags="Types" title="Reference">
+<pre>\rules except wikilink
+
+This is a [[TextReference, as described here|https://tiddlywiki.com/static/TextReference.html]].
+
+The tiddler portion of the TextReference is checked and possibly relinked. So if `FirstTiddler` were renamed to `SecondTiddler`, then a TextReference like
+
+`FirstTiddler!!MyField`
+
+would become
+
+`SecondTiddler!!MyField`
+
+You probably won't use this one very often. Generally, when you want to make a TextReference, you do so through transclusion (e.g. `{{FirstTiddler!!MyField}}`), and those will already be relinked for you, but there are some cases where a literal value is expected to be a TextReference.
+
+...namely, the filter operator `list`. That's it.
+</pre>
+</div>
 <div title="Relink">
 <pre>\define plugin() $:/plugins/flibbles/relink
 
@@ -10660,8 +10707,6 @@ Drag the following onto your Tiddlywiki project and say &quot;yes&quot; to impor
 <div caption="Roadmap" title="Roadmap">
 <pre>This page is meant more for the developer so they don't forget what's left to do.
 
-* Split whitelists into neat categories based on plugin
-** Related: create an example third-party plugin to show how that works.
 * Make the tab-sensitive demo links actual links, not buttons. Also add links to relink configuration page when appropriate.
 * Add in form validation for //add// fields in configuration.
 * Improve UI in configuration menu. Delete buttons shouldn't get that much space. Maybe have examples for each row in gray.
@@ -10678,7 +10723,7 @@ Drag the following onto your Tiddlywiki project and say &quot;yes&quot; to impor
 * On relink failure, at least change as many instances as possible rather than giving up on an entire tiddler.
 * Possible issue with `&lt;$importvariables&gt;` widgets being called whose attributes depend on macros defined immediately preceding the widget call. `\define macro() blah\n\n&lt;$importvariables filter=&lt;&lt;blah&gt;&gt; &gt;...`
 ** And I need to track variables set in `&lt;$set&gt;` even though those aren't ever involved in relinking. They may be part of an importvariables attribute value.
-* Better application of wikitext rules in WikiRelinking. Pragma first, then block and inline
+* Better application of wikitext rules in ~WikiRelinking. Pragma first, then block and inline
 ** Right now, if `\define relink-??()` is encountered after pragmas should no longer be parsed, this is still relinked if its title matches the fromTitle. I'm not actually sure I should prevent this. It's a weird use case, but I think the user will still probably want it replaced.
 </pre>
 </div>
@@ -10764,6 +10809,15 @@ td.relink-text pre {
 <pre>&lt;&lt;now [UTC]YYYY0MM0DD0hh0mm0ssXXX&gt;&gt;
 </pre>
 </div>
+<div title="Templates/Type">
+<pre>&lt;$tiddler tiddler=&lt;&lt;currentTab&gt;&gt; &gt;
+
+! &lt;$link&gt;&lt;$transclude field=&quot;caption&quot;&gt;{{!!title}}&lt;/$transclude&gt;&lt;/$link&gt;
+
+{{}}
+&lt;/$tiddler&gt;
+</pre>
+</div>
 <div title="Templates/ul">
 <pre>&lt;!-- Useful for making lists of a tag. --&gt;
 &lt;ul&gt;&lt;$list variable=&quot;listItem&quot;
@@ -10787,6 +10841,69 @@ td.relink-text pre {
 &lt;/$tiddler&gt;
 </pre>
 </div>
+<div tags="Feature" title="Third Party Plugin Integration">
+<pre>//Relink// has the ability to allow other plugins to integrate seemlessly with it if they so choose. For example, if a plugin you're developing has macros, widgets, fields, or filter operators which could benefit from being relinked, you need only to include a few extra tiddlers with your plugin, and //Relink// will automatically manage your plugins content, assuming //Relink// is installed.
+
+Not only will //Relink// recognize any configuration tiddlers your plugin specifies, it will organize your settings into its own subcategory in the //Relink// whitelists.
+
+!! Configuration Tiddler names
+
+Each relinkable structure type has it's own name structure.
+
+!!! Widgets and elements
+
+Each managed attributes will require its own tiddler.
+Widget name should begin with a '$' if it's a widget. This is probably the case.
+
+```
+$:/config/flibbles/relink/attributes/$element-name$/$attribute-name$
+```
+
+!!! Fields
+
+```
+$:/config/flibbles/relink/fields/$field-name$
+```
+
+!!! Macro Parameters
+Each managed parameter of a macro will require its own tiddler.
+
+```
+$:/config/flibbles/relink/macros/$macro-name$/$parameter-name$
+```
+!!! Filter Operators
+
+```
+$:/config/flibbles/relink/operator/$operator-name$
+```
+
+!! Text
+
+The text of these configuration tiddlers is one word, specifying the [[type|Types]] of the parameter/attribute/field/operator. The following values are allowed:
+
+&lt;ul&gt;&lt;$list filter=&quot;[tag[Types]]&quot;&gt;
+&lt;li&gt;&lt;$link&gt;&lt;$text text={{{[all[current]lowercase[]]}}} /&gt;&lt;/$link&gt;&lt;/li&gt;
+&lt;/$list&gt;&lt;/ul&gt;
+
+!! Example
+
+[[An example plugin is included in this demo|$:/plugins/flibbles/3rd-party]]. It doesn't do anything, but it is integrated with //Relink// for each type of construct it defines.
+</pre>
+</div>
+<div tags="Types" title="Title">
+<pre>This is the simplest type. The value is a single tiddler title.
+
+For example: In `&lt;$link to=&quot;Tiddler Name&quot; /&gt;`, if the `to` attribute is treated as a title type (which it is by default), then //Tiddler Name// is considered as a single title. The value can contain spaces without any special syntax.
+
+An example of a title field would be
+
+`list-after: Tiddler A`
+
+The value of list-after is one tiddler titled &quot;Tiddler A&quot;. If &quot;Tiddler A&quot; is renamed to &quot;Tiddler B&quot;, that field would become:
+
+`list-after: Tiddler B`
+</pre>
+</div>
 <div caption="Transcludes" tags="Documentation WikiText" title="Transcludes">
 <pre>Simple Transclusion patterns are automatically updated. This includes both the tiddler and the template tiddler.
 
@@ -10805,6 +10922,16 @@ Filters inside of filtered transclusions are also processed. Relink will obey th
 ```
 
 &lt;&lt;link-to-tab Demo Demo/Transcludes Demo&gt;&gt;
+</pre>
+</div>
+<div caption="Field Types" list="Title" tags="Documentation" title="Types">
+<pre>Fields, attributes, parameters, and operators have types. Depending on the type, Relink will parse them differently.
+
+&lt;$macrocall $name=&quot;tabs&quot;
+	tabsList=&quot;[tag&lt;currentTiddler&gt;]&quot;
+	default=&quot;Title&quot;
+	class=&quot;tc-vertical&quot;
+	template=&quot;Templates/Type&quot; /&gt;
 </pre>
 </div>
 <div caption="Release Notes" tags="Relink" title="Versions">
@@ -10856,7 +10983,7 @@ Filters inside of filtered transclusions are also processed. Relink will obey th
 * Made logging consistent and more clear.
 * Demo site explains relink placeholders.
 * Prompt about tiddlers that won't be renamed when renaming tiddlers is now fixed, but a better fix is incoming.
-* Prettylinks and CamelCase links handle strange titles better
+* Prettylinks and ~CamelCase links handle strange titles better
 * Transcludes handle field and indexes ( `{{tiddler!!field }}` ). It also handles edge cases better.
 * Lists will alert when they cannot relink, instead of bungling the operation
 * Better error handling
@@ -10878,7 +11005,7 @@ Filters inside of filtered transclusions are also processed. Relink will obey th
 * better handling for bad transclusion renames (e.g. `tiddlers with !! bangs`)
 * Added the [[TextReference field type|https://tiddlywiki.com/static/TextReference.html]]. Probably won't be used too much, but Relink is meant to be a total solution.
 * Revamped the popup that appears while renaming tiddlers. Now it accurately lists any tiddlers Relink will be unable to fix.
-* Added a TiddlerInfo tab which lists all tiddlers that reference the given one.
+* Added a ~TiddlerInfo tab which lists all tiddlers that reference the given one.
 * //Relink// now should handle all relinking except for macros, which I'm not sure yet how or if I should tackle.
 
 !! v1.4.1
@@ -10919,6 +11046,14 @@ Filters inside of filtered transclusions are also processed. Relink will obey th
 !! v1.5.3
 
 * Removed startsWith and endsWith from the project. Also for IE11 support (#9)
+
+!! v1.5.4
+
+* Modified whitelists to group configurations by core, custom, and external plugins. This subcategories are collapsible.
+* Moved add button to the top for each white list.
+* Demo site changes:
+** Added example plugin which showcases how plugin integration would work. There's also [[documentation to go along with it|Third Party Plugin Integration]].
+** Refactored certain elements, particularly, broke up the Field_Types page into individual tiddlers with tags.
 </pre>
 </div>
 

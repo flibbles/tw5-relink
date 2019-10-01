@@ -26,3 +26,11 @@ created: 20190907001619669
 !! v1.5.3
 
 * Removed startsWith and endsWith from the project. Also for IE11 support (#9)
+
+!! v1.5.4
+
+* Modified whitelists to group configurations by core, custom, and external plugins. This subcategories are collapsible.
+* Moved add button to the top for each white list.
+* Demo site changes:
+** Added example plugin which showcases how plugin integration would work. There's also [[documentation to go along with it|Third Party Plugin Integration]].
+** Refactored certain elements, particularly, broke up the Field_Types page into individual tiddlers with tags.
