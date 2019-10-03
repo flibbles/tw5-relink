@@ -14,15 +14,55 @@ Utility methods for the wikitext relink rules.
  *
  * return: Returns the wrapped value, or undefined if it's impossible to wrap
  */
-exports.wrapAttributeValue = function(value, preference, whitelist) {
-	whitelist = whitelist || ["", "'", '"', '"""'];
+exports.wrapAttributeValue = function(value, preference) {
+	var whitelist = ["", "'", '"', '"""'];
 	var choices = {
 		"": function(v) {return !/([\/\s<>"'=])/.test(v); },
 		"'": function(v) {return v.indexOf("'") < 0; },
 		'"': function(v) {return v.indexOf('"') < 0; },
-		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';},
-		"[[": exports.canBePrettyOperand
+		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';}
 	};
+	if (choices[preference] && choices[preference](value)) {
+		return wrap(value, preference);
+	}
+	for (var i = 0; i < whitelist.length; i++) {
+		var quote = whitelist[i];
+		if (choices[quote](value)) {
+			return wrap(value, quote);
+		}
+	}
+	// No quotes will work on this
+	return undefined;
+};
+
+/**Like wrapAttribute value, except for macro parameters, not attributes.
+ *
+ * These are more permissive. Allows brackets,
+ * and slashes and '<' in unquoted values.
+ */
+exports.wrapParameterValue = function(value, preference) {
+	var whitelist = ["", "'", '"', '[[', '"""'];
+	var choices = {
+		"": function(v) {return !/([\s>"'=])/.test(v); },
+		"'": function(v) {return v.indexOf("'") < 0; },
+		'"': function(v) {return v.indexOf('"') < 0; },
+		"[[": exports.canBePrettyOperand,
+		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';}
+	};
+	if (choices[preference] && choices[preference](value)) {
+		return wrap(value, preference);
+	}
+	for (var i = 0; i < whitelist.length; i++) {
+		var quote = whitelist[i];
+		if (choices[quote](value)) {
+			return wrap(value, quote);
+		}
+	}
+	// No quotes will work on this
+	return undefined;
+};
+
+function wrap(value, wrapper) {
 	var wrappers = {
 		"": function(v) {return v; },
 		"'": function(v) {return "'"+v+"'"; },
@@ -30,19 +70,12 @@ exports.wrapAttributeValue = function(value, preference, whitelist) {
 		'"""': function(v) {return '"""'+v+'"""'; },
 		"[[": function(v) {return "[["+v+"]]"; }
 	};
-	if (choices[preference]) {
-		if (choices[preference](value)) {
-			return wrappers[preference](value);
-		}
+	var chosen = wrappers[wrapper];
+	if (chosen) {
+		return chosen(value);
+	} else {
+		return undefined;
 	}
-	for (var i = 0; i < whitelist.length; i++) {
-		var quote = whitelist[i];
-		if (choices[quote](value)) {
-			return wrappers[quote](value);
-		}
-	}
-	// No quotes will work on this
-	return undefined;
 };
 
 /**Return true if value can be used inside a prettylink.

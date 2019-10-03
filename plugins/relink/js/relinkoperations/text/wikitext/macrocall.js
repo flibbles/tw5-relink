@@ -85,7 +85,7 @@ exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle
 			continue;
 		}
 		var quote = utils.determineQuote(text, param);
-		var quoted = utils.wrapAttributeValue(value, quote, ['', "'", '"', '[[', '"""']);
+		var quoted = utils.wrapParameterValue(value, quote);
 		var newParam = $tw.utils.extend({}, param);
 		if (quoted === undefined) {
 			var ph = parser.getPlaceholderFor(value,handler.name);

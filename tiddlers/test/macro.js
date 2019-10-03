@@ -81,11 +81,16 @@ it('quotation of originalValue', function() {
 	testText("<<test Btitle:'from here'>>");
 	testText("<<test Btitle:[[from here]]>>");
 	testText('<<test Btitle:"from here">>');
+	testText('<<test Btitle:from>>', {from: "from", to: "to"});
 	testText("<<test Btitle:from>>", "<<test Btitle:'to there'>>", {from: "from"});
 	testText("<<test Btitle:    from    >>", {from: "from", to: "to"});
 	testText('<<test Btitle:"""from here""">>');
 	// Trick title. Old param parser choked on this.
 	testText('<<test Btitle:from]] >>', {from: "from]]", to: "tothere"});
+	// Doesn't use quotes when slashes present. This is important to me.
+	testText('<<test Btitle:from/here>>', {from: "from/here", to: "to/there"});
+	// they allow unquoted '<' as well, while attributes don't
+	testText('<<test Btitle:from>>', {from: "from", to: "to<there"});
 });
 
 it('unquotable titles', function() {

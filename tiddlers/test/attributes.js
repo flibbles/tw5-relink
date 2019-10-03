@@ -31,7 +31,10 @@ it('field attributes', function() {
 	testText("<$link to='from here'\n/>");
 	testText("<$link\ntag='div'\nto='from here'>caption</$link>");
 	testText("<$link\n\ttag='div'\n\tto='from here'>caption</$link>");
-	testText(`Beginning text <$link to="from here">caption</$link> ending`);
+	testText(`Begin text <$link to="from here">caption</$link> ending`);
+	// Ensure slashes are enclosed in quotes. Important, because macros
+	// don't do this.
+	testText("<$link to=from />", "<$link to='to/there' />", {from: "from", to: "to/there"});
 	// extra tricky
 	testText(`<$link tooltip="link -> dest" to="from here" />`);
 	// ignores
