@@ -25,7 +25,7 @@ title: Templates/Demo
 </$list>
 
 
-@@clear:both;
+@@.relink-demo-description
 <$transclude field="description" />
 @@
 

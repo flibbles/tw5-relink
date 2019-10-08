@@ -68,3 +68,8 @@ a.relink-dragger:hover {
 .relink-demo-fields {
 	width: 100%;
 }
+
+.relink-demo-description {
+	clear: both;
+	padding-top: 5px;
+}
