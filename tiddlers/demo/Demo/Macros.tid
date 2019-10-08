@@ -6,5 +6,7 @@ description: <p><$link to="Macros/choice">The macro `choice` is globally defined
 
 <<choice Weapon Frodo!!weapon>>
 
-<$macrocall $name="choice" type="Name" item="Frodo!!title"/>
+<$macrocall $name="choice"
+            type="Name"
+            item="Frodo!!title"/>
 

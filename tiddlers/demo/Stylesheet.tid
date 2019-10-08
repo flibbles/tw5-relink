@@ -38,12 +38,33 @@ a.relink-dragger:hover {
 	top:1px;
 }
 
-td.relink-text {
+.relink-text {
 	padding: 0px;
 }
 
-td.relink-text pre {
+.relink-text pre {
 	padding: 6px;
 	margin: 0px;
 	border: none;
+}
+
+.relink-demo-source {
+	float: left;
+	width: 49%;
+	border: 1px solid #cccccc;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+.relink-demo-preview {
+	float: right;
+	width: 49%;
+	margin-left: 0px;
+	margin-right: 0px;
+	border: 1px solid #cccccc;
+	padding: 3px;
+}
+
+.relink-demo-fields {
+	width: 100%;
 }

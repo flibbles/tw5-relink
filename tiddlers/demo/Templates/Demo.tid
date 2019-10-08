@@ -4,19 +4,30 @@ title: Templates/Demo
 
 !! <$link>{{!!caption}}</$link>
 
-<table>
+<$list filter="[all[current]relink.showcase[text]]">
+
+@@.relink-demo-source
+<div class="relink-text"><pre><$view field=<<field>> /></pre></div>
+@@
+
+<div class="relink-demo-preview">
+
+<$transclude />
+
+</div>
+</$list><$list filter="[all[current]!relink.showcase[text]]">
+
+<table class="relink-demo-fields">
 <$list variable="field" filter="[enlist{!!relink.showcase}]">
 <tr><td>''<<field>>''</td><td class="relink-text"><pre><$view field=<<field>> /></pre></td></tr>
 </$list>
 </table>
+</$list>
 
-<blockquote>
 
-<$transclude />
-
-</blockquote>
-
+@@clear:both;
 <$transclude field="description" />
+@@
 
 <$list filter="[all[current]search[relink-1()]]">
 
