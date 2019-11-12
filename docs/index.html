@@ -10,7 +10,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 <meta name="application-name" content="TiddlyWiki" />
 <meta name="generator" content="TiddlyWiki" />
-<meta name="tiddlywiki-version" content="5.1.22-prerelease" />
+<meta name="tiddlywiki-version" content="5.1.21" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -183,13 +183,7 @@ Error message and password prompt
 
 <li>$:/themes/tiddlywiki/vanilla</li>
 
-<li>$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint</li>
-
-<li>$:/themes/tiddlywiki/vanilla/metrics/storyright</li>
-
-<li>$:/themes/tiddlywiki/vanilla/metrics/storywidth</li>
-
-<li>$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth</li>
+<li>$:/themes/tiddlywiki/vanilla/options/sidebarlayout</li>
 
 <li>Attributes</li>
 
@@ -325,7 +319,7 @@ Error message and password prompt
 <div title="$:/config/ViewToolbarButtons/Visibility/$:/core/ui/Buttons/info">
 <pre>show</pre>
 </div>
-<div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="" description="TiddlyWiki5 core" list="readme" plugin-priority="0" plugin-type="plugin" title="$:/core" type="application/json" version="5.1.22-prerelease">
+<div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="" description="TiddlyWiki5 core" list="readme" plugin-priority="0" plugin-type="plugin" title="$:/core" type="application/json" version="5.1.21">
 <pre>{
     &quot;tiddlers&quot;: {
         &quot;$:/Acknowledgements&quot;: {
@@ -5826,7 +5820,7 @@ Error message and password prompt
         },
         &quot;$:/core/modules/savers/gitlab.js&quot;: {
             &quot;title&quot;: &quot;$:/core/modules/savers/gitlab.js&quot;,
-            &quot;text&quot;: &quot;/*\\\ntitle: $:/core/modules/savers/gitlab.js\ntype: application/javascript\nmodule-type: saver\n\nSaves wiki by pushing a commit to the GitLab REST API\n\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: true */\n\&quot;use strict\&quot;;\n\n/*\nSelect the appropriate saver module and set it up\n*/\nvar GitLabSaver = function(wiki) {\n\tthis.wiki = wiki;\n};\n\nGitLabSaver.prototype.save = function(text,method,callback) {\n\t/* See https://docs.gitlab.com/ee/api/repository_files.html */\n\tvar self = this,\n\t\tusername = this.wiki.getTiddlerText(\&quot;$:/GitLab/Username\&quot;),\n\t\tpassword = $tw.utils.getPassword(\&quot;gitlab\&quot;),\n\t\trepo = this.wiki.getTiddlerText(\&quot;$:/GitLab/Repo\&quot;),\n\t\tpath = this.wiki.getTiddlerText(\&quot;$:/GitLab/Path\&quot;),\n\t\tfilename = this.wiki.getTiddlerText(\&quot;$:/GitLab/Filename\&quot;),\n\t\tbranch = this.wiki.getTiddlerText(\&quot;$:/GitLab/Branch\&quot;) || \&quot;master\&quot;,\n\t\tendpoint = this.wiki.getTiddlerText(\&quot;$:/GitLab/ServerURL\&quot;) || \&quot;https://gitlab.com/api/v4\&quot;,\n\t\theaders = {\n\t\t\t\&quot;Content-Type\&quot;: \&quot;application/json;charset=UTF-8\&quot;,\n\t\t\t\&quot;Private-Token\&quot;: password\n\t\t};\n\t// Bail if we don't have everything we need\n\tif(!username || !password || !repo || !path || !filename) {\n\t\treturn false;\n\t}\n\t// Make sure the path start and ends with a slash\n\tif(path.substring(0,1) !== \&quot;/\&quot;) {\n\t\tpath = \&quot;/\&quot; + path;\n\t}\n\tif(path.substring(path.length - 1) !== \&quot;/\&quot;) {\n\t\tpath = path + \&quot;/\&quot;;\n\t}\n\t// Compose the base URI\n\tvar uri = endpoint + \&quot;/projects/\&quot; + encodeURIComponent(repo) + \&quot;/repository/\&quot;;\n\t// Perform a get request to get the details (inc shas) of files in the same path as our file\n\t$tw.utils.httpRequest({\n\t\turl: uri + \&quot;tree/?path=\&quot; + encodeURIComponent(path.replace(/^\\/+|\\/$/g, '')) + \&quot;&amp;branch=\&quot; + encodeURIComponent(branch.replace(/^\\/+|\\/$/g, '')),\n\t\ttype: \&quot;GET\&quot;,\n\t\theaders: headers,\n\t\tcallback: function(err,getResponseDataJson,xhr) {\n\t\t\tvar getResponseData,sha = \&quot;\&quot;;\n\t\t\tif(err &amp;&amp; xhr.status !== 404) {\n\t\t\t\treturn callback(err);\n\t\t\t}\n\t\t\tvar requestType = \&quot;POST\&quot;;\n\t\t\tif(xhr.status !== 404) {\n\t\t\t\tgetResponseData = JSON.parse(getResponseDataJson);\n\t\t\t\t$tw.utils.each(getResponseData,function(details) {\n\t\t\t\t\tif(details.name === filename) {\n\t\t\t\t\t\trequestType = \&quot;PUT\&quot;;\n\t\t\t\t\t\tsha = details.sha;\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}\n\t\t\tvar data = {\n\t\t\t\tcommit_message: $tw.language.getRawString(\&quot;ControlPanel/Saving/GitService/CommitMessage\&quot;),\n\t\t\t\tcontent: text,\n\t\t\t\tbranch: branch,\n\t\t\t\tsha: sha\n\t\t\t};\n\t\t\t// Perform a request to save the file\n\t\t\t$tw.utils.httpRequest({\n\t\t\t\turl: uri + \&quot;files/\&quot; + encodeURIComponent(path.replace(/^\\/+/, '') + filename),\n\t\t\t\ttype: requestType,\n\t\t\t\theaders: headers,\n\t\t\t\tdata: JSON.stringify(data),\n\t\t\t\tcallback: function(err,putResponseDataJson,xhr) {\n\t\t\t\t\tif(err) {\n\t\t\t\t\t\treturn callback(err);\n\t\t\t\t\t}\n\t\t\t\t\tvar putResponseData = JSON.parse(putResponseDataJson);\n\t\t\t\t\tcallback(null);\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t});\n\treturn true;\n};\n\n/*\nInformation about this saver\n*/\nGitLabSaver.prototype.info = {\n\tname: \&quot;gitlab\&quot;,\n\tpriority: 2000,\n\tcapabilities: [\&quot;save\&quot;, \&quot;autosave\&quot;]\n};\n\n/*\nStatic method that returns true if this saver is capable of working\n*/\nexports.canSave = function(wiki) {\n\treturn true;\n};\n\n/*\nCreate an instance of this saver\n*/\nexports.create = function(wiki) {\n\treturn new GitLabSaver(wiki);\n};\n\n})();\n&quot;,
+            &quot;text&quot;: &quot;/*\\\ntitle: $:/core/modules/savers/gitlab.js\ntype: application/javascript\nmodule-type: saver\n\nSaves wiki by pushing a commit to the GitLab REST API\n\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: true */\n\&quot;use strict\&quot;;\n\n/*\nSelect the appropriate saver module and set it up\n*/\nvar GitLabSaver = function(wiki) {\n\tthis.wiki = wiki;\n};\n\nGitLabSaver.prototype.save = function(text,method,callback) {\n\t/* See https://docs.gitlab.com/ee/api/repository_files.html */\n\tvar self = this,\n\t\tusername = this.wiki.getTiddlerText(\&quot;$:/GitLab/Username\&quot;),\n\t\tpassword = $tw.utils.getPassword(\&quot;gitlab\&quot;),\n\t\trepo = this.wiki.getTiddlerText(\&quot;$:/GitLab/Repo\&quot;),\n\t\tpath = this.wiki.getTiddlerText(\&quot;$:/GitLab/Path\&quot;),\n\t\tfilename = this.wiki.getTiddlerText(\&quot;$:/GitLab/Filename\&quot;),\n\t\tbranch = this.wiki.getTiddlerText(\&quot;$:/GitLab/Branch\&quot;) || \&quot;master\&quot;,\n\t\tendpoint = this.wiki.getTiddlerText(\&quot;$:/GitLab/ServerURL\&quot;) || \&quot;https://gitlab.com/api/v4\&quot;,\n\t\theaders = {\n\t\t\t\&quot;Content-Type\&quot;: \&quot;application/json;charset=UTF-8\&quot;,\n\t\t\t\&quot;Private-Token\&quot;: password\n\t\t};\n\t// Bail if we don't have everything we need\n\tif(!username || !password || !repo || !path || !filename) {\n\t\treturn false;\n\t}\n\t// Make sure the path start and ends with a slash\n\tif(path.substring(0,1) !== \&quot;/\&quot;) {\n\t\tpath = \&quot;/\&quot; + path;\n\t}\n\tif(path.substring(path.length - 1) !== \&quot;/\&quot;) {\n\t\tpath = path + \&quot;/\&quot;;\n\t}\n\t// Compose the base URI\n\tvar uri = endpoint + \&quot;/projects/\&quot; + encodeURIComponent(repo) + \&quot;/repository/\&quot;;\n\t// Perform a get request to get the details (inc shas) of files in the same path as our file\n\t$tw.utils.httpRequest({\n\t\turl: uri + \&quot;tree/\&quot; + encodeURIComponent(path.replace(/^\\/+|\\/$/g, '')),\n\t\ttype: \&quot;GET\&quot;,\n\t\theaders: headers,\n\t\tdata: {\n\t\t\tref: branch\n\t\t},\n\t\tcallback: function(err,getResponseDataJson,xhr) {\n\t\t\tvar getResponseData,sha = \&quot;\&quot;;\n\t\t\tif(err &amp;&amp; xhr.status !== 404) {\n\t\t\t\treturn callback(err);\n\t\t\t}\n\t\t\tvar requestType = \&quot;POST\&quot;;\n\t\t\tif(xhr.status !== 404) {\n\t\t\t\tgetResponseData = JSON.parse(getResponseDataJson);\n\t\t\t\t$tw.utils.each(getResponseData,function(details) {\n\t\t\t\t\tif(details.name === filename) {\n\t\t\t\t\t\trequestType = \&quot;PUT\&quot;;\n\t\t\t\t\t\tsha = details.sha;\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}\n\t\t\tvar data = {\n\t\t\t\tcommit_message: $tw.language.getRawString(\&quot;ControlPanel/Saving/GitService/CommitMessage\&quot;),\n\t\t\t\tcontent: text,\n\t\t\t\tbranch: branch,\n\t\t\t\tsha: sha\n\t\t\t};\n\t\t\t// Perform a request to save the file\n\t\t\t$tw.utils.httpRequest({\n\t\t\t\turl: uri + \&quot;files/\&quot; + encodeURIComponent(path.replace(/^\\/+/, '') + filename),\n\t\t\t\ttype: requestType,\n\t\t\t\theaders: headers,\n\t\t\t\tdata: JSON.stringify(data),\n\t\t\t\tcallback: function(err,putResponseDataJson,xhr) {\n\t\t\t\t\tif(err) {\n\t\t\t\t\t\treturn callback(err);\n\t\t\t\t\t}\n\t\t\t\t\tvar putResponseData = JSON.parse(putResponseDataJson);\n\t\t\t\t\tcallback(null);\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t});\n\treturn true;\n};\n\n/*\nInformation about this saver\n*/\nGitLabSaver.prototype.info = {\n\tname: \&quot;gitlab\&quot;,\n\tpriority: 2000,\n\tcapabilities: [\&quot;save\&quot;, \&quot;autosave\&quot;]\n};\n\n/*\nStatic method that returns true if this saver is capable of working\n*/\nexports.canSave = function(wiki) {\n\treturn true;\n};\n\n/*\nCreate an instance of this saver\n*/\nexports.create = function(wiki) {\n\treturn new GitLabSaver(wiki);\n};\n\n})();\n&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;,
             &quot;module-type&quot;: &quot;saver&quot;
         },
@@ -6723,7 +6717,7 @@ Error message and password prompt
         },
         &quot;$:/core/save/all-external-js&quot;: {
             &quot;title&quot;: &quot;$:/core/save/all-external-js&quot;,
-            &quot;text&quot;: &quot;\\import [[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]\n\\define saveTiddlerFilter()\n[is[tiddler]] -[prefix[$:/state/popup/]] -[[$:/HistoryList]] -[[$:/core]] -[[$:/boot/boot.css]] -[type[application/javascript]library[yes]] -[[$:/boot/boot.js]] -[[$:/boot/bootprefix.js]] +[sort[title]] $(publishFilter)$\n\\end\n{{$:/core/templates/tiddlywiki5-external-js.html}}\n&quot;
+            &quot;text&quot;: &quot;\\define saveTiddlerFilter()\n[is[tiddler]] -[prefix[$:/state/popup/]] -[[$:/HistoryList]] -[[$:/core]] -[[$:/boot/boot.css]] -[type[application/javascript]library[yes]] -[[$:/boot/boot.js]] -[[$:/boot/bootprefix.js]] +[sort[title]] $(publishFilter)$\n\\end\n{{$:/core/templates/tiddlywiki5-external-js.html}}\n&quot;
         },
         &quot;$:/core/templates/tiddlywiki5.js&quot;: {
             &quot;title&quot;: &quot;$:/core/templates/tiddlywiki5.js&quot;,
@@ -6767,7 +6761,7 @@ Error message and password prompt
         },
         &quot;$:/core/save/all&quot;: {
             &quot;title&quot;: &quot;$:/core/save/all&quot;,
-            &quot;text&quot;: &quot;\\import [[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]\n\\define saveTiddlerFilter()\n[is[tiddler]] -[prefix[$:/state/popup/]] -[[$:/HistoryList]] -[[$:/boot/boot.css]] -[type[application/javascript]library[yes]] -[[$:/boot/boot.js]] -[[$:/boot/bootprefix.js]] +[sort[title]] $(publishFilter)$\n\\end\n{{$:/core/templates/tiddlywiki5.html}}\n&quot;
+            &quot;text&quot;: &quot;\\define saveTiddlerFilter()\n[is[tiddler]] -[prefix[$:/state/popup/]] -[[$:/HistoryList]] -[[$:/boot/boot.css]] -[type[application/javascript]library[yes]] -[[$:/boot/boot.js]] -[[$:/boot/bootprefix.js]] +[sort[title]] $(publishFilter)$\n\\end\n{{$:/core/templates/tiddlywiki5.html}}\n&quot;
         },
         &quot;$:/core/save/empty&quot;: {
             &quot;title&quot;: &quot;$:/core/save/empty&quot;,
@@ -8769,7 +8763,7 @@ Error message and password prompt
         &quot;$:/config/OfficialPluginLibrary&quot;: {
             &quot;title&quot;: &quot;$:/config/OfficialPluginLibrary&quot;,
             &quot;tags&quot;: &quot;$:/tags/PluginLibrary&quot;,
-            &quot;url&quot;: &quot;https://tiddlywiki.com/library/v5.1.22/index.html&quot;,
+            &quot;url&quot;: &quot;https://tiddlywiki.com/library/v5.1.21/index.html&quot;,
             &quot;caption&quot;: &quot;{{$:/language/OfficialPluginLibrary}}&quot;,
             &quot;text&quot;: &quot;{{$:/language/OfficialPluginLibrary/Hint}}\n&quot;
         },
@@ -9570,7 +9564,7 @@ Error message and password prompt
 }
 </pre>
 </div>
-<div author="Flibbles" core-version="&gt;=5.1.14" created="20191001171937468" dependents="" description="Relink - flexibility when relinking renamed tiddlers" list="readme configuration" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink" type="application/json" version="1.5.4">
+<div author="Flibbles" core-version="&gt;=5.1.14" created="20191112185205845" dependents="" description="Relink - flexibility when relinking renamed tiddlers" list="readme configuration" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink" type="application/json" version="1.5.4">
 <pre>{
     &quot;tiddlers&quot;: {
         &quot;$:/plugins/flibbles/relink/js/bulkops.js&quot;: {
@@ -9694,7 +9688,7 @@ Error message and password prompt
             &quot;type&quot;: &quot;application/javascript&quot;
         },
         &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/macrocall.js&quot;: {
-            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkwikitextrule\n\nHandles macro calls.\n\n&lt;&lt;myMacro '[[MyFilter]]' 'myTitle'&gt;&gt;\n\n\\*/\n\nvar utils = require(\&quot;./utils.js\&quot;);\nvar Rebuilder = require(\&quot;$:/plugins/flibbles/relink/js/utils/rebuilder\&quot;);\nvar log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;\nvar settings = require('$:/plugins/flibbles/relink/js/settings.js');\nvar CannotFindMacroDefError = require(\&quot;$:/plugins/flibbles/relink/js/errors.js\&quot;).CannotFindMacroDefError;\n\nexports.name = [\&quot;macrocallinline\&quot;, \&quot;macrocallblock\&quot;];\n\nexports.relink = function(tiddler, text, fromTitle, toTitle, options) {\n\t// Get all the details of the match\n\tvar macroName = this.match[1],\n\t\tparamString = this.match[2],\n\t\tmacroText = this.match[0];\n\t// Move past the macro call\n\tthis.parser.pos = this.matchRegExp.lastIndex;\n\tvar start = this.matchRegExp.lastIndex - this.match[0].length;\n\tvar managedMacro = settings.getMacros(options)[macroName];\n\tif (!managedMacro) {\n\t\t// We don't manage this macro. Bye.\n\t\treturn undefined;\n\t}\n\tvar offset = macroName.length+2;\n\toffset = $tw.utils.skipWhiteSpace(macroText, offset);\n\tvar params = parseParams(paramString, offset+start);\n\tvar macroInfo = {\n\t\tname: macroName,\n\t\tstart: start,\n\t\tend: this.matchRegExp.lastIndex,\n\t\tparams: params\n\t};\n\tvar results = this.relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, options);\n\tif (results) {\n\t\treturn this.macroToString(results, text, this.parser, options);\n\t} else {\n\t\treturn undefined;\n\t}\n};\n\n/**Processes the given macro,\n * macro: {name:, params:, start:, end:}\n * each parameters: {name:, end:, value:}\n * Macro invocation returned is the same, but relinked, and may have new keys:\n * parameters: {type: macro, start:, newValue: (quoted replacement value)}\n */\nexports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle, options) {\n\tvar managedMacro = settings.getMacros(options)[macro.name];\n\tvar modified = false;\n\tif (!managedMacro) {\n\t\t// We don't manage this macro. Bye.\n\t\treturn undefined;\n\t}\n\tif (macro.params.every(function(p) {\n\t\treturn p.value.indexOf(fromTitle) &lt; 0;\n\t})) {\n\t\t// We cut early if the fromTitle doesn't even appear\n\t\t// anywhere in the title. This is to avoid any headache\n\t\t// about finding macro definitions (and any resulting\n\t\t// exceptions if there isn't even a title to replace.\n\t\treturn undefined;\n\t}\n\tvar outMacro = $tw.utils.extend({}, macro);\n\toutMacro.params = macro.params.slice();\n\tfor (var managedArg in managedMacro) {\n\t\tvar index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);\n\t\tif (index &lt; 0) {\n\t\t\t// this arg either was not supplied, or we can't find\n\t\t\t// the definition, so we can't tie it to an anonymous\n\t\t\t// argument. Either way, move on to the next.\n\t\t\tcontinue;\n\t\t}\n\t\tvar param = macro.params[index];\n\t\tvar handler = managedMacro[managedArg];\n\t\tvar extendedOptions = $tw.utils.extend({placeholder: parser}, options);\n\t\tvar value = handler.relink(param.value, fromTitle, toTitle, extendedOptions);\n\t\tif (value === undefined) {\n\t\t\tcontinue;\n\t\t}\n\t\tvar quote = utils.determineQuote(text, param);\n\t\tvar quoted = utils.wrapAttributeValue(value, quote, ['', \&quot;'\&quot;, '\&quot;', '[[', '\&quot;\&quot;\&quot;']);\n\t\tvar newParam = $tw.utils.extend({}, param);\n\t\tif (quoted === undefined) {\n\t\t\tvar ph = parser.getPlaceholderFor(value,handler.name);\n\t\t\tnewParam.newValue = \&quot;&lt;&lt;\&quot;+ph+\&quot;&gt;&gt;\&quot;;\n\t\t\tnewParam.type = \&quot;macro\&quot;;\n\t\t} else {\n\t\t\tnewParam.start = newParam.end - (newParam.value.length + (quote.length*2));\n\t\t\tnewParam.value = value;\n\t\t\tnewParam.newValue = quoted;\n\t\t}\n\t\toutMacro.params[index] = newParam;\n\t\tmodified = true;\n\t}\n\tif (modified) {\n\t\treturn outMacro;\n\t}\n\treturn undefined;\n};\n\nexports.mustBeAWidget = function(macro) {\n\tfor (var i = 0; i &lt; macro.params.length; i++) {\n\t\tif (macro.params[i].type === \&quot;macro\&quot;) {\n\t\t\treturn true;\n\t\t}\n\t}\n\treturn false\n};\n\n/**Given a macro object ({name:, params:, start: end:}), and the text where\n * it was parsed from, returns a new macro that maintains any syntactic\n * structuring.\n */\nexports.macroToString = function(macro, text, parser, options) {\n\tif (exports.mustBeAWidget(macro)) {\n\t\tvar names = getParamNames(macro.name, macro.params, parser, options);\n\t\tvar attrs = [];\n\t\tfor (var i = 0; i &lt; macro.params.length; i++) {\n\t\t\tvar p = macro.params[i];\n\t\t\tvar val;\n\t\t\tif (p.newValue) {\n\t\t\t\tval = p.newValue;\n\t\t\t} else {\n\t\t\t\tval = utils.wrapAttributeValue(p.value);\n\t\t\t}\n\t\t\tattrs.push(\&quot; \&quot;+names[i]+\&quot;=\&quot;+val);\n\t\t}\n\t\treturn \&quot;&lt;$macrocall $name=\&quot;+utils.wrapAttributeValue(macro.name)+attrs.join('')+\&quot;/&gt;\&quot;;\n\t} else {\n\t\tvar builder = new Rebuilder(text, macro.start);\n\t\tfor (var i = 0; i &lt; macro.params.length; i++) {\n\t\t\tvar param = macro.params[i];\n\t\t\tif (param.newValue) {\n\t\t\t\tbuilder.add(param.newValue, param.start, param.end);\n\t\t\t}\n\t\t}\n\t\treturn builder.results(macro.end);\n\t}\n};\n\nfunction getParamIndexWithinMacrocall(macroName, param, params, parser, options) {\n\tvar index, i;\n\tfor (i = 0; i &lt; params.length; i++) {\n\t\tif (params[i].name === param) {\n\t\t\treturn i;\n\t\t}\n\t}\n\tvar expectedIndex = indexOfParameterDef(macroName, param, parser, options);\n\t// We've got to skip over all the named parameter instances.\n\tif (expectedIndex &gt;= 0) {\n\t\tvar anonI = 0;\n\t\tfor (i = 0; i &lt; params.length; i++) {\n\t\t\tif (params[i].name === undefined) {\n\t\t\t\tif (anonI === expectedIndex) {\n\t\t\t\t\treturn i;\n\t\t\t\t}\n\t\t\t\tanonI++;\n\t\t\t} else {\n\t\t\t\tvar indexOfOther = indexOfParameterDef(macroName, params[i].name, parser, options);\n\t\t\t\tif (indexOfOther &lt; expectedIndex) {\n\t\t\t\t\tanonI++;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\treturn -1;\n};\n\n// Looks up the definition of a macro, and figures out what the expected index\n// is for the given parameter.\nfunction indexOfParameterDef(macroName, paramName, parser, options) {\n\tvar def = getDefinition(macroName, parser, options);\n\tvar params = def.params || [];\n\tfor (var i = 0; i &lt; params.length; i++) {\n\t\tif (params[i].name === paramName) {\n\t\t\treturn i;\n\t\t}\n\t}\n\treturn -1;\n};\n\nfunction getParamNames(macroName, params, parser, options) {\n\tvar used = Object.create(null);\n\tvar rtn = new Array(params.length);\n\tvar anonsExist = false;\n\tvar i;\n\tfor (i = 0; i &lt; params.length; i++) {\n\t\tvar name = params[i].name;\n\t\tif (name) {\n\t\t\trtn[i] = name;\n\t\t\tused[name] = true;\n\t\t} else {\n\t\t\tanonsExist = true;\n\t\t}\n\t}\n\tif (anonsExist) {\n\t\tvar defParams = getDefinition(macroName, parser, options).params || [];\n\t\tvar defPtr = 0;\n\t\tfor (i = 0; i &lt; params.length; i++) {\n\t\t\tif (rtn[i] === undefined) {\n\t\t\t\twhile(defPtr &lt; defParams.length &amp;&amp; used[defParams[defPtr].name]) {\n\t\t\t\t\tdefPtr++;\n\t\t\t\t}\n\t\t\t\tif (defPtr &gt;= defParams.length) {\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t\trtn[i] = defParams[defPtr].name;\n\t\t\t\tused[defParams[defPtr].name] = true;\n\t\t\t}\n\t\t}\n\t}\n\treturn rtn;\n};\n\n/** Returns undefined if the definition cannot be found.\n */\nfunction getDefinition (macroName, parser, options) {\n\tvar variableContainer = parser.getVariableWidget();\n\tvar def = variableContainer.variables[macroName];\n\tif (!def) {\n\t\t// Check with the macro modules\n\t\tif ($tw.utils.hop($tw.macros, macroName)) {\n\t\t\tdef = $tw.macros[macroName];\n\t\t} else {\n\t\t\tthrow new CannotFindMacroDefError(macroName);\n\t\t}\n\t}\n\treturn def;\n};\n\nfunction parseParams(paramString, pos) {\n\tvar params = [],\n\t\treParam = /\\s*(?:([A-Za-z0-9\\-_]+)\\s*:)?(?:\\s*(?:\&quot;\&quot;\&quot;([\\s\\S]*?)\&quot;\&quot;\&quot;|\&quot;([^\&quot;]*)\&quot;|'([^']*)'|\\[\\[([^\\]]*)\\]\\]|([^\&quot;'\\s]+)))/mg,\n\t\tparamMatch = reParam.exec(paramString);\n\twhile(paramMatch) {\n\t\t// Process this parameter\n\t\tvar paramInfo = {\n\t\t\tvalue: paramMatch[2] || paramMatch[3] || paramMatch[4] || paramMatch[5] || paramMatch[6]\n\t\t};\n\t\tif(paramMatch[1]) {\n\t\t\tparamInfo.name = paramMatch[1];\n\t\t}\n\t\t//paramInfo.start = pos;\n\t\tparamInfo.end = reParam.lastIndex + pos;\n\t\tparams.push(paramInfo);\n\t\t// Find the next match\n\t\tparamMatch = reParam.exec(paramString);\n\t}\n\treturn params;\n};\n&quot;,
+            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkwikitextrule\n\nHandles macro calls.\n\n&lt;&lt;myMacro '[[MyFilter]]' 'myTitle'&gt;&gt;\n\n\\*/\n\nvar utils = require(\&quot;./utils.js\&quot;);\nvar Rebuilder = require(\&quot;$:/plugins/flibbles/relink/js/utils/rebuilder\&quot;);\nvar log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;\nvar settings = require('$:/plugins/flibbles/relink/js/settings.js');\nvar CannotFindMacroDefError = require(\&quot;$:/plugins/flibbles/relink/js/errors.js\&quot;).CannotFindMacroDefError;\n\nexports.name = [\&quot;macrocallinline\&quot;, \&quot;macrocallblock\&quot;];\n\nexports.relink = function(tiddler, text, fromTitle, toTitle, options) {\n\t// Get all the details of the match\n\tvar macroName = this.match[1],\n\t\tparamString = this.match[2],\n\t\tmacroText = this.match[0];\n\t// Move past the macro call\n\tthis.parser.pos = this.matchRegExp.lastIndex;\n\tvar start = this.matchRegExp.lastIndex - this.match[0].length;\n\tvar managedMacro = settings.getMacros(options)[macroName];\n\tif (!managedMacro) {\n\t\t// We don't manage this macro. Bye.\n\t\treturn undefined;\n\t}\n\tvar offset = macroName.length+2;\n\toffset = $tw.utils.skipWhiteSpace(macroText, offset);\n\tvar params = parseParams(paramString, offset+start);\n\tvar macroInfo = {\n\t\tname: macroName,\n\t\tstart: start,\n\t\tend: this.matchRegExp.lastIndex,\n\t\tparams: params\n\t};\n\tvar results = this.relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, options);\n\tif (results) {\n\t\treturn this.macroToString(results, text, this.parser, options);\n\t} else {\n\t\treturn undefined;\n\t}\n};\n\n/**Processes the given macro,\n * macro: {name:, params:, start:, end:}\n * each parameters: {name:, end:, value:}\n * Macro invocation returned is the same, but relinked, and may have new keys:\n * parameters: {type: macro, start:, newValue: (quoted replacement value)}\n */\nexports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle, options) {\n\tvar managedMacro = settings.getMacros(options)[macro.name];\n\tvar modified = false;\n\tif (!managedMacro) {\n\t\t// We don't manage this macro. Bye.\n\t\treturn undefined;\n\t}\n\tif (macro.params.every(function(p) {\n\t\treturn p.value.indexOf(fromTitle) &lt; 0;\n\t})) {\n\t\t// We cut early if the fromTitle doesn't even appear\n\t\t// anywhere in the title. This is to avoid any headache\n\t\t// about finding macro definitions (and any resulting\n\t\t// exceptions if there isn't even a title to replace.\n\t\treturn undefined;\n\t}\n\tvar outMacro = $tw.utils.extend({}, macro);\n\toutMacro.params = macro.params.slice();\n\tfor (var managedArg in managedMacro) {\n\t\tvar index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);\n\t\tif (index &lt; 0) {\n\t\t\t// this arg either was not supplied, or we can't find\n\t\t\t// the definition, so we can't tie it to an anonymous\n\t\t\t// argument. Either way, move on to the next.\n\t\t\tcontinue;\n\t\t}\n\t\tvar param = macro.params[index];\n\t\tvar handler = managedMacro[managedArg];\n\t\tvar extendedOptions = $tw.utils.extend({placeholder: parser}, options);\n\t\tvar value = handler.relink(param.value, fromTitle, toTitle, extendedOptions);\n\t\tif (value === undefined) {\n\t\t\tcontinue;\n\t\t}\n\t\tvar quote = utils.determineQuote(text, param);\n\t\tvar quoted = utils.wrapParameterValue(value, quote);\n\t\tvar newParam = $tw.utils.extend({}, param);\n\t\tif (quoted === undefined) {\n\t\t\tvar ph = parser.getPlaceholderFor(value,handler.name);\n\t\t\tnewParam.newValue = \&quot;&lt;&lt;\&quot;+ph+\&quot;&gt;&gt;\&quot;;\n\t\t\tnewParam.type = \&quot;macro\&quot;;\n\t\t} else {\n\t\t\tnewParam.start = newParam.end - (newParam.value.length + (quote.length*2));\n\t\t\tnewParam.value = value;\n\t\t\tnewParam.newValue = quoted;\n\t\t}\n\t\toutMacro.params[index] = newParam;\n\t\tmodified = true;\n\t}\n\tif (modified) {\n\t\treturn outMacro;\n\t}\n\treturn undefined;\n};\n\nexports.mustBeAWidget = function(macro) {\n\tfor (var i = 0; i &lt; macro.params.length; i++) {\n\t\tif (macro.params[i].type === \&quot;macro\&quot;) {\n\t\t\treturn true;\n\t\t}\n\t}\n\treturn false\n};\n\n/**Given a macro object ({name:, params:, start: end:}), and the text where\n * it was parsed from, returns a new macro that maintains any syntactic\n * structuring.\n */\nexports.macroToString = function(macro, text, parser, options) {\n\tif (exports.mustBeAWidget(macro)) {\n\t\tvar names = getParamNames(macro.name, macro.params, parser, options);\n\t\tvar attrs = [];\n\t\tfor (var i = 0; i &lt; macro.params.length; i++) {\n\t\t\tvar p = macro.params[i];\n\t\t\tvar val;\n\t\t\tif (p.newValue) {\n\t\t\t\tval = p.newValue;\n\t\t\t} else {\n\t\t\t\tval = utils.wrapAttributeValue(p.value);\n\t\t\t}\n\t\t\tattrs.push(\&quot; \&quot;+names[i]+\&quot;=\&quot;+val);\n\t\t}\n\t\treturn \&quot;&lt;$macrocall $name=\&quot;+utils.wrapAttributeValue(macro.name)+attrs.join('')+\&quot;/&gt;\&quot;;\n\t} else {\n\t\tvar builder = new Rebuilder(text, macro.start);\n\t\tfor (var i = 0; i &lt; macro.params.length; i++) {\n\t\t\tvar param = macro.params[i];\n\t\t\tif (param.newValue) {\n\t\t\t\tbuilder.add(param.newValue, param.start, param.end);\n\t\t\t}\n\t\t}\n\t\treturn builder.results(macro.end);\n\t}\n};\n\nfunction getParamIndexWithinMacrocall(macroName, param, params, parser, options) {\n\tvar index, i;\n\tfor (i = 0; i &lt; params.length; i++) {\n\t\tif (params[i].name === param) {\n\t\t\treturn i;\n\t\t}\n\t}\n\tvar expectedIndex = indexOfParameterDef(macroName, param, parser, options);\n\t// We've got to skip over all the named parameter instances.\n\tif (expectedIndex &gt;= 0) {\n\t\tvar anonI = 0;\n\t\tfor (i = 0; i &lt; params.length; i++) {\n\t\t\tif (params[i].name === undefined) {\n\t\t\t\tif (anonI === expectedIndex) {\n\t\t\t\t\treturn i;\n\t\t\t\t}\n\t\t\t\tanonI++;\n\t\t\t} else {\n\t\t\t\tvar indexOfOther = indexOfParameterDef(macroName, params[i].name, parser, options);\n\t\t\t\tif (indexOfOther &lt; expectedIndex) {\n\t\t\t\t\tanonI++;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\treturn -1;\n};\n\n// Looks up the definition of a macro, and figures out what the expected index\n// is for the given parameter.\nfunction indexOfParameterDef(macroName, paramName, parser, options) {\n\tvar def = getDefinition(macroName, parser, options);\n\tvar params = def.params || [];\n\tfor (var i = 0; i &lt; params.length; i++) {\n\t\tif (params[i].name === paramName) {\n\t\t\treturn i;\n\t\t}\n\t}\n\treturn -1;\n};\n\nfunction getParamNames(macroName, params, parser, options) {\n\tvar used = Object.create(null);\n\tvar rtn = new Array(params.length);\n\tvar anonsExist = false;\n\tvar i;\n\tfor (i = 0; i &lt; params.length; i++) {\n\t\tvar name = params[i].name;\n\t\tif (name) {\n\t\t\trtn[i] = name;\n\t\t\tused[name] = true;\n\t\t} else {\n\t\t\tanonsExist = true;\n\t\t}\n\t}\n\tif (anonsExist) {\n\t\tvar defParams = getDefinition(macroName, parser, options).params || [];\n\t\tvar defPtr = 0;\n\t\tfor (i = 0; i &lt; params.length; i++) {\n\t\t\tif (rtn[i] === undefined) {\n\t\t\t\twhile(defPtr &lt; defParams.length &amp;&amp; used[defParams[defPtr].name]) {\n\t\t\t\t\tdefPtr++;\n\t\t\t\t}\n\t\t\t\tif (defPtr &gt;= defParams.length) {\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t\trtn[i] = defParams[defPtr].name;\n\t\t\t\tused[defParams[defPtr].name] = true;\n\t\t\t}\n\t\t}\n\t}\n\treturn rtn;\n};\n\n/** Returns undefined if the definition cannot be found.\n */\nfunction getDefinition (macroName, parser, options) {\n\tvar variableContainer = parser.getVariableWidget();\n\tvar def = variableContainer.variables[macroName];\n\tif (!def) {\n\t\t// Check with the macro modules\n\t\tif ($tw.utils.hop($tw.macros, macroName)) {\n\t\t\tdef = $tw.macros[macroName];\n\t\t} else {\n\t\t\tthrow new CannotFindMacroDefError(macroName);\n\t\t}\n\t}\n\treturn def;\n};\n\nfunction parseParams(paramString, pos) {\n\tvar params = [],\n\t\treParam = /\\s*(?:([A-Za-z0-9\\-_]+)\\s*:)?(?:\\s*(?:\&quot;\&quot;\&quot;([\\s\\S]*?)\&quot;\&quot;\&quot;|\&quot;([^\&quot;]*)\&quot;|'([^']*)'|\\[\\[([^\\]]*)\\]\\]|([^\&quot;'\\s]+)))/mg,\n\t\tparamMatch = reParam.exec(paramString);\n\twhile(paramMatch) {\n\t\t// Process this parameter\n\t\tvar paramInfo = {\n\t\t\tvalue: paramMatch[2] || paramMatch[3] || paramMatch[4] || paramMatch[5] || paramMatch[6]\n\t\t};\n\t\tif(paramMatch[1]) {\n\t\t\tparamInfo.name = paramMatch[1];\n\t\t}\n\t\t//paramInfo.start = pos;\n\t\tparamInfo.end = reParam.lastIndex + pos;\n\t\tparams.push(paramInfo);\n\t\t// Find the next match\n\t\tparamMatch = reParam.exec(paramString);\n\t}\n\treturn params;\n};\n&quot;,
             &quot;module-type&quot;: &quot;relinkwikitextrule&quot;,
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/macrocall.js&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;
@@ -9724,7 +9718,7 @@ Error message and password prompt
             &quot;type&quot;: &quot;application/javascript&quot;
         },
         &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/utils.js&quot;: {
-            &quot;text&quot;: &quot;/*\\\nmodule-type: library\n\nUtility methods for the wikitext relink rules.\n\n\\*/\n\n/**Finds an appropriate quote mark for a given value.\n *\n *Tiddlywiki doesn't have escape characters for attribute values. Instead,\n * we just have to find the type of quotes that'll work for the given title.\n * There exist titles that simply can't be quoted.\n * If it can stick with the preference, it will.\n *\n * return: Returns the wrapped value, or undefined if it's impossible to wrap\n */\nexports.wrapAttributeValue = function(value, preference, whitelist) {\n\twhitelist = whitelist || [\&quot;\&quot;, \&quot;'\&quot;, '\&quot;', '\&quot;\&quot;\&quot;'];\n\tvar choices = {\n\t\t\&quot;\&quot;: function(v) {return !/([\\/\\s&lt;&gt;\&quot;'=])/.test(v); },\n\t\t\&quot;'\&quot;: function(v) {return v.indexOf(\&quot;'\&quot;) &lt; 0; },\n\t\t'\&quot;': function(v) {return v.indexOf('\&quot;') &lt; 0; },\n\t\t'\&quot;\&quot;\&quot;': function(v) {return v.indexOf('\&quot;\&quot;\&quot;') &lt; 0 &amp;&amp; v[v.length-1] != '\&quot;';},\n\t\t\&quot;[[\&quot;: exports.canBePrettyOperand\n\t};\n\tvar wrappers = {\n\t\t\&quot;\&quot;: function(v) {return v; },\n\t\t\&quot;'\&quot;: function(v) {return \&quot;'\&quot;+v+\&quot;'\&quot;; },\n\t\t'\&quot;': function(v) {return '\&quot;'+v+'\&quot;'; },\n\t\t'\&quot;\&quot;\&quot;': function(v) {return '\&quot;\&quot;\&quot;'+v+'\&quot;\&quot;\&quot;'; },\n\t\t\&quot;[[\&quot;: function(v) {return \&quot;[[\&quot;+v+\&quot;]]\&quot;; }\n\t};\n\tif (choices[preference]) {\n\t\tif (choices[preference](value)) {\n\t\t\treturn wrappers[preference](value);\n\t\t}\n\t}\n\tfor (var i = 0; i &lt; whitelist.length; i++) {\n\t\tvar quote = whitelist[i];\n\t\tif (choices[quote](value)) {\n\t\t\treturn wrappers[quote](value);\n\t\t}\n\t}\n\t// No quotes will work on this\n\treturn undefined;\n};\n\n/**Return true if value can be used inside a prettylink.\n */\nexports.canBePretty = function(value) {\n\treturn value.indexOf(\&quot;]]\&quot;) &lt; 0 &amp;&amp; value[value.length-1] !== ']';\n};\n\nexports.canBePrettyOperand = function(value) {\n\treturn value.indexOf(']') &lt; 0;\n};\n\n/**Given some text, and a param or  attribute within that text, this returns\n * what type of quotation that attribute is using.\n *\n * param: An object in the form {end:, ...}\n */\nexports.determineQuote = function(text, param) {\n\tvar pos = param.end-1;\n\tif (text[pos] === \&quot;'\&quot;) {\n\t\treturn \&quot;'\&quot;;\n\t}\n\tif (text[pos] === '\&quot;') {\n\t\tif (text.substr(pos-2, 3) === '\&quot;\&quot;\&quot;') {\n\t\t\treturn '\&quot;\&quot;\&quot;';\n\t\t} else {\n\t\t\treturn '\&quot;';\n\t\t}\n\t}\n\tif (text.substr(pos-1,2) === ']]' &amp;&amp; text.substr((pos-param.value.length)-3, 2) === '[[') {\n\t\treturn \&quot;[[\&quot;;\n\t}\n\treturn '';\n};\n&quot;,
+            &quot;text&quot;: &quot;/*\\\nmodule-type: library\n\nUtility methods for the wikitext relink rules.\n\n\\*/\n\n/**Finds an appropriate quote mark for a given value.\n *\n *Tiddlywiki doesn't have escape characters for attribute values. Instead,\n * we just have to find the type of quotes that'll work for the given title.\n * There exist titles that simply can't be quoted.\n * If it can stick with the preference, it will.\n *\n * return: Returns the wrapped value, or undefined if it's impossible to wrap\n */\nexports.wrapAttributeValue = function(value, preference) {\n\tvar whitelist = [\&quot;\&quot;, \&quot;'\&quot;, '\&quot;', '\&quot;\&quot;\&quot;'];\n\tvar choices = {\n\t\t\&quot;\&quot;: function(v) {return !/([\\/\\s&lt;&gt;\&quot;'=])/.test(v); },\n\t\t\&quot;'\&quot;: function(v) {return v.indexOf(\&quot;'\&quot;) &lt; 0; },\n\t\t'\&quot;': function(v) {return v.indexOf('\&quot;') &lt; 0; },\n\t\t'\&quot;\&quot;\&quot;': function(v) {return v.indexOf('\&quot;\&quot;\&quot;') &lt; 0 &amp;&amp; v[v.length-1] != '\&quot;';}\n\t};\n\tif (choices[preference] &amp;&amp; choices[preference](value)) {\n\t\treturn wrap(value, preference);\n\t}\n\tfor (var i = 0; i &lt; whitelist.length; i++) {\n\t\tvar quote = whitelist[i];\n\t\tif (choices[quote](value)) {\n\t\t\treturn wrap(value, quote);\n\t\t}\n\t}\n\t// No quotes will work on this\n\treturn undefined;\n};\n\n/**Like wrapAttribute value, except for macro parameters, not attributes.\n *\n * These are more permissive. Allows brackets,\n * and slashes and '&lt;' in unquoted values.\n */\nexports.wrapParameterValue = function(value, preference) {\n\tvar whitelist = [\&quot;\&quot;, \&quot;'\&quot;, '\&quot;', '[[', '\&quot;\&quot;\&quot;'];\n\tvar choices = {\n\t\t\&quot;\&quot;: function(v) {return !/([\\s&gt;\&quot;'=])/.test(v); },\n\t\t\&quot;'\&quot;: function(v) {return v.indexOf(\&quot;'\&quot;) &lt; 0; },\n\t\t'\&quot;': function(v) {return v.indexOf('\&quot;') &lt; 0; },\n\t\t\&quot;[[\&quot;: exports.canBePrettyOperand,\n\t\t'\&quot;\&quot;\&quot;': function(v) {return v.indexOf('\&quot;\&quot;\&quot;') &lt; 0 &amp;&amp; v[v.length-1] != '\&quot;';}\n\t};\n\tif (choices[preference] &amp;&amp; choices[preference](value)) {\n\t\treturn wrap(value, preference);\n\t}\n\tfor (var i = 0; i &lt; whitelist.length; i++) {\n\t\tvar quote = whitelist[i];\n\t\tif (choices[quote](value)) {\n\t\t\treturn wrap(value, quote);\n\t\t}\n\t}\n\t// No quotes will work on this\n\treturn undefined;\n};\n\nfunction wrap(value, wrapper) {\n\tvar wrappers = {\n\t\t\&quot;\&quot;: function(v) {return v; },\n\t\t\&quot;'\&quot;: function(v) {return \&quot;'\&quot;+v+\&quot;'\&quot;; },\n\t\t'\&quot;': function(v) {return '\&quot;'+v+'\&quot;'; },\n\t\t'\&quot;\&quot;\&quot;': function(v) {return '\&quot;\&quot;\&quot;'+v+'\&quot;\&quot;\&quot;'; },\n\t\t\&quot;[[\&quot;: function(v) {return \&quot;[[\&quot;+v+\&quot;]]\&quot;; }\n\t};\n\tvar chosen = wrappers[wrapper];\n\tif (chosen) {\n\t\treturn chosen(value);\n\t} else {\n\t\treturn undefined;\n\t}\n};\n\n/**Return true if value can be used inside a prettylink.\n */\nexports.canBePretty = function(value) {\n\treturn value.indexOf(\&quot;]]\&quot;) &lt; 0 &amp;&amp; value[value.length-1] !== ']';\n};\n\nexports.canBePrettyOperand = function(value) {\n\treturn value.indexOf(']') &lt; 0;\n};\n\n/**Given some text, and a param or  attribute within that text, this returns\n * what type of quotation that attribute is using.\n *\n * param: An object in the form {end:, ...}\n */\nexports.determineQuote = function(text, param) {\n\tvar pos = param.end-1;\n\tif (text[pos] === \&quot;'\&quot;) {\n\t\treturn \&quot;'\&quot;;\n\t}\n\tif (text[pos] === '\&quot;') {\n\t\tif (text.substr(pos-2, 3) === '\&quot;\&quot;\&quot;') {\n\t\t\treturn '\&quot;\&quot;\&quot;';\n\t\t} else {\n\t\t\treturn '\&quot;';\n\t\t}\n\t}\n\tif (text.substr(pos-1,2) === ']]' &amp;&amp; text.substr((pos-param.value.length)-3, 2) === '[[') {\n\t\treturn \&quot;[[\&quot;;\n\t}\n\treturn '';\n};\n&quot;,
             &quot;module-type&quot;: &quot;library&quot;,
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/utils.js&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;
@@ -10131,7 +10125,7 @@ Error message and password prompt
         },
         &quot;$:/plugins/flibbles/relink/ui/components/tables&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/ui/components/tables&quot;,
-            &quot;text&quot;: &quot;\\define prefix(category) $:/config/flibbles/relink/$category$/\n\\define .make-table(title, subfilter, default-table-state:yes)\n\n&lt;$set name=\&quot;table-state\&quot; value=&lt;&lt;qualify \&quot;\&quot;\&quot;$:/state/flibbles/relink/tables/$title$\&quot;\&quot;\&quot;&gt;&gt;&gt;\n&lt;tr&gt;&lt;th colspan=&lt;&lt;column-count&gt;&gt; style=\&quot;text-align:left;\&quot;&gt;\n&lt;$reveal type=\&quot;nomatch\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$button class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot; set=&lt;&lt;table-state&gt;&gt; setTo=\&quot;yes\&quot;&gt;\n{{$:/core/images/right-arrow}}\n&lt;/$button&gt;\n&lt;/$reveal&gt;\n&lt;$reveal type=\&quot;match\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$button class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot; set=&lt;&lt;table-state&gt;&gt; setTo=\&quot;no\&quot;&gt;\n{{$:/core/images/down-arrow}}\n&lt;/$button&gt;\n&lt;/$reveal&gt; ''$title$''\n&lt;/th&gt;&lt;/tr&gt;\n&lt;$list filter=\&quot;[$subfilter$prefix&lt;category-prefix&gt;!has[draft.of]has[text]sort[]]\&quot;&gt;\n&lt;$set name=\&quot;currentSetting\&quot; filter=\&quot;[all[current]removeprefix&lt;category-prefix&gt;]\&quot;&gt;\n&lt;$reveal tag=\&quot;tr\&quot; type=\&quot;match\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$macrocall $name=&lt;&lt;__list-row-macro__&gt;&gt; currentSetting=&lt;&lt;currentSetting&gt;&gt; /&gt;\n&lt;/$reveal&gt;\n&lt;/$set&gt;\n&lt;/$list&gt;\n&lt;/$set&gt;\n\\end\n\n\\define tables(category, list-row-macro, header-list)\n&lt;$set name=\&quot;category-prefix\&quot; value=&lt;&lt;prefix $category$&gt;&gt;&gt;\n&lt;$set name=\&quot;column-count\&quot; filter=\&quot;[enlist&lt;__header-list__&gt;count[]]\&quot;&gt;\n\n&lt;table&gt;&lt;tbody&gt;\n&lt;tr&gt;&lt;$list variable=\&quot;header\&quot; filter=\&quot;[enlist&lt;__header-list__&gt;]\&quot;&gt;&lt;th&gt;&lt;&lt;header&gt;&gt;&lt;/th&gt;&lt;/$list&gt;&lt;/tr&gt;\n\n&lt;$list variable=\&quot;render\&quot; filter=\&quot;[prefix&lt;category-prefix&gt;!has[draft.of]has[text]!is[shadow]first[]]\&quot;&gt;\n&lt;&lt;.make-table Custom \&quot;all[]!is[shadow]\&quot; yes&gt;&gt;\n&lt;/$list&gt;\n\n&lt;$list filter=\&quot;[all[shadows]prefix&lt;category-prefix&gt;has[text]shadowsource[]!title[$:/plugins/flibbles/relink]]\&quot;&gt;\n&lt;$macrocall $name=\&quot;.make-table\&quot; title={{!!description}} subfilter=\&quot;all[current]plugintiddlers[]\&quot; /&gt;\n&lt;/$list&gt;\n\n&lt;&lt;.make-table Core \&quot;[$:/plugins/flibbles/relink]plugintiddlers[]\&quot;&gt;&gt;\n\n&lt;/tbody&gt;&lt;/table&gt;\n&lt;/$set&gt;&lt;/$set&gt;\n\\end\n&quot;
+            &quot;text&quot;: &quot;\\define prefix(category) $:/config/flibbles/relink/$category$/\n\\define .make-table(title, subfilter, default-table-state:yes)\n\n&lt;$set name=\&quot;table-state\&quot; value=&lt;&lt;qualify \&quot;\&quot;\&quot;$:/state/flibbles/relink/tables/$title$\&quot;\&quot;\&quot;&gt;&gt;&gt;\n&lt;tr&gt;&lt;th colspan=&lt;&lt;column-count&gt;&gt; style=\&quot;text-align:left;\&quot;&gt;\n&lt;$reveal type=\&quot;nomatch\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$button class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot; set=&lt;&lt;table-state&gt;&gt; setTo=\&quot;yes\&quot;&gt;\n{{$:/core/images/right-arrow}}\n&lt;/$button&gt;\n&lt;/$reveal&gt;\n&lt;$reveal type=\&quot;match\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$button class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot; set=&lt;&lt;table-state&gt;&gt; setTo=\&quot;no\&quot;&gt;\n{{$:/core/images/down-arrow}}\n&lt;/$button&gt;\n&lt;/$reveal&gt; ''$title$''\n&lt;/th&gt;&lt;/tr&gt;\n&lt;$list filter=\&quot;[$subfilter$prefix&lt;category-prefix&gt;!has[draft.of]has[text]sort[]]\&quot;&gt;\n&lt;$set name=\&quot;currentSetting\&quot; filter=\&quot;[all[current]removeprefix&lt;category-prefix&gt;]\&quot;&gt;\n&lt;$reveal tag=\&quot;tr\&quot; type=\&quot;match\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$macrocall $name=&lt;&lt;__list-row-macro__&gt;&gt; currentSetting=&lt;&lt;currentSetting&gt;&gt; /&gt;\n&lt;/$reveal&gt;\n&lt;/$set&gt;\n&lt;/$list&gt;\n&lt;/$set&gt;\n\\end\n\n\\define tables(category, list-row-macro, header-list)\n&lt;$set name=\&quot;category-prefix\&quot; value=&lt;&lt;prefix $category$&gt;&gt;&gt;\n&lt;$set name=\&quot;column-count\&quot; filter=\&quot;[enlist&lt;__header-list__&gt;count[]]\&quot;&gt;\n\n&lt;table&gt;&lt;tbody&gt;\n&lt;tr&gt;&lt;$list variable=\&quot;header\&quot; filter=\&quot;[enlist&lt;__header-list__&gt;]\&quot;&gt;&lt;th&gt;&lt;&lt;header&gt;&gt;&lt;/th&gt;&lt;/$list&gt;&lt;/tr&gt;\n\n&lt;$list variable=\&quot;render\&quot; filter=\&quot;[prefix&lt;category-prefix&gt;!has[draft.of]has[text]!is[shadow]first[]]\&quot;&gt;\n&lt;&lt;.make-table Custom \&quot;all[]!is[shadow]\&quot; yes&gt;&gt;\n&lt;/$list&gt;\n\n&lt;&lt;.make-table Core \&quot;[$:/plugins/flibbles/relink]plugintiddlers[]\&quot;&gt;&gt;\n\n&lt;$list filter=\&quot;[all[shadows]prefix&lt;category-prefix&gt;has[text]shadowsource[]!title[$:/plugins/flibbles/relink]]\&quot;&gt;\n&lt;$macrocall $name=\&quot;.make-table\&quot; title={{!!description}} subfilter=\&quot;all[current]plugintiddlers[]\&quot; /&gt;\n&lt;/$list&gt;\n\n&lt;/tbody&gt;&lt;/table&gt;\n&lt;/$set&gt;&lt;/$set&gt;\n\\end\n&quot;
         },
         &quot;$:/plugins/flibbles/relink/ui/configuration/Attributes&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/ui/configuration/Attributes&quot;,
@@ -10183,7 +10177,7 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="$:/themes/tiddlywiki/vanilla" description="Emphasises individual tiddlers" name="Snow White" plugin-priority="0" plugin-type="theme" title="$:/themes/tiddlywiki/snowwhite" type="application/json" version="5.1.22-prerelease">
+<div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="$:/themes/tiddlywiki/vanilla" description="Emphasises individual tiddlers" name="Snow White" plugin-priority="0" plugin-type="theme" title="$:/themes/tiddlywiki/snowwhite" type="application/json" version="5.1.21">
 <pre>{
     &quot;tiddlers&quot;: {
         &quot;$:/themes/tiddlywiki/snowwhite/base&quot;: {
@@ -10194,7 +10188,7 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="" description="Basic theme" name="Vanilla" plugin-priority="0" plugin-type="theme" title="$:/themes/tiddlywiki/vanilla" type="application/json" version="5.1.22-prerelease">
+<div author="JeremyRuston" core-version="&gt;=5.0.0" dependents="" description="Basic theme" name="Vanilla" plugin-priority="0" plugin-type="theme" title="$:/themes/tiddlywiki/vanilla" type="application/json" version="5.1.21">
 <pre>{
     &quot;tiddlers&quot;: {
         &quot;$:/themes/tiddlywiki/vanilla/themetweaks&quot;: {
@@ -10292,17 +10286,8 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div title="$:/themes/tiddlywiki/vanilla/metrics/sidebarbreakpoint">
-<pre>1060px</pre>
-</div>
-<div title="$:/themes/tiddlywiki/vanilla/metrics/storyright">
-<pre>870px</pre>
-</div>
-<div title="$:/themes/tiddlywiki/vanilla/metrics/storywidth">
-<pre>870px</pre>
-</div>
-<div title="$:/themes/tiddlywiki/vanilla/metrics/tiddlerwidth">
-<pre>800px</pre>
+<div title="$:/themes/tiddlywiki/vanilla/options/sidebarlayout">
+<pre>fluid-fixed</pre>
 </div>
 <div caption="Attributes" tags="Documentation Construct" title="Attributes">
 <pre>The attributes of widgets can be updated by Relink, but only if they're whitelisted. Given a whitelisted element/attribute pair, such as `$link` and `to`, the following update could happen:
@@ -10369,7 +10354,11 @@ Change the tiddler ''[[Frodo]]'' down below to see how these examples react.
 <pre></pre>
 </div>
 <div caption="Filters" description="&lt;p&gt;Filters in whitelisted fields and attributes will be updated as well. However, Relink only updates the operands of whitelisted filter operators. This includes `tag` and `title`, but you can add or remove any operators you want to the list.&lt;/p&gt;&lt;p&gt;''Note'': Indirect operands are always updated, since regardless of their operator, they may reference tiddlers.&lt;/p&gt;" relink.showcase="text" tags="Demo" title="Demo/Filters">
-<pre>{{{Frodo [tag[Frodo]] [[Weapon: ]addsuffix{Frodo!!weapon}]}}}
+<pre>{{{
+Frodo
+[tag[Frodo]]
+[[Weapon: ]addsuffix{Frodo!!weapon}]
+}}}
 </pre>
 </div>
 <div caption="Links" description="Notice that custom link captions don't change, neither do plaintext occurrences of Frodo. Only occurrences of the title that in some way link to the page are updated." relink.showcase="text" tags="Demo" title="Demo/Links">
@@ -10387,7 +10376,9 @@ BilboBaggins is a ~CamelCase link. Visit ~BilboBaggins to test Wikilinks.
 
 &lt;&lt;choice Weapon Frodo!!weapon&gt;&gt;
 
-&lt;$macrocall $name=&quot;choice&quot; type=&quot;Name&quot; item=&quot;Frodo!!title&quot;/&gt;
+&lt;$macrocall $name=&quot;choice&quot;
+            type=&quot;Name&quot;
+            item=&quot;Frodo!!title&quot;/&gt;
 
 </pre>
 </div>
@@ -10598,7 +10589,6 @@ At worst, it'll report that it couldn't relink a particular tiddler if it finds 
 </div>
 <div tags="$:/tags/Macro" title="Macros/choice">
 <pre>\define choice(type, item) //$type$ of choice//: ''{{$item$}}''
-
 &lt;$codeblock code={{{[&lt;currentTiddler&gt;get[text]splitbefore[&lt;]removesuffix[&lt;]]}}} /&gt;
 
 The choice macro takes a reference for its second parameter called ''item''.
@@ -10719,7 +10709,6 @@ Drag the following onto your Tiddlywiki project and say &quot;yes&quot; to impor
 * Document the filters included with //Relink//.
 * Write tests to confirm relink:references filter, and its interaction with the to-update filter.
 ** Also, ensure that relink:references works on input and isn't a generator. This may require creating [all[relinkable]]
-* Make the demo template show text and result side-by-side rather than top and bottom.
 * On relink failure, at least change as many instances as possible rather than giving up on an entire tiddler.
 * Possible issue with `&lt;$importvariables&gt;` widgets being called whose attributes depend on macros defined immediately preceding the widget call. `\define macro() blah\n\n&lt;$importvariables filter=&lt;&lt;blah&gt;&gt; &gt;...`
 ** And I need to track variables set in `&lt;$set&gt;` even though those aren't ever involved in relinking. They may be part of an importvariables attribute value.
@@ -10764,14 +10753,40 @@ a.relink-dragger:hover {
 	top:1px;
 }
 
-td.relink-text {
+.relink-text {
 	padding: 0px;
 }
 
-td.relink-text pre {
+.relink-text pre {
 	padding: 6px;
 	margin: 0px;
 	border: none;
+}
+
+.relink-demo-source {
+	float: left;
+	width: 49%;
+	border: 1px solid #cccccc;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+.relink-demo-preview {
+	float: right;
+	width: 49%;
+	margin-left: 0px;
+	margin-right: 0px;
+	border: 1px solid #cccccc;
+	padding: 3px;
+}
+
+.relink-demo-fields {
+	width: 100%;
+}
+
+.relink-demo-description {
+	clear: both;
+	padding-top: 5px;
 }
 </pre>
 </div>
@@ -10780,19 +10795,30 @@ td.relink-text pre {
 
 !! &lt;$link&gt;{{!!caption}}&lt;/$link&gt;
 
-&lt;table&gt;
+&lt;$list filter=&quot;[all[current]relink.showcase[text]]&quot;&gt;
+
+@@.relink-demo-source
+&lt;div class=&quot;relink-text&quot;&gt;&lt;pre&gt;&lt;$view field=&lt;&lt;field&gt;&gt; /&gt;&lt;/pre&gt;&lt;/div&gt;
+@@
+
+&lt;div class=&quot;relink-demo-preview&quot;&gt;
+
+&lt;$transclude /&gt;
+
+&lt;/div&gt;
+&lt;/$list&gt;&lt;$list filter=&quot;[all[current]!relink.showcase[text]]&quot;&gt;
+
+&lt;table class=&quot;relink-demo-fields&quot;&gt;
 &lt;$list variable=&quot;field&quot; filter=&quot;[enlist{!!relink.showcase}]&quot;&gt;
 &lt;tr&gt;&lt;td&gt;''&lt;&lt;field&gt;&gt;''&lt;/td&gt;&lt;td class=&quot;relink-text&quot;&gt;&lt;pre&gt;&lt;$view field=&lt;&lt;field&gt;&gt; /&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;/$list&gt;
 &lt;/table&gt;
+&lt;/$list&gt;
 
-&lt;blockquote&gt;
 
-&lt;$transclude /&gt;
-
-&lt;/blockquote&gt;
-
+@@.relink-demo-description
 &lt;$transclude field=&quot;description&quot; /&gt;
+@@
 
 &lt;$list filter=&quot;[all[current]search[relink-1()]]&quot;&gt;
 
