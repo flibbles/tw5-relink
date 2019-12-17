@@ -12,6 +12,11 @@
 				},
 				"type": "application/javascript"
 			}
+		},
+		{
+			"path": "./setup",
+			"filesRegExp": "^.*$",
+			"isTiddlerFile": true
 		}
 	]
 }

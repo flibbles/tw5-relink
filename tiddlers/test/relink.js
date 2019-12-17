@@ -109,9 +109,9 @@ it("supports IE11", function() {
 			continue;
 		}
 		var text = tiddler.text;
-		expect(text).toNotContain(".startsWith");
-		expect(text).toNotContain(".endsWith");
-		expect(text).toNotContain(".assign");
+		expect(text.indexOf(".startsWith")).toEqual(-1);
+		expect(text.indexOf(".endsWith")).toEqual(-1);
+		expect(text.indexOf(".assign")).toEqual(-1);
 	}
 });
 
@@ -138,6 +138,14 @@ it('can filter for all impossible tiddlers', function() {
 	test("'bad]] t' +[relink:impossible[from]]", ["A"]);
 	test("[relink:references[from]]", ["A", "C"]);
 	test("[relink:nonexistent[]]", ["This text is pulled"]);
+});
+
+it('did import pluginrule, even though it never uses it', function() {
+	var rwtr = $tw.wiki.filterTiddlers("[[relinkwikitextrule]modules[]]");
+	// Just make sure there's more than a few so we know we're actually
+	// using the right module-type.
+	expect(rwtr.length).toBeGreaterThan(5);
+	expect(rwtr).toContain("test/setup/pluginrule.js");
 });
 
 });
