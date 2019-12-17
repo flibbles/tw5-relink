@@ -1,5 +1,6 @@
 title: $:/config/flibbles/relink/fields/
 
+filter: filter
 list: list
 list-after: title
 list-before: title

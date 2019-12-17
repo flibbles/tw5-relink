@@ -58,6 +58,12 @@ it('still relinks lists', function() {
 	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in list field of tiddler 'test'"]);
 });
 
+it('relinks filter field', function() {
+	var r = testField("[title[from here]] stuff", "[title[to there]] stuff",
+	                  {field: "filter", type: "filter"});
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in filter field of tiddler 'test'"]);
+});
+
 it('lists work with strange titles', function() {
 	function works(title, wrapped) {
 		//var expected = wrapped ? "A [["+title+"]] B" : "A "+title+" B";
