@@ -22,7 +22,6 @@ it('allows all other unmanaged wikitext rules', function() {
 	fine("This is ordinary text");
 	fine("This is a WikiLink here");
 	fine("This \n*is\n*a\n*list");
-	fine("Image: [img[https://google.com]] and [img[Title]] here");
 	fine("External links: [ext[https://google.com]] and [ext[Tooltip|https://google.com]] here");
 	fine("Comments <!-- Look like this -->");
 	fine("Block Comments\n\n<!--\n\nLook like this? -->\n\n");

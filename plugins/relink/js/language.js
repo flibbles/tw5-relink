@@ -50,6 +50,7 @@ exports.log = {
 	"filteredtransclude-placeholder": "Renaming '<<from>>' to '<<to>>' in filtered transclusion of tiddler '<<tiddler>>' %cby creating placeholder macros",
 	"filteredtransclude-placeholder-widget": "Renaming '<<from>>' to '<<to>>' in filtered transclusion of tiddler '<<tiddler>>' %cby converting it into a widget and creating placeholder macros",
 	"filteredtransclude-widget": "Renaming '<<from>>' to '<<to>>' in filtered transclusion of tiddler '<<tiddler>>' %cby converting it into a widget",
+	"image": "Renaming '<<from>>' to '<<to>>' in image of tiddler '<<tiddler>>'",
 	"import": "Renaming '<<from>>' to '<<to>>' in \\import filter of tiddler '<<tiddler>>'",
 	"import-placeholder": "Renaming '<<from>>' to '<<to>>' in \\import filter of tiddler '<<tiddler>>' %cby creating placeholder macros",
 	"macrodef": "Renaming '<<from>>' to '<<to>>' in <<macro>> definition of tiddler '<<tiddler>>'",
