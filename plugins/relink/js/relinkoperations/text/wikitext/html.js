@@ -65,15 +65,15 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			}
 			attr.value = value;
 		} else if (attr.type === "indirect") {
-			if (toTitle.indexOf("}") >= 0) {
-				// Impossible replacement
-				throw new CannotRelinkError();
-			}
 			oldValue = attr.textReference;
 			quote = "{{";
 			var ref = $tw.utils.parseTextReference(attr.textReference);
 			if (ref.title !== fromTitle) {
 				continue;
+			}
+			if (toTitle.indexOf("}") >= 0) {
+				// Impossible replacement
+				throw new CannotRelinkError();
 			}
 			ref.title = toTitle;
 			attr.textReference = refHandler.toString(ref);

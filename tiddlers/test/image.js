@@ -19,6 +19,45 @@ it("image", function() {
 	var r = testText("Image to [img[from here]].");
 	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in image of tiddler 'test'"]);
 	testText("to [img[from here]][[from here]]");
+	// quotes can make us scan too early for the source
+	testText("[img class='a' [']].",
+	         "[img class='a' [to there]].",
+	         {from: "'"});
+});
+
+it("indirect attributes", function() {
+	testText("[img width={{from here}} [s]]");
+	testText("[img width  =  {{from here}} [s]]");
+	testText("[img width={{from here!!width}} [s]]");
+	testText("[img width={{from here##width}} [s]]");
+	var r;
+	r = testText("[img width={{from here}} [s]]", {to: "title}brack", ignored: true});
+	expect(r.fails.length).toEqual(1);
+	r = testText("[img width={{from here}} [s]]", {to: "title!!bang", ignored: true});
+	expect(r.fails.length).toEqual(1);
+});
+
+it("filtered attributes", function() {
+	testText("[img width={{{[tag[from here]]}}} [s]]");
+	testText("[img width  =  {{{  [tag[from here]]   }}} [s]]");
+	testText("[img width={{{[tag[from here]]}}} [s]].",
+	         "\\define relink-1() A]B\n[img width={{{[tag<relink-1>]}}} [s]].", {to: "A]B"});
+	var r = testText("[img width={{{[[from here]]}}} [s]]", {to: "A}}}B", ignored: true});
+	expect(r.fails.length).toEqual(1);
+});
+
+it("macro attributes", function() {
+	function test(value, expected, options) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddler(utils.macroConf("ten", "tiddler"));
+		var macros = "\\define ten(tiddler) 10\n";
+		return testText(macros+value, macros+expected,
+		                Object.assign({wiki: wiki}, options));
+	};
+	var original = "[img width=<<ten 'from here'>> [s]]";
+	test(original, "[img width=<<ten 'to there'>> [s]]");
+	var r = test(original, original, {to: "A>>'\"\"\"]]B"});
+	expect(r.fails.length).toEqual(1);
 });
 
 it("whitespace surrounding values", function() {

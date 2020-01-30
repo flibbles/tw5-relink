@@ -99,6 +99,15 @@ it('supports indirect attribute values', function() {
 	expect(results.fails.length).toEqual(1);
 });
 
+it('allows redirect with bad toTitle if not applicable', function() {
+	var to = "title}withBracket";
+	// Relink used to fail processing {{thing}} because of an illegal
+	// toTitle for references, but it shouldn't fail since no replacement
+	// will actually occur.
+	var r = testText("<$link tag={{thing}} to='from here' />", {to: to});
+	expect(r.fails.length).toEqual(0);
+});
+
 //TODO: This scenario is actually possible, but it's not necessary for
 //      the major release.
 it('fails on bad indirect attributes', function() {
