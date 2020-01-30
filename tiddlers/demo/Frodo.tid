@@ -1,14 +1,20 @@
 title: Frodo
 weapon: Sting
+width: 100
 
 \define bill() Sam's pony "Bill"
 \define rename(name, weapon:"Axe")
+<$vars fromSVG={{{[all[current]addsuffix[.svg]]}}}
+       toSVG={{{[<__name__>addsuffix[.svg]]}}} >
+
 <$button>
 
 <$text text=<<__name__>> />
 <$action-sendmessage $message="tm-rename-tiddler" to=<<__name__>> />
 <$action-setfield $tiddler=<<__name__>> $field="weapon" $value=<<__weapon__>> />
+<$action-sendmessage $message="tm-rename-tiddler" from=<<fromSVG>> to=<<toSVG>> />
 </$button>
+</$vars>
 \end
 Feel free to change my name.
 
