@@ -22,26 +22,68 @@ exports.name = "image";
 exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	var ptr = this.nextImage.start;
 	var builder = new Rebuilder(text, ptr);
-	ptr += 4; //[img
+	var makeWidget = false;
 	var logArguments = {
 		from: fromTitle,
 		to: toTitle,
 		tiddler: tiddler.fields.title
 	};
+	if (this.nextImage.attributes.source.value === fromTitle && !canBePretty(toTitle, this.nextImage.attributes.tooltip)) {
+		makeWidget = true;
+		builder.add("<$image", ptr, ptr+4);
+	}
+	ptr += 4; //[img
+	var inSource = false;
 	for (var attributeName in this.nextImage.attributes) {
 		var attr = this.nextImage.attributes[attributeName];
+		if (attributeName === "source" || attributeName === "tooltip") {
+			if (inSource) {
+				ptr = text.indexOf('|', ptr);
+			} else {
+				ptr = text.indexOf('[', ptr);
+				inSource = true;
+			}
+			if (makeWidget) {
+				if (" \t\n".indexOf(text[ptr-1]) >= 0) {
+					builder.add('', ptr, ptr+1);
+				} else {
+					builder.add(' ', ptr, ptr+1);
+				}
+			}
+			ptr += 1;
+		}
 		if (attributeName === "source") {
 			ptr = text.indexOf(attr.value, ptr);
 			if (attr.value === fromTitle) {
-				builder.add(toTitle, ptr, ptr+fromTitle.length);
-				log("image", logArguments, options);
+				if (makeWidget) {
+					var quotedValue = utils.wrapAttributeValue(toTitle);
+					if (quotedValue === undefined) {
+						var key = this.parser.getPlaceholderFor(toTitle);
+						builder.add("source=<<"+key+">>", ptr, ptr+fromTitle.length);
+						log("image-placeholder-widget", logArguments, options);
+
+					} else {
+						builder.add("source="+quotedValue, ptr, ptr+fromTitle.length);
+						log("image-widget", logArguments, options);
+					}
+
+
+				} else {
+					builder.add(toTitle, ptr, ptr+fromTitle.length);
+					log("image", logArguments, options);
+				}
 			}
-			ptr += attr.value.length+2;
+			ptr = text.indexOf(']]', ptr);
+			if (makeWidget) {
+				builder.add("/>", ptr, ptr+2);
+			}
+			ptr += 2;
 		} else if (attributeName === "tooltip") {
-			ptr = text.indexOf('[', ptr);
-			// and in case of surrounding whitespace:
-			ptr = text.indexOf(attr.value, ptr); 
-			ptr += attr.value.length + 1;
+			if (makeWidget) {
+				ptr = text.indexOf(attr.value, ptr);
+				var quotedValue = utils.wrapAttributeValue(attr.value);
+				builder.add("tooltip="+quotedValue, ptr, ptr+attr.value.length);
+			}
 		} else {
 			ptr = text.indexOf(attributeName, ptr);
 			ptr += attributeName.length;
@@ -104,4 +146,8 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 
 function canBeFilterValue(value) {
 	return value.indexOf("}}}") < 0 && value.substr(value.length-2) !== '}}';
+};
+
+function canBePretty(title, tooltip) {
+	return title.indexOf(']') < 0 && (tooltip || title.indexOf('|') < 0);
 };

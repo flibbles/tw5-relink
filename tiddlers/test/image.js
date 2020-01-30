@@ -90,4 +90,36 @@ it("Handles correctly when no change", function() {
 	         "[img width=32 height=32 [des|link fromHere]][[to there]]");
 });
 
+it("unpretty source", function() {
+	var r = testText("Image [img[from here]] end",
+	                 "Image <$image source=to]there/> end",
+	                 {to: "to]there"});
+	expect(r.log).toEqual(["%cRenaming 'from here' to 'to]there' in image of tiddler 'test' %cby converting it into a widget"]);
+	testText("Image [img[Description|from here]] end",
+	         "Image <$image tooltip=Description source=to]there/> end",
+	         {to: "to]there"});
+	testText("[img\nwidth=250\n[caption|from here]] end",
+	         "<$image\nwidth=250\ntooltip=caption source=to]there/> end",
+	         {to: "to]there"});
+	testText("[img[  caption  |  from here  ]] end",
+	         "<$image   tooltip=caption    source=to]there  /> end",
+	         {to: "to]there"});
+	// Tricky bars
+	testText("[img[from here]] end",
+	         "<$image source=to|there/> end",
+	         {to: "to|there"});
+	testText("[img[Caption|from here]] end",
+	         "[img[Caption|to|there]] end",
+	         {to: "to|there"});
+});
+
+it("unpretty source and bad widget", function() {
+	var title = '"F]]\'"'
+	var r = testText("Image [img[Description|from here]] end",
+	                 "\\define relink-1() "+title+"\nImage <$image tooltip=Description source=<<relink-1>>/> end",
+	                 {to: title});
+	expect(r.log).toEqual(["%cRenaming 'from here' to '"+title+"' in image of tiddler 'test' %cby converting it into a widget and creating placeholder macros"]);
+
+});
+
 });
