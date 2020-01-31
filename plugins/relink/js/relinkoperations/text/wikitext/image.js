@@ -85,63 +85,67 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				builder.add("tooltip="+quotedValue, ptr, ptr+attr.value.length);
 			}
 		} else {
-			ptr = text.indexOf(attributeName, ptr);
-			ptr += attributeName.length;
-			ptr = text.indexOf('=', ptr);
-			if (attr.type === "string") {
-				ptr = text.indexOf(attr.value, ptr)
-				var quote = utils.determineQuote(text, attr);
-				// ignore first quote. We already passed it
-				ptr += quote.length + attr.value.length;
-			} else if (attr.type === "indirect") {
-				ptr = text.indexOf('{{', ptr);
-				var quote = "{{";
-				var ref = $tw.utils.parseTextReference(attr.textReference);
-				var end = ptr + attr.textReference.length + 4;
-				if (ref.title === fromTitle) {
-					if (toTitle.indexOf("}") >= 0) {
-						throw new CannotRelinkError();
-					}
-					ref.title = toTitle;
-					var value = refHandler.toString(ref);
-					builder.add("{{"+value+"}}", ptr, end);
-				}
-				ptr = end;
-			} else if (attr.type === "filtered") {
-				ptr = text.indexOf('{{{', ptr);
-				var end = ptr + attr.filter.length + 6;
-				var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-				var filter = filterHandler.relink(attr.filter, fromTitle, toTitle, extendedOptions);
-				if (filter !== undefined) {
-					if (!canBeFilterValue(filter)) {
-						throw new CannotRelinkError();
-					}
-					attr.filter = filter;
-					var quoted = "{{{"+filter+"}}}";
-					builder.add(quoted, ptr, end);
-				}
-				ptr = end;
-			} else if (attr.type === "macro") {
-				ptr = text.indexOf("<<", ptr);
-				var end = attr.value.end;
-				var macro = attr.value;
-				oldValue = attr.value;
-				var newMacro = macrocall.relinkMacroInvocation(macro, text, this.parser, fromTitle, toTitle, options);
-				if (newMacro !== undefined) {
-					if (macrocall.mustBeAWidget(newMacro)) {
-						throw new CannotRelinkError();
-					}
-					var macroString = macrocall.macroToString(newMacro, text, this.parser, options);
-					builder.add(macroString, ptr, end);
-				}
-				ptr = end;
-			}
+			ptr = relinkAttribute(attr, this.parser, builder, fromTitle, toTitle, options);
 		}
-		
-
 	}
 	this.parser.pos = ptr;
 	return builder.results(ptr);
+};
+
+function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, options) {
+	var text = builder.text;
+	var ptr = text.indexOf(attribute.name, attribute.start);
+	ptr += attribute.name.length;
+	ptr = text.indexOf('=', ptr);
+	if (attribute.type === "string") {
+		ptr = text.indexOf(attribute.value, ptr)
+		var quote = utils.determineQuote(text, attribute);
+		// ignore first quote. We already passed it
+		ptr += quote.length + attribute.value.length;
+	} else if (attribute.type === "indirect") {
+		ptr = text.indexOf('{{', ptr);
+		var quote = "{{";
+		var ref = $tw.utils.parseTextReference(attribute.textReference);
+		var end = ptr + attribute.textReference.length + 4;
+		if (ref.title === fromTitle) {
+			if (toTitle.indexOf("}") >= 0) {
+				throw new CannotRelinkError();
+			}
+			ref.title = toTitle;
+			var value = refHandler.toString(ref);
+			builder.add("{{"+value+"}}", ptr, end);
+		}
+		ptr = end;
+	} else if (attribute.type === "filtered") {
+		ptr = text.indexOf('{{{', ptr);
+		var end = ptr + attribute.filter.length + 6;
+		var extendedOptions = $tw.utils.extend({placeholder: parser}, options);
+		var filter = filterHandler.relink(attribute.filter, fromTitle, toTitle, extendedOptions);
+		if (filter !== undefined) {
+			if (!canBeFilterValue(filter)) {
+				throw new CannotRelinkError();
+			}
+			attribute.filter = filter;
+			var quoted = "{{{"+filter+"}}}";
+			builder.add(quoted, ptr, end);
+		}
+		ptr = end;
+	} else if (attribute.type === "macro") {
+		ptr = text.indexOf("<<", ptr);
+		var end = attribute.value.end;
+		var macro = attribute.value;
+		oldValue = attribute.value;
+		var newMacro = macrocall.relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, options);
+		if (newMacro !== undefined) {
+			if (macrocall.mustBeAWidget(newMacro)) {
+				throw new CannotRelinkError();
+			}
+			var macroString = macrocall.macroToString(newMacro, text, parser, options);
+			builder.add(macroString, ptr, end);
+		}
+		ptr = end;
+	}
+	return ptr;
 };
 
 function canBeFilterValue(value) {
