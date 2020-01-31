@@ -2,6 +2,6 @@ created: 20200131021148900
 
 !! v1.6.0
 
-* Support for image wikitext ([img[tiddler.png]])
+* Support for image wikitext (`[img[tiddler.png]]`)
 ** Included demo page in demo tiddler
 * Fixed bug where Relink could fail to relink html elements using indirect attributes in rare cases.
