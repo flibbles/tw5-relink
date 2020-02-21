@@ -114,6 +114,10 @@ WikiRelinker.prototype.getPreamble = function() {
 };
 
 exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
+	// fromTitle doesn't even show up plaintext. No relinking to do.
+	if (tiddler.fields.text.indexOf(fromTitle) < 0) {
+		return;
+	}
 	var text = tiddler.fields.text,
 		builder = new Rebuilder(text),
 		parser = new WikiRelinker(text, tiddler.fields.title, toTitle, options),

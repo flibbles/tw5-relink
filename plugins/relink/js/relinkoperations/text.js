@@ -24,8 +24,7 @@ var exceptions = {
 
 exports['text'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = tiddler.fields;
-	var text = fields.text;
-	if (text && text.indexOf(fromTitle) >= 0) {
+	if (fields.text) {
 		var type = exceptions[fields.title] || fields.type || defaultOperator;
 		if (textOperators[type]) {
 			textOperators[type].call(this, tiddler, fromTitle, toTitle, changes, options);
