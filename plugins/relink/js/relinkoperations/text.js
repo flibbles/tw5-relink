@@ -14,12 +14,19 @@ var defaultOperator = "text/vnd.tiddlywiki";
 var textOperators = Object.create(null);
 $tw.modules.applyMethods('relinktextoperator', textOperators);
 
+// $:/DefaultTiddlers is a tiddler which has type "text/vnd.tiddlywiki",
+// but it lies. It doesn't contain wikitext. It contains a filter, so
+// we pretend it has a filter type.
+// If you want to be able to add more exceptions for your plugin, let me know.
+var exceptions = {
+	"$:/DefaultTiddlers": "text/x-tiddler-filter"
+};
+
 exports['text'] = function(tiddler, fromTitle, toTitle, changes, options) {
-	var text = tiddler.fields.text,
-		builder = [],
-		buildIndex = 0;
+	var fields = tiddler.fields;
+	var text = fields.text;
 	if (text && text.indexOf(fromTitle) >= 0) {
-		var type = tiddler.fields.type || defaultOperator;
+		var type = exceptions[fields.title] || fields.type || defaultOperator;
 		if (textOperators[type]) {
 			textOperators[type].call(this, tiddler, fromTitle, toTitle, changes, options);
 		}

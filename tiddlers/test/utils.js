@@ -13,6 +13,7 @@ var language = require('$:/plugins/flibbles/relink/js/language.js');
  * returns the modified test tiddler for examination.
  * Options:
  *   wiki: specifies custom Wiki. Useful to include settings tiddlers.
+ *   target: this is the tiddler being relinked. (default: "test")
  *   from: specifies the dummy tiddler's initial name (default: "from here")
  *   to: specifies dummy tiddler's final name (default: "to there")
  *   log: OUTPUT: This is an array where the log output will be stored.
@@ -25,6 +26,7 @@ exports.relink = function(fields, options) {
 	var results = {};
 	var relinkedTiddler;
 	var wiki = options.wiki || new $tw.Wiki();
+	var target = options.target || "test";
 	wiki.addTiddlers(exports.setupTiddlers());
 	results.wiki = wiki;
 	results.from = options.from || "from here";
@@ -37,7 +39,7 @@ exports.relink = function(fields, options) {
 	results.log = exports.collect("log", function() {
 	results.warn = exports.collect("warn", function() {
 	results.fails = exports.collectFailures(function() {
-		var tiddler = new $tw.Tiddler({title: "test"}, fields);
+		var tiddler = new $tw.Tiddler({title: target}, fields);
 		var title = tiddler.fields.title;
 		wiki.addTiddler(tiddler);
 		wiki.renameTiddler(results.from, results.to, options);

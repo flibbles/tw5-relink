@@ -15,7 +15,7 @@ function testText(text, expected, options) {
 	return results;
 };
 
-describe("text", function() {
+describe("wikitext", function() {
 
 it('allows all other unmanaged wikitext rules', function() {
 	function fine(text) { testText(text + " [[from here]]"); };
