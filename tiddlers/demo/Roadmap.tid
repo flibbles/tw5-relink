@@ -3,7 +3,6 @@ title: Roadmap
 
 This page is meant more for the developer so they don't forget what's left to do.
 
-* Make the tab-sensitive demo links actual links, not buttons. Also add links to relink configuration page when appropriate.
 * Add in form validation for //add// fields in configuration.
 * Improve UI in configuration menu. Delete buttons shouldn't get that much space. Maybe have examples for each row in gray.
 * I think the code is supposed to be in the `./plugins/flibbles/relink` dir, not the `./plugins/relink` dir.
