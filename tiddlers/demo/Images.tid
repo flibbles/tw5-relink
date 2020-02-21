@@ -1,0 +1,38 @@
+caption: Images
+tags: Documentation Construct
+title: Images
+
+Relink will manage images which link to tiddlers within the project.
+
+```
+[img[MyPicture.png]]
+[img[Accompanying tooltip|MyPicture.png]]
+[img height=256 width=256 [MyPicture.png]]
+```
+
+It will attempt to preserve any whitespace you use for formatting.
+
+```
+[img
+	height=256
+	class="css-class"
+	[MyPicture.png]]
+```
+would become:
+
+```
+[img
+	height=256
+	class="css-class"
+	[New Picture Image.png]]
+```
+
+If any attributes use indirect or filter references, those will be updated appropriately. I.E.:
+
+```
+[img class={{DataTiddler||field}} [MyPicture.png]]
+```
+
+In this case, `DataTiddler` will be updated if that tiddler is renamed.
+
+<<link-to-tab Demo Demo/Images Demo>>
