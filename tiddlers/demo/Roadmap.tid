@@ -7,7 +7,6 @@ This page is meant more for the developer so they don't forget what's left to do
 * Improve UI in configuration menu. Delete buttons shouldn't get that much space. Maybe have examples for each row in gray.
 * I think the code is supposed to be in the `./plugins/flibbles/relink` dir, not the `./plugins/relink` dir.
 * Macros cached after encountering `<$importvariables>` should be popped after encountering `</$importvariables>`.
-* Possibly remove the package.json file. This isn't an npm package. It isn't something any other coder would need except for me, the author.
 * Organize the unit tests better. Especially relink.js. That's kind of a misc test set that should be categorized more logically.
 * Improve documentation on README to be more clear.
 * There are TODOs scattered throughout the code which need to be addressed.
