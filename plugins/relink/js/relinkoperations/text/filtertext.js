@@ -11,7 +11,7 @@ wikitext.
 
 var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
 
-exports['text/x-tiddler-filter'] = function(tiddler, fromTitle, toTitle, changes, options) {
+exports['text/x-tiddler-filter'] = function(tiddler, fromTitle, toTitle, logger, changes, options) {
 	// fromTitle doesn't even show up plaintext. No relinking to do.
 	if (tiddler.fields.text.indexOf(fromTitle) < 0) {
 		return;

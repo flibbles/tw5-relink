@@ -13,7 +13,6 @@ var type = 'text/vnd.tiddlywiki';
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 var Widget = require("$:/core/modules/widgets/widget.js").widget;
-var Logger = require("$:/plugins/flibbles/relink/js/language.js").Logger;
 
 var rules = Object.create(null);
 
@@ -147,12 +146,10 @@ function fieldTypeMethod(text, fromTitle, toTitle, logger, options) {
 	return undefined;
 };
 
-exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
-	var logger = new Logger(tiddler.fields.title, fromTitle, toTitle);
+exports[type] = function(tiddler, fromTitle, toTitle, logger, changes, options) {
 	var currentOptions = $tw.utils.extend({currentTiddler: tiddler.fields.title}, options);
 	var output = fieldTypeMethod(tiddler.fields.text, fromTitle, toTitle, logger, currentOptions);
 	if (output !== undefined) {
 		changes.text = output;
 	}
-	logger.logAll(options);
 }
