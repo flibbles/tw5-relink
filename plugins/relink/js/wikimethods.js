@@ -6,6 +6,7 @@ Introduces some utility methods used by Relink.
 \*/
 
 var errors = require('$:/plugins/flibbles/relink/js/errors');
+var Logger = require("$:/plugins/flibbles/relink/js/language.js").Logger;
 
 var relinkOperations = Object.create(null);
 $tw.modules.applyMethods('relinkoperator', relinkOperations);
@@ -53,11 +54,11 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 			if(tiddler
 			&& !tiddler.fields["plugin-type"]
 			&& tiddler.fields.type !== "application/javascript") {
+				var logger = new Logger(tiddler.fields.title, fromTitle, toTitle);
 				try {
 					var changes = Object.create(null);
 					for (var operation in relinkOperations) {
-						options.currentTiddler = tiddler.fields.title;
-						relinkOperations[operation](tiddler, fromTitle, toTitle, changes, options);
+						relinkOperations[operation](tiddler, fromTitle, toTitle, logger, changes, options);
 					}
 					// If any fields changed, update tiddler
 					if(Object.keys(changes).length > 0) {
@@ -75,6 +76,7 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 						throw e;
 					}
 				}
+				logger.logAll(options);
 			}
 		}
 	}

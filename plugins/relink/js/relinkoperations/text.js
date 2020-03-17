@@ -10,7 +10,6 @@ relink titles within the body.
 "use strict";
 
 var defaultOperator = "text/vnd.tiddlywiki";
-var Logger = require("$:/plugins/flibbles/relink/js/language.js").Logger;
 
 var textOperators = Object.create(null);
 $tw.modules.applyMethods('relinktextoperator', textOperators);
@@ -23,14 +22,12 @@ var exceptions = {
 	"$:/DefaultTiddlers": "text/x-tiddler-filter"
 };
 
-exports['text'] = function(tiddler, fromTitle, toTitle, changes, options) {
+exports['text'] = function(tiddler, fromTitle, toTitle, logger, changes, options) {
 	var fields = tiddler.fields;
-	var logger = new Logger(tiddler.fields.title, fromTitle, toTitle);
 	if (fields.text) {
 		var type = exceptions[fields.title] || fields.type || defaultOperator;
 		if (textOperators[type]) {
 			textOperators[type].call(this, tiddler, fromTitle, toTitle, logger, changes, options);
 		}
 	}
-	logger.logAll(options);
 };

@@ -52,7 +52,11 @@ exports.logRelink = function(message, args, options) {
 		// rendering would require working through a wiki
 		// object. Too heavy weight for log messages.
 		var msg = raw.replace(/<<([^<>]+)>>/g, function(match, key) {
-			return args[key] || ("<<"+key+">>");
+			var value = args[key];
+			if (key === "field") {
+				value = descriptor(value);
+			};
+			return value || ("<<"+key+">>");
 		});
 		if (raw.indexOf('%c') >= 0) {
 			// Doing a little bit of bold so the user sees
@@ -89,4 +93,12 @@ exports.log = {
 	"prettylink": "prettylink",
 	"transclude": "transclusion",
 	"wikilink": "CamelCase link",
+};
+
+function descriptor(field) {
+	if (field === "tags") {
+		return "tags";
+	} else {
+		return field + " field" ;
+	}
 };
