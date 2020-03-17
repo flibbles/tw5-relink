@@ -114,15 +114,13 @@ WikiRelinker.prototype.getPreamble = function() {
 	}
 };
 
-exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
+function fieldTypeMethod(text, fromTitle, toTitle, logger, options) {
 	// fromTitle doesn't even show up plaintext. No relinking to do.
-	if (tiddler.fields.text.indexOf(fromTitle) < 0) {
+	if (text.indexOf(fromTitle) < 0) {
 		return;
 	}
-	var text = tiddler.fields.text,
-		builder = new Rebuilder(text),
-		parser = new WikiRelinker(text, tiddler.fields.title, toTitle, options),
-		logger = new Logger(tiddler.fields.title, fromTitle, toTitle),
+	var builder = new Rebuilder(text),
+		parser = new WikiRelinker(text, options.currentTiddler, toTitle, options),
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		if (matchingRule.rule.relink) {
@@ -142,9 +140,19 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 			}
 		}
 	}
-	logger.logAll(options);
 	if (builder.changed()) {
 		builder.prepend(parser.getPreamble());
-		changes.text = builder.results();
+		return builder.results();
 	}
+	return undefined;
 };
+
+exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
+	var logger = new Logger(tiddler.fields.title, fromTitle, toTitle);
+	var currentOptions = $tw.utils.extend({currentTiddler: tiddler.fields.title}, options);
+	var output = fieldTypeMethod(tiddler.fields.text, fromTitle, toTitle, logger, currentOptions);
+	if (output !== undefined) {
+		changes.text = output;
+	}
+	logger.logAll(options);
+}

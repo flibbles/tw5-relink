@@ -56,6 +56,7 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 				try {
 					var changes = Object.create(null);
 					for (var operation in relinkOperations) {
+						options.currentTiddler = tiddler.fields.title;
 						relinkOperations[operation](tiddler, fromTitle, toTitle, changes, options);
 					}
 					// If any fields changed, update tiddler
