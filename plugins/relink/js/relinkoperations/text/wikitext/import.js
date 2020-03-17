@@ -12,7 +12,7 @@ var filterRelinker = settings.getRelinker('filter');
 
 exports.name = "import";
 
-exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
+exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	// In this one case, I'll let the parser parse out the filter and move
 	// the ptr.
 	var start = this.matchRegExp.lastIndex;
@@ -23,12 +23,11 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	var value = filterRelinker.relink(filter, fromTitle, toTitle, extendedOptions);
 	var rtn = undefined;
 	if (value !== undefined) {
-		var message = extendedOptions.usedPlaceholder ? "import-placeholder" : "import";
-		log(message, {
-			from: fromTitle,
-			to: toTitle,
-			tiddler: tiddler.fields.title
-		}, options);
+		var logArguments = {name: "import"};
+		if (extendedOptions.usedPlaceholder) {
+			logArguments.placeholder = true;
+		}
+		logger.add(logArguments);
 		var newline = text.substring(start+filter.length, this.parser.pos);
 		filter = value;
 		rtn = "\\import " + value + newline;

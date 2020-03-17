@@ -16,25 +16,23 @@ var utils = require("./utils.js");
 
 exports.name = "wikilink";
 
-exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
+exports.relink = function(text, fromTitle, toTitle, logger, options) {
+	var out = undefined;
 	this.parser.pos = this.matchRegExp.lastIndex;
 	if (this.match[0] === fromTitle && this.match[0][0] !== '~') {
-		var logArguments = {
-			from: fromTitle,
-			to: toTitle,
-			tiddler: tiddler.fields.title
-		};
+		var logArguments = {name: "wikilink"};
 		if (toTitle.match(this.matchRegExp) && toTitle[0] !== '~') {
-			log("wikilink", logArguments, options);
-			return toTitle;
+			out = toTitle;
 		} else if (utils.canBePretty(toTitle)) {
-			log("wikilink-pretty", logArguments, options);
-			return "[[" + toTitle + "]]";
+			logArguments.pretty = true;
+			out = "[[" + toTitle + "]]";
 		} else {
 			var ph = this.parser.getPlaceholderFor(toTitle);
-			log("wikilink-placeholder", logArguments, options);
-			return "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+			logArguments.placeholder = true;
+			logArguments.widget = true;
+			out = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 		}
+		logger.add(logArguments);
 	}
-	return undefined;
+	return out;
 };

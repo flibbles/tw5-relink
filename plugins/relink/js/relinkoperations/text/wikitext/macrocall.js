@@ -15,7 +15,7 @@ var CannotFindMacroDefError = require("$:/plugins/flibbles/relink/js/errors.js")
 
 exports.name = ["macrocallinline", "macrocallblock"];
 
-exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
+exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	// Get all the details of the match
 	var macroName = this.match[1],
 		paramString = this.match[2],

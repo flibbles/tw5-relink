@@ -13,6 +13,7 @@ var type = 'text/vnd.tiddlywiki';
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 var Widget = require("$:/core/modules/widgets/widget.js").widget;
+var Logger = require("$:/plugins/flibbles/relink/js/language.js").Logger;
 
 var rules = Object.create(null);
 
@@ -121,10 +122,11 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var text = tiddler.fields.text,
 		builder = new Rebuilder(text),
 		parser = new WikiRelinker(text, tiddler.fields.title, toTitle, options),
+		logger = new Logger(tiddler.fields.title, fromTitle, toTitle),
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		if (matchingRule.rule.relink) {
-			var newSegment = matchingRule.rule.relink(tiddler, text, fromTitle, toTitle, options);
+			var newSegment = matchingRule.rule.relink(text, fromTitle, toTitle, logger, options);
 			if (newSegment !== undefined) {
 				builder.add(newSegment, matchingRule.matchIndex, parser.pos);
 			}
@@ -140,6 +142,7 @@ exports[type] = function(tiddler, fromTitle, toTitle, changes, options) {
 			}
 		}
 	}
+	logger.logAll(options);
 	if (builder.changed()) {
 		builder.prepend(parser.getPreamble());
 		changes.text = builder.results();

@@ -16,16 +16,12 @@ var utils = require("./utils.js");
 
 exports.name = ['transcludeinline', 'transcludeblock'];
 
-exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
+exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	var m = this.match,
 		reference = m[1],
 		template = m[2],
 		quoted,
-		logArguments = {
-			from: fromTitle,
-			to: toTitle,
-			tiddler: tiddler.fields.title
-		};
+		logArguments = {name: "transclude"};
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var trimmedRef = $tw.utils.trim(reference);
 	var ref = $tw.utils.parseTextReference(trimmedRef);
@@ -47,7 +43,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			template = template.replace(fromTitle, toTitle);
 		}
 		if (modified) {
-			log("transclude", logArguments, options);
+			logger.add(logArguments);
 			return prettyTransclude(reference, template);
 		}
 		return undefined;
@@ -57,10 +53,12 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		var resultTitle = utils.wrapAttributeValue(toTitle);
 		if (resultTitle === undefined) {
 			resultTitle = "<<"+this.parser.getPlaceholderFor(toTitle)+">>";
-			log("transclude-placeholder", logArguments, options);
+			logArguments.placeholder = true;
+			logArguments.widget = true;
 		} else {
-			log("transclude-widget", logArguments, options);
+			logArguments.widget = true;
 		}
+		logger.add(logArguments);
 		if ($tw.utils.trim(template) === fromTitle) {
 			// Now for this bizarre-ass use-case, where both the
 			// title and template are being replaced.
@@ -73,11 +71,11 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 	}
 	if ($tw.utils.trim(template) === fromTitle) {
 		var resultTemplate = utils.wrapAttributeValue(toTitle);
-		var message = "transclude-widget";
+		logArguments.widget = true;
 		var rtn;
 		if (resultTemplate === undefined) {
 			resultTemplate = "<<"+this.parser.getPlaceholderFor(toTitle)+">>";
-			message = "transclude-placeholder";
+			logArguments.placeholder = true;
 		}
 		if (ref.title) {
 			var resultTitle = utils.wrapAttributeValue(ref.title);
@@ -86,14 +84,14 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				// to placeholder a title OTHER than the one
 				// we're changing.
 				resultTitle = "<<"+this.parser.getPlaceholderFor(ref.title)+">>";
-				message = "transclude-placeholder";
+				logArguments.placeholder = true;
 			}
 			var attrs = this.transcludeAttributes(ref.field, ref.index);
 			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
 		} else {
 			rtn = "<$transclude tiddler="+resultTemplate+"/>";
 		}
-		log(message, logArguments, options);
+		logger.add(logArguments);
 		return rtn;
 	}
 	return undefined;

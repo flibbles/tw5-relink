@@ -14,7 +14,7 @@ var utils = require("./utils.js");
 
 exports.name = "prettylink";
 
-exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
+exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var caption, quoted, m = this.match;
 	if (m[2] === fromTitle) {
@@ -24,29 +24,29 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		// format is [[MyTiddler]], and it doesn't match
 		return undefined;
 	}
-	var logArguments = {
-		from: fromTitle,
-		to: toTitle,
-		tiddler: tiddler.fields.title
-	};
+	var logArguments = {name: "prettylink"};
+	var out;
 	if (utils.canBePretty(toTitle)) {
-		log("prettylink", logArguments, options);
-		return prettyLink(toTitle, caption);
+		out = prettyLink(toTitle, caption);
 	} else if (caption === undefined) {
 		// If we don't have a caption, we have to resort to placeholders
 		// anyway to prevent link/caption desync from later relinks.
 		// It doesn't matter whether the toTitle is quotable
-		log("prettylink-placeholder", logArguments, options);
+		logArguments.placeholder = true;
+		logArguments.widget = true;
 		var ph = this.parser.getPlaceholderFor(toTitle);
-		return "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+		out = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 	} else if (quoted = utils.wrapAttributeValue(toTitle)) {
-		log("prettylink-widget", logArguments, options);
-		return "<$link to="+quoted+">"+caption+"</$link>";
+		logArguments.widget = true;
+		out = "<$link to="+quoted+">"+caption+"</$link>";
 	} else {
-		log("prettylink-placeholder", logArguments, options);
+		logArguments.placeholder = true;
+		logArguments.widget = true;
 		var ph = this.parser.getPlaceholderFor(toTitle);
-		return "<$link to=<<"+ph+">>>"+caption+"</$link>";
+		out = "<$link to=<<"+ph+">>>"+caption+"</$link>";
 	}
+	logger.add(logArguments);
+	return out;
 };
 
 function prettyLink(title, caption) {

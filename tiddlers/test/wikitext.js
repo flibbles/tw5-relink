@@ -105,7 +105,7 @@ it('placeholders', function() {
 	r = testText(macro("filter-1","[title[from here]]")+content,
 	             macro(1,"to[]this")+macro("filter-1","[title<relink-1>]")+content,
 	             {to: "to[]this"});
-	expect(r.log).toEqual([`%cRenaming 'from here' to 'to[]this' in relink-filter-1 definition of tiddler 'test' %cby creating more placeholder macros`]);
+	expect(r.log).toEqual([`%cRenaming 'from here' to 'to[]this' in relink-filter-1 definition of tiddler 'test' %cby creating placeholder macros`]);
 	// Works with the list placeholders
 	testText(macro("list-1","A [[from here]] B")+content);
 	// Works with reference placeholders

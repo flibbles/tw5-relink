@@ -19,15 +19,11 @@ var utils = require("./utils.js");
 
 exports.name = "image";
 
-exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
+exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	var ptr = this.nextImage.start;
 	var builder = new Rebuilder(text, ptr);
 	var makeWidget = false;
-	var logArguments = {
-		from: fromTitle,
-		to: toTitle,
-		tiddler: tiddler.fields.title
-	};
+	var logArguments = {name: "image"};
 	if (this.nextImage.attributes.source.value === fromTitle && !canBePretty(toTitle, this.nextImage.attributes.tooltip)) {
 		makeWidget = true;
 		builder.add("<$image", ptr, ptr+4);
@@ -60,18 +56,17 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 					if (quotedValue === undefined) {
 						var key = this.parser.getPlaceholderFor(toTitle);
 						builder.add("source=<<"+key+">>", ptr, ptr+fromTitle.length);
-						log("image-placeholder-widget", logArguments, options);
+						logArguments.placeholder = true;
+						logArguments.widget = true;
 
 					} else {
 						builder.add("source="+quotedValue, ptr, ptr+fromTitle.length);
-						log("image-widget", logArguments, options);
+						logArguments.widget = true;
 					}
-
-
 				} else {
 					builder.add(toTitle, ptr, ptr+fromTitle.length);
-					log("image", logArguments, options);
 				}
+				logger.add(logArguments);
 			}
 			ptr = text.indexOf(']]', ptr);
 			if (makeWidget) {

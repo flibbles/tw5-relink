@@ -21,7 +21,7 @@ var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").Canno
 
 exports.name = "html";
 
-exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
+exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	var managedElement = settings.getAttributes(options)[this.nextTag.tag],
 		builder = new Rebuilder(text, this.nextTag.start);
 	var importFilterAttr;
@@ -37,7 +37,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
 			importFilterAttr = attr;
 		}
-		var oldValue, quote, logMessage = "attribute";
+		var oldValue, quote, logArguments = {name: "attribute"};
 		if (attr.type === "string") {
 			var handler = getAttributeHandler(this.nextTag, attributeName, options);
 			if (!handler) {
@@ -51,7 +51,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				continue;
 			}
 			if (extendedOptions.usedPlaceholder) {
-				logMessage = "attribute-placeholder";
+				logArguments.placeholder = true;
 			}
 			quote = utils.determineQuote(text, attr);
 			attr.quotedValue = utils.wrapAttributeValue(value,quote);
@@ -61,7 +61,7 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 				value = this.parser.getPlaceholderFor(value,handler.name)
 				attr.type = "macro";
 				attr.quotedValue = "<<"+value+">>";
-				logMessage = "attribute-placeholder";
+				logArguments.placeholder = true;
 			}
 			attr.value = value;
 		} else if (attr.type === "indirect") {
@@ -118,14 +118,10 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 		               - (quote.length*2)
 		               - oldValue.length;
 		builder.add(attr.quotedValue, valueStart, attr.end);
-		var logArguments = {
-			from: fromTitle,
-			to: toTitle,
-			tiddler: tiddler.fields.title,
-			element: this.nextTag.tag,
-			attribute: attributeName
-		};
-		log(logMessage, logArguments, options);
+
+		logArguments.element = this.nextTag.tag,
+		logArguments.attribute = attributeName
+		logger.add(logArguments);
 	}
 	if (importFilterAttr) {
 		var importFilter = computeAttribute(importFilterAttr, this.parser, options);

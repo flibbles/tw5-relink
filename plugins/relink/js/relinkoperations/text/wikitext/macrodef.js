@@ -13,7 +13,7 @@ var settings = require("$:/plugins/flibbles/relink/js/settings");
 
 exports.name = "macrodef";
 
-exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
+exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	var setParseTreeNode = this.parse();
 	var parentWidget = this.parser.getVariableWidget();
 	var setWidget = parentWidget.makeChildWidget(setParseTreeNode[0]);
@@ -38,16 +38,14 @@ exports.relink = function(tiddler, text, fromTitle, toTitle, options) {
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
 			var value = handler.relink(match[1], fromTitle, toTitle, extendedOptions);
 			if (value !== undefined) {
-				var message = "macrodef";
-				if (extendedOptions.usedPlaceholder) {
-					message = "macrodef-placeholder";
-				}
-				log(message, {
-					from: fromTitle,
-					to: toTitle,
-					tiddler: tiddler.fields.title,
+				var logArguments = {
+					name: "macrodef",
 					macro: m[1]
-				}, options);
+				};
+				if (extendedOptions.usedPlaceholder) {
+					logArguments.placeholder = true;
+				}
+				logger.add(logArguments);
 				this.parser.pos += match[0].length;
 				return "\\define "+m[1]+"() "+value+match[2];
 			}
