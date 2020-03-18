@@ -16,12 +16,24 @@ exports.Logger.prototype.add = function(args) {
 	this.logs.push(args);
 };
 
+exports.Logger.prototype.addToFailures = function(list) {
+	for (var i = 0; i < this.logs.length; i++) {
+		var args = this.logs[i];
+		if (args.impossible) {
+			list.push(this.title);
+		}
+	}
+};
+
 exports.Logger.prototype.logAll = function(options) {
 	if (options.quiet) {
 		return;
 	}
 	for (var i = 0; i < this.logs.length; i++) {
 		var args = this.logs[i];
+		if (args.impossible) {
+			continue;
+		}
 		args.tiddler = this.title;
 		args.to = this.to;
 		args.from = this.from;

@@ -14,8 +14,8 @@ var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
-var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
-var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
+var refHandler = settings.getRelinker('reference');
+var filterHandler = settings.getRelinker('filter');
 var macrocall = require("./macrocall.js");
 var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").CannotRelinkError;
 
@@ -46,7 +46,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 			}
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
 			oldValue = attr.value;
-			var value = handler.relink(attr.value, fromTitle, toTitle, extendedOptions);
+			var value = handler.relink(attr.value, fromTitle, toTitle, logger, extendedOptions);
 			if (value === undefined) {
 				continue;
 			}
@@ -81,7 +81,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		} else if (attr.type === "filtered") {
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
 			oldValue = attr.filter
-			var filter = filterHandler.relink(attr.filter, fromTitle, toTitle, extendedOptions);
+			var filter = filterHandler.relink(attr.filter, fromTitle, toTitle, logger, extendedOptions);
 			if (filter === undefined) {
 				continue;
 			}
@@ -95,7 +95,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
 			oldValue = attr.value;
-			var newMacro = macrocall.relinkMacroInvocation(macro, text, this.parser, fromTitle, toTitle, options);
+			var newMacro = macrocall.relinkMacroInvocation(macro, text, this.parser, fromTitle, toTitle, logger, options);
 			if (newMacro === undefined) {
 				continue;
 			}

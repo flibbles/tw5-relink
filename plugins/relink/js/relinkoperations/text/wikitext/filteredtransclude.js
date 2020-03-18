@@ -36,7 +36,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		modified = true;
 	}
 	var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-	var relinkedFilter = filterHandler.relink(filter, fromTitle, toTitle, extendedOptions);
+	var relinkedFilter = filterHandler.relink(filter, fromTitle, toTitle, logger, extendedOptions);
 	if (extendedOptions.usedPlaceholder) {
 		logArguments.placeholder = true;
 	}

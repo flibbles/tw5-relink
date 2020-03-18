@@ -37,7 +37,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		end: this.matchRegExp.lastIndex,
 		params: params
 	};
-	var results = this.relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, options);
+	var results = this.relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, logger, options);
 	if (results) {
 		return this.macroToString(results, text, this.parser, options);
 	} else {
@@ -51,7 +51,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
  * Macro invocation returned is the same, but relinked, and may have new keys:
  * parameters: {type: macro, start:, newValue: (quoted replacement value)}
  */
-exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle, options) {
+exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle, logger, options) {
 	var managedMacro = settings.getMacros(options)[macro.name];
 	var modified = false;
 	if (!managedMacro) {
@@ -80,7 +80,7 @@ exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle
 		var param = macro.params[index];
 		var handler = managedMacro[managedArg];
 		var extendedOptions = $tw.utils.extend({placeholder: parser}, options);
-		var value = handler.relink(param.value, fromTitle, toTitle, extendedOptions);
+		var value = handler.relink(param.value, fromTitle, toTitle, logger, extendedOptions);
 		if (value === undefined) {
 			continue;
 		}

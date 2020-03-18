@@ -80,14 +80,14 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				builder.add("tooltip="+quotedValue, ptr, ptr+attr.value.length);
 			}
 		} else {
-			ptr = relinkAttribute(attr, this.parser, builder, fromTitle, toTitle, options);
+			ptr = relinkAttribute(attr, this.parser, builder, fromTitle, toTitle, logger, options);
 		}
 	}
 	this.parser.pos = ptr;
 	return builder.results(ptr);
 };
 
-function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, options) {
+function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger, options) {
 	var text = builder.text;
 	var ptr = text.indexOf(attribute.name, attribute.start);
 	ptr += attribute.name.length;
@@ -115,7 +115,7 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, options
 		ptr = text.indexOf('{{{', ptr);
 		var end = ptr + attribute.filter.length + 6;
 		var extendedOptions = $tw.utils.extend({placeholder: parser}, options);
-		var filter = filterHandler.relink(attribute.filter, fromTitle, toTitle, extendedOptions);
+		var filter = filterHandler.relink(attribute.filter, fromTitle, toTitle, logger, extendedOptions);
 		if (filter !== undefined) {
 			if (!canBeFilterValue(filter)) {
 				throw new CannotRelinkError();
@@ -130,7 +130,7 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, options
 		var end = attribute.value.end;
 		var macro = attribute.value;
 		oldValue = attribute.value;
-		var newMacro = macrocall.relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, options);
+		var newMacro = macrocall.relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, options);
 		if (newMacro !== undefined) {
 			if (macrocall.mustBeAWidget(newMacro)) {
 				throw new CannotRelinkError();

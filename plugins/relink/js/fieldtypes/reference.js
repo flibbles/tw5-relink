@@ -11,9 +11,13 @@ var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").Canno
 
 exports.name = "reference";
 
-exports.relink = function(value, fromTitle, toTitle, options) {
+exports.relink = function(value, fromTitle, toTitle, logger, options) {
 	var reference = $tw.utils.parseTextReference(value);
 	if (reference.title !== fromTitle) {
+		return undefined;
+	}
+	if (!exports.canBePretty(toTitle)) {
+		logger.add({name: "reference", impossible: true});
 		return undefined;
 	}
 	reference.title = toTitle;

@@ -5,14 +5,13 @@ This specifies logic for updating filters to reflect title changes.
 /**Returns undefined if no change was made.
  */
 
-var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").CannotRelinkError;
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 
 exports.name = "filter";
 
-exports.relink = function(filter, fromTitle, toTitle, options) {
+exports.relink = function(filter, fromTitle, toTitle, logger, options) {
 	if (!filter || filter.indexOf(fromTitle) < 0) {
 		return undefined;
 	}
@@ -59,7 +58,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 				var alone = standaloneTitle.exec(filter);
 				if (!alone || alone.index != p) {
 					// It's a legit run
-					p =parseFilterOperation(relinker,fromTitle,toTitle,filter,p,whitelist,options);
+					p =parseFilterOperation(relinker,fromTitle,toTitle,logger,filter,p,whitelist,options);
 					if (p === undefined) {
 						// The filter is malformed
 						// We do nothing.
@@ -90,10 +89,11 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 				var newVal = wrapTitle(toTitle, preference);
 				if (newVal === undefined) {
 					if (!options.placeholder) {
-						throw new CannotRelinkError();
+						logger.add({name: "filter", impossible: true});
+						p = operandRegExp.lastIndex;
+						continue;
 					}
-					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]";
-					options.usedPlaceholder = true;
+					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]"; options.usedPlaceholder = true;
 				}
 				if (newVal[0] != '[') {
 					// not bracket enclosed
@@ -139,7 +139,7 @@ function wrapTitle(value, preference) {
 	return undefined;
 }
 
-function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whitelist, options) {
+function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString, p, whitelist, options) {
 	var nextBracketPos, operator;
 	// Skip the starting square bracket
 	if(filterString.charAt(p++) !== "[") {
@@ -179,16 +179,15 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 			case "{": // Curly brackets
 				nextBracketPos = filterString.indexOf("}",p);
 				var operand = filterString.substring(p,nextBracketPos);
-				var ref = $tw.utils.parseTextReference(operand);
-				if (ref.title === fromTitle) {
+				var newRef = refHandler.relink(operand, fromTitle, toTitle, logger, options);
+				if (newRef) {
 					if(!canBePrettyIndirect(toTitle)) {
-						throw new CannotRelinkError();
+						logger.add({name: "reference", impossible: true});
+					} else {
+						// We don't check the whitelist.
+						// All indirect operands convert.
+						relinker.add(newRef,p,nextBracketPos);
 					}
-					ref.title = toTitle;
-					var newRef = refHandler.toString(ref);
-					// We don't check the whitelist.
-					// All indirect operands convert.
-					relinker.add(newRef,p,nextBracketPos);
 				}
 				break;
 			case "[": // Square brackets
@@ -200,7 +199,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 					// This operator isn't managed. Bye.
 					break;
 				}
-				var result = handler.relink(operand, fromTitle, toTitle, options);
+				var result = handler.relink(operand, fromTitle, toTitle, logger, options);
 				if (!result) {
 					// The fromTitle wasn't in the operand.
 					break;
@@ -208,7 +207,8 @@ function parseFilterOperation(relinker, fromTitle, toTitle, filterString, p, whi
 				var wrapped;
 				if (!canBePrettyOperand(result)) {
 					if (!options.placeholder) {
-						throw new CannotRelinkError();
+						logger.add({name: "filter", impossible: true});
+						break;
 					}
 					var ph = options.placeholder.getPlaceholderFor(result);
 					wrapped = "<"+ph+">";

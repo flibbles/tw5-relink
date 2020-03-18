@@ -36,7 +36,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 			var handler = settings.getRelinker(placeholder[1] || 'title');
 				// This is a filter
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			var value = handler.relink(match[1], fromTitle, toTitle, extendedOptions);
+			var value = handler.relink(match[1], fromTitle, toTitle, logger, extendedOptions);
 			if (value !== undefined) {
 				var logArguments = {
 					name: "macrodef",

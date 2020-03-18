@@ -4,18 +4,17 @@ This manages replacing titles that occur within stringLists, like,
 TiddlerA [[Tiddler with spaces]] [[Another Title]]
 \*/
 
-var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").CannotRelinkError;
-
 exports.name = "list";
 
 /**Returns undefined if no change was made.
  * Parameter: value can literally be a list. This can happen for builtin
  *            types 'list' and 'tag'. In those cases, we also return list.
  */
-exports.relink = function(value, fromTitle, toTitle, options) {
+exports.relink = function(value, fromTitle, toTitle, logger, options) {
 	var isModified = false,
 		actualList = false,
-		list;
+		list,
+		output;
 	if (typeof value !== "string") {
 		// Not a string. Must be a list.
 		// clone it, since we may make changes to this possibly
@@ -35,15 +34,15 @@ exports.relink = function(value, fromTitle, toTitle, options) {
 		// It doesn't parse correctly alone, it won't
 		// parse correctly in any list.
 		if (!canBeListItem(toTitle)) {
-			throw new CannotRelinkError();
-		}
-		if (actualList) {
-			return list;
+			logger.add({name: "list", impossible: true});
+			return undefined;
+		} else if (actualList) {
+			output = list;
 		} else {
-			return $tw.utils.stringifyList(list);
+			output = $tw.utils.stringifyList(list);
 		}
 	}
-	return undefined;
+	return output;
 };
 
 function canBeListItem(value) {

@@ -20,7 +20,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	var filter = parseTree[0].attributes.filter.value;
 
 	var extendedOptions = $tw.utils.extend({placeholder: this.parser},options);
-	var value = filterRelinker.relink(filter, fromTitle, toTitle, extendedOptions);
+	var value = filterRelinker.relink(filter, fromTitle, toTitle, logger, extendedOptions);
 	var rtn = undefined;
 	if (value !== undefined) {
 		var logArguments = {name: "import"};

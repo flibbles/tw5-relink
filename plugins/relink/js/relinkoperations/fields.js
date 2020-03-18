@@ -16,7 +16,7 @@ exports['fields'] = function(tiddler, fromTitle, toTitle, logger, changes, optio
 	var fields = settings.getFields(options);
 	$tw.utils.each(fields, function(handler, field) {
 		var input = tiddler.fields[field];
-		var value = handler.relink(input, fromTitle, toTitle, options);
+		var value = handler.relink(input, fromTitle, toTitle, logger, options);
 		if (value !== undefined) {
 			logger.add({ name: "field", field: field });
 			changes[field] = value;

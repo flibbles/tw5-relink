@@ -52,6 +52,16 @@ it('handles managed rules inside unmanaged rules', function() {
 	testText("''[[from here]]''");
 });
 
+it('continues on after impossible relink', function() {
+	// The list field can't be updated, but the text should be, despite
+	// the failure.
+	var text = "{{from here}}";
+	var results = utils.relink({text: text, list: "[[from here]]"}, {to: "to ]] here"});
+	expect(results.fails.length).toEqual(1);
+	expect(results.tiddler.fields.text).toEqual("{{to ]] here}}");
+	expect(results.tiddler.fields.list).toEqual(["from here"]);
+});
+
 it('comments', function() {
 	testText("<!--[[from here]]-->", {ignored: true});
 	testText("<!--\n\n[[from here]]\n\n-->", {ignored: true});

@@ -77,6 +77,8 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 					}
 				}
 				logger.logAll(options);
+				// TODO: Temporary
+				logger.addToFailures(failures);
 			}
 		}
 	}
