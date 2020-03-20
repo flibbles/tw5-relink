@@ -44,15 +44,9 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		// parameter needs to placeholder, just fail.
 		mayBeWidget = false;
 	}
-	var results = relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, logger, options, mayBeWidget);
+	var results = relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, logger, mayBeWidget, options);
 	if (results) {
-		var string = macroToString(results, text, names, options);
-		if (string !== undefined) {
-			return string;
-		}
-		// We couldn't make the string, which means we needed
-		// the macro definition and couldn't find it.
-		logger.add({name: "macrocall", impossible: true});
+		return macroToString(results, text, names, options);
 	}
 	return undefined;
 };
@@ -62,12 +56,8 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
  *  is complicated.
  */
 exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, logger, options) {
-	var newMacro = relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, options, false);
+	var newMacro = relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, false, options);
 	if (newMacro === undefined) {
-		return undefined;
-	}
-	if (mustBeAWidget(newMacro)) {
-		logger.add({name: "macrocall", impossible: true});
 		return undefined;
 	}
 	return macroToStringMacro(newMacro, text, options);
@@ -79,7 +69,7 @@ exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, logg
  * Macro invocation returned is the same, but relinked, and may have new keys:
  * parameters: {type: macro, start:, newValue: (quoted replacement value)}
  */
-function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, options, mayBeWidget) {
+function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, mayBeWidget, options) {
 	var managedMacro = settings.getMacros(options)[macro.name];
 	var modified = false;
 	if (!managedMacro) {
