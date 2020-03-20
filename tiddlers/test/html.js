@@ -128,9 +128,10 @@ it("failure doesn't prevent other relinks", function() {
 	                 {to: "A}}}B"});
 	expect(r.fails.length).toEqual(1);
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.macroConf("test", "arg"));
-	var r = testText("\\define test(arg)\n<$link to=<<test 'from here'>>/> [[from here]]",
-	                 "\\define test(arg)\n<$link to=<<test 'from here'>>/> [[A' B]\"]]",
+	wiki.addTiddlers([utils.macroConf("t", "arg"),
+		{title: "m", tags: "$:/tags/Macro", text: "\\define t(arg)"}]);
+	var r = testText("<$link to=<<t 'from here'>>/> [[from here]]",
+	                 "<$link to=<<t 'from here'>>/> [[A' B]\"]]",
 	                 {to: "A' B]\"", wiki: wiki});
 	expect(r.fails.length).toEqual(1);
 });

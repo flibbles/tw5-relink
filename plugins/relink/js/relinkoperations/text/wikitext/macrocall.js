@@ -39,7 +39,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	};
 	var results = relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, logger, options);
 	if (results) {
-		return this.macroToString(results, text, this.parser, options);
+		return macroToString(results, text, this.parser, options);
 	} else {
 		return undefined;
 	}
@@ -58,7 +58,7 @@ exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, logg
 		logger.add({name: "macrocall", impossible: true});
 		return undefined;
 	}
-	return newMacro;
+	return macroToString(newMacro, text, parser, options);
 };
 
 /**Processes the given macro,
@@ -138,7 +138,7 @@ function mustBeAWidget(macro) {
  * it was parsed from, returns a new macro that maintains any syntactic
  * structuring.
  */
-exports.macroToString = function(macro, text, parser, options) {
+function macroToString(macro, text, parser, options) {
 	if (mustBeAWidget(macro)) {
 		var names = getParamNames(macro.name, macro.params, parser, options);
 		var attrs = [];

@@ -130,9 +130,8 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger,
 		var end = attribute.value.end;
 		var macro = attribute.value;
 		oldValue = attribute.value;
-		var newMacro = macrocall.relinkAttribute(macro, text, parser, fromTitle, toTitle, logger, options);
-		if (newMacro !== undefined) {
-			var macroString = macrocall.macroToString(newMacro, text, parser, options);
+		var macroString = macrocall.relinkAttribute(macro, text, parser, fromTitle, toTitle, logger, options);
+		if (macroString !== undefined) {
 			builder.add(macroString, ptr, end);
 		}
 		ptr = end;

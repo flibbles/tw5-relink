@@ -142,7 +142,7 @@ it('imported macros', function() {
 		testText(text, options);
 	};
 	test("\\import otherTiddler\n\n<<other Z [[from here]]>>");
-	test("<$importvariables filter='otherTiddler'><<other Z [[from here]]>></$importvariables>");
+	test("<$importvariables filter='A otherTiddler B'><<other Z [[from here]]>></$importvariables>");
 	test("<$importvariables filter={{otherRef!!pointer}}><<other Z [[from here]]>></$importvariables>");
 	test("<$importvariables filter={{{[all[current]get[pointer]]}}}><<other Z [[from here]]>></$importvariables>", {fields: {pointer: "otherTiddler"}});
 	test("<$importvariables filter={{!!pointer}}><<other Z [[from here]]>></$importvariables>", {fields: {pointer: "otherTiddler"}});

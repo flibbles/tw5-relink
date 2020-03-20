@@ -36,7 +36,8 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
 			importFilterAttr = attr;
 		}
-		var oldValue, quote, logArguments = {name: "attribute"};
+		var oldLength, quotedValue, quote,
+			logArguments = {name: "attribute"};
 		if (attr.type === "string") {
 			var handler = getAttributeHandler(this.nextTag, attributeName, options);
 			if (!handler) {
@@ -44,7 +45,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				continue;
 			}
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			oldValue = attr.value;
+			oldLength = attr.value.length;
 			var value = handler.relink(attr.value, fromTitle, toTitle, logger, extendedOptions);
 			if (value === undefined) {
 				continue;
@@ -53,28 +54,26 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				logArguments.placeholder = true;
 			}
 			quote = utils.determineQuote(text, attr);
-			attr.quotedValue = utils.wrapAttributeValue(value,quote);
-			if (attr.quotedValue === undefined) {
+			quotedValue = utils.wrapAttributeValue(value,quote);
+			if (quotedValue === undefined) {
 				// The value was unquotable. We need to make
 				// a macro in order to replace it.
 				value = this.parser.getPlaceholderFor(value,handler.name)
 				attr.type = "macro";
-				attr.quotedValue = "<<"+value+">>";
+				quotedValue = "<<"+value+">>";
 				logArguments.placeholder = true;
 			}
-			attr.value = value;
 		} else if (attr.type === "indirect") {
-			oldValue = attr.textReference;
+			oldLength = attr.textReference.length;
 			quote = "{{";
 			var newRef = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, logger, options);
 			if (!newRef) {
 				continue;
 			}
-			attr.textReference = newRef;
-			attr.quotedValue = "{{"+attr.textReference+"}}";
+			quotedValue = "{{"+newRef+"}}";
 		} else if (attr.type === "filtered") {
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			oldValue = attr.filter
+			oldLength = attr.filter.length
 			var filter = filterHandler.relink(attr.filter, fromTitle, toTitle, logger, extendedOptions);
 			if (filter === undefined) {
 				continue;
@@ -84,38 +83,46 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				logger.add({name: "filter", impossible: true});
 				continue;
 			}
-			attr.filter = filter;
-			attr.quotedValue = "{{{" + filter + "}}}";
+			quotedValue = "{{{" + filter + "}}}";
 			quote = "{{{";
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
-			oldValue = attr.value;
-			var newMacro = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, logger, options);
-			if (newMacro === undefined) {
+			oldLength = attr.value.length;
+			var macroString = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, logger, options);
+			if (macroString === undefined) {
 				continue;
 			}
-			attr.value = newMacro;
 			// TODO: Let's not hack like this. attr.value is
 			// expected to be a string of the unquoted value below.
 			// Make this better when I can.
-			oldValue.length = (macro.end-macro.start)-4;
+			oldLength = (macro.end-macro.start)-4;
 			quote = "<<";
-			attr.quotedValue = macrocall.macroToString(newMacro, text, this.parser, options);
+			quotedValue = macroString;
 		} else {
 			continue;
+		}
+		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
+			// If this is an import variable filter, we gotta
+			// remember this new value when we import lower down.
+			importFilterAttr = quotedValue;
 		}
 		// account for the quote if it's there.
 		// We count backwards from the end to preserve whitespace
 		var valueStart = attr.end
 		               - (quote.length*2)
-		               - oldValue.length;
-		builder.add(attr.quotedValue, valueStart, attr.end);
+		               - oldLength;
+		builder.add(quotedValue, valueStart, attr.end);
 
 		logArguments.element = this.nextTag.tag,
 		logArguments.attribute = attributeName
 		logger.add(logArguments);
 	}
 	if (importFilterAttr) {
+		if (typeof importFilterAttr === "string") {
+			// It was changed. Reparse it. It'll be a quoted
+			// attribute value. Add a dummy attribute name.
+			importFilterAttr = $tw.utils.parseAttribute("p="+importFilterAttr, 0)
+		}
 		var importFilter = computeAttribute(importFilterAttr, this.parser, options);
 		var parentWidget = this.parser.getVariableWidget();
 		var varHolder = options.wiki.relinkGenerateVariableWidget(importFilter, parentWidget);
