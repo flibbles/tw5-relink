@@ -112,6 +112,19 @@ exports.relink = function(filter, fromTitle, toTitle, logger, options) {
 	return relinker.results();
 };
 
+/* Same as this.relink, except this has the added constraint that the return
+ * value must be able to be wrapped in curly braces. (i.e. '{{{...}}}')
+ */
+exports.relinkInBraces = function(filter, fromTitle, toTitle, logger, options) {
+	var output = this.relink(filter, fromTitle, toTitle, logger, options);
+	if (output && !canBeInBraces(output)) {
+		// Although I think we can actually do this one.
+		logger.add({name: "filter", impossible: true});
+		return undefined;
+	}
+	return output;
+};
+
 function wrapTitle(value, preference) {
 	var choices = {
 		"": function(v) {return !/[\s\[\]]/.test(v); },
@@ -255,4 +268,8 @@ function fieldType(whitelist, operator) {
 
 function canBePrettyOperand(value) {
 	return value.indexOf(']') < 0;
+};
+
+function canBeInBraces(value) {
+	return value.indexOf("}}}") < 0 && value.substr(value.length-2) !== '}}';
 };

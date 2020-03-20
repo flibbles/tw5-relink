@@ -108,15 +108,11 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger,
 		ptr = text.indexOf('{{{', ptr);
 		var end = ptr + attribute.filter.length + 6;
 		var extendedOptions = $tw.utils.extend({placeholder: parser}, options);
-		var filter = filterHandler.relink(attribute.filter, fromTitle, toTitle, logger, extendedOptions);
+		var filter = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, logger, extendedOptions);
 		if (filter !== undefined) {
-			if (!canBeFilterValue(filter)) {
-				logger.add({name: "filter", impossible: true});
-			} else {
-				attribute.filter = filter;
-				var quoted = "{{{"+filter+"}}}";
-				builder.add(quoted, ptr, end);
-			}
+			attribute.filter = filter;
+			var quoted = "{{{"+filter+"}}}";
+			builder.add(quoted, ptr, end);
 		}
 		ptr = end;
 	} else if (attribute.type === "macro") {
@@ -131,10 +127,6 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger,
 		ptr = end;
 	}
 	return ptr;
-};
-
-function canBeFilterValue(value) {
-	return value.indexOf("}}}") < 0 && value.substr(value.length-2) !== '}}';
 };
 
 function canBePretty(title, tooltip) {

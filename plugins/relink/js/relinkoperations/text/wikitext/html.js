@@ -72,13 +72,8 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 			quotedValue = "{{"+newRef+"}}";
 		} else if (attr.type === "filtered") {
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			var filter = filterHandler.relink(attr.filter, fromTitle, toTitle, logger, extendedOptions);
+			var filter = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, logger, extendedOptions);
 			if (filter === undefined) {
-				continue;
-			}
-			if (!canBeFilterValue(filter)) {
-				// Although I think we can actually do this one.
-				logger.add({name: "filter", impossible: true});
 				continue;
 			}
 			// +6 for '{{{' and '}}}'
@@ -158,8 +153,4 @@ function computeAttribute(attribute, parser, options) {
 		value = attribute.value;
 	}
 	return value;
-};
-
-function canBeFilterValue(value) {
-	return value.indexOf("}}}") < 0 && value.substr(value.length-2) !== '}}';
 };
