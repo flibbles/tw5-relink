@@ -125,8 +125,10 @@ it('undefined macros', function() {
 	// Relink CAN resolve the argument, since it's named, but it needs to
 	// convert into a widget, which it can't do unless ALL arguments can
 	// be named (which you can't do without the macro definition).
-	testText("<<undef something param:'from here'>>",
-	         {wiki: wiki, to: to, ignored: true, fails: 1});
+	// ALSO: it shouldn't make a placeholder if there's no point.
+	testText("<<undef something param:'from here'>> [[from here]]",
+	         "<<undef something param:'from here'>> [[A] '\"]]",
+	         {wiki: wiki, to: "A] '\"", fails: 1});
 
 	// Relink continues if one param couldn't resolve. Others might.
 	wiki.addTiddler(utils.macroConf("undef", "list", "list"));
@@ -140,12 +142,10 @@ it('undefined macros', function() {
 	         {wiki: wiki, fails: 2, to: to});
 	// Super tricky. Both parameters can relink, but 'param' requires a
 	// downgrade. But there's an unresolved anonymous param, so no
-	// downgrade possible. Thus both must fail. Looking for two failures.
-	/*
-	testText("<<undef list:'[[from]]' param:'from' other>> [[from]]",
-	         "<<undef list:'[[from]]' param:'from' other>> [[A] '\"]]",
-	         {wiki: wiki, fails: 2, from: "from", to: "A] '\""});
-	*/
+	// downgrade possible. Therefore, fail that, but process the other.
+	testText("<<undef list:'[[from]]' param:'from' anon>> [[from]]",
+	         `<<undef list:"""[[A] '\"]]""" param:'from' anon>> [[A] '\"]]`,
+	         {wiki: wiki, fails: 1, from: "from", to: "A] '\""});
 
 
 });

@@ -37,12 +37,24 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		end: this.matchRegExp.lastIndex,
 		params: params
 	};
-	var results = relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, logger, options);
-	if (results) {
-		return macroToString(results, text, this.parser, options);
-	} else {
-		return undefined;
+	var mayBeWidget = true;
+	var names = getParamNames(macroInfo.name, macroInfo.params, this.parser, options);
+	if (names === undefined) {
+		// Needed the definition, and couldn't find it. So if a single
+		// parameter needs to placeholder, just fail.
+		mayBeWidget = false;
 	}
+	var results = relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, logger, options, mayBeWidget);
+	if (results) {
+		var string = macroToString(results, text, names, options);
+		if (string !== undefined) {
+			return string;
+		}
+		// We couldn't make the string, which means we needed
+		// the macro definition and couldn't find it.
+		logger.add({name: "macrocall", impossible: true});
+	}
+	return undefined;
 };
 
 /** Relinks macros that occur as attributes, like <$element attr=<<...>> />
@@ -50,7 +62,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
  *  is complicated.
  */
 exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, logger, options) {
-	var newMacro = relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, options, true);
+	var newMacro = relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, options, false);
 	if (newMacro === undefined) {
 		return undefined;
 	}
@@ -58,7 +70,7 @@ exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, logg
 		logger.add({name: "macrocall", impossible: true});
 		return undefined;
 	}
-	return macroToString(newMacro, text, parser, options);
+	return macroToStringMacro(newMacro, text, options);
 };
 
 /**Processes the given macro,
@@ -67,7 +79,7 @@ exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, logg
  * Macro invocation returned is the same, but relinked, and may have new keys:
  * parameters: {type: macro, start:, newValue: (quoted replacement value)}
  */
-function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, options, noWidget) {
+function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, options, mayBeWidget) {
 	var managedMacro = settings.getMacros(options)[macro.name];
 	var modified = false;
 	if (!managedMacro) {
@@ -112,7 +124,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, 
 		var quoted = utils.wrapParameterValue(value, quote);
 		var newParam = $tw.utils.extend({}, param);
 		if (quoted === undefined) {
-			if (noWidget) {
+			if (!mayBeWidget) {
 				logger.add({name: "macrocall", impossible: true});
 				continue;
 			}
@@ -146,9 +158,8 @@ function mustBeAWidget(macro) {
  * it was parsed from, returns a new macro that maintains any syntactic
  * structuring.
  */
-function macroToString(macro, text, parser, options) {
+function macroToString(macro, text, names, options) {
 	if (mustBeAWidget(macro)) {
-		var names = getParamNames(macro.name, macro.params, parser, options);
 		var attrs = [];
 		for (var i = 0; i < macro.params.length; i++) {
 			var p = macro.params[i];
@@ -162,15 +173,19 @@ function macroToString(macro, text, parser, options) {
 		}
 		return "<$macrocall $name="+utils.wrapAttributeValue(macro.name)+attrs.join('')+"/>";
 	} else {
-		var builder = new Rebuilder(text, macro.start);
-		for (var i = 0; i < macro.params.length; i++) {
-			var param = macro.params[i];
-			if (param.newValue) {
-				builder.add(param.newValue, param.start, param.end);
-			}
-		}
-		return builder.results(macro.end);
+		return macroToStringMacro(macro, text, options);
 	}
+};
+
+function macroToStringMacro(macro, text, options) {
+	var builder = new Rebuilder(text, macro.start);
+	for (var i = 0; i < macro.params.length; i++) {
+		var param = macro.params[i];
+		if (param.newValue) {
+			builder.add(param.newValue, param.start, param.end);
+		}
+	}
+	return builder.results(macro.end);
 };
 
 function getParamIndexWithinMacrocall(macroName, param, params, parser, options) {
@@ -234,7 +249,10 @@ function getParamNames(macroName, params, parser, options) {
 	if (anonsExist) {
 		var def = getDefinition(macroName, parser, options);
 		if (def === undefined) {
-			throw new CannotFindMacroDefError(macroName);
+			// If there are anonymous parameters, and we can't
+			// find the definition, then we can't hope to create
+			// a widget.
+			return undefined;
 		}
 		var defParams = def.params || [];
 		var defPtr = 0;
