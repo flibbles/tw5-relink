@@ -31,9 +31,11 @@ it("indirect attributes", function() {
 	testText("[img width={{from here!!width}} [s]]");
 	testText("[img width={{from here##width}} [s]]");
 	var r;
-	r = testText("[img width={{from here}} [s]]", {to: "title}brack", ignored: true});
+	r = testText("[img width={{from here}} [from here]]",
+	             "[img width={{from here}} [brack}]]", {to: "brack}"});
 	expect(r.fails.length).toEqual(1);
-	r = testText("[img width={{from here}} [s]]", {to: "title!!bang", ignored: true});
+	r = testText("[img width={{from here}} [from here]]",
+	             "[img width={{from here}} [A!!B]]", {to: "A!!B"});
 	expect(r.fails.length).toEqual(1);
 });
 
@@ -42,7 +44,8 @@ it("filtered attributes", function() {
 	testText("[img width  =  {{{  [tag[from here]]   }}} [s]]");
 	testText("[img width={{{[tag[from here]]}}} [s]].",
 	         "\\define relink-1() A]B\n[img width={{{[tag<relink-1>]}}} [s]].", {to: "A]B"});
-	var r = testText("[img width={{{[[from here]]}}} [s]]", {to: "A}}}B", ignored: true});
+	var r = testText("[img width={{{'from here'}}} [from here]]",
+	                 "[img width={{{'from here'}}} [A}}}B]]", {to:"A}}}B"});
 	expect(r.fails.length).toEqual(1);
 });
 

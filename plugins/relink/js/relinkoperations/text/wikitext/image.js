@@ -14,7 +14,6 @@ var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
 var macrocall = require("./macrocall.js");
-var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").CannotRelinkError;
 var utils = require("./utils.js");
 
 exports.name = "image";
@@ -99,16 +98,10 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger,
 		ptr += quote.length + attribute.value.length;
 	} else if (attribute.type === "indirect") {
 		ptr = text.indexOf('{{', ptr);
-		var quote = "{{";
-		var ref = $tw.utils.parseTextReference(attribute.textReference);
 		var end = ptr + attribute.textReference.length + 4;
-		if (ref.title === fromTitle) {
-			if (toTitle.indexOf("}") >= 0) {
-				throw new CannotRelinkError();
-			}
-			ref.title = toTitle;
-			var value = refHandler.toString(ref);
-			builder.add("{{"+value+"}}", ptr, end);
+		var ref = refHandler.relinkInBraces(attribute.textReference, fromTitle, toTitle, logger, options);
+		if (ref) {
+			builder.add("{{"+ref+"}}", ptr, end);
 		}
 		ptr = end;
 	} else if (attribute.type === "filtered") {
@@ -118,11 +111,12 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger,
 		var filter = filterHandler.relink(attribute.filter, fromTitle, toTitle, logger, extendedOptions);
 		if (filter !== undefined) {
 			if (!canBeFilterValue(filter)) {
-				throw new CannotRelinkError();
+				logger.add({name: "filter", impossible: true});
+			} else {
+				attribute.filter = filter;
+				var quoted = "{{{"+filter+"}}}";
+				builder.add(quoted, ptr, end);
 			}
-			attribute.filter = filter;
-			var quoted = "{{{"+filter+"}}}";
-			builder.add(quoted, ptr, end);
 		}
 		ptr = end;
 	} else if (attribute.type === "macro") {
