@@ -36,8 +36,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
 			importFilterAttr = attr;
 		}
-		var oldLength, quotedValue, quote,
-			logArguments = {name: "attribute"};
+		var oldLength, quotedValue, logArguments = {name: "attribute"};
 		if (attr.type === "string") {
 			var handler = getAttributeHandler(this.nextTag, attributeName, options);
 			if (!handler) {
@@ -45,7 +44,6 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				continue;
 			}
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			oldLength = attr.value.length;
 			var value = handler.relink(attr.value, fromTitle, toTitle, logger, extendedOptions);
 			if (value === undefined) {
 				continue;
@@ -53,7 +51,8 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 			if (extendedOptions.usedPlaceholder) {
 				logArguments.placeholder = true;
 			}
-			quote = utils.determineQuote(text, attr);
+			var quote = utils.determineQuote(text, attr);
+			oldLength = attr.value.length + (quote.length * 2);
 			quotedValue = utils.wrapAttributeValue(value,quote);
 			if (quotedValue === undefined) {
 				// The value was unquotable. We need to make
@@ -64,16 +63,15 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				logArguments.placeholder = true;
 			}
 		} else if (attr.type === "indirect") {
-			oldLength = attr.textReference.length;
-			quote = "{{";
 			var newRef = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, logger, options);
 			if (!newRef) {
 				continue;
 			}
+			// +4 for '{{' and '}}'
+			oldLength = attr.textReference.length + 4;
 			quotedValue = "{{"+newRef+"}}";
 		} else if (attr.type === "filtered") {
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			oldLength = attr.filter.length
 			var filter = filterHandler.relink(attr.filter, fromTitle, toTitle, logger, extendedOptions);
 			if (filter === undefined) {
 				continue;
@@ -83,20 +81,17 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				logger.add({name: "filter", impossible: true});
 				continue;
 			}
+			// +6 for '{{{' and '}}}'
+			oldLength = attr.filter.length + 6;
 			quotedValue = "{{{" + filter + "}}}";
-			quote = "{{{";
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
-			oldLength = attr.value.length;
 			var macroString = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, logger, options);
 			if (macroString === undefined) {
 				continue;
 			}
-			// TODO: Let's not hack like this. attr.value is
-			// expected to be a string of the unquoted value below.
-			// Make this better when I can.
-			oldLength = (macro.end-macro.start)-4;
-			quote = "<<";
+			// already includes the 4 carrot brackets
+			oldLength = macro.end-macro.start;
 			quotedValue = macroString;
 		} else {
 			continue;
@@ -106,11 +101,8 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 			// remember this new value when we import lower down.
 			importFilterAttr = quotedValue;
 		}
-		// account for the quote if it's there.
 		// We count backwards from the end to preserve whitespace
-		var valueStart = attr.end
-		               - (quote.length*2)
-		               - oldLength;
+		var valueStart = attr.end - oldLength;
 		builder.add(quotedValue, valueStart, attr.end);
 
 		logArguments.element = this.nextTag.tag,
