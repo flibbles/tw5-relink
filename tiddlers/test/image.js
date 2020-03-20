@@ -54,9 +54,11 @@ it("macro attributes", function() {
 		return testText(macros+value, macros+expected,
 		                Object.assign({wiki: wiki}, options));
 	};
-	var original = "[img width=<<ten 'from here'>> [s]]";
-	test(original, "[img width=<<ten 'to there'>> [s]]");
-	var r = test(original, original, {to: "A>>'\"\"\"]]B"});
+	test("[img width=<<ten 'from here'>> [s]]",
+	     "[img width=<<ten 'to there'>> [s]]");
+	var r = test("[img width=<<ten 'from here'>> [s]] [[from here]]",
+	             "[img width=<<ten 'from here'>> [s]] [[A ']B\"]]",
+	             {to: "A ']B\""});
 	expect(r.fails.length).toEqual(1);
 });
 

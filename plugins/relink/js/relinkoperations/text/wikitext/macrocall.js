@@ -37,12 +37,28 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		end: this.matchRegExp.lastIndex,
 		params: params
 	};
-	var results = this.relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, logger, options);
+	var results = relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, logger, options);
 	if (results) {
 		return this.macroToString(results, text, this.parser, options);
 	} else {
 		return undefined;
 	}
+};
+
+/** Relinks macros that occur as attributes, like <$element attr=<<...>> />
+ *  Processes the same, except it can't downgrade into a widget if the title
+ *  is complicated.
+ */
+exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, logger, options) {
+	var newMacro = relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, options, true);
+	if (newMacro === undefined) {
+		return undefined;
+	}
+	if (mustBeAWidget(newMacro)) {
+		logger.add({name: "macrocall", impossible: true});
+		return undefined;
+	}
+	return newMacro;
 };
 
 /**Processes the given macro,
@@ -51,7 +67,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
  * Macro invocation returned is the same, but relinked, and may have new keys:
  * parameters: {type: macro, start:, newValue: (quoted replacement value)}
  */
-exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle, logger, options) {
+function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, options, noWidget) {
 	var managedMacro = settings.getMacros(options)[macro.name];
 	var modified = false;
 	if (!managedMacro) {
@@ -88,6 +104,10 @@ exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle
 		var quoted = utils.wrapParameterValue(value, quote);
 		var newParam = $tw.utils.extend({}, param);
 		if (quoted === undefined) {
+			if (noWidget) {
+				logger.add({name: "macrocall", impossible: true});
+				continue;
+			}
 			var ph = parser.getPlaceholderFor(value,handler.name);
 			newParam.newValue = "<<"+ph+">>";
 			newParam.type = "macro";
@@ -105,7 +125,7 @@ exports.relinkMacroInvocation = function(macro, text, parser, fromTitle, toTitle
 	return undefined;
 };
 
-exports.mustBeAWidget = function(macro) {
+function mustBeAWidget(macro) {
 	for (var i = 0; i < macro.params.length; i++) {
 		if (macro.params[i].type === "macro") {
 			return true;
@@ -119,7 +139,7 @@ exports.mustBeAWidget = function(macro) {
  * structuring.
  */
 exports.macroToString = function(macro, text, parser, options) {
-	if (exports.mustBeAWidget(macro)) {
+	if (mustBeAWidget(macro)) {
 		var names = getParamNames(macro.name, macro.params, parser, options);
 		var attrs = [];
 		for (var i = 0; i < macro.params.length; i++) {

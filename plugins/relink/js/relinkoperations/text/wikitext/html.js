@@ -17,7 +17,6 @@ var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var refHandler = settings.getRelinker('reference');
 var filterHandler = settings.getRelinker('filter');
 var macrocall = require("./macrocall.js");
-var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").CannotRelinkError;
 
 exports.name = "html";
 
@@ -67,16 +66,11 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		} else if (attr.type === "indirect") {
 			oldValue = attr.textReference;
 			quote = "{{";
-			var ref = $tw.utils.parseTextReference(attr.textReference);
-			if (ref.title !== fromTitle) {
+			var newRef = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, logger, options);
+			if (!newRef) {
 				continue;
 			}
-			if (toTitle.indexOf("}") >= 0) {
-				// Impossible replacement
-				throw new CannotRelinkError();
-			}
-			ref.title = toTitle;
-			attr.textReference = refHandler.toString(ref);
+			attr.textReference = newRef;
 			attr.quotedValue = "{{"+attr.textReference+"}}";
 		} else if (attr.type === "filtered") {
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
@@ -87,7 +81,8 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 			}
 			if (!canBeFilterValue(filter)) {
 				// Although I think we can actually do this one.
-				throw new CannotRelinkError();
+				logger.add({name: "filter", impossible: true});
+				continue;
 			}
 			attr.filter = filter;
 			attr.quotedValue = "{{{" + filter + "}}}";
@@ -95,12 +90,9 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
 			oldValue = attr.value;
-			var newMacro = macrocall.relinkMacroInvocation(macro, text, this.parser, fromTitle, toTitle, logger, options);
+			var newMacro = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, logger, options);
 			if (newMacro === undefined) {
 				continue;
-			}
-			if (macrocall.mustBeAWidget(newMacro)) {
-				throw new CannotRelinkError();
 			}
 			attr.value = newMacro;
 			// TODO: Let's not hack like this. attr.value is

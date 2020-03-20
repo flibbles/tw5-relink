@@ -108,13 +108,30 @@ it('allows redirect with bad toTitle if not applicable', function() {
 	expect(r.fails.length).toEqual(0);
 });
 
-//TODO: This scenario is actually possible, but it's not necessary for
-//      the major release.
 it('fails on bad indirect attributes', function() {
 	var r;
-	r = testText("<$link to={{from here}}/>", {ignored: true, to: "E!!E"});
+	r = testText("<$link tooltip={{from here}} to='from here'/>",
+	             "<$link tooltip={{from here}} to='E!!E'/>", {to: "E!!E"});
 	expect(r.fails.length).toEqual(1);
-	r = testText("<$link to={{from here}}/>", {ignored: true, to: "T##T"});
+	r = testText("<$link tooltip={{from here}} to='from here'/>",
+	             "<$link tooltip={{from here}} to='T##T'/>", {to: "T##T"});
+	expect(r.fails.length).toEqual(1);
+});
+
+it("failure doesn't prevent other relinks", function() {
+	var r = testText("<$link tooltip={{from here}} to='from here' />",
+	                 "<$link tooltip={{from here}} to='to}there' />",
+	                 {to: "to}there"});
+	expect(r.fails.length).toEqual(1);
+	var r = testText("<$link tooltip={{{[[from here]]}}} to='from here' />",
+	                 "<$link tooltip={{{[[from here]]}}} to='A}}}B' />",
+	                 {to: "A}}}B"});
+	expect(r.fails.length).toEqual(1);
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("test", "arg"));
+	var r = testText("\\define test(arg)\n<$link to=<<test 'from here'>>/> [[from here]]",
+	                 "\\define test(arg)\n<$link to=<<test 'from here'>>/> [[A' B]\"]]",
+	                 {to: "A' B]\"", wiki: wiki});
 	expect(r.fails.length).toEqual(1);
 });
 

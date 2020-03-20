@@ -179,15 +179,11 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 			case "{": // Curly brackets
 				nextBracketPos = filterString.indexOf("}",p);
 				var operand = filterString.substring(p,nextBracketPos);
-				var newRef = refHandler.relink(operand, fromTitle, toTitle, logger, options);
+				var newRef = refHandler.relinkInBraces(operand, fromTitle, toTitle, logger, options);
 				if (newRef) {
-					if(!canBePrettyIndirect(toTitle)) {
-						logger.add({name: "reference", impossible: true});
-					} else {
-						// We don't check the whitelist.
-						// All indirect operands convert.
-						relinker.add(newRef,p,nextBracketPos);
-					}
+					// We don't check the whitelist.
+					// All indirect operands convert.
+					relinker.add(newRef,p,nextBracketPos);
 				}
 				break;
 			case "[": // Square brackets
@@ -259,8 +255,4 @@ function fieldType(whitelist, operator) {
 
 function canBePrettyOperand(value) {
 	return value.indexOf(']') < 0;
-};
-
-function canBePrettyIndirect(value) {
-	return value.indexOf('}') < 0;
 };

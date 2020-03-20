@@ -35,7 +35,6 @@ exports.relink = function(value, fromTitle, toTitle, logger, options) {
 		// parse correctly in any list.
 		if (!canBeListItem(toTitle)) {
 			logger.add({name: "list", impossible: true});
-			return undefined;
 		} else if (actualList) {
 			output = list;
 		} else {

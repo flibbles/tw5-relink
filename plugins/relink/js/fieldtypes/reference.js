@@ -24,6 +24,18 @@ exports.relink = function(value, fromTitle, toTitle, logger, options) {
 	return exports.toString(reference);
 };
 
+/* Same as this.relink, except this has the added constraint that the return
+ * value must be able to be wrapped in curly braces.
+ */
+exports.relinkInBraces = function(value, fromTitle, toTitle, logger, options) {
+	var output = this.relink(value, fromTitle, toTitle, logger, options);
+	if (output && toTitle.indexOf("}") >= 0) {
+		logger.add({name: "reference", impossible: true});
+		return undefined;
+	}
+	return output;
+};
+
 exports.toString = function(textReference) {
 	var title = textReference.title || '';
 	if (!exports.canBePretty(title)) {
