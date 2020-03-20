@@ -5,7 +5,6 @@ Introduces some utility methods used by Relink.
 
 \*/
 
-var errors = require('$:/plugins/flibbles/relink/js/errors');
 var Logger = require("$:/plugins/flibbles/relink/js/language.js").Logger;
 
 var relinkOperations = Object.create(null);
@@ -65,17 +64,13 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 						changeList[title] = changes;
 					}
 				} catch (e) {
-					if (e instanceof errors.RelinkError) {
-						failures.push(title);
-					} else {
-						// Should we test for instanceof Error instead?: yes
-						// Does that work in the testing environment?: no
-						if (e.message) {
-							e.message = e.message + "\nWhen relinking '" + title + "'";
-						}
-						throw e;
+					// Should we test for instanceof Error instead?: yes
+					// Does that work in the testing environment?: no
+					if (e.message) {
+						e.message = e.message + "\nWhen relinking '" + title + "'";
 					}
-				}
+					throw e;
+			j}
 				logger.logAll(options);
 				// TODO: Temporary
 				logger.addToFailures(failures);
