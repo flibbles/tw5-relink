@@ -11,9 +11,11 @@ var utils = require("./utils.js");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
-var CannotFindMacroDefError = require("$:/plugins/flibbles/relink/js/errors.js").CannotFindMacroDefError;
 
 exports.name = ["macrocallinline", "macrocallblock"];
+
+// Error thrown when a macro's definition is needed, but can't be found.
+function CannotFindMacroDefError() {};
 
 exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	// Get all the details of the match
@@ -211,7 +213,7 @@ function getParamIndexWithinMacrocall(macroName, param, params, parser, options)
 function indexOfParameterDef(macroName, paramName, parser, options) {
 	var def = getDefinition(macroName, parser, options);
 	if (def === undefined) {
-		throw new CannotFindMacroDefError(macroName);
+		throw new CannotFindMacroDefError();
 	}
 	var params = def.params || [];
 	for (var i = 0; i < params.length; i++) {
