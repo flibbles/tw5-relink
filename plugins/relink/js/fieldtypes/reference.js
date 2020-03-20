@@ -7,8 +7,6 @@ tiddlerTitle!!field
 tiddlerTitle##propertyIndex
 \*/
 
-var CannotRelinkError = require("$:/plugins/flibbles/relink/js/errors.js").CannotRelinkError;
-
 exports.name = "reference";
 
 exports.relink = function(value, fromTitle, toTitle, logger, options) {
@@ -38,9 +36,6 @@ exports.relinkInBraces = function(value, fromTitle, toTitle, logger, options) {
 
 exports.toString = function(textReference) {
 	var title = textReference.title || '';
-	if (!exports.canBePretty(title)) {
-		throw new CannotRelinkError();
-	}
 	if (textReference.field) {
 		return title + "!!" + textReference.field;
 	} else if (textReference.index) {
