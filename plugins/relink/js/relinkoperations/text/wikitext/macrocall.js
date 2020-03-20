@@ -86,7 +86,15 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, 
 	var outMacro = $tw.utils.extend({}, macro);
 	outMacro.params = macro.params.slice();
 	for (var managedArg in managedMacro) {
-		var index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);
+		var index;
+		try {
+			index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);
+		} catch (e) {
+			if (e instanceof CannotFindMacroDefError) {
+				logger.add({name: "macrocall", impossible: true});
+				continue;
+			}
+		}
 		if (index < 0) {
 			// this arg either was not supplied, or we can't find
 			// the definition, so we can't tie it to an anonymous
@@ -197,6 +205,9 @@ function getParamIndexWithinMacrocall(macroName, param, params, parser, options)
 // is for the given parameter.
 function indexOfParameterDef(macroName, paramName, parser, options) {
 	var def = getDefinition(macroName, parser, options);
+	if (def === undefined) {
+		throw new CannotFindMacroDefError(macroName);
+	}
 	var params = def.params || [];
 	for (var i = 0; i < params.length; i++) {
 		if (params[i].name === paramName) {
@@ -221,7 +232,11 @@ function getParamNames(macroName, params, parser, options) {
 		}
 	}
 	if (anonsExist) {
-		var defParams = getDefinition(macroName, parser, options).params || [];
+		var def = getDefinition(macroName, parser, options);
+		if (def === undefined) {
+			throw new CannotFindMacroDefError(macroName);
+		}
+		var defParams = def.params || [];
 		var defPtr = 0;
 		for (i = 0; i < params.length; i++) {
 			if (rtn[i] === undefined) {
@@ -249,7 +264,7 @@ function getDefinition (macroName, parser, options) {
 		if ($tw.utils.hop($tw.macros, macroName)) {
 			def = $tw.macros[macroName];
 		} else {
-			throw new CannotFindMacroDefError(macroName);
+			return undefined;
 		}
 	}
 	return def;

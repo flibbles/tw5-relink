@@ -122,8 +122,32 @@ it('undefined macros', function() {
 	testText("<<undef 'from here'>>", {wiki: wiki,ignored: true,fails: 1});
 	var to = `to''[]there"`;
 	testText("<<undef param:'from here'>>", utils.placeholder(1,to)+"<$macrocall $name=undef param=<<relink-1>>/>", {wiki: wiki, to: to});
+	// Relink CAN resolve the argument, since it's named, but it needs to
+	// convert into a widget, which it can't do unless ALL arguments can
+	// be named (which you can't do without the macro definition).
 	testText("<<undef something param:'from here'>>",
 	         {wiki: wiki, to: to, ignored: true, fails: 1});
+
+	// Relink continues if one param couldn't resolve. Others might.
+	wiki.addTiddler(utils.macroConf("undef", "list", "list"));
+	testText("<<undef 'from here' param:'from here'>>",
+	         "<<undef 'from here' param:'to there'>>", {wiki: wiki, fails: 1});
+	// Two failures, one can't be resolved. The other needs to downgrade
+	// into a widget, but it can't because an unnamed parameter can't be
+	// resolved.
+	testText("<<undef 'from here' param:'from here'>>",
+	         "<<undef 'from here' param:'from here'>>",
+	         {wiki: wiki, fails: 2, to: to});
+	// Super tricky. Both parameters can relink, but 'param' requires a
+	// downgrade. But there's an unresolved anonymous param, so no
+	// downgrade possible. Thus both must fail. Looking for two failures.
+	/*
+	testText("<<undef list:'[[from]]' param:'from' other>> [[from]]",
+	         "<<undef list:'[[from]]' param:'from' other>> [[A] '\"]]",
+	         {wiki: wiki, fails: 2, from: "from", to: "A] '\""});
+	*/
+
+
 });
 
 it('imported macros', function() {

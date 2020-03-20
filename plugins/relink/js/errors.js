@@ -10,10 +10,6 @@ function RelinkError() {};
 RelinkError.prototype = Object.create(Error);
 exports.RelinkError = RelinkError;
 
-function CannotRelinkError() { };
-CannotRelinkError.prototype = new RelinkError();
-exports.CannotRelinkError = CannotRelinkError
-
 function CannotFindMacroDefError(macroName) { this.macroName = macroName; };
 CannotFindMacroDefError.prototype = new RelinkError();
 exports.CannotFindMacroDefError = CannotFindMacroDefError;
