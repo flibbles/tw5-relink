@@ -110,3 +110,13 @@ exports.determineQuote = function(text, param) {
 	}
 	return '';
 };
+
+// Finds the newline at the end of a string and returns it. Empty string if
+// none exists.
+exports.getEndingNewline = function(string) {
+	var l = string.length;
+	if (string[l-1] === '\n') {
+		return (string[l-2] === '\r') ? "\r\n" : "\n";
+	}
+	return "";
+};

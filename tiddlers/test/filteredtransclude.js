@@ -28,6 +28,8 @@ it('pretty', function() {
 	expect(r.log).toEqual([logMessage("to there")]);
 	testText("Inline {{{[[from here]]}}} List");
 	testText("Block\n\n{{{[[from here]]}}}\n\nList");
+	testText("Block\n{{{[[from here]]}}}.class\nList");
+	testText("Block\r\n{{{[[from here]]}}}\r\nList");
 	testText("{{{[[from here]]|tooltip}}}");
 	testText("{{{[[from here]]||Template}}}");
 	testText("{{{[[from here]]||from here}}}");
@@ -37,6 +39,13 @@ it('pretty', function() {
 	testText("{{{[[from here]]|tooltip||Template}}width:40;}.class.class");
 	// tricky titles
 	testText("{{{[[from here]]}}}", {to: "to } there"});
+});
+
+it('from titles with curlies', function() {
+	testText("{{{has{curls}}}}", {from: "has{curls}", to: "there"});
+	testText("{{{has{curls}}}}}}", {from: "has{curls}}}", to: "there"});
+	// Inline rule won't match this correctly, so we shouldn't either.
+	testText("{{{has{curls}}}} inline", {from: "has{curls}",ignored: true});
 });
 
 it('preserves pretty whitespace', function() {
@@ -51,10 +60,11 @@ it('rightly judges unpretty', function() {
 		         "Test: <$list filter="+to+"/>.",
 		         {to: to});
 	};
-	// TODO: This is one case where we consider it unpretty, but it might
-	// not be. If the transclusion is considered as a block, then the
-	// required newline at the end may make this filter parse correctly.
 	testUnpretty("Curly}}Closers");
+	// This doesn't have to become unpretty if it's considered as a block,
+	// since the block parser goes to the end of the line and therefor
+	// correctly parses the curly braces.
+	// However, it's too much work to test for, so just downgrade it.
 	testUnpretty("Curly}}Closers}");
 	testUnpretty("Bars|Bars");
 });
@@ -72,6 +82,10 @@ it('unpretty (degrades to widget)', function() {
 	test("cur{","{{{A||from here}}}","<$list filter=A template=cur{/>");
 	test("bar|", "{{{[[from here]]|tooltip||Template}}width:50;}.A.B",
 	             "<$list filter=bar| tooltip=tooltip template=Template style=width:50; itemClass='A B'/>");
+
+	// preserves block newline whitespace
+	test("A|B", "{{{[[from here]]}}}\nTxt", "<$list filter=A|B/>\nTxt");
+	test("A|B", "{{{[[from here]]}}}\r\nTxt", "<$list filter=A|B/>\r\nTxt");
 });
 
 it('unpretty and unquotable', function() {

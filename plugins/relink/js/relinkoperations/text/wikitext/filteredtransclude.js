@@ -47,39 +47,18 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	if (!modified) {
 		return undefined;
 	}
+	var output;
 	if (canBePretty(filter) && canBePrettyTemplate(template)) {
-		logger.add(logArguments);
-		return prettyList(filter, tooltip, template, style, classes);
+		output = prettyList(filter, tooltip, template, style, classes);
+	} else {
+		output = widget(filter, tooltip, template, style, classes, parser, logArguments);
 	}
-	logArguments.widget = true;
-	if (classes !== undefined) {
-		classes = classes.split('.').join(' ');
-	}
-	function wrap(name, value, treatAsTitle) {
-		if (!value) {
-			return '';
-		}
-		var wrappedValue = utils.wrapAttributeValue(value);
-		if (wrappedValue === undefined) {
-			var category = treatAsTitle ? undefined : name;
-			wrappedValue = "<<"+parser.getPlaceholderFor(value,category)+">>";
-			logArguments.widget = true;
-			logArguments.placeholder = true;
-		}
-		return " "+name+"="+wrappedValue;
-	};
-	var widget = [
-		"<$list",
-		wrap("filter", filter),
-		wrap("tooltip", tooltip),
-		wrap("template", template, true),
-		wrap("style", style),
-		wrap("itemClass", classes),
-		"/>"
-	].join('');
 	logger.add(logArguments);
-	return widget;
+	// By copying over the ending newline of the original text if present,
+	// thisrelink method thus works for both the inline and block rule
+	return output + utils.getEndingNewline(m[0]);
 };
+
 
 function canBePretty(filter) {
 	return filter.indexOf('|') < 0 && filter.indexOf('}}') < 0;
@@ -110,4 +89,35 @@ function prettyList(filter, tooltip, template, style, classes) {
 	}
 	style = style || '';
 	return "{{{"+filter+tooltip+template+"}}"+style+"}"+classes;
+};
+
+/** Returns a filtered transclude as a string of a widget.
+ */
+function widget(filter, tooltip, template, style, classes, parser, logArguments) {
+	logArguments.widget = true;
+	if (classes !== undefined) {
+		classes = classes.split('.').join(' ');
+	}
+	function wrap(name, value, treatAsTitle) {
+		if (!value) {
+			return '';
+		}
+		var wrappedValue = utils.wrapAttributeValue(value);
+		if (wrappedValue === undefined) {
+			var category = treatAsTitle ? undefined : name;
+			wrappedValue = "<<"+parser.getPlaceholderFor(value,category)+">>";
+			logArguments.placeholder = true;
+		}
+		return " "+name+"="+wrappedValue;
+	};
+	var widget = [
+		"<$list",
+		wrap("filter", filter),
+		wrap("tooltip", tooltip),
+		wrap("template", template, true),
+		wrap("style", style),
+		wrap("itemClass", classes),
+		"/>"
+	].join('');
+	return widget;
 };

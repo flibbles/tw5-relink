@@ -41,7 +41,7 @@ function WikiRelinker(text, title, toTitle, options) {
 	}
 	this.title = title;
 	this.toTitle = toTitle;
-	this.inlineRules = this.blockRules.concat(this.pragmaRules, this.inlineRules);
+	this.inlineRules = this.inlineRules.concat(this.pragmaRules, this.blockRules);
 	// We work through relinkRules so we can change it later.
 	// relinkRules is inlineRules so it gets touched up by amendRules().
 	this.relinkRules = this.inlineRules;

@@ -40,6 +40,7 @@ it('transcludes', function() {
 	testText("Before {{||from here}} After")
 	testText("Before {{from here||from here}} After")
 	testText("Before\n\n{{from here||template}}\n\nAfter")
+	testText("Before\r\n{{from here||template}}\r\nAfter")
 	//These ones don't make much sense, but we'll support them.
 	testText("Before {{from here!!field||template}} After");
 	testText("Before {{from here##index||template}} After");
@@ -60,6 +61,14 @@ it('preserves pretty whitespace', function() {
 	testText("Before {{  from here!!field  ||  from here  }} After");
 	testText("Before {{  from here##index  ||  from here  }} After");
 	testText("Before {{||  from here  }} After");
+});
+
+it('from titles with curlies', function() {
+	// Despite a block rule theoretically being able to parse this,
+	// (like it can with filteredtransclude), it doesn't. That's becase
+	// the regexp used by the rule disallows ANY '}' no matter what.
+	testText("{{has{curls}}}", {from: "has{curls}", ignored: true});
+	testText("{{has{curls}}} inline", {from: "has{curls}", ignored: true});
 });
 
 it('rightly judges unpretty', function() {
@@ -90,6 +99,10 @@ it('unpretty (degrades to widget)', function() {
 	//test("{{from here!!field||Template}}.", "<$tiddler tiddler='"+to+"'>{{##index}}</$tiddler>.");
 	//test("{{from here##index||Template}}.", "<$tiddler tiddler='"+to+"'>{{##index}}</$tiddler>.");
 	test("{{from here||from here}}.", "<$tiddler tiddler='"+to+"'><$transclude tiddler='"+to+"'/></$tiddler>.");
+
+	// preserves block newline whitespace
+	test("{{from here}}\nTxt", "<$tiddler tiddler='"+to+"'>{{}}</$tiddler>\nTxt");
+	test("{{from here}}\r\nTxt", "<$tiddler tiddler='"+to+"'>{{}}</$tiddler>\r\nTxt");
 });
 
 it('unpretty, but the title is unquotable', function() {
