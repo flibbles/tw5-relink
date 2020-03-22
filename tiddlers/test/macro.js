@@ -41,6 +41,15 @@ it("the '>' character", function() {
 	testText("Macro <<test stuff from>>.", "Macro <<test stuff 'My>val'>>.", {from: "from", to: "My>val"});
 });
 
+it("block or inline", function() {
+	// These ensure that trailing newlines are preserved if present
+	// These are really tests that inline and block rules both work
+	// in their own ways.
+	testText("<<test stuff 'from here'>>\nOther text");
+	testText("<<test stuff 'from here'>>\r\nOther text");
+	testText("<<test stuff 'from here'>> Other text");
+});
+
 it("doesn't choke if attribute string == macro name", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("jsontiddlers", "filter", "filter"));
