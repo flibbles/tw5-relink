@@ -82,6 +82,24 @@ it('comments', function() {
 	testText("\\rules except commentinline commentblock\n"+block);
 });
 
+it('code blocks', function() {
+	function test(code, ignored) {
+		var preamble = "This is a lot of text that comes before the code block to make sure it properly sets the parser.pos past all this."
+		var expected = ignored ? "[[VarName]]" : "[[to there]]";
+		testText(preamble+code+expected, preamble+code+expected);
+	}
+	test("\n```\nThis VarName shouldn't update.\n```\n");
+	test("\n```javascript\nThis VarName shouldn't update.\n```\n");
+	test(" ``This VarName shouldn't update.``");
+	test("``This VarName shouldn't update.``");
+	test(" `This VarName shouldn't update.`");
+	test("`This VarName shouldn't update.`");
+	// Unclosed codeblocks
+	test("\n```\nThis VarName shouldn't update.\n", true);
+	test("``This VarName shouldn't update.\n", true);
+	test("`This VarName shouldn't update.\n", true);
+});
+
 it('wikilinks', function() {
 	var r, macro = utils.placeholder;
 	r = testText("A WikiLink please", {from: "WikiLink", to: "WikiChange"});
