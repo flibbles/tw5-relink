@@ -5,20 +5,17 @@ This handles all logging and alerts Relink emits.
 
 \*/
 
-exports.Logger = function(title, from, to) {
-	this.title = title;
-	this.from = from;
-	this.to = to;
-	this.logs = [];
+exports.Logger = function() {
+	this.children = [];
 };
 
 exports.Logger.prototype.add = function(args) {
-	this.logs.push(args);
+	this.children.push(args);
 };
 
-exports.Logger.prototype.addToFailures = function(list) {
-	for (var i = 0; i < this.logs.length; i++) {
-		failureRecurse(this.title, list, this.logs[i]);
+exports.Logger.prototype.addToFailures = function(title, list) {
+	for (var i = 0; i < this.children.length; i++) {
+		failureRecurse(title, list, this.children[i]);
 	}
 };
 
@@ -33,27 +30,28 @@ function failureRecurse(title, list, node) {
 	}
 };
 
-exports.Logger.prototype.logAll = function(options) {
-	if (options.quiet) {
+exports.Logger.prototype.logAll = function(title, from, to, options) {
+	if (options.quiet || !this.children) {
 		return;
 	}
-	for (var i = 0; i < this.logs.length; i++) {
-		var args = this.logs[i];
+	for (var i = 0; i < this.children.length; i++) {
+		var args = this.children[i];
 		if (args.impossible) {
 			continue;
 		}
-		args.tiddler = this.title;
-		args.to = this.to;
-		args.from = this.from;
-		exports.logRelink(args.name, args, options);
+		args.tiddler = title;
+		args.to = to;
+		args.from = from;
+		var raw = exports.log[args.name];
+		if (raw) {
+			exports.logRelink(raw, args, options);
+		} else {
+			exports.Logger.prototype.logAll.call(args, title, from, to, options);
+		}
 	}
 };
 
-exports.logRelink = function(message, args, options) {
-	if (options.quiet) {
-		return;
-	}
-	var raw = exports.log[message];
+exports.logRelink = function(raw, args, options) {
 	if (raw) {
 		raw = "Renaming '"+args.from+"' to '"+args.to+"' in " + raw + " of tiddler '"+args.tiddler+"'";
 		if (args.placeholder) {

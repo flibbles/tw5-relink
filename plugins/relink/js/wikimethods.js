@@ -53,7 +53,7 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 			if(tiddler
 			&& !tiddler.fields["plugin-type"]
 			&& tiddler.fields.type !== "application/javascript") {
-				var logger = new Logger(tiddler.fields.title, fromTitle, toTitle);
+				var logger = new Logger();
 				try {
 					var changes = Object.create(null);
 					for (var operation in relinkOperations) {
@@ -70,10 +70,10 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 						e.message = e.message + "\nWhen relinking '" + title + "'";
 					}
 					throw e;
-			j}
-				logger.logAll(options);
+			}
+				logger.logAll(tiddler.fields.title, fromTitle, toTitle, options);
 				// TODO: Temporary
-				logger.addToFailures(failures);
+				logger.addToFailures(tiddler.fields.title, failures);
 			}
 		}
 	}

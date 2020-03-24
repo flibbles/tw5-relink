@@ -17,6 +17,7 @@ var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var refHandler = settings.getRelinker('reference');
 var filterHandler = settings.getRelinker('filter');
 var macrocall = require("./macrocall.js");
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "html";
 
@@ -24,6 +25,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	var managedElement = settings.getAttributes(options)[this.nextTag.tag],
 		builder = new Rebuilder(text, this.nextTag.start);
 	var importFilterAttr;
+	var widgetEntry = new EntryNode("html");
 	for (var attributeName in this.nextTag.attributes) {
 		var attr = this.nextTag.attributes[attributeName];
 		var nextEql = text.indexOf('=', attr.start);
@@ -37,7 +39,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 			importFilterAttr = attr;
 		}
 		var oldLength, quotedValue,
-			widgetEntry = {name: "attribute"};
+			attrEntry = new EntryNode("attribute");
 		if (attr.type === "string") {
 			var handler = getAttributeHandler(this.nextTag, attributeName, options);
 			if (!handler) {
@@ -49,7 +51,8 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				continue;
 			}
 			if (entry.impossible) {
-				logger.add(entry);
+				attrEntry.add(entry);
+				widgetEntry.add(attrEntry);
 				continue;
 			}
 			var quote = utils.determineQuote(text, attr);
@@ -62,18 +65,18 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				// TODO: I think I can scrap this line.
 				attr.type = "macro";
 				quotedValue = "<<"+value+">>";
-				widgetEntry.placeholder = true;
+				attrEntry.placeholder = true;
 			}
-			if (entry.placeholder) {
-				widgetEntry.placeholder = true;
-			}
+			attrEntry.add(entry);
+
 		} else if (attr.type === "indirect") {
 			var newRef = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
 			if (newRef === undefined) {
 				continue;
 			}
 			if (newRef.impossible) {
-				logger.add(newRef);
+				attrEntry.add(newRef);
+				widgetEntry.add(attrEntry);
 				continue;
 			}
 			// +4 for '{{' and '}}'
@@ -85,16 +88,21 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				continue;
 			}
 			if (filterEntry.impossible) {
-				logger.add(filterEntry);
+				attrEntry.add(filterEntry);
+				widgetEntry.add(attrEntry);
 				continue;
 			}
 			// +6 for '{{{' and '}}}'
 			oldLength = attr.filter.length + 6;
 			quotedValue = "{{{" + filterEntry.output + "}}}";
+			attrEntry.add(filterEntry);
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
-			var macroString = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, logger, options);
+			var macroString = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, attrEntry, options);
 			if (macroString === undefined) {
+				if (attrEntry.children.length > 0) {
+					widgetEntry.add(attrEntry);
+				}
 				continue;
 			}
 			// already includes the 4 carrot brackets
@@ -112,9 +120,9 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		var valueStart = attr.end - oldLength;
 		builder.add(quotedValue, valueStart, attr.end);
 
-		widgetEntry.element = this.nextTag.tag,
-		widgetEntry.attribute = attributeName
-		logger.add(widgetEntry);
+		attrEntry.element = this.nextTag.tag,
+		attrEntry.attribute = attributeName
+		widgetEntry.add(attrEntry);
 	}
 	if (importFilterAttr) {
 		if (typeof importFilterAttr === "string") {
@@ -126,6 +134,9 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		var parentWidget = this.parser.getVariableWidget();
 		var varHolder = options.wiki.relinkGenerateVariableWidget(importFilter, parentWidget);
 		this.parser.addWidget(varHolder);
+	}
+	if (widgetEntry.children.length > 0) {
+		logger.add(widgetEntry);
 	}
 	this.parser.pos = this.nextTag.end;
 	return builder.results(this.nextTag.end);
