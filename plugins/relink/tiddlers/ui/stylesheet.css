@@ -5,6 +5,10 @@
 	width: 100%;
 }
 
+.tc-relink-references-table td {
+	border: none;
+}
+
 .tc-relink-references-title {
 	width: 1%; /* Keeps this column small */
 	text-align: left;
@@ -14,4 +18,5 @@
 	font-style: italic;
 	text-align: left;
 	font-weight: 200;
+	padding-left: 25px;
 }

@@ -19,11 +19,26 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "html";
 
+var HtmlEntry = EntryNode.newType("html");
+
+HtmlEntry.prototype.occurrences = function(title) {
+	var self = this;
+	return this.children.map(function(child) {
+		return "<" + self.element + " " + child.attribute + " />";
+	});
+};
+
+var AttributeEntry = EntryNode.newType("attribute");
+
+AttributeEntry.prototype.occurrences = function() {
+	return [this.attribute];
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var managedElement = settings.getAttributes(options)[this.nextTag.tag],
 		builder = new Rebuilder(text, this.nextTag.start);
 	var importFilterAttr;
-	var widgetEntry = new EntryNode("html");
+	var widgetEntry = new HtmlEntry();
 	for (var attributeName in this.nextTag.attributes) {
 		var attr = this.nextTag.attributes[attributeName];
 		var nextEql = text.indexOf('=', attr.start);
@@ -37,7 +52,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			importFilterAttr = attr;
 		}
 		var oldLength, quotedValue, entry,
-			attrEntry = new EntryNode("attribute");
+			attrEntry = new AttributeEntry();
 		if (attr.type === "string") {
 			var handler = getAttributeHandler(this.nextTag, attributeName, options);
 			if (!handler) {
@@ -94,6 +109,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		}
 		attrEntry.add(entry);
 		attrEntry.element = this.nextTag.tag,
+		widgetEntry.element = this.nextTag.tag,
 		attrEntry.attribute = attributeName
 		widgetEntry.add(attrEntry);
 		if (quotedValue === undefined) {
@@ -107,7 +123,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		// We count backwards from the end to preserve whitespace
 		var valueStart = attr.end - oldLength;
 		builder.add(quotedValue, valueStart, attr.end);
-
 	}
 	if (importFilterAttr) {
 		processImportFilter(importFilterAttr, this.parser, options);

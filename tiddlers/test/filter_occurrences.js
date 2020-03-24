@@ -25,6 +25,12 @@ it("works", function() {
 	//test({list: "A from B"}, ["list: [[from]], .."]);
 });
 
+it("html", function() {
+	test({text: "<$link to='from' />"}, ["<$link to />"]);
+	test({text: "<$link to='from' tooltip={{from}} />"},
+	     ["<$link to />", "<$link tooltip />"]);
+});
+
 it("fields", function() {
 	test({"list-after": "from"}, ["list-after field"]);
 	test({"tags": "A from B"}, ["tags"]);
