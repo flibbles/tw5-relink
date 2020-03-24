@@ -11,8 +11,6 @@ should be changed.
 
 var utils = require("./utils.js");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
-var html = require("$:/core/modules/parsers/wikiparser/rules/html.js");
-var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var refHandler = settings.getRelinker('reference');
 var filterHandler = settings.getRelinker('filter');

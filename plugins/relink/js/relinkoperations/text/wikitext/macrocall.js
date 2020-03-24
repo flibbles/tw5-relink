@@ -9,8 +9,8 @@ Handles macro calls.
 
 var utils = require("./utils.js");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
-var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = ["macrocallinline", "macrocallblock"];
 
@@ -88,14 +88,17 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, 
 		return undefined;
 	}
 	var outMacro = $tw.utils.extend({}, macro);
+	var macroEntry = new EntryNode("macrocall");
 	outMacro.params = macro.params.slice();
 	for (var managedArg in managedMacro) {
 		var index;
+		var paramEntry = new EntryNode("macroparam");
 		try {
 			index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);
 		} catch (e) {
 			if (e instanceof CannotFindMacroDefError) {
-				logger.add({name: "macrocall", impossible: true});
+				paramEntry.impossible = true;
+				macroEntry.add(paramEntry);
 				continue;
 			}
 		}
@@ -112,7 +115,8 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, 
 			continue;
 		}
 		if (entry.impossible) {
-			logger.add(entry);
+			paramEntry.add(entry);
+			macroEntry.add(paramEntry);
 			continue;
 		}
 		var quote = utils.determineQuote(text, param);
@@ -120,19 +124,26 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, 
 		var newParam = $tw.utils.extend({}, param);
 		if (quoted === undefined) {
 			if (!mayBeWidget) {
-				logger.add({name: "macrocall", impossible: true});
+				paramEntry.impossible = true;
+				macroEntry.add(paramEntry);
 				continue;
 			}
 			var ph = parser.getPlaceholderFor(entry.output,handler.name);
 			newParam.newValue = "<<"+ph+">>";
 			newParam.type = "macro";
+			paramEntry.placeholder = true;
 		} else {
 			newParam.start = newParam.end - (newParam.value.length + (quote.length*2));
 			newParam.value = entry.output;
 			newParam.newValue = quoted;
 		}
 		outMacro.params[index] = newParam;
+		paramEntry.add(entry);
+		macroEntry.add(paramEntry);
 		modified = true;
+	}
+	if (macroEntry.children.length > 0) {
+		logger.add(macroEntry);
 	}
 	if (modified) {
 		return outMacro;
