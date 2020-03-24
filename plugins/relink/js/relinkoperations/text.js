@@ -22,18 +22,13 @@ var exceptions = {
 	"$:/DefaultTiddlers": "text/x-tiddler-filter"
 };
 
-exports['text'] = function(tiddler, fromTitle, toTitle, logger, changes, options) {
+exports['text'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = tiddler.fields;
 	if (fields.text) {
 		var type = exceptions[fields.title] || fields.type || defaultOperator;
 		if (textOperators[type]) {
 			var entry = textOperators[type].call(this, tiddler, fromTitle, toTitle, options);
-			if (entry) {
-				logger.add(entry);
-				if (entry.output) {
-					changes.text = entry.output;
-				}
-			}
+			changes.text = entry;
 		}
 	}
 };

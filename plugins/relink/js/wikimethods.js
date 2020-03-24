@@ -55,12 +55,22 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 			&& tiddler.fields.type !== "application/javascript") {
 				var logger = new Logger();
 				try {
-					var changes = Object.create(null);
+					var entries = Object.create(null);
 					for (var operation in relinkOperations) {
-						relinkOperations[operation](tiddler, fromTitle, toTitle, logger, changes, options);
+						relinkOperations[operation](tiddler, fromTitle, toTitle, entries, options);
+					}
+					var changes = Object.create(null);
+					var update = false;
+					for (var field in entries) {
+						var entry = entries[field];
+						logger.add(entry);
+						if (entry && entry.output) {
+							changes[field] = entry.output;
+							update = true;
+						}
 					}
 					// If any fields changed, update tiddler
-					if(Object.keys(changes).length > 0) {
+					if (update) {
 						changeList[title] = changes;
 					}
 				} catch (e) {

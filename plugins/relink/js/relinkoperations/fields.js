@@ -13,7 +13,7 @@ var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
-exports['fields'] = function(tiddler, fromTitle, toTitle, logger, changes, options) {
+exports['fields'] = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = settings.getFields(options);
 	$tw.utils.each(fields, function(handler, field) {
 		var input = tiddler.fields[field];
@@ -21,11 +21,9 @@ exports['fields'] = function(tiddler, fromTitle, toTitle, logger, changes, optio
 		if (entry !== undefined) {
 			var fieldEntry = new EntryNode("field");
 			fieldEntry.field = field;
+			fieldEntry.output = entry.output;
 			fieldEntry.add(entry);
-			logger.add(fieldEntry);
-			if (entry.output) {
-				changes[field] = entry.output;
-			}
+			changes[field] = fieldEntry;
 		}
 	});
 };

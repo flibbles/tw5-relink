@@ -10,7 +10,9 @@ exports.Logger = function() {
 };
 
 exports.Logger.prototype.add = function(args) {
-	this.children.push(args);
+	if (args) {
+		this.children.push(args);
+	}
 };
 
 exports.Logger.prototype.addToFailures = function(title, list) {
