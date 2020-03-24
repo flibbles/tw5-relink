@@ -9,12 +9,12 @@ Handles replacement in wiki text inline rules, like,
 
 \*/
 
-var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
 var macrocall = require("./macrocall.js");
 var utils = require("./utils.js");
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "image";
 
@@ -22,7 +22,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	var ptr = this.nextImage.start;
 	var builder = new Rebuilder(text, ptr);
 	var makeWidget = false;
-	var logArguments = {name: "image"};
+	var imageEntry = new EntryNode("image");
 	if (this.nextImage.attributes.source.value === fromTitle && !canBePretty(toTitle, this.nextImage.attributes.tooltip)) {
 		makeWidget = true;
 		builder.add("<$image", ptr, ptr+4);
@@ -30,6 +30,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	ptr += 4; //[img
 	var inSource = false;
 	for (var attributeName in this.nextImage.attributes) {
+		var attrEntry = new EntryNode("imageattr");
 		var attr = this.nextImage.attributes[attributeName];
 		if (attributeName === "source" || attributeName === "tooltip") {
 			if (inSource) {
@@ -50,22 +51,23 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		if (attributeName === "source") {
 			ptr = text.indexOf(attr.value, ptr);
 			if (attr.value === fromTitle) {
+				var entry = {name: "title"};
 				if (makeWidget) {
 					var quotedValue = utils.wrapAttributeValue(toTitle);
 					if (quotedValue === undefined) {
 						var key = this.parser.getPlaceholderFor(toTitle);
 						builder.add("source=<<"+key+">>", ptr, ptr+fromTitle.length);
-						logArguments.placeholder = true;
-						logArguments.widget = true;
+						entry.placeholder = true;
+						entry.widget = true;
 
 					} else {
 						builder.add("source="+quotedValue, ptr, ptr+fromTitle.length);
-						logArguments.widget = true;
+						entry.widget = true;
 					}
 				} else {
 					builder.add(toTitle, ptr, ptr+fromTitle.length);
 				}
-				logger.add(logArguments);
+				attrEntry.add(entry);
 			}
 			ptr = text.indexOf(']]', ptr);
 			if (makeWidget) {
@@ -79,10 +81,16 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				builder.add("tooltip="+quotedValue, ptr, ptr+attr.value.length);
 			}
 		} else {
-			ptr = relinkAttribute(attr, this.parser, builder, fromTitle, toTitle, logger, options);
+			ptr = relinkAttribute(attr, this.parser, builder, fromTitle, toTitle, attrEntry, options);
+		}
+		if (attrEntry.children.length > 0) {
+			imageEntry.add(attrEntry);
 		}
 	}
 	this.parser.pos = ptr;
+	if (imageEntry.children.length > 0) {
+		logger.add(imageEntry);
+	}
 	return builder.results(ptr);
 };
 
