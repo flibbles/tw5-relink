@@ -120,10 +120,11 @@ function fieldTypeMethod(text, fromTitle, toTitle, logger, options) {
 	}
 	var builder = new Rebuilder(text),
 		parser = new WikiRelinker(text, options.currentTiddler, toTitle, options),
+		extendedOptions = $tw.utils.extend({placeholder: parser}, options),
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		if (matchingRule.rule.relink) {
-			var newSegment = matchingRule.rule.relink(text, fromTitle, toTitle, logger, options);
+			var newSegment = matchingRule.rule.relink(text, fromTitle, toTitle, logger, extendedOptions);
 			if (newSegment !== undefined) {
 				builder.add(newSegment, matchingRule.matchIndex, parser.pos);
 			}

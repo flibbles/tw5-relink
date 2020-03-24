@@ -37,8 +37,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		entry.add({name: "title", output: template});
 		modified = true;
 	}
-	var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-	var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, extendedOptions);
+	var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, options);
 	if (filterEntry !== undefined) {
 		entry.add(filterEntry);
 		filter = filterEntry.output;

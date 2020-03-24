@@ -20,8 +20,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	var parseTree = this.parse();
 	var filter = parseTree[0].attributes.filter.value;
 
-	var extendedOptions = $tw.utils.extend({placeholder: this.parser},options);
-	var filterEntry = filterRelinker.relink(filter, fromTitle, toTitle, extendedOptions);
+	var filterEntry = filterRelinker.relink(filter, fromTitle, toTitle, options);
 	var rtn = undefined;
 	if (filterEntry !== undefined) {
 		var entry = new EntryNode("import");

@@ -111,8 +111,7 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger,
 	} else if (attribute.type === "filtered") {
 		ptr = text.indexOf('{{{', ptr);
 		var end = ptr + attribute.filter.length + 6;
-		var extendedOptions = $tw.utils.extend({placeholder: parser}, options);
-		var filter = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, extendedOptions);
+		var filter = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, options);
 		if (filter !== undefined) {
 			if (filter.impossible) {
 				logger.add(filter);

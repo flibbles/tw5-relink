@@ -107,8 +107,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, 
 		}
 		var param = macro.params[index];
 		var handler = managedMacro[managedArg];
-		var extendedOptions = $tw.utils.extend({placeholder: parser}, options);
-		var entry = handler.relink(param.value, fromTitle, toTitle, extendedOptions);
+		var entry = handler.relink(param.value, fromTitle, toTitle, options);
 		if (entry === undefined) {
 			continue;
 		}

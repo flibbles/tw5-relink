@@ -36,8 +36,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		if (match) {
 			var handler = settings.getRelinker(placeholder[1] || 'title');
 				// This is a filter
-			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			var entry = handler.relink(match[1], fromTitle, toTitle, extendedOptions);
+			var entry = handler.relink(match[1], fromTitle, toTitle, options);
 			if (entry !== undefined) {
 				var macroEntry = new EntryNode("macrodef");
 				macroEntry.macro = m[1];

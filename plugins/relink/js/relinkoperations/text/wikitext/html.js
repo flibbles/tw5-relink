@@ -44,8 +44,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				// We don't manage this attribute. Bye.
 				continue;
 			}
-			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			var entry = handler.relink(attr.value, fromTitle, toTitle, extendedOptions);
+			var entry = handler.relink(attr.value, fromTitle, toTitle, options);
 			if (entry === undefined) {
 				continue;
 			}
@@ -81,8 +80,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 			oldLength = attr.textReference.length + 4;
 			quotedValue = "{{"+newRef.output+"}}";
 		} else if (attr.type === "filtered") {
-			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			var filterEntry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, extendedOptions);
+			var filterEntry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, options);
 			if (filterEntry === undefined) {
 				continue;
 			}
