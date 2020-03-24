@@ -14,7 +14,6 @@ way to ensure this runs after the old relinkTiddler method is applied.
 "use strict";
 
 var language = require('$:/plugins/flibbles/relink/js/language.js');
-var Logger = require("$:/plugins/flibbles/relink/js/language.js").Logger;
 
 exports.name = "redefine-relinkTiddler";
 exports.synchronous = true;
@@ -37,7 +36,6 @@ function relinkTiddler(fromTitle, toTitle, options) {
 			toTitle,
 			options,
 			function(entries, tiddler, title) {
-		var logger = new Logger();
 		var changes = Object.create(null);
 		var update = false;
 		for (var field in entries) {
@@ -45,7 +43,7 @@ function relinkTiddler(fromTitle, toTitle, options) {
 			language.eachImpossible(entry, function() {
 				failures.push(title);
 			});
-			logger.add(entry);
+			language.logAll(entry, title, fromTitle, toTitle, options);
 			if (entry && entry.output) {
 				changes[field] = entry.output;
 				update = true;
@@ -57,7 +55,6 @@ function relinkTiddler(fromTitle, toTitle, options) {
 			newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
 			self.addTiddler(newTiddler);
 		}
-		logger.logAll(title, fromTitle, toTitle, options);
 	});
 	if (failures.length > 0) {
 		language.reportFailures(failures);

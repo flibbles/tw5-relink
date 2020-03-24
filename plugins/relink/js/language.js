@@ -5,10 +5,6 @@ This handles all logging and alerts Relink emits.
 
 \*/
 
-exports.Logger = function() {
-	this.children = [];
-};
-
 exports.eachImpossible = function(rootEntry, method) {
 	if (rootEntry.children && rootEntry.children.length > 0) {
 		for (var i = 0; i < rootEntry.children.length; i++) {
@@ -20,35 +16,27 @@ exports.eachImpossible = function(rootEntry, method) {
 	}
 };
 
-exports.Logger.prototype.add = function(args) {
-	if (args) {
-		this.children.push(args);
+exports.logAll = function(entry, title, from, to, options) {
+	var raw = exports.log[entry.name];
+	if (raw) {
+		exports.logRelink(raw, entry, title, from, to, options);
 	}
-};
-
-exports.Logger.prototype.logAll = function(title, from, to, options) {
-	if (!this.children) {
+	if (!entry.children) {
 		return;
 	}
-	for (var i = 0; i < this.children.length; i++) {
-		var args = this.children[i];
+	for (var i = 0; i < entry.children.length; i++) {
+		var args = entry.children[i];
 		if (args.impossible) {
 			continue;
 		}
-		args.tiddler = title;
-		args.to = to;
-		args.from = from;
-		var raw = exports.log[args.name];
-		if (raw) {
-			exports.logRelink(raw, args, options);
-		} else {
-			exports.Logger.prototype.logAll.call(args, title, from, to, options);
+		if (!raw) {
+			exports.logAll(args, title, from, to, options);
 		}
 	}
 };
 
-exports.logRelink = function(raw, args, options) {
-	raw = "Renaming '"+args.from+"' to '"+args.to+"' in " + raw + " of tiddler '"+args.tiddler+"'";
+exports.logRelink = function(raw, args, title, from, to, options) {
+	raw = "Renaming '"+from+"' to '"+to+"' in " + raw + " of tiddler '"+title+"'";
 	if (args.placeholder) {
 		if (args.widget) {
 			raw = raw + " %cby converting it into a widget and creating placeholder macros";
