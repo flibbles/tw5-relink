@@ -23,10 +23,10 @@ exports.impossible = function(source,operator,options) {
 		results = [];
 	if (fromTitle) {
 		source(function(toTiddler, toTitle) {
-			var fails = options.wiki.eachRelinkableTiddler(
-					fromTitle, toTitle, options,
-					function(fields, tiddler, title) {
-
+			var records = options.wiki.getRelinkableTiddlers(
+				fromTitle, toTitle, options);
+			for (var title in records) {
+				var fields = records[title];
 				var impossible = false;
 				for (var field in fields) {
 					language.eachImpossible(fields[field], function() {
@@ -36,7 +36,7 @@ exports.impossible = function(source,operator,options) {
 				if (impossible) {
 					$tw.utils.pushTop(results, title);
 				}
-			});
+			};
 		});
 	}
 	return results;

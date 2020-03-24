@@ -8,20 +8,8 @@ Introduces some utility methods used by Relink.
 var relinkOperations = Object.create(null);
 $tw.modules.applyMethods('relinkoperator', relinkOperations);
 
-/**Walks through all non-shadow tiddlers and sees which ones need to be relinked
- *
- * For each one, calls method on it with arguments (changes, tiddler, title)
- * Returns a list of tiddlers it would fail to update.
- */
-exports.eachRelinkableTiddler = function(fromTitle, toTitle, options, method) {
-	var data = this.getRelinkableTiddlers(fromTitle, toTitle, options);
-	for (var title in data) {
-		method(data[title], this.getTiddler(title), title);
-	}
-};
-
 /** Returns a pair like this,
- *  { field: entry, ... }
+ *  { title: {field: entry, ... }, ... }
  */
 exports.getRelinkableTiddlers = function(fromTitle, toTitle, options) {
 	var cache = this.getGlobalCache("relink-"+fromTitle, function() {
@@ -91,13 +79,10 @@ function getRelinkFilter(wiki) {
  */
 exports.relinkTiddlerDryRun = function(fromTitle, toTitle, options) {
 	var results = [];
-	this.eachRelinkableTiddler(
-			fromTitle,
-			toTitle,
-			options,
-			function(changes, tiddler, title) {
+	var records = this.getRelinkableTiddlers(fromTitle, toTitle, options);
+	for (title in records) {
 		results.push(title);
-	});
+	};
 	return results;
 };
 

@@ -18,11 +18,11 @@ exports.references = function(source,operator,options) {
 	var fromTitle = operator.operand,
 		results = [];
 	if (fromTitle) {
-		options.wiki.eachRelinkableTiddler(
-			fromTitle, "$:/plugins/flibbles/relink/dummy", options,
-			function(entries, tiddler, title) {
-				results.push(title);
-			});
+		var records = options.wiki.getRelinkableTiddlers(
+			fromTitle, "$:/plugins/flibbles/relink/dummy", options);
+		for (var title in records) {
+			results.push(title);
+		}
 	}
 	return results;
 };

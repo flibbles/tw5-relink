@@ -31,11 +31,9 @@ exports.startup = function() {
 function relinkTiddler(fromTitle, toTitle, options) {
 	var self = this;
 	var failures = [];
-	this.eachRelinkableTiddler(
-			fromTitle,
-			toTitle,
-			options,
-			function(entries, tiddler, title) {
+	var records = this.getRelinkableTiddlers(fromTitle, toTitle, options);
+	for (var title in records) {
+		var entries = records[title];
 		var changes = Object.create(null);
 		var update = false;
 		for (var field in entries) {
@@ -51,11 +49,12 @@ function relinkTiddler(fromTitle, toTitle, options) {
 		}
 		// If any fields changed, update tiddler
 		if (update) {
+			var tiddler = this.getTiddler(title);
 			var newTiddler = new $tw.Tiddler(tiddler,changes,self.getModificationFields())
 			newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
 			self.addTiddler(newTiddler);
 		}
-	});
+	};
 	if (failures.length > 0) {
 		language.reportFailures(failures);
 	}
