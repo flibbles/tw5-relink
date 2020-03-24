@@ -16,11 +16,10 @@ This renames both the list and the template field.
 exports.name = ['filteredtranscludeinline', 'filteredtranscludeblock'];
 
 var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
-var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var utils = require("./utils.js");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
-exports.relink = function(text, fromTitle, toTitle, logger, options) {
+exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match;
 		filter = m[1],
 		tooltip = m[2],
@@ -52,10 +51,10 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	} else {
 		output = widget(filter, tooltip, template, style, classes, parser, entry);
 	}
-	logger.add(entry);
 	// By copying over the ending newline of the original text if present,
 	// thisrelink method thus works for both the inline and block rule
-	return output + utils.getEndingNewline(m[0]);
+	entry.output = output + utils.getEndingNewline(m[0]);
+	return entry;
 };
 
 

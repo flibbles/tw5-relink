@@ -9,12 +9,11 @@ Handles replacement in wiki text inline rules, like,
 
 \*/
 
-var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var utils = require("./utils.js");
 
 exports.name = "prettylink";
 
-exports.relink = function(text, fromTitle, toTitle, logger, options) {
+exports.relink = function(text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var caption, quoted, m = this.match;
 	if (m[2] === fromTitle) {
@@ -24,29 +23,27 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		// format is [[MyTiddler]], and it doesn't match
 		return undefined;
 	}
-	var logArguments = {name: "prettylink"};
-	var out;
+	var entry = {name: "prettylink"};
 	if (utils.canBePretty(toTitle)) {
-		out = prettyLink(toTitle, caption);
+		entry.output = prettyLink(toTitle, caption);
 	} else if (caption === undefined) {
 		// If we don't have a caption, we have to resort to placeholders
 		// anyway to prevent link/caption desync from later relinks.
 		// It doesn't matter whether the toTitle is quotable
-		logArguments.placeholder = true;
-		logArguments.widget = true;
+		entry.placeholder = true;
+		entry.widget = true;
 		var ph = this.parser.getPlaceholderFor(toTitle);
-		out = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+		entry.output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 	} else if (quoted = utils.wrapAttributeValue(toTitle)) {
-		logArguments.widget = true;
-		out = "<$link to="+quoted+">"+caption+"</$link>";
+		entry.widget = true;
+		entry.output = "<$link to="+quoted+">"+caption+"</$link>";
 	} else {
-		logArguments.placeholder = true;
-		logArguments.widget = true;
+		entry.placeholder = true;
+		entry.widget = true;
 		var ph = this.parser.getPlaceholderFor(toTitle);
-		out = "<$link to=<<"+ph+">>>"+caption+"</$link>";
+		entry.output = "<$link to=<<"+ph+">>>"+caption+"</$link>";
 	}
-	logger.add(logArguments);
-	return out;
+	return entry;
 };
 
 function prettyLink(title, caption) {

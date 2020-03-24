@@ -15,12 +15,12 @@ var utils = require("./utils.js");
 
 exports.name = ['transcludeinline', 'transcludeblock'];
 
-exports.relink = function(text, fromTitle, toTitle, logger, options) {
+exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match,
 		reference = m[1],
 		template = m[2],
 		quoted,
-		logArguments = {name: "transclude"},
+		entry = {name: "transclude"},
 		trimmedRef = $tw.utils.trim(reference),
 		ref = $tw.utils.parseTextReference(trimmedRef),
 		rtn;
@@ -47,11 +47,11 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		}
 	} else if (ref.title === fromTitle) {
 		// This block and the next account for the 1%...
-		logArguments.widget = true;
+		entry.widget = true;
 		var resultTitle = utils.wrapAttributeValue(toTitle);
 		if (resultTitle === undefined) {
 			resultTitle = "<<"+this.parser.getPlaceholderFor(toTitle)+">>";
-			logArguments.placeholder = true;
+			entry.placeholder = true;
 		}
 		if ($tw.utils.trim(template) === fromTitle) {
 			// Now for this bizarre-ass use-case, where both the
@@ -64,10 +64,10 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		}
 	} else if ($tw.utils.trim(template) === fromTitle) {
 		var resultTemplate = utils.wrapAttributeValue(toTitle);
-		logArguments.widget = true;
+		entry.widget = true;
 		if (resultTemplate === undefined) {
 			resultTemplate = "<<"+this.parser.getPlaceholderFor(toTitle)+">>";
-			logArguments.placeholder = true;
+			entry.placeholder = true;
 		}
 		if (ref.title) {
 			var resultTitle = utils.wrapAttributeValue(ref.title);
@@ -76,7 +76,7 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				// to placeholder a title OTHER than the one
 				// we're changing.
 				resultTitle = "<<"+this.parser.getPlaceholderFor(ref.title)+">>";
-				logArguments.placeholder = true;
+				entry.placeholder = true;
 			}
 			var attrs = this.transcludeAttributes(ref.field, ref.index);
 			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
@@ -85,13 +85,14 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		}
 	}
 	if (rtn) {
-		logger.add(logArguments);
 		// Adding any newline that might have existed is what allows
 		// this relink method to work for both the block and inline
 		// filter wikitext rule.
 		rtn = rtn + utils.getEndingNewline(m[0]);
+		entry.output = rtn;
+		return entry;
 	}
-	return rtn;
+	return undefined;
 };
 
 function canBePrettyTemplate(value) {

@@ -11,28 +11,26 @@ but not:
 
 \*/
 
-var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var utils = require("./utils.js");
 
 exports.name = "wikilink";
 
-exports.relink = function(text, fromTitle, toTitle, logger, options) {
-	var out = undefined;
+exports.relink = function(text, fromTitle, toTitle, options) {
+	var entry = undefined;
 	this.parser.pos = this.matchRegExp.lastIndex;
 	if (this.match[0] === fromTitle && this.match[0][0] !== '~') {
-		var logArguments = {name: "wikilink"};
+		entry = {name: "wikilink"};
 		if (toTitle.match(this.matchRegExp) && toTitle[0] !== '~') {
-			out = toTitle;
+			entry.output = toTitle;
 		} else if (utils.canBePretty(toTitle)) {
-			logArguments.pretty = true;
-			out = "[[" + toTitle + "]]";
+			entry.pretty = true;
+			entry.output = "[[" + toTitle + "]]";
 		} else {
 			var ph = this.parser.getPlaceholderFor(toTitle);
-			logArguments.placeholder = true;
-			logArguments.widget = true;
-			out = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+			entry.placeholder = true;
+			entry.widget = true;
+			entry.output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 		}
-		logger.add(logArguments);
 	}
-	return out;
+	return entry;
 };

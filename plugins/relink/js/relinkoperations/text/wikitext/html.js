@@ -19,7 +19,7 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "html";
 
-exports.relink = function(text, fromTitle, toTitle, logger, options) {
+exports.relink = function(text, fromTitle, toTitle, options) {
 	var managedElement = settings.getAttributes(options)[this.nextTag.tag],
 		builder = new Rebuilder(text, this.nextTag.start);
 	var importFilterAttr;
@@ -96,16 +96,18 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 			attrEntry.add(filterEntry);
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
-			var macroString = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, attrEntry, options);
-			if (macroString === undefined) {
-				if (attrEntry.children.length > 0) {
-					widgetEntry.add(attrEntry);
-				}
+			var entry = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, options);
+			if (entry === undefined) {
+				continue;
+			}
+			attrEntry.add(entry);
+			widgetEntry.add(attrEntry);
+			if (!entry.output) {
 				continue;
 			}
 			// already includes the 4 carrot brackets
 			oldLength = macro.end-macro.start;
-			quotedValue = macroString;
+			quotedValue = entry.output;
 		} else {
 			continue;
 		}
@@ -133,11 +135,12 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		var varHolder = options.wiki.relinkGenerateVariableWidget(importFilter, parentWidget);
 		this.parser.addWidget(varHolder);
 	}
-	if (widgetEntry.children.length > 0) {
-		logger.add(widgetEntry);
-	}
 	this.parser.pos = this.nextTag.end;
-	return builder.results(this.nextTag.end);
+	if (widgetEntry.children.length > 0) {
+		widgetEntry.output = builder.results(this.nextTag.end);
+		return widgetEntry;
+	}
+	return undefined;
 };
 
 /** Returns the field handler for the given attribute of the given widget.

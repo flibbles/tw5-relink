@@ -18,7 +18,7 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "image";
 
-exports.relink = function(text, fromTitle, toTitle, logger, options) {
+exports.relink = function(text, fromTitle, toTitle, options) {
 	var ptr = this.nextImage.start;
 	var builder = new Rebuilder(text, ptr);
 	var makeWidget = false;
@@ -89,12 +89,13 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	}
 	this.parser.pos = ptr;
 	if (imageEntry.children.length > 0) {
-		logger.add(imageEntry);
+		imageEntry.output = builder.results(ptr);
+		return imageEntry;
 	}
-	return builder.results(ptr);
+	return undefined;
 };
 
-function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger, options) {
+function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, options) {
 	var text = builder.text;
 	var ptr = text.indexOf(attribute.name, attribute.start);
 	ptr += attribute.name.length;
@@ -109,9 +110,8 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger,
 		var end = ptr + attribute.textReference.length + 4;
 		var ref = refHandler.relinkInBraces(attribute.textReference, fromTitle, toTitle, options);
 		if (ref) {
-			if (ref.impossible) {
-				logger.add(ref);
-			} else {
+			entry.add(ref);
+			if (ref.output) {
 				builder.add("{{"+ref.output+"}}", ptr, end);
 			}
 		}
@@ -121,9 +121,8 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger,
 		var end = ptr + attribute.filter.length + 6;
 		var filter = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, options);
 		if (filter !== undefined) {
-			if (filter.impossible) {
-				logger.add(filter);
-			} else {
+			entry.add(filter);
+			if (filter.output) {
 				attribute.filter = filter.output;
 				var quoted = "{{{"+filter.output+"}}}";
 				builder.add(quoted, ptr, end);
@@ -135,9 +134,12 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger,
 		var end = attribute.value.end;
 		var macro = attribute.value;
 		oldValue = attribute.value;
-		var macroString = macrocall.relinkAttribute(macro, text, parser, fromTitle, toTitle, logger, options);
-		if (macroString !== undefined) {
-			builder.add(macroString, ptr, end);
+		var macroEntry = macrocall.relinkAttribute(macro, text, parser, fromTitle, toTitle, options);
+		if (macroEntry !== undefined) {
+			entry.add(macroEntry);
+			if (macroEntry.output) {
+				builder.add(macroEntry.output, ptr, end);
+			}
 		}
 		ptr = end;
 	}

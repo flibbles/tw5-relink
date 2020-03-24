@@ -8,13 +8,12 @@ that we may have previously install.
 
 \*/
 
-var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require("$:/plugins/flibbles/relink/js/settings");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "macrodef";
 
-exports.relink = function(text, fromTitle, toTitle, logger, options) {
+exports.relink = function(text, fromTitle, toTitle, options) {
 	var setParseTreeNode = this.parse();
 	var parentWidget = this.parser.getVariableWidget();
 	var setWidget = parentWidget.makeChildWidget(setParseTreeNode[0]);
@@ -41,9 +40,9 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				var macroEntry = new EntryNode("macrodef");
 				macroEntry.macro = m[1];
 				macroEntry.add(entry);
-				logger.add(macroEntry);
 				this.parser.pos += match[0].length;
-				return "\\define "+m[1]+"() "+entry.output+match[2];
+				macroEntry.output = "\\define "+m[1]+"() "+entry.output+match[2];
+				return macroEntry;
 			}
 		}
 	}

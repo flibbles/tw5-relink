@@ -124,9 +124,12 @@ function fieldTypeMethod(text, fromTitle, toTitle, logger, options) {
 		matchingRule;
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		if (matchingRule.rule.relink) {
-			var newSegment = matchingRule.rule.relink(text, fromTitle, toTitle, logger, extendedOptions);
-			if (newSegment !== undefined) {
-				builder.add(newSegment, matchingRule.matchIndex, parser.pos);
+			var newEntry = matchingRule.rule.relink(text, fromTitle, toTitle, extendedOptions);
+			if (newEntry !== undefined) {
+				logger.add(newEntry);
+				if (newEntry.output) {
+					builder.add(newEntry.output, matchingRule.matchIndex, parser.pos);
+				}
 			}
 		} else {
 			if (matchingRule.rule.matchRegExp !== undefined) {

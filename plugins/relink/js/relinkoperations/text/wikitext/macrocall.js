@@ -17,7 +17,7 @@ exports.name = ["macrocallinline", "macrocallblock"];
 // Error thrown when a macro's definition is needed, but can't be found.
 function CannotFindMacroDefError() {};
 
-exports.relink = function(text, fromTitle, toTitle, logger, options) {
+exports.relink = function(text, fromTitle, toTitle, options) {
 	// Get all the details of the match
 	var macroName = this.match[1],
 		paramString = this.match[2],
@@ -46,23 +46,23 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		// parameter needs to placeholder, just fail.
 		mayBeWidget = false;
 	}
-	var results = relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, logger, mayBeWidget, options);
-	if (results) {
-		return macroToString(results, text, names, options);
+	var entry = relinkMacroInvocation(macroInfo, text, this.parser, fromTitle, toTitle, mayBeWidget, options);
+	if (entry && entry.output) {
+		entry.output =macroToString(entry.output, text, names, options);
 	}
-	return undefined;
+	return entry;
 };
 
 /** Relinks macros that occur as attributes, like <$element attr=<<...>> />
  *  Processes the same, except it can't downgrade into a widget if the title
  *  is complicated.
  */
-exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, logger, options) {
-	var newMacro = relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, false, options);
-	if (newMacro === undefined) {
-		return undefined;
+exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, options) {
+	var entry = relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, false, options);
+	if (entry && entry.output) {
+		entry.output = macroToStringMacro(entry.output, text, options);
 	}
-	return macroToStringMacro(newMacro, text, options);
+	return entry;
 };
 
 /**Processes the given macro,
@@ -70,8 +70,10 @@ exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, logg
  * each parameters: {name:, end:, value:}
  * Macro invocation returned is the same, but relinked, and may have new keys:
  * parameters: {type: macro, start:, newValue: (quoted replacement value)}
+ * Output of the returned entry isn't a string, but a macro object. It needs
+ * to be converted.
  */
-function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, mayBeWidget, options) {
+function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWidget, options) {
 	var managedMacro = settings.getMacros(options)[macro.name];
 	var modified = false;
 	if (!managedMacro) {
@@ -143,10 +145,10 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, 
 		modified = true;
 	}
 	if (macroEntry.children.length > 0) {
-		logger.add(macroEntry);
-	}
-	if (modified) {
-		return outMacro;
+		if (modified) {
+			macroEntry.output = outMacro;
+		}
+		return macroEntry;
 	}
 	return undefined;
 };

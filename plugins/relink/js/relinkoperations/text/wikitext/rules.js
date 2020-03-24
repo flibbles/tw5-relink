@@ -13,4 +13,7 @@ exports.name = "rules";
  * the rules, which is exactly what I want it to do too.
  * It also takes care of moving the pos pointer forward.
  */
-exports.relink = function() { this.parse(); };
+exports.relink = function() {
+	this.parse();
+	return undefined;
+};

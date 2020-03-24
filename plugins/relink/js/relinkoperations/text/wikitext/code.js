@@ -10,7 +10,7 @@ ignore their contents.
 
 exports.name = ["codeinline", "codeblock"];
 
-exports.relink = function(text, fromTitle, toTitle, logger, options) {
+exports.relink = function(text, fromTitle, toTitle, options) {
 	var reEnd;
 	this.parser.pos = this.matchRegExp.lastIndex;
 	// I'm lazy. This relink method works for both codeblock and codeinline
