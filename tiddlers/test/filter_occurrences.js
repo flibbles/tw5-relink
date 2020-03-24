@@ -18,12 +18,17 @@ function test(fields, expectedArray) {
 describe('filter: occurrences', function() {
 
 it("works", function() {
-	return;
 	test({text: "Text [[from]] stuff"}, ["[[from]]"]);
 	test({text: "Reference {{from}} stuff"}, ["{{from}}"]);
-	test({text: "<$link to=from>stuff</$link>"}, ["<$link to=from ..>"]);
+	//test({text: "<$link to=from>stuff</$link>"}, ["<$link to=from ..>"]);
 	//test({text: "Reference {{other||from}} stuff"}, ["{{||from}}"]);
 	//test({list: "A from B"}, ["list: [[from]], .."]);
+});
+
+it("fields", function() {
+	test({"list-after": "from"}, ["list-after field"]);
+	test({"tags": "A from B"}, ["tags"]);
+	test({"list": "A from B"}, ["list field"]);
 });
 
 });

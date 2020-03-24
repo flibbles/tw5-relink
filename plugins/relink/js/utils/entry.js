@@ -1,9 +1,20 @@
 function EntryNode(name) {
-	this.name = name;
+	if (name) {
+		this.name = name;
+	}
 	this.children = [];
 };
 
 module.exports = EntryNode;
+
+EntryNode.newType = function(name) {
+	function NewEntry() {
+		EntryNode.apply(this, arguments);
+	};
+	NewEntry.prototype = Object.create(EntryNode.prototype);
+	NewEntry.prototype.name = name;
+	return NewEntry;
+};
 
 EntryNode.prototype.add = function(entry) {
 	this.placeholder = this.placeholder || entry.placeholder;
