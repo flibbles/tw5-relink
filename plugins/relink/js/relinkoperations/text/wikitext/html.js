@@ -48,25 +48,21 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			if (entry === undefined) {
 				continue;
 			}
-			if (entry.impossible) {
-				attrEntry.add(entry);
-				widgetEntry.add(attrEntry);
-				continue;
-			}
-			var quote = utils.determineQuote(text, attr);
-			oldLength = attr.value.length + (quote.length * 2);
-			quotedValue = utils.wrapAttributeValue(entry.output,quote);
-			if (quotedValue === undefined) {
-				// The value was unquotable. We need to make
-				// a macro in order to replace it.
-				var value = this.parser.getPlaceholderFor(entry.output,handler.name)
-				// TODO: I think I can scrap this line.
-				attr.type = "macro";
-				quotedValue = "<<"+value+">>";
-				attrEntry.placeholder = true;
+			if (!entry.impossible) {
+				var quote = utils.determineQuote(text, attr);
+				oldLength = attr.value.length + (quote.length * 2);
+				quotedValue = utils.wrapAttributeValue(entry.output,quote);
+				if (quotedValue === undefined) {
+					// The value was unquotable. We need to make
+					// a macro in order to replace it.
+					var value = this.parser.getPlaceholderFor(entry.output,handler.name)
+					// TODO: I think I can scrap this line.
+					attr.type = "macro";
+					quotedValue = "<<"+value+">>";
+					attrEntry.placeholder = true;
+				}
 			}
 			attrEntry.add(entry);
-
 		} else if (attr.type === "indirect") {
 			var newRef = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
 			if (newRef === undefined) {
@@ -74,25 +70,21 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 			if (newRef.impossible) {
 				attrEntry.add(newRef);
-				widgetEntry.add(attrEntry);
-				continue;
+			} else {
+				// +4 for '{{' and '}}'
+				oldLength = attr.textReference.length + 4;
+				quotedValue = "{{"+newRef.output+"}}";
 			}
-			// +4 for '{{' and '}}'
-			oldLength = attr.textReference.length + 4;
-			quotedValue = "{{"+newRef.output+"}}";
 		} else if (attr.type === "filtered") {
 			var filterEntry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, options);
 			if (filterEntry === undefined) {
 				continue;
 			}
-			if (filterEntry.impossible) {
-				attrEntry.add(filterEntry);
-				widgetEntry.add(attrEntry);
-				continue;
+			if (!filterEntry.impossible) {
+				// +6 for '{{{' and '}}}'
+				oldLength = attr.filter.length + 6;
+				quotedValue = "{{{"+ filterEntry.output +"}}}";
 			}
-			// +6 for '{{{' and '}}}'
-			oldLength = attr.filter.length + 6;
-			quotedValue = "{{{" + filterEntry.output + "}}}";
 			attrEntry.add(filterEntry);
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
@@ -100,15 +92,17 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			if (entry === undefined) {
 				continue;
 			}
-			attrEntry.add(entry);
-			widgetEntry.add(attrEntry);
-			if (!entry.output) {
-				continue;
+			if (entry.output) {
+				// already includes '<<' and '>>'
+				oldLength = macro.end-macro.start;
+				quotedValue = entry.output;
 			}
-			// already includes the 4 carrot brackets
-			oldLength = macro.end-macro.start;
-			quotedValue = entry.output;
-		} else {
+			attrEntry.add(entry);
+		}
+		attrEntry.element = this.nextTag.tag,
+		attrEntry.attribute = attributeName
+		widgetEntry.add(attrEntry);
+		if (quotedValue === undefined) {
 			continue;
 		}
 		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
@@ -120,9 +114,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var valueStart = attr.end - oldLength;
 		builder.add(quotedValue, valueStart, attr.end);
 
-		attrEntry.element = this.nextTag.tag,
-		attrEntry.attribute = attributeName
-		widgetEntry.add(attrEntry);
 	}
 	if (importFilterAttr) {
 		if (typeof importFilterAttr === "string") {
