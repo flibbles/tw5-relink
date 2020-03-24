@@ -19,7 +19,7 @@ exports['text/x-tiddler-filter'] = function(tiddler, fromTitle, toTitle, logger,
 	var filterEntry = filterHandler.relink(tiddler.fields.text, fromTitle, toTitle, options)
 	if (filterEntry !== undefined) {
 		logger.add(filterEntry);
-		if (!filterEntry.impossible) {
+		if (filterEntry.output) {
 			changes.text = filterEntry.output;
 		}
 	}

@@ -18,10 +18,18 @@ exports.Logger.prototype.add = function(args) {
 
 exports.Logger.prototype.addToFailures = function(list) {
 	for (var i = 0; i < this.logs.length; i++) {
-		var args = this.logs[i];
-		if (args.impossible) {
-			list.push(this.title);
+		failureRecurse(this.title, list, this.logs[i]);
+	}
+};
+
+function failureRecurse(title, list, node) {
+	if (node.children && node.children.length > 0) {
+		for (var i = 0; i < node.children.length; i++) {
+			failureRecurse(title, list, node.children[i]);
 		}
+	}
+	if (node.impossible) {
+		list.push(title);
 	}
 };
 
