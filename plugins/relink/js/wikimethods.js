@@ -27,7 +27,7 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var changeList = Object.create(null);
-	if(fromTitle && toTitle && fromTitle !== toTitle) {
+	if(fromTitle && toTitle) {
 		var toUpdate = getRelinkFilter(wiki);
 		var tiddlerList = toUpdate.call(wiki); // no source or widget
 		for (var i = 0; i < tiddlerList.length; i++) {
