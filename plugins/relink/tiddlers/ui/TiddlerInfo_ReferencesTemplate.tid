@@ -5,6 +5,10 @@ title: $:/plugins/flibbles/relink/ui/TiddlerInfo/ReferencesTemplate
 <$link to=<<listItem>>/>
 </td>
 <td class="tc-relink-references-occurrence">
-<$text text={{{[<listItem>relink:occurrences<currentTiddler>]}}} />
+<$list filter="[<listItem>relink:occurrences<currentTiddler>]">
+
+<$text text=<<currentTiddler>> />
+</$list>
+
 </td>
 </tr>

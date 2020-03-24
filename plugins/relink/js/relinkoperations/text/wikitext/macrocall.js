@@ -17,6 +17,15 @@ exports.name = ["macrocallinline", "macrocallblock"];
 // Error thrown when a macro's definition is needed, but can't be found.
 function CannotFindMacroDefError() {};
 
+var MacrocallEntry = EntryNode.newType("macrocall");
+
+MacrocallEntry.prototype.occurrences = function() {
+	var self = this;
+	return this.children.map(function(child) {
+		return "<<" + self.macro + " " + child.parameter + ">>";
+	});
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	// Get all the details of the match
 	var macroName = this.match[1],
@@ -90,7 +99,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		return undefined;
 	}
 	var outMacro = $tw.utils.extend({}, macro);
-	var macroEntry = new EntryNode("macrocall");
+	var macroEntry = new MacrocallEntry();
 	outMacro.params = macro.params.slice();
 	for (var managedArg in managedMacro) {
 		var index;
@@ -116,9 +125,10 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		if (entry === undefined) {
 			continue;
 		}
+		paramEntry.add(entry);
+		paramEntry.parameter = managedArg;
+		macroEntry.add(paramEntry);
 		if (entry.impossible) {
-			paramEntry.add(entry);
-			macroEntry.add(paramEntry);
 			continue;
 		}
 		var quote = utils.determineQuote(text, param);
@@ -127,7 +137,6 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		if (quoted === undefined) {
 			if (!mayBeWidget) {
 				paramEntry.impossible = true;
-				macroEntry.add(paramEntry);
 				continue;
 			}
 			var ph = parser.getPlaceholderFor(entry.output,handler.name);
@@ -140,11 +149,10 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 			newParam.newValue = quoted;
 		}
 		outMacro.params[index] = newParam;
-		paramEntry.add(entry);
-		macroEntry.add(paramEntry);
 		modified = true;
 	}
 	if (macroEntry.children.length > 0) {
+		macroEntry.macro = macro.name;
 		if (modified) {
 			macroEntry.output = outMacro;
 		}
