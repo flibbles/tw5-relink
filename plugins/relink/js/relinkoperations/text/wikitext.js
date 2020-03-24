@@ -13,6 +13,7 @@ var type = 'text/vnd.tiddlywiki';
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 var Widget = require("$:/core/modules/widgets/widget.js").widget;
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var rules = Object.create(null);
 
@@ -113,7 +114,7 @@ WikiRelinker.prototype.getPreamble = function() {
 	}
 };
 
-function fieldTypeMethod(text, fromTitle, toTitle, logger, options) {
+function fieldTypeMethod(text, fromTitle, toTitle, options) {
 	// fromTitle doesn't even show up plaintext. No relinking to do.
 	if (text.indexOf(fromTitle) < 0) {
 		return;
@@ -121,12 +122,13 @@ function fieldTypeMethod(text, fromTitle, toTitle, logger, options) {
 	var builder = new Rebuilder(text),
 		parser = new WikiRelinker(text, options.currentTiddler, toTitle, options),
 		extendedOptions = $tw.utils.extend({placeholder: parser}, options),
-		matchingRule;
+		matchingRule,
+		entry = new EntryNode("wikitext");
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		if (matchingRule.rule.relink) {
 			var newEntry = matchingRule.rule.relink(text, fromTitle, toTitle, extendedOptions);
 			if (newEntry !== undefined) {
-				logger.add(newEntry);
+				entry.add(newEntry);
 				if (newEntry.output) {
 					builder.add(newEntry.output, matchingRule.matchIndex, parser.pos);
 				}
@@ -143,17 +145,17 @@ function fieldTypeMethod(text, fromTitle, toTitle, logger, options) {
 			}
 		}
 	}
-	if (builder.changed()) {
-		builder.prepend(parser.getPreamble());
-		return builder.results();
+	if (entry.children.length > 0) {
+		if (builder.changed()) {
+			builder.prepend(parser.getPreamble());
+			entry.output = builder.results();
+		}
+		return entry;
 	}
 	return undefined;
 };
 
-exports[type] = function(tiddler, fromTitle, toTitle, logger, changes, options) {
+exports[type] = function(tiddler, fromTitle, toTitle, options) {
 	var currentOptions = $tw.utils.extend({currentTiddler: tiddler.fields.title}, options);
-	var output = fieldTypeMethod(tiddler.fields.text, fromTitle, toTitle, logger, currentOptions);
-	if (output !== undefined) {
-		changes.text = output;
-	}
+	return fieldTypeMethod(tiddler.fields.text, fromTitle, toTitle, currentOptions);
 }

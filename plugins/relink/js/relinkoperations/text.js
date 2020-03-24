@@ -27,7 +27,13 @@ exports['text'] = function(tiddler, fromTitle, toTitle, logger, changes, options
 	if (fields.text) {
 		var type = exceptions[fields.title] || fields.type || defaultOperator;
 		if (textOperators[type]) {
-			textOperators[type].call(this, tiddler, fromTitle, toTitle, logger, changes, options);
+			var entry = textOperators[type].call(this, tiddler, fromTitle, toTitle, options);
+			if (entry) {
+				logger.add(entry);
+				if (entry.output) {
+					changes.text = entry.output;
+				}
+			}
 		}
 	}
 };
