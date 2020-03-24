@@ -36,7 +36,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
 			importFilterAttr = attr;
 		}
-		var oldLength, quotedValue,
+		var oldLength, quotedValue, entry,
 			attrEntry = new EntryNode("attribute");
 		if (attr.type === "string") {
 			var handler = getAttributeHandler(this.nextTag, attributeName, options);
@@ -44,7 +44,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				// We don't manage this attribute. Bye.
 				continue;
 			}
-			var entry = handler.relink(attr.value, fromTitle, toTitle, options);
+			entry = handler.relink(attr.value, fromTitle, toTitle, options);
 			if (entry === undefined) {
 				continue;
 			}
@@ -56,49 +56,43 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 					// The value was unquotable. We need to make
 					// a macro in order to replace it.
 					var value = this.parser.getPlaceholderFor(entry.output,handler.name)
-					// TODO: I think I can scrap this line.
-					attr.type = "macro";
 					quotedValue = "<<"+value+">>";
 					attrEntry.placeholder = true;
 				}
 			}
-			attrEntry.add(entry);
 		} else if (attr.type === "indirect") {
-			var newRef = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
-			if (newRef === undefined) {
-				continue;
-			}
-			if (newRef.impossible) {
-				attrEntry.add(newRef);
-			} else {
-				// +4 for '{{' and '}}'
-				oldLength = attr.textReference.length + 4;
-				quotedValue = "{{"+newRef.output+"}}";
-			}
-		} else if (attr.type === "filtered") {
-			var filterEntry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, options);
-			if (filterEntry === undefined) {
-				continue;
-			}
-			if (!filterEntry.impossible) {
-				// +6 for '{{{' and '}}}'
-				oldLength = attr.filter.length + 6;
-				quotedValue = "{{{"+ filterEntry.output +"}}}";
-			}
-			attrEntry.add(filterEntry);
-		} else if (attr.type === "macro") {
-			var macro = attr.value;
-			var entry = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, options);
+			entry = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
 			if (entry === undefined) {
 				continue;
 			}
-			if (entry.output) {
+			if (!entry.impossible) {
+				// +4 for '{{' and '}}'
+				oldLength = attr.textReference.length + 4;
+				quotedValue = "{{"+entry.output+"}}";
+			}
+		} else if (attr.type === "filtered") {
+			entry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, options);
+			if (entry === undefined) {
+				continue;
+			}
+			if (!entry.impossible) {
+				// +6 for '{{{' and '}}}'
+				oldLength = attr.filter.length + 6;
+				quotedValue = "{{{"+ entry.output +"}}}";
+			}
+		} else if (attr.type === "macro") {
+			var macro = attr.value;
+			entry = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, options);
+			if (entry === undefined) {
+				continue;
+			}
+			if (!entry.impossible) {
 				// already includes '<<' and '>>'
 				oldLength = macro.end-macro.start;
 				quotedValue = entry.output;
 			}
-			attrEntry.add(entry);
 		}
+		attrEntry.add(entry);
 		attrEntry.element = this.nextTag.tag,
 		attrEntry.attribute = attributeName
 		widgetEntry.add(attrEntry);
@@ -116,15 +110,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 
 	}
 	if (importFilterAttr) {
-		if (typeof importFilterAttr === "string") {
-			// It was changed. Reparse it. It'll be a quoted
-			// attribute value. Add a dummy attribute name.
-			importFilterAttr = $tw.utils.parseAttribute("p="+importFilterAttr, 0)
-		}
-		var importFilter = computeAttribute(importFilterAttr, this.parser, options);
-		var parentWidget = this.parser.getVariableWidget();
-		var varHolder = options.wiki.relinkGenerateVariableWidget(importFilter, parentWidget);
-		this.parser.addWidget(varHolder);
+		processImportFilter(importFilterAttr, this.parser, options);
 	}
 	this.parser.pos = this.nextTag.end;
 	if (widgetEntry.children.length > 0) {
@@ -168,4 +154,18 @@ function computeAttribute(attribute, parser, options) {
 		value = attribute.value;
 	}
 	return value;
+};
+
+// This processes a <$importvariables> filter attribute and adds any new
+// variables to our parser.
+function processImportFilter(importAttribute, parser, options) {
+	if (typeof importAttribute === "string") {
+		// It was changed. Reparse it. It'll be a quoted
+		// attribute value. Add a dummy attribute name.
+		importAttribute = $tw.utils.parseAttribute("p="+importAttribute, 0)
+	}
+	var importFilter = computeAttribute(importAttribute, parser, options);
+	var parentWidget = parser.getVariableWidget();
+	var varHolder = options.wiki.relinkGenerateVariableWidget(importFilter, parentWidget);
+	parser.addWidget(varHolder);
 };
