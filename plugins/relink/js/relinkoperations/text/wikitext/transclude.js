@@ -15,12 +15,18 @@ var utils = require("./utils.js");
 
 exports.name = ['transcludeinline', 'transcludeblock'];
 
+function TranscludeEntry() {};
+TranscludeEntry.prototype.name = "transclude";
+TranscludeEntry.prototype.occurrences = function(title) {
+	return ["{{" + title + "}}"];
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match,
 		reference = m[1],
 		template = m[2],
 		quoted,
-		entry = {name: "transclude"},
+		entry = new TranscludeEntry(),
 		trimmedRef = $tw.utils.trim(reference),
 		ref = $tw.utils.parseTextReference(trimmedRef),
 		rtn;
