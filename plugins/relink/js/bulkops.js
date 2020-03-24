@@ -42,6 +42,9 @@ function relinkTiddler(fromTitle, toTitle, options) {
 		var update = false;
 		for (var field in entries) {
 			var entry = entries[field];
+			language.eachImpossible(entry, function() {
+				failures.push(title);
+			});
 			logger.add(entry);
 			if (entry && entry.output) {
 				changes[field] = entry.output;
@@ -55,7 +58,6 @@ function relinkTiddler(fromTitle, toTitle, options) {
 			self.addTiddler(newTiddler);
 		}
 		logger.logAll(title, fromTitle, toTitle, options);
-		logger.addToFailures(tiddler.fields.title, failures);
 	});
 	if (failures.length > 0) {
 		language.reportFailures(failures);
