@@ -9,4 +9,8 @@ title: $:/plugins/flibbles/relink/ui/TiddlerInfo/References
 <<lingo References/Description>>
 </$list>
 
-<$list filter=<<filter>> emptyMessage=<<lingo References/Empty>> template="$:/core/ui/ListItemTemplate">
+<table class="tc-relink-references-table">
+<tbody>
+<$list filter=<<filter>> emptyMessage=<<lingo References/Empty>> variable="listItem" template="$:/plugins/flibbles/relink/ui/TiddlerInfo/ReferencesTemplate" />
+</tbody>
+</table>

@@ -1,0 +1,17 @@
+.tc-relink-references {
+}
+
+.tc-relink-references-table {
+	width: 100%;
+}
+
+.tc-relink-references-title {
+	width: 1%; /* Keeps this column small */
+	text-align: left;
+}
+
+.tc-relink-references-occurrence {
+	font-style: italic;
+	text-align: left;
+	font-weight: 200;
+}
