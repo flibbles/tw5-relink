@@ -11,6 +11,12 @@ Handles replacement in wiki text inline rules, like,
 
 var utils = require("./utils.js");
 
+function PrettyLinkEntry() {};
+PrettyLinkEntry.prototype.name = "prettylink";
+PrettyLinkEntry.prototype.occurrences = function(title) {
+	return ["[[" + title + "]]"];
+};
+
 exports.name = "prettylink";
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -23,7 +29,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		// format is [[MyTiddler]], and it doesn't match
 		return undefined;
 	}
-	var entry = {name: "prettylink"};
+	var entry = new PrettyLinkEntry();
 	if (utils.canBePretty(toTitle)) {
 		entry.output = prettyLink(toTitle, caption);
 	} else if (caption === undefined) {
