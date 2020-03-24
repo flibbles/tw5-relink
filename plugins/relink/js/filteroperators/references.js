@@ -19,9 +19,8 @@ exports.references = function(source,operator,options) {
 		results = [];
 	if (fromTitle) {
 		options.wiki.eachRelinkableTiddler(
-			fromTitle, "__relink_dummy__",
-			$tw.utils.extend({quiet: true}, options),
-			function(changes, tiddler, title) {
+			fromTitle, "$:/plugins/flibbles/relink/dummy", options,
+			function(entries, tiddler, title) {
 				results.push(title);
 			});
 	}

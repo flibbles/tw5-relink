@@ -14,6 +14,7 @@ way to ensure this runs after the old relinkTiddler method is applied.
 "use strict";
 
 var language = require('$:/plugins/flibbles/relink/js/language.js');
+var Logger = require("$:/plugins/flibbles/relink/js/language.js").Logger;
 
 exports.name = "redefine-relinkTiddler";
 exports.synchronous = true;
@@ -30,14 +31,31 @@ exports.startup = function() {
  */
 function relinkTiddler(fromTitle, toTitle, options) {
 	var self = this;
-	var failures = this.eachRelinkableTiddler(
+	var failures = [];
+	this.eachRelinkableTiddler(
 			fromTitle,
 			toTitle,
 			options,
-			function(changes, tiddler) {
-		var newTiddler = new $tw.Tiddler(tiddler,changes,self.getModificationFields())
-		newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
-		self.addTiddler(newTiddler);
+			function(entries, tiddler, title) {
+		var logger = new Logger();
+		var changes = Object.create(null);
+		var update = false;
+		for (var field in entries) {
+			var entry = entries[field];
+			logger.add(entry);
+			if (entry && entry.output) {
+				changes[field] = entry.output;
+				update = true;
+			}
+		}
+		// If any fields changed, update tiddler
+		if (update) {
+			var newTiddler = new $tw.Tiddler(tiddler,changes,self.getModificationFields())
+			newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
+			self.addTiddler(newTiddler);
+		}
+		logger.logAll(title, fromTitle, toTitle, options);
+		logger.addToFailures(tiddler.fields.title, failures);
 	});
 	if (failures.length > 0) {
 		language.reportFailures(failures);

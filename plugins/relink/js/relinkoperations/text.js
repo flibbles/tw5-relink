@@ -28,7 +28,9 @@ exports['text'] = function(tiddler, fromTitle, toTitle, changes, options) {
 		var type = exceptions[fields.title] || fields.type || defaultOperator;
 		if (textOperators[type]) {
 			var entry = textOperators[type].call(this, tiddler, fromTitle, toTitle, options);
-			changes.text = entry;
+			if (entry) {
+				changes.text = entry;
+			}
 		}
 	}
 };

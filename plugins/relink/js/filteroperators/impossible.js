@@ -16,16 +16,27 @@ and a toTitle.
 Results are dominantly appanded if more than one input tiddler is given.
 \*/
 
+var Logger = require("$:/plugins/flibbles/relink/js/language.js").Logger;
+
 exports.impossible = function(source,operator,options) {
 	var fromTitle = operator.operand,
 		results = [];
 	if (fromTitle) {
 		source(function(toTiddler, toTitle) {
 			var fails = options.wiki.eachRelinkableTiddler(
-				fromTitle, toTitle,
-				$tw.utils.extend({quiet: true}, options),
-				function(tiddler, title) {});
-			$tw.utils.pushTop(results, fails);
+					fromTitle, toTitle, options,
+					function(entries, tiddler, title) {
+
+				var logger = new Logger();
+				var failures = []
+				for (var field in entries) {
+					logger.add(entries[field]);
+				}
+				logger.addToFailures(title, failures);
+				if (failures.length > 0) {
+					$tw.utils.pushTop(results, title);
+				}
+			});
 		});
 	}
 	return results;

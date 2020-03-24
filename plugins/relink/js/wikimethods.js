@@ -5,8 +5,6 @@ Introduces some utility methods used by Relink.
 
 \*/
 
-var Logger = require("$:/plugins/flibbles/relink/js/language.js").Logger;
-
 var relinkOperations = Object.create(null);
 $tw.modules.applyMethods('relinkoperator', relinkOperations);
 
@@ -17,14 +15,13 @@ $tw.modules.applyMethods('relinkoperator', relinkOperations);
  */
 exports.eachRelinkableTiddler = function(fromTitle, toTitle, options, method) {
 	var data = this.getRelinkableTiddlers(fromTitle, toTitle, options);
-	for (var title in data.changes) {
-		method(data.changes[title], this.getTiddler(title), title);
+	for (var title in data) {
+		method(data[title], this.getTiddler(title), title);
 	}
-	return data.failures;
 };
 
 /** Returns a pair like this,
- *  { changes: {...}, failures: [] }
+ *  { field: entry, ... }
  */
 exports.getRelinkableTiddlers = function(fromTitle, toTitle, options) {
 	var cache = this.getGlobalCache("relink-"+fromTitle, function() {
@@ -41,7 +38,6 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 	options.wiki = options.wiki || wiki;
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
-	var failures = [];
 	var changeList = Object.create(null);
 	if(fromTitle && toTitle && fromTitle !== toTitle) {
 		var toUpdate = getRelinkFilter(wiki);
@@ -53,25 +49,16 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 			if(tiddler
 			&& !tiddler.fields["plugin-type"]
 			&& tiddler.fields.type !== "application/javascript") {
-				var logger = new Logger();
 				try {
 					var entries = Object.create(null);
 					for (var operation in relinkOperations) {
 						relinkOperations[operation](tiddler, fromTitle, toTitle, entries, options);
 					}
-					var changes = Object.create(null);
-					var update = false;
 					for (var field in entries) {
-						var entry = entries[field];
-						logger.add(entry);
-						if (entry && entry.output) {
-							changes[field] = entry.output;
-							update = true;
-						}
-					}
-					// If any fields changed, update tiddler
-					if (update) {
-						changeList[title] = changes;
+						// So long as there is one key,
+						// add it to the change list.
+						changeList[title] = entries;
+						break;
 					}
 				} catch (e) {
 					// Should we test for instanceof Error instead?: yes
@@ -80,14 +67,11 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 						e.message = e.message + "\nWhen relinking '" + title + "'";
 					}
 					throw e;
-			}
-				logger.logAll(tiddler.fields.title, fromTitle, toTitle, options);
-				// TODO: Temporary
-				logger.addToFailures(tiddler.fields.title, failures);
+				}
 			}
 		}
 	}
-	return {changes: changeList, failures: failures};
+	return changeList;
 };
 
 function getRelinkFilter(wiki) {
