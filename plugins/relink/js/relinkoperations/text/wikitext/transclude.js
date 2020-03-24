@@ -10,7 +10,6 @@ This renames both the tiddler and the template field.
 
 \*/
 
-var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var utils = require("./utils.js");
 

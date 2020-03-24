@@ -8,13 +8,15 @@ This specifies logic for updating filters to reflect title changes.
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "filter";
 
-exports.relink = function(filter, fromTitle, toTitle, logger, options) {
+exports.relink = function(filter, fromTitle, toTitle, options) {
 	if (!filter || filter.indexOf(fromTitle) < 0) {
 		return undefined;
 	}
+	var filterEntry = new EntryNode("filter");
 	var relinker = new Rebuilder(filter);
 	var whitelist = settings.getOperators(options);
 	var p = 0, // Current position in the filter string
@@ -58,7 +60,7 @@ exports.relink = function(filter, fromTitle, toTitle, logger, options) {
 				var alone = standaloneTitle.exec(filter);
 				if (!alone || alone.index != p) {
 					// It's a legit run
-					p =parseFilterOperation(relinker,fromTitle,toTitle,logger,filter,p,whitelist,options);
+					p =parseFilterOperation(relinker,fromTitle,toTitle,filterEntry,filter,p,whitelist,options);
 					if (p === undefined) {
 						// The filter is malformed
 						// We do nothing.
@@ -86,14 +88,18 @@ exports.relink = function(filter, fromTitle, toTitle, logger, options) {
 				preference = '';
 			}
 			if (val === fromTitle) {
+				var entry = {name: "title"};
 				var newVal = wrapTitle(toTitle, preference);
 				if (newVal === undefined) {
 					if (!options.placeholder) {
-						logger.add({name: "filter", impossible: true});
+						entry.impossible = true;
+						filterEntry.add(entry);
 						p = operandRegExp.lastIndex;
 						continue;
 					}
-					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]"; options.usedPlaceholder = true;
+
+					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]";
+					entry.placeholder = true;
 				}
 				if (newVal[0] != '[') {
 					// not bracket enclosed
@@ -104,25 +110,31 @@ exports.relink = function(filter, fromTitle, toTitle, logger, options) {
 					}
 					wordBarrierRequired = true;
 				}
+				entry.output = toTitle;
+				filterEntry.add(entry);
 				relinker.add(newVal,p,operandRegExp.lastIndex);
 			}
 			p = operandRegExp.lastIndex;
 		}
 	}
-	return relinker.results();
+	if (filterEntry.children.length > 0) {
+		filterEntry.output = relinker.results();
+		return filterEntry;
+	}
+	return undefined;
 };
 
 /* Same as this.relink, except this has the added constraint that the return
  * value must be able to be wrapped in curly braces. (i.e. '{{{...}}}')
  */
-exports.relinkInBraces = function(filter, fromTitle, toTitle, logger, options) {
-	var output = this.relink(filter, fromTitle, toTitle, logger, options);
-	if (output && !canBeInBraces(output)) {
+exports.relinkInBraces = function(filter, fromTitle, toTitle, options) {
+	var entry = this.relink(filter, fromTitle, toTitle, options);
+	if (entry && entry.output && !canBeInBraces(entry.output)) {
 		// Although I think we can actually do this one.
-		logger.add({name: "filter", impossible: true});
-		return undefined;
+		delete entry.output;
+		entry.impossible = true;
 	}
-	return output;
+	return entry;
 };
 
 function wrapTitle(value, preference) {
@@ -192,11 +204,14 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 			case "{": // Curly brackets
 				nextBracketPos = filterString.indexOf("}",p);
 				var operand = filterString.substring(p,nextBracketPos);
-				var newRef = refHandler.relinkInBraces(operand, fromTitle, toTitle, logger, options);
-				if (newRef) {
-					// We don't check the whitelist.
-					// All indirect operands convert.
-					relinker.add(newRef,p,nextBracketPos);
+				var refEntry = refHandler.relinkInBraces(operand, fromTitle, toTitle, options);
+				if (refEntry) {
+					if (refEntry.output) {
+						// We don't check the whitelist.
+						// All indirect operands convert.
+						relinker.add(refEntry.output,p,nextBracketPos);
+					}
+					logger.add(refEntry);
 				}
 				break;
 			case "[": // Square brackets
@@ -208,24 +223,31 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					// This operator isn't managed. Bye.
 					break;
 				}
-				var result = handler.relink(operand, fromTitle, toTitle, logger, options);
+				var result = handler.relink(operand, fromTitle, toTitle, options);
 				if (!result) {
 					// The fromTitle wasn't in the operand.
 					break;
 				}
+				if (result.impossible) {
+					logger.add(result);
+					break;
+				}
 				var wrapped;
-				if (!canBePrettyOperand(result)) {
+				if (!canBePrettyOperand(result.output)) {
 					if (!options.placeholder) {
-						logger.add({name: "filter", impossible: true});
+						delete result.output;
+						result.impossible = true;
+						logger.add(result);
 						break;
 					}
-					var ph = options.placeholder.getPlaceholderFor(result);
+					var ph = options.placeholder.getPlaceholderFor(result.output);
 					wrapped = "<"+ph+">";
-					options.usedPlaceholder = true;
+					result.placeholder = true;
 				} else {
-					wrapped = "["+result+"]";
+					wrapped = "["+result.output+"]";
 				}
 				relinker.add(wrapped, p-1, nextBracketPos+1);
+				logger.add(result);
 				break;
 			case "<": // Angle brackets
 				nextBracketPos = filterString.indexOf(">",p);

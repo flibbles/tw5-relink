@@ -9,29 +9,31 @@ tiddlerTitle##propertyIndex
 
 exports.name = "reference";
 
-exports.relink = function(value, fromTitle, toTitle, logger, options) {
+exports.relink = function(value, fromTitle, toTitle, options) {
 	var reference = $tw.utils.parseTextReference(value);
+	var entry = {name: "reference"};
 	if (reference.title !== fromTitle) {
 		return undefined;
 	}
 	if (!exports.canBePretty(toTitle)) {
-		logger.add({name: "reference", impossible: true});
-		return undefined;
+		entry.impossible = true;
+	} else {
+		reference.title = toTitle;
+		entry.output = exports.toString(reference);
 	}
-	reference.title = toTitle;
-	return exports.toString(reference);
+	return entry;
 };
 
 /* Same as this.relink, except this has the added constraint that the return
  * value must be able to be wrapped in curly braces.
  */
-exports.relinkInBraces = function(value, fromTitle, toTitle, logger, options) {
-	var output = this.relink(value, fromTitle, toTitle, logger, options);
-	if (output && toTitle.indexOf("}") >= 0) {
-		logger.add({name: "reference", impossible: true});
-		return undefined;
+exports.relinkInBraces = function(value, fromTitle, toTitle, options) {
+	var log = this.relink(value, fromTitle, toTitle, options);
+	if (log && log.output && toTitle.indexOf("}") >= 0) {
+		delete log.output;
+		log.impossible = true;
 	}
-	return output;
+	return log;
 };
 
 exports.toString = function(textReference) {

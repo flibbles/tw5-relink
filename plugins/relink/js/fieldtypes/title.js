@@ -9,9 +9,9 @@ exports.name = 'title';
 
 /**Returns undefined if no change was made.
  */
-exports.relink = function(value, fromTitle, toTitle, logger, options) {
+exports.relink = function(value, fromTitle, toTitle, options) {
 	if (value === fromTitle) {
-		return toTitle;
+		return {name: "title", output: toTitle};
 	}
 	return undefined;
 };

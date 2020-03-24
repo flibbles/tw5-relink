@@ -99,20 +99,28 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, logger,
 	} else if (attribute.type === "indirect") {
 		ptr = text.indexOf('{{', ptr);
 		var end = ptr + attribute.textReference.length + 4;
-		var ref = refHandler.relinkInBraces(attribute.textReference, fromTitle, toTitle, logger, options);
+		var ref = refHandler.relinkInBraces(attribute.textReference, fromTitle, toTitle, options);
 		if (ref) {
-			builder.add("{{"+ref+"}}", ptr, end);
+			if (ref.impossible) {
+				logger.add(ref);
+			} else {
+				builder.add("{{"+ref.output+"}}", ptr, end);
+			}
 		}
 		ptr = end;
 	} else if (attribute.type === "filtered") {
 		ptr = text.indexOf('{{{', ptr);
 		var end = ptr + attribute.filter.length + 6;
 		var extendedOptions = $tw.utils.extend({placeholder: parser}, options);
-		var filter = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, logger, extendedOptions);
+		var filter = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, extendedOptions);
 		if (filter !== undefined) {
-			attribute.filter = filter;
-			var quoted = "{{{"+filter+"}}}";
-			builder.add(quoted, ptr, end);
+			if (filter.impossible) {
+				logger.add(filter);
+			} else {
+				attribute.filter = filter.output;
+				var quoted = "{{{"+filter.output+"}}}";
+				builder.add(quoted, ptr, end);
+			}
 		}
 		ptr = end;
 	} else if (attribute.type === "macro") {

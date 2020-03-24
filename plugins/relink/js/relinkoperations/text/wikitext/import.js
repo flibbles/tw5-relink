@@ -9,6 +9,7 @@ Handles import pragmas
 var settings = require("$:/plugins/flibbles/relink/js/settings.js");
 var log = require("$:/plugins/flibbles/relink/js/language.js").logRelink;
 var filterRelinker = settings.getRelinker('filter');
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "import";
 
@@ -20,17 +21,15 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	var filter = parseTree[0].attributes.filter.value;
 
 	var extendedOptions = $tw.utils.extend({placeholder: this.parser},options);
-	var value = filterRelinker.relink(filter, fromTitle, toTitle, logger, extendedOptions);
+	var filterEntry = filterRelinker.relink(filter, fromTitle, toTitle, extendedOptions);
 	var rtn = undefined;
-	if (value !== undefined) {
-		var logArguments = {name: "import"};
-		if (extendedOptions.usedPlaceholder) {
-			logArguments.placeholder = true;
-		}
-		logger.add(logArguments);
+	if (filterEntry !== undefined) {
+		var entry = new EntryNode("import");
+		entry.add(filterEntry);
+		logger.add(entry);
 		var newline = text.substring(start+filter.length, this.parser.pos);
-		filter = value;
-		rtn = "\\import " + value + newline;
+		filter = filterEntry.output;
+		rtn = "\\import " + filterEntry.output + newline;
 	}
 
 	// Before we go, we need to actually import the variables

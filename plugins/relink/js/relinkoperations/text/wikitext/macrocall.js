@@ -108,24 +108,28 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, logger, 
 		var param = macro.params[index];
 		var handler = managedMacro[managedArg];
 		var extendedOptions = $tw.utils.extend({placeholder: parser}, options);
-		var value = handler.relink(param.value, fromTitle, toTitle, logger, extendedOptions);
-		if (value === undefined) {
+		var entry = handler.relink(param.value, fromTitle, toTitle, extendedOptions);
+		if (entry === undefined) {
+			continue;
+		}
+		if (entry.impossible) {
+			logger.add(entry);
 			continue;
 		}
 		var quote = utils.determineQuote(text, param);
-		var quoted = utils.wrapParameterValue(value, quote);
+		var quoted = utils.wrapParameterValue(entry.output, quote);
 		var newParam = $tw.utils.extend({}, param);
 		if (quoted === undefined) {
 			if (!mayBeWidget) {
 				logger.add({name: "macrocall", impossible: true});
 				continue;
 			}
-			var ph = parser.getPlaceholderFor(value,handler.name);
+			var ph = parser.getPlaceholderFor(entry.output,handler.name);
 			newParam.newValue = "<<"+ph+">>";
 			newParam.type = "macro";
 		} else {
 			newParam.start = newParam.end - (newParam.value.length + (quote.length*2));
-			newParam.value = value;
+			newParam.value = entry.output;
 			newParam.newValue = quoted;
 		}
 		outMacro.params[index] = newParam;

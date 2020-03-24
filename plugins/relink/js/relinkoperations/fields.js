@@ -11,15 +11,21 @@ only supports single-value fields.
 
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports['fields'] = function(tiddler, fromTitle, toTitle, logger, changes, options) {
 	var fields = settings.getFields(options);
 	$tw.utils.each(fields, function(handler, field) {
 		var input = tiddler.fields[field];
-		var value = handler.relink(input, fromTitle, toTitle, logger, options);
-		if (value !== undefined) {
-			logger.add({ name: "field", field: field });
-			changes[field] = value;
+		var entry = handler.relink(input, fromTitle, toTitle, options);
+		if (entry !== undefined) {
+			var fieldEntry = new EntryNode("field");
+			fieldEntry.field = field;
+			fieldEntry.add(entry);
+			logger.add(fieldEntry);
+			if (entry.output) {
+				changes[field] = entry.output;
+			}
 		}
 	});
 };

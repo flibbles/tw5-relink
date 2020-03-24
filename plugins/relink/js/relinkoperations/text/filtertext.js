@@ -16,8 +16,11 @@ exports['text/x-tiddler-filter'] = function(tiddler, fromTitle, toTitle, logger,
 	if (tiddler.fields.text.indexOf(fromTitle) < 0) {
 		return;
 	}
-	var relinkedFilter = filterHandler.relink(tiddler.fields.text, fromTitle, toTitle, logger, options)
-	if (relinkedFilter !== undefined) {
-		changes.text = relinkedFilter;
+	var filterEntry = filterHandler.relink(tiddler.fields.text, fromTitle, toTitle, options)
+	if (filterEntry !== undefined) {
+		logger.add(filterEntry);
+		if (!filterEntry.impossible) {
+			changes.text = filterEntry.output;
+		}
 	}
 };

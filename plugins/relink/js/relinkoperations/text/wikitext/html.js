@@ -36,7 +36,8 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
 			importFilterAttr = attr;
 		}
-		var oldLength, quotedValue, logArguments = {name: "attribute"};
+		var oldLength, quotedValue,
+			widgetEntry = {name: "attribute"};
 		if (attr.type === "string") {
 			var handler = getAttributeHandler(this.nextTag, attributeName, options);
 			if (!handler) {
@@ -44,41 +45,54 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 				continue;
 			}
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			var value = handler.relink(attr.value, fromTitle, toTitle, logger, extendedOptions);
-			if (value === undefined) {
+			var entry = handler.relink(attr.value, fromTitle, toTitle, extendedOptions);
+			if (entry === undefined) {
 				continue;
 			}
-			if (extendedOptions.usedPlaceholder) {
-				logArguments.placeholder = true;
+			if (entry.impossible) {
+				logger.add(entry);
+				continue;
 			}
 			var quote = utils.determineQuote(text, attr);
 			oldLength = attr.value.length + (quote.length * 2);
-			quotedValue = utils.wrapAttributeValue(value,quote);
+			quotedValue = utils.wrapAttributeValue(entry.output,quote);
 			if (quotedValue === undefined) {
 				// The value was unquotable. We need to make
 				// a macro in order to replace it.
-				value = this.parser.getPlaceholderFor(value,handler.name)
+				var value = this.parser.getPlaceholderFor(entry.output,handler.name)
+				// TODO: I think I can scrap this line.
 				attr.type = "macro";
 				quotedValue = "<<"+value+">>";
-				logArguments.placeholder = true;
+				widgetEntry.placeholder = true;
+			}
+			if (entry.placeholder) {
+				widgetEntry.placeholder = true;
 			}
 		} else if (attr.type === "indirect") {
-			var newRef = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, logger, options);
-			if (!newRef) {
+			var newRef = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
+			if (newRef === undefined) {
+				continue;
+			}
+			if (newRef.impossible) {
+				logger.add(newRef);
 				continue;
 			}
 			// +4 for '{{' and '}}'
 			oldLength = attr.textReference.length + 4;
-			quotedValue = "{{"+newRef+"}}";
+			quotedValue = "{{"+newRef.output+"}}";
 		} else if (attr.type === "filtered") {
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			var filter = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, logger, extendedOptions);
-			if (filter === undefined) {
+			var filterEntry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, extendedOptions);
+			if (filterEntry === undefined) {
+				continue;
+			}
+			if (filterEntry.impossible) {
+				logger.add(filterEntry);
 				continue;
 			}
 			// +6 for '{{{' and '}}}'
 			oldLength = attr.filter.length + 6;
-			quotedValue = "{{{" + filter + "}}}";
+			quotedValue = "{{{" + filterEntry.output + "}}}";
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
 			var macroString = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, logger, options);
@@ -100,9 +114,9 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		var valueStart = attr.end - oldLength;
 		builder.add(quotedValue, valueStart, attr.end);
 
-		logArguments.element = this.nextTag.tag,
-		logArguments.attribute = attributeName
-		logger.add(logArguments);
+		widgetEntry.element = this.nextTag.tag,
+		widgetEntry.attribute = attributeName
+		logger.add(widgetEntry);
 	}
 	if (importFilterAttr) {
 		if (typeof importFilterAttr === "string") {

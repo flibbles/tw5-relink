@@ -18,6 +18,7 @@ exports.name = ['filteredtranscludeinline', 'filteredtranscludeblock'];
 var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var utils = require("./utils.js");
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	var m = this.match;
@@ -27,21 +28,20 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 		style = m[4],
 		classes = m[5],
 		parser = this.parser,
-		logArguments = {name: "filteredtransclude"};
+		entry = new EntryNode("filteredtransclude");
 	parser.pos = this.matchRegExp.lastIndex;
 	var modified = false;
 	if ($tw.utils.trim(template) === fromTitle) {
 		// preserves user-inputted whitespace
 		template = template.replace(fromTitle, toTitle);
+		entry.add({name: "title", output: template});
 		modified = true;
 	}
 	var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-	var relinkedFilter = filterHandler.relink(filter, fromTitle, toTitle, logger, extendedOptions);
-	if (extendedOptions.usedPlaceholder) {
-		logArguments.placeholder = true;
-	}
-	if (relinkedFilter !== undefined) {
-		filter = relinkedFilter;
+	var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, extendedOptions);
+	if (filterEntry !== undefined) {
+		entry.add(filterEntry);
+		filter = filterEntry.output;
 		modified = true;
 	}
 	if (!modified) {
@@ -51,9 +51,9 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 	if (canBePretty(filter) && canBePrettyTemplate(template)) {
 		output = prettyList(filter, tooltip, template, style, classes);
 	} else {
-		output = widget(filter, tooltip, template, style, classes, parser, logArguments);
+		output = widget(filter, tooltip, template, style, classes, parser, entry);
 	}
-	logger.add(logArguments);
+	logger.add(entry);
 	// By copying over the ending newline of the original text if present,
 	// thisrelink method thus works for both the inline and block rule
 	return output + utils.getEndingNewline(m[0]);

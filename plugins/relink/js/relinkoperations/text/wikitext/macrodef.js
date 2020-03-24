@@ -10,6 +10,7 @@ that we may have previously install.
 
 var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var settings = require("$:/plugins/flibbles/relink/js/settings");
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "macrodef";
 
@@ -36,18 +37,14 @@ exports.relink = function(text, fromTitle, toTitle, logger, options) {
 			var handler = settings.getRelinker(placeholder[1] || 'title');
 				// This is a filter
 			var extendedOptions = $tw.utils.extend({placeholder: this.parser}, options);
-			var value = handler.relink(match[1], fromTitle, toTitle, logger, extendedOptions);
-			if (value !== undefined) {
-				var logArguments = {
-					name: "macrodef",
-					macro: m[1]
-				};
-				if (extendedOptions.usedPlaceholder) {
-					logArguments.placeholder = true;
-				}
-				logger.add(logArguments);
+			var entry = handler.relink(match[1], fromTitle, toTitle, extendedOptions);
+			if (entry !== undefined) {
+				var macroEntry = new EntryNode("macrodef");
+				macroEntry.macro = m[1];
+				macroEntry.add(entry);
+				logger.add(macroEntry);
 				this.parser.pos += match[0].length;
-				return "\\define "+m[1]+"() "+value+match[2];
+				return "\\define "+m[1]+"() "+entry.output+match[2];
 			}
 		}
 	}

@@ -10,11 +10,10 @@ exports.name = "list";
  * Parameter: value can literally be a list. This can happen for builtin
  *            types 'list' and 'tag'. In those cases, we also return list.
  */
-exports.relink = function(value, fromTitle, toTitle, logger, options) {
+exports.relink = function(value, fromTitle, toTitle, options) {
 	var isModified = false,
 		actualList = false,
-		list,
-		output;
+		list;
 	if (typeof value !== "string") {
 		// Not a string. Must be a list.
 		// clone it, since we may make changes to this possibly
@@ -31,17 +30,19 @@ exports.relink = function(value, fromTitle, toTitle, logger, options) {
 		}
 	});
 	if (isModified) {
+		var entry = {name: "list"};
 		// It doesn't parse correctly alone, it won't
 		// parse correctly in any list.
 		if (!canBeListItem(toTitle)) {
-			logger.add({name: "list", impossible: true});
+			entry.impossible = true;
 		} else if (actualList) {
-			output = list;
+			entry.output = list;
 		} else {
-			output = $tw.utils.stringifyList(list);
+			entry.output = $tw.utils.stringifyList(list);
 		}
+		return entry;
 	}
-	return output;
+	return undefined;
 };
 
 function canBeListItem(value) {
