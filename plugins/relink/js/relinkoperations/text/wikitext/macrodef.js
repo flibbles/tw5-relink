@@ -13,6 +13,19 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "macrodef";
 
+var MacrodefEntry = EntryNode.newType("macrodef");
+
+MacrodefEntry.prototype.report = function() {
+	var macroStr = "\\define " + this.macro + "()";
+	if (this.children[0].report) {
+		return this.children[0].report().map(function(report) {
+			return macroStr + " " + report;
+		});
+	} else {
+		return [macroStr];
+	}
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var setParseTreeNode = this.parse();
 	var parentWidget = this.parser.getVariableWidget();
@@ -34,10 +47,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var match = valueRegExp.exec(text);
 		if (match) {
 			var handler = settings.getRelinker(placeholder[1] || 'title');
-				// This is a filter
+			// This is a filter
 			var entry = handler.relink(match[1], fromTitle, toTitle, options);
 			if (entry !== undefined) {
-				var macroEntry = new EntryNode("macrodef");
+				var macroEntry = new MacrodefEntry();
 				macroEntry.macro = m[1];
 				macroEntry.add(entry);
 				this.parser.pos += match[0].length;
