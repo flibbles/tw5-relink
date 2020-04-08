@@ -21,7 +21,7 @@ exports.name = "html";
 
 var HtmlEntry = EntryNode.newType("html");
 
-HtmlEntry.prototype.occurrences = function(title) {
+HtmlEntry.prototype.report = function() {
 	var self = this;
 	return this.children.map(function(child) {
 		return "<" + self.element + " " + child.attribute + " />";
@@ -30,7 +30,7 @@ HtmlEntry.prototype.occurrences = function(title) {
 
 var AttributeEntry = EntryNode.newType("attribute");
 
-AttributeEntry.prototype.occurrences = function() {
+AttributeEntry.prototype.report = function() {
 	return [this.attribute];
 };
 

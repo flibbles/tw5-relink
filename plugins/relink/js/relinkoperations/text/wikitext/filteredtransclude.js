@@ -21,11 +21,11 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var FilteredTranscludeEntry = EntryNode.newType("filteredtransclude");
 
-FilteredTranscludeEntry.prototype.occurrences = function(title) {
+FilteredTranscludeEntry.prototype.report = function() {
 	var output = [];
 	$tw.utils.each(this.children, function(child) {
 		if (child.name === "filter") {
-			$tw.utils.each(child.occurrences(), function(report) {
+			$tw.utils.each(child.report(), function(report) {
 				output.push("{{{" + report + "}}}");
 			});
 		} else {

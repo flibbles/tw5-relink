@@ -15,12 +15,12 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var FieldEntry = EntryNode.newType("field");
 
-FieldEntry.prototype.occurrences = function(title) {
+FieldEntry.prototype.report = function() {
 	var self = this;
 	var output = [];
 	$tw.utils.each(this.children, function(child) {
-		if (child.occurrences) {
-			$tw.utils.each(child.occurrences(), function(report) {
+		if (child.report) {
+			$tw.utils.each(child.report(), function(report) {
 				output.push(self.field + ": " + report);
 			});
 		} else {

@@ -20,7 +20,7 @@ exports.occurrences = function(source,operator,options) {
 			if (affectedFields) {
 				for (var field in affectedFields) {
 					var entry = affectedFields[field];
-					var signatures = entry.occurrences(fromTitle);
+					var signatures = entry.report();
 					results = results.concat(signatures);
 				}
 			}

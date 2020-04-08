@@ -19,7 +19,7 @@ function CannotFindMacroDefError() {};
 
 var MacrocallEntry = EntryNode.newType("macrocall");
 
-MacrocallEntry.prototype.occurrences = function() {
+MacrocallEntry.prototype.report = function() {
 	var self = this;
 	return this.children.map(function(child) {
 		return "<<" + self.macro + " " + child.parameter + ">>";

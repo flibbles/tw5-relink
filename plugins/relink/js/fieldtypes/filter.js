@@ -14,7 +14,7 @@ exports.name = "filter";
 
 var FilterEntry = EntryNode.newType("filter");
 
-FilterEntry.prototype.occurrences = function(title) {
+FilterEntry.prototype.report = function() {
 	return this.children.map(function(child) {
 		if (child.quotation !== undefined) {
 			return child.quotation + "title" + child.quotation;

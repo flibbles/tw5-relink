@@ -13,8 +13,8 @@ var utils = require("./utils.js");
 
 function PrettyLinkEntry() {};
 PrettyLinkEntry.prototype.name = "prettylink";
-PrettyLinkEntry.prototype.occurrences = function(title) {
-	return ["[[" + title + "]]"];
+PrettyLinkEntry.prototype.report = function() {
+	return ["[[link]]"];
 };
 
 exports.name = "prettylink";

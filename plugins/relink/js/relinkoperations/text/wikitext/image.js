@@ -20,15 +20,15 @@ exports.name = "image";
 
 var ImageEntry = EntryNode.newType("image");
 
-ImageEntry.prototype.occurrences = function(title) {
+ImageEntry.prototype.report = function() {
 	return this.children.map(function(child) {
-		return "[img" + child.occurrences(title) + "]";
+		return "[img" + child.report() + "]";
 	});
 };
 
 var ImageAttrEntry = EntryNode.newType("imageattr");
 
-ImageAttrEntry.prototype.occurrences = function(title) {
+ImageAttrEntry.prototype.report = function() {
 	if (this.attribute === "source") {
 		return "[]";
 	}

@@ -17,8 +17,8 @@ exports.name = ['transcludeinline', 'transcludeblock'];
 
 function TranscludeEntry() {};
 TranscludeEntry.prototype.name = "transclude";
-TranscludeEntry.prototype.occurrences = function(title) {
-	return ["{{" + title + "}}"];
+TranscludeEntry.prototype.report = function() {
+	return ["{{transclude}}"];
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
