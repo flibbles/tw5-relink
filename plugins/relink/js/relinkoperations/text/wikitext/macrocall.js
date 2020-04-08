@@ -34,6 +34,11 @@ var MacroparamEntry = EntryNode.newType("macroparam");
 
 MacroparamEntry.prototype.report = function() {
 	var child = this.children[0];
+	if (!child) {
+		// This means we had a definition lookup error. I may want to
+		// do something more elaborate here later.
+		return [];
+	}
 	if (child.report) {
 		var parameter = this.parameter;
 		return child.report().map(function(report) {

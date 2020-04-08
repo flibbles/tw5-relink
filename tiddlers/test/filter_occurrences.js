@@ -66,7 +66,7 @@ it("html", function() {
 
 it("macrocall", function() {
 	function testMacro(text, expected) {
-		var def = "\\define test(title, filter) stuff\n";
+		var def = "\\define test(title, filt, ref, list) stuff\n";
 		test({text: def + text}, expected, [
 			utils.macroConf("test", "title", "title"),
 			utils.macroConf("test", "ref", "reference"),
@@ -85,6 +85,18 @@ it("macrocall", function() {
 	testMacro("<<test from filt:'[[from]]'>>", ["<<test title>>", "<<test filt>>"]);
 	testMacro("<<test filt:'[list[from]tag[from]]'>>", ['<<test filt: "[list[]]">>', '<<test filt: "[tag[]]">>']);
 	testMacro("<<test from>>\n<<test from>>", ["<<test title>>", "<<test title>>"]);
+});
+
+it("macrocall when missing definition", function() {
+	function testMacro(text, expected) {
+		test({text: text}, expected, [
+			utils.macroConf("test", "title", "title"),
+			utils.macroConf("test", "ref", "reference"),
+			utils.macroConf("test", "filt", "filter"),
+			utils.macroConf("test", "list", "list")]);
+	};
+	testMacro("<<test title:from>>", ["<<test title>>"]);
+	testMacro("<<test from>>", []);
 });
 
 it("images", function() {
