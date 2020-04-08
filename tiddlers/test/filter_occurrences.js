@@ -59,15 +59,15 @@ it("images", function() {
 });
 
 it("filteredtranscludes", function() {
-	test({text: "{{{[tag[from]]}}}"}, ["{{{tag[]}}}"]);
+	test({text: "{{{[tag[from]]}}}"}, ["{{{[tag[]]}}}"]);
 	test({text: "{{{[tag[else]] ||from}}}"}, ["{{{||template}}}"]);
 	test({text: "{{{from||from}}}"}, ["{{{title}}}", "{{{||template}}}"]);
 });
 
 it("pragmas", function() {
-	test({text: "\\import [tag[from]]\n"}, ["\\import tag[]"]);
+	test({text: "\\import [tag[from]]\n"}, ["\\import [tag[]]"]);
 	test({text: "\\define relink-1() from\n"}, ["\\define relink-1()"]);
-	test({text: "\\define relink-filter-1() [tag[from]]\n"}, ["\\define relink-filter-1() tag[]"]);
+	test({text: "\\define relink-filter-1() [tag[from]]\n"}, ["\\define relink-filter-1() [tag[]]"]);
 	test({text: "\\define relink-list-1() A from\n"}, ["\\define relink-list-1()"]);
 });
 
@@ -88,13 +88,13 @@ it("filter fields", function() {
 	test({"filter": "A from"}, ["filter: title"]);
 	// Duplicates are allowed
 	test({"filter": "A from B from"}, ["filter: title", "filter: title"]);
-	test({"filter": "from [tag[from]]"}, ["filter: title","filter: tag[]"]);
+	test({"filter": "from [tag[from]]"}, ["filter: title","filter: [tag[]]"]);
 });
 
 it("filter tiddlers", function() {
-	test({type: "text/x-tiddler-filter", text: "[tag[from]]"}, ["tag[]"]);
+	test({type: "text/x-tiddler-filter", text: "[tag[from]]"}, ["[tag[]]"]);
 	// Also, make sure $:/DefaultTiddlers works.
-	test({title: "$:/DefaultTiddlers", text: "[tag[from]]"}, ["tag[]"]);
+	test({title: "$:/DefaultTiddlers", text: "[tag[from]]"}, ["[tag[]]"]);
 });
 
 it("filters", function() {
@@ -102,23 +102,23 @@ it("filters", function() {
 		test({type: "text/x-tiddler-filter", text: text}, expected);
 	};
 	// Variations of title
-	testFilter("[[from]]", ["title[]"]);
-	testFilter("[{from}]", ["title{}"]);
+	testFilter("[[from]]", ["[title[]]"]);
+	testFilter("[{from}]", ["[title{}]"]);
 	testFilter("from", ["title"]);
 	testFilter("'from'", ["'title'"]);
 	testFilter('"from"', ['"title"']);
-	testFilter("[title[from]]", ["title[]"]);
-	testFilter("[field:title[from]]", ["field:title[]"]);
+	testFilter("[title[from]]", ["[title[]]"]);
+	testFilter("[field:title[from]]", ["[field:title[]]"]);
 
 	// Suffixes and Prefixes
-	testFilter("[!tag[from]]", ["!tag[]"]);
-	testFilter("[tag:suffix[from]]", ["tag:suffix[]"]);
+	testFilter("[!tag[from]]", ["[!tag[]]"]);
+	testFilter("[tag:suffix[from]]", ["[tag:suffix[]]"]);
 
 	//Indirect parameters
-	testFilter("[something{from}]", ["something{}"]);
+	testFilter("[something{from}]", ["[something{}]"]);
 
 	// Multiples
-	testFilter("from [tag[from]oper{from}]", ["title", "tag[]", "oper{}"]);
+	testFilter("from [tag[from]oper{from}]", ["title", "[tag[]]", "[oper{}]"]);
 });
 
 });

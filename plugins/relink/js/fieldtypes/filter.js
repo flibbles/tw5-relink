@@ -28,7 +28,7 @@ FilterEntry.prototype.report = function() {
 		if (op.suffix) {
 			suffix = ":" + op.suffix;
 		}
-		return (op.prefix || '') + op.operator + suffix + brackets;
+		return "[" + (op.prefix || '') + op.operator + suffix + brackets + "]";
 	});
 };
 
