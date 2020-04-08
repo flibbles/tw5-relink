@@ -105,6 +105,7 @@ it("filteredtranscludes", function() {
 
 it("pragmas", function() {
 	test({text: "\\import [tag[from]]\n"}, ["\\import [tag[]]"]);
+	test({text: "\\import from\n"}, ["\\import"]);
 	test({text: "\\define relink-1() from\n"}, ["\\define relink-1()"]);
 	test({text: "\\define relink-filter-1() [tag[from]]\n"}, ["\\define relink-filter-1() [tag[]]"]);
 	test({text: "\\define relink-list-1() A from\n"}, ["\\define relink-list-1()"]);

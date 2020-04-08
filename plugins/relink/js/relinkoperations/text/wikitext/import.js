@@ -16,7 +16,11 @@ var ImportEntry = EntryNode.newType("import");
 
 ImportEntry.prototype.report = function() {
 	return this.children[0].report().map(function(report) {
-		return "\\import " + report;
+		if (report.length > 0) {
+			return "\\import " + report;
+		} else {
+			return "\\import";
+		}
 	});
 };
 
