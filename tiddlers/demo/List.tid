@@ -12,3 +12,5 @@ If //Second Tiddler// were renamed to //New Tiddler//, that field would become,
 `list [[First Tiddler]] [[New Tiddler]] TiddlerWithoutSpaces`
 
 Relink adds brackets whenever necessary.
+
+''Note:'' Tiddlywiki lists don't support duplicates, and therefore neither does Relink.
