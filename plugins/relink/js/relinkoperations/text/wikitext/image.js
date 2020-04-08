@@ -18,11 +18,28 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "image";
 
+var ImageEntry = EntryNode.newType("image");
+
+ImageEntry.prototype.occurrences = function(title) {
+	return this.children.map(function(child) {
+		return "[img" + child.occurrences(title) + "]";
+	});
+};
+
+var ImageAttrEntry = EntryNode.newType("imageattr");
+
+ImageAttrEntry.prototype.occurrences = function(title) {
+	if (this.attribute === "source") {
+		return "[]";
+	}
+	return " " + this.attribute;
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var ptr = this.nextImage.start;
 	var builder = new Rebuilder(text, ptr);
 	var makeWidget = false;
-	var imageEntry = new EntryNode("image");
+	var imageEntry = new ImageEntry();
 	if (this.nextImage.attributes.source.value === fromTitle && !canBePretty(toTitle, this.nextImage.attributes.tooltip)) {
 		makeWidget = true;
 		builder.add("<$image", ptr, ptr+4);
@@ -30,7 +47,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	ptr += 4; //[img
 	var inSource = false;
 	for (var attributeName in this.nextImage.attributes) {
-		var attrEntry = new EntryNode("imageattr");
+		var attrEntry = new ImageAttrEntry();
 		var attr = this.nextImage.attributes[attributeName];
 		if (attributeName === "source" || attributeName === "tooltip") {
 			if (inSource) {
@@ -84,6 +101,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			ptr = relinkAttribute(attr, this.parser, builder, fromTitle, toTitle, attrEntry, options);
 		}
 		if (attrEntry.children.length > 0) {
+			attrEntry.attribute = attributeName;
 			imageEntry.add(attrEntry);
 		}
 	}

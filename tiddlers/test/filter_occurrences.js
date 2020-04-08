@@ -43,6 +43,14 @@ it("macrocall", function() {
 	     ["<<test title>>", "<<test title>>"]);
 });
 
+it("images", function() {
+	test({text: "[img[from]]"}, ["[img[]]"]);
+	test({text: "[img height={{from}} [else]]"}, ["[img height]"]);
+	test({text: "[img class={{from}} [else]]"}, ["[img class]"]);
+	// Both are recorded separately
+	test({text: "[img height={{from}} [from]]"},["[img height]","[img[]]"]);
+});
+
 it("fields", function() {
 	test({"list-after": "from"}, ["list-after field"]);
 	test({"tags": "A from B"}, ["tags"]);
