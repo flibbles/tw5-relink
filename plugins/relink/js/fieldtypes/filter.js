@@ -12,11 +12,31 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "filter";
 
+var FilterEntry = EntryNode.newType("filter");
+
+FilterEntry.prototype.occurrences = function(title) {
+	return this.children.map(function(child) {
+		if (child.quotation !== undefined) {
+			return child.quotation + "title" + child.quotation;
+		}
+		var brackets = '[]';
+		var op = child.operator;
+		if (child.name == "reference") {
+			brackets = '{}';
+		}
+		var suffix = '';
+		if (op.suffix) {
+			suffix = ":" + op.suffix;
+		}
+		return (op.prefix || '') + op.operator + suffix + brackets;
+	});
+};
+
 exports.relink = function(filter, fromTitle, toTitle, options) {
 	if (!filter || filter.indexOf(fromTitle) < 0) {
 		return undefined;
 	}
-	var filterEntry = new EntryNode("filter");
+	var filterEntry = new FilterEntry();
 	var relinker = new Rebuilder(filter);
 	var whitelist = settings.getOperators(options);
 	var p = 0, // Current position in the filter string
@@ -111,6 +131,8 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 					wordBarrierRequired = true;
 				}
 				entry.output = toTitle;
+				entry.operator = {operator: "title"};
+				entry.quotation = preference;
 				filterEntry.add(entry);
 				relinker.add(newVal,p,operandRegExp.lastIndex);
 			}
@@ -176,6 +198,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 		operator = {};
 		// Check for an operator prefix
 		if(filterString.charAt(p) === "!") {
+			operator.prefix = "!";
 			p++;
 		}
 		// Get the operator name
@@ -211,6 +234,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 						// All indirect operands convert.
 						relinker.add(refEntry.output,p,nextBracketPos);
 					}
+					refEntry.operator = operator;
 					logger.add(refEntry);
 				}
 				break;
@@ -247,6 +271,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					wrapped = "["+result.output+"]";
 				}
 				relinker.add(wrapped, p-1, nextBracketPos+1);
+				result.operator = operator;
 				logger.add(result);
 				break;
 			case "<": // Angle brackets

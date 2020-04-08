@@ -13,7 +13,7 @@ function test(fields, expectedArray) {
 	wiki.addTiddler(utils.macroConf("test", "title", "title"));
 	wiki.addTiddler(utils.macroConf("test", "filter", "filter"));
 	wiki.addTiddler(tiddler);
-	var output = wiki.filterTiddlers("[[test]relink:occurrences[from]]");
+	var output = wiki.filterTiddlers("[["+tiddler.title+"]relink:occurrences[from]]");
 	expect(output).toEqual(expectedArray);
 };
 
@@ -47,6 +47,36 @@ it("fields", function() {
 	test({"list-after": "from"}, ["list-after field"]);
 	test({"tags": "A from B"}, ["tags"]);
 	test({"list": "A from B"}, ["list field"]);
+});
+
+it("filter tiddlers", function() {
+	test({type: "text/x-tiddler-filter", text: "[tag[from]]"}, ["tag[]"]);
+	// Also, make sure $:/DefaultTiddlers works.
+	test({title: "$:/DefaultTiddlers", text: "[tag[from]]"}, ["tag[]"]);
+});
+
+it("filters", function() {
+	function testFilter(text, expected) {
+		test({type: "text/x-tiddler-filter", text: text}, expected);
+	};
+	// Variations of title
+	testFilter("[[from]]", ["title[]"]);
+	testFilter("[{from}]", ["title{}"]);
+	testFilter("from", ["title"]);
+	testFilter("'from'", ["'title'"]);
+	testFilter('"from"', ['"title"']);
+	testFilter("[title[from]]", ["title[]"]);
+	testFilter("[field:title[from]]", ["field:title[]"]);
+
+	// Suffixes and Prefixes
+	testFilter("[!tag[from]]", ["!tag[]"]);
+	testFilter("[tag:suffix[from]]", ["tag:suffix[]"]);
+
+	//Indirect parameters
+	testFilter("[something{from}]", ["something{}"]);
+
+	// Multiples
+	testFilter("from [tag[from]oper{from}]", ["title", "tag[]", "oper{}"]);
 });
 
 });
