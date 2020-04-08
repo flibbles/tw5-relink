@@ -73,9 +73,11 @@ it("images", function() {
 });
 
 it("filteredtranscludes", function() {
+	test({text: "{{{from}}}"}, ["{{{}}}"]);
 	test({text: "{{{[tag[from]]}}}"}, ["{{{[tag[]]}}}"]);
-	test({text: "{{{[tag[else]] ||from}}}"}, ["{{{||template}}}"]);
-	test({text: "{{{from||from}}}"}, ["{{{}}}", "{{{||template}}}"]);
+	test({text: "{{{from ||template}}}"}, ["{{{||template}}}"]);
+	test({text: "{{{[tag[else]] ||from}}}"}, ["{{{[tag[else]] ||}}}"]);
+	test({text: "{{{from||from}}}"}, ["{{{||from}}}", "{{{from||}}}"]);
 });
 
 it("pragmas", function() {
