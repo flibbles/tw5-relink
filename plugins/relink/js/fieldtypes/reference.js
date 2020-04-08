@@ -9,9 +9,24 @@ tiddlerTitle##propertyIndex
 
 exports.name = "reference";
 
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
+
+var ReferenceEntry = EntryNode.newType("reference");
+
+ReferenceEntry.prototype.report = function() {
+	if (this.reference.field) {
+		return ["!!" + this.reference.field];
+	}
+	if (this.reference.index) {
+		return ["##" + this.reference.index];
+	}
+	return [""];
+};
+
 exports.relink = function(value, fromTitle, toTitle, options) {
 	var reference = $tw.utils.parseTextReference(value);
-	var entry = {name: "reference"};
+	var entry = new ReferenceEntry();
+	entry.reference = reference;
 	if (reference.title !== fromTitle) {
 		return undefined;
 	}

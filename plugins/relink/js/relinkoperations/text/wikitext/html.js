@@ -22,16 +22,35 @@ exports.name = "html";
 var HtmlEntry = EntryNode.newType("html");
 
 HtmlEntry.prototype.report = function() {
-	var self = this;
-	return this.children.map(function(child) {
-		return "<" + self.element + " " + child.attribute + " />";
+	var element = this.element;
+	var output = [];
+	$tw.utils.each(this.children, function(child) {
+		$tw.utils.each(child.report(), function(report) {
+			output.push("<" + element + " " + report + " />");
+		});
 	});
+	return output;
 };
 
 var AttributeEntry = EntryNode.newType("attribute");
 
 AttributeEntry.prototype.report = function() {
-	return [this.attribute];
+	var child = this.children[0];
+	if (child.report) {
+		var type = this.type;
+		var attribute = this.attribute
+		return child.report().map(function(report) {
+			var rtn = attribute + "="
+			if (type === "string") {
+				rtn += report;
+			} else if (type === "indirect") {
+				rtn += "{{" + report + "}}";
+			}
+			return rtn;
+		});
+	} else {
+		return [this.attribute];
+	}
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -111,6 +130,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		attrEntry.element = this.nextTag.tag,
 		widgetEntry.element = this.nextTag.tag,
 		attrEntry.attribute = attributeName
+		attrEntry.type = attr.type;
 		widgetEntry.add(attrEntry);
 		if (quotedValue === undefined) {
 			continue;

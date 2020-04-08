@@ -50,8 +50,11 @@ it("wikiLinks", function() {
 
 it("html", function() {
 	test({text: "<$link to='from' />"}, ["<$link to />"]);
+	test({text: "<$text text={{from}} />"}, ["<$text text={{}} />"]);
+	test({text: "<$text text={{from!!F}} />"}, ["<$text text={{!!F}} />"]);
+	// Multiples
 	test({text: "<$link to='from' tooltip={{from}} />"},
-	     ["<$link to />", "<$link tooltip />"]);
+	     ["<$link to />", "<$link tooltip={{}} />"]);
 });
 
 it("macrocall", function() {
