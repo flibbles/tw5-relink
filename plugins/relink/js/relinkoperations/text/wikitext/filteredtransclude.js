@@ -19,6 +19,23 @@ var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinke
 var utils = require("./utils.js");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
+var FilteredTranscludeEntry = EntryNode.newType("filteredtransclude");
+
+FilteredTranscludeEntry.prototype.occurrences = function(title) {
+	var output = [];
+	$tw.utils.each(this.children, function(child) {
+		if (child.name === "filter") {
+			$tw.utils.each(child.occurrences(), function(report) {
+				output.push("{{{" + report + "}}}");
+			});
+		} else {
+			// Must be the template
+			output.push("{{{||template}}}");
+		}
+	});
+	return output;
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match;
 		filter = m[1],
@@ -27,19 +44,21 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		style = m[4],
 		classes = m[5],
 		parser = this.parser,
-		entry = new EntryNode("filteredtransclude");
+		entry = new FilteredTranscludeEntry();
 	parser.pos = this.matchRegExp.lastIndex;
 	var modified = false;
-	if ($tw.utils.trim(template) === fromTitle) {
-		// preserves user-inputted whitespace
-		template = template.replace(fromTitle, toTitle);
-		entry.add({name: "title", output: template});
-		modified = true;
-	}
+
 	var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, options);
 	if (filterEntry !== undefined) {
 		entry.add(filterEntry);
 		filter = filterEntry.output;
+		modified = true;
+	}
+
+	if ($tw.utils.trim(template) === fromTitle) {
+		// preserves user-inputted whitespace
+		template = template.replace(fromTitle, toTitle);
+		entry.add({name: "title", output: template});
 		modified = true;
 	}
 	if (!modified) {

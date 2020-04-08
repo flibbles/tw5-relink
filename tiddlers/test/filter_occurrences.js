@@ -52,6 +52,12 @@ it("images", function() {
 	test({text: "[img height={{from}} [from]]"},["[img height]","[img[]]"]);
 });
 
+it("filteredtranscludes", function() {
+	test({text: "{{{[tag[from]]}}}"}, ["{{{tag[]}}}"]);
+	test({text: "{{{[tag[else]] ||from}}}"}, ["{{{||template}}}"]);
+	test({text: "{{{from||from}}}"}, ["{{{title}}}", "{{{||template}}}"]);
+});
+
 it("fields", function() {
 	test({"list-after": "from"}, ["list-after field"]);
 	test({"tags": "A from B"}, ["tags"]);
@@ -67,6 +73,7 @@ it("fields", function() {
 
 it("filter fields", function() {
 	test({"filter": "A from"}, ["filter: title"]);
+	// Duplicates are allowed
 	test({"filter": "A from B from"}, ["filter: title", "filter: title"]);
 	test({"filter": "from [tag[from]]"}, ["filter: title","filter: tag[]"]);
 });
