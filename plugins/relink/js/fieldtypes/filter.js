@@ -16,20 +16,26 @@ var FilterEntry = EntryNode.newType("filter");
 
 FilterEntry.prototype.report = function() {
 	return this.children.map(function(child) {
-		if (child.quotation !== undefined) {
-			return child.quotation + "title" + child.quotation;
+		if (!child.report) {
+			return "";
 		}
-		var brackets = '[]';
-		var op = child.operator;
-		if (child.name == "reference") {
-			brackets = '{}';
-		}
-		var suffix = '';
-		if (op.suffix) {
-			suffix = ":" + op.suffix;
-		}
-		return "[" + (op.prefix || '') + op.operator + suffix + brackets + "]";
+		return child.report();
 	});
+};
+
+var OperatorEntry = EntryNode.newType("operator");
+
+OperatorEntry.prototype.report = function() {
+	var brackets = '[]';
+	var op = this.operator;
+	if (this.children[0].name == "reference") {
+		brackets = '{}';
+	}
+	var suffix = '';
+	if (op.suffix) {
+		suffix = ":" + op.suffix;
+	}
+	return "[" + (op.prefix || '') + op.operator + suffix + brackets + "]";
 };
 
 exports.relink = function(filter, fromTitle, toTitle, options) {
@@ -222,6 +228,9 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 			operator.operator = "title";
 		}
 
+		var operatorEntry = new OperatorEntry();
+		operatorEntry.operator = operator;
+
 		p = nextBracketPos + 1;
 		switch (bracket) {
 			case "{": // Curly brackets
@@ -234,8 +243,8 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 						// All indirect operands convert.
 						relinker.add(refEntry.output,p,nextBracketPos);
 					}
-					refEntry.operator = operator;
-					logger.add(refEntry);
+					operatorEntry.add(refEntry);
+					logger.add(operatorEntry);
 				}
 				break;
 			case "[": // Square brackets
@@ -271,8 +280,8 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					wrapped = "["+result.output+"]";
 				}
 				relinker.add(wrapped, p-1, nextBracketPos+1);
-				result.operator = operator;
-				logger.add(result);
+				operatorEntry.add(result);
+				logger.add(operatorEntry);
 				break;
 			case "<": // Angle brackets
 				nextBracketPos = filterString.indexOf(">",p);

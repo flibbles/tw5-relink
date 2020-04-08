@@ -21,14 +21,14 @@ FieldEntry.prototype.report = function() {
 	$tw.utils.each(this.children, function(child) {
 		if (child.report) {
 			$tw.utils.each(child.report(), function(report) {
-				output.push(self.field + ": " + report);
+				if (report) {
+					output.push(self.field + ": " + report);
+				} else {
+					output.push(self.field);
+				}
 			});
 		} else {
-			if (self.field === "tags") {
-				output.push("tags");
-			} else {
-				output.push(self.field + " field");
-			}
+			output.push(self.field);
 		}
 	});
 	return output;

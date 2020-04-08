@@ -75,7 +75,7 @@ it("images", function() {
 it("filteredtranscludes", function() {
 	test({text: "{{{[tag[from]]}}}"}, ["{{{[tag[]]}}}"]);
 	test({text: "{{{[tag[else]] ||from}}}"}, ["{{{||template}}}"]);
-	test({text: "{{{from||from}}}"}, ["{{{title}}}", "{{{||template}}}"]);
+	test({text: "{{{from||from}}}"}, ["{{{}}}", "{{{||template}}}"]);
 });
 
 it("pragmas", function() {
@@ -86,27 +86,32 @@ it("pragmas", function() {
 });
 
 it("fields", function() {
-	test({"list-after": "from"}, ["list-after field"]);
+	test({"list-after": "from"}, ["list-after"]);
 	test({"tags": "A from B"}, ["tags"]);
-	test({"list": "A from B"}, ["list field"]);
+	test({"list": "A from B"}, ["list"]);
 
 	// Multiple instances within a field are reported only once, this is
 	// because Tiddlywiki removes duplicates itself, so we can't even
 	// tell with the "list" field. Just got to make sure we're consistent
 	// with custom list fields.
-	test({"list": "A from B from"}, ["list field"]);
-	test({"customlist": "A from B from"}, ["customlist field"]);
+	test({"list": "A from B from"}, ["list"]);
+	test({"customlist": "A from B from"}, ["customlist"]);
 });
 
 it("filter fields", function() {
-	test({"filter": "A from"}, ["filter: title"]);
+	test({"filter": "A from"}, ["filter"]);
+	test({"filter": "A [tag[from]]"}, ["filter: [tag[]]"]);
 	// Duplicates are allowed
-	test({"filter": "A from B from"}, ["filter: title", "filter: title"]);
-	test({"filter": "from [tag[from]]"}, ["filter: title","filter: [tag[]]"]);
+	test({"filter": "A from B from"}, ["filter", "filter"]);
+	test({"filter": "from [tag[from]]"}, ["filter","filter: [tag[]]"]);
 });
 
 it("filter tiddlers", function() {
 	test({type: "text/x-tiddler-filter", text: "[tag[from]]"}, ["[tag[]]"]);
+	// This is the only case where a report string may be empty
+	test({type: "text/x-tiddler-filter", text: "from"}, [""]);
+	// Multiples
+	test({type: "text/x-tiddler-filter", text: "from [tag[from]]"}, ["", "[tag[]]"]);
 	// Also, make sure $:/DefaultTiddlers works.
 	test({title: "$:/DefaultTiddlers", text: "[tag[from]]"}, ["[tag[]]"]);
 });
@@ -116,13 +121,14 @@ it("filters", function() {
 		test({type: "text/x-tiddler-filter", text: text}, expected);
 	};
 	// Variations of title
-	testFilter("[[from]]", ["[title[]]"]);
+	testFilter("[[from]]", [""]);
 	testFilter("[{from}]", ["[title{}]"]);
-	testFilter("from", ["title"]);
-	testFilter("'from'", ["'title'"]);
-	testFilter('"from"', ['"title"']);
+	testFilter("from", [""]);
+	testFilter("'from'", [""]);
+	testFilter('"from"', [""]);
 	testFilter("[title[from]]", ["[title[]]"]);
 	testFilter("[field:title[from]]", ["[field:title[]]"]);
+	testFilter("[[from]tag[something]]", ["[title[]]"]);
 
 	// Suffixes and Prefixes
 	testFilter("[!tag[from]]", ["[!tag[]]"]);
@@ -132,7 +138,7 @@ it("filters", function() {
 	testFilter("[something{from}]", ["[something{}]"]);
 
 	// Multiples
-	testFilter("from [tag[from]oper{from}]", ["title", "[tag[]]", "[oper{}]"]);
+	testFilter("from [tag[from]oper{from}]", ["", "[tag[]]", "[oper{}]"]);
 });
 
 });
