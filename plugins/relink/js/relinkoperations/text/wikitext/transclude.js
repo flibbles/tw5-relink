@@ -12,13 +12,34 @@ This renames both the tiddler and the template field.
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var utils = require("./utils.js");
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = ['transcludeinline', 'transcludeblock'];
 
-function TranscludeEntry() {};
-TranscludeEntry.prototype.name = "transclude";
+var TranscludeEntry = EntryNode.newType("transclude");
+
 TranscludeEntry.prototype.report = function() {
-	return ["{{transclude}}"];
+	var ref = this.reference || {};
+	var self = this;
+	return this.children.map(function(child) {
+		if (child.name === "reference") {
+			var suffix = "";
+			if (ref.field) {
+				suffix = "!!" + ref.field;
+			}
+			if (ref.index) {
+				suffix = "##" + ref.index;
+			}
+			if (self.template) {
+				suffix = suffix + "||" + self.template;
+			}
+			return "{{" + suffix + "}}";
+		} else {
+			// Must be template
+			var refString = refHandler.toString(ref);
+			return "{{" + refString + "||}}";
+		}
+	});
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -26,10 +47,12 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		reference = m[1],
 		template = m[2],
 		quoted,
-		entry = new TranscludeEntry(),
 		trimmedRef = $tw.utils.trim(reference),
 		ref = $tw.utils.parseTextReference(trimmedRef),
+		entry = new TranscludeEntry(),
 		rtn;
+	entry.reference = ref;
+	entry.template = template;
 	this.parser.pos = this.matchRegExp.lastIndex;
 	// This block takes care of 99% of all cases
 	if (canBePrettyTemplate(toTitle) &&
@@ -42,11 +65,13 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			var refString = refHandler.toString(ref);
 			// preserve user's whitespace
 			reference = reference.replace(trimmedRef, refString);
+			entry.add({name: "reference"});
 		}
 		if ($tw.utils.trim(template) === fromTitle) {
 			modified = true;
 			// preserve user's whitespace
 			template = template.replace(fromTitle, toTitle);
+			entry.add({name: "template"});
 		}
 		if (modified) {
 			rtn = prettyTransclude(reference, template);

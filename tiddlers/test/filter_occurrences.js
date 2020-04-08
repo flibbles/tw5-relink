@@ -21,11 +21,16 @@ function test(fields, expectedArray) {
 
 describe('filter: occurrences', function() {
 
-it("works", function() {
-	test({text: "Reference {{from}} stuff"}, ["{{transclude}}"]);
-	//test({text: "<$link to=from>stuff</$link>"}, ["<$link to=from ..>"]);
-	//test({text: "Reference {{other||from}} stuff"}, ["{{||from}}"]);
-	//test({list: "A from B"}, ["list: [[from]], .."]);
+it("transcludes", function() {
+	test({text: "Reference {{from}} stuff"}, ["{{}}"]);
+	test({text: "{{from||template}}"}, ["{{||template}}"]);
+	test({text: "{{other||from}}"}, ["{{other||}}"]);
+	test({text: "{{from!!field}}"}, ["{{!!field}}"]);
+	test({text: "{{from##index}}"}, ["{{##index}}"]);
+	test({text: "{{from!!field||template}}"}, ["{{!!field||template}}"]);
+
+	// Multiples allowed
+	test({text: "{{from!!F||from}}"}, ["{{!!F||from}}", "{{from!!F||}}"]);
 });
 
 it("prettylinks", function() {
