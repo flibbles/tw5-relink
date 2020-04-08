@@ -39,12 +39,18 @@ AttributeEntry.prototype.report = function() {
 	if (child.report) {
 		var type = this.type;
 		var attribute = this.attribute
+		var output = [];
 		return child.report().map(function(report) {
-			var rtn = attribute + "="
-			if (type === "string") {
-				rtn += report;
+			var rtn = attribute;
+			if (type === "filtered") {
+				rtn += "={{{" + report + "}}}";
 			} else if (type === "indirect") {
-				rtn += "{{" + report + "}}";
+				rtn += "={{" + report + "}}";
+			} else {
+				// must be string. Can't possibly be macro.
+				if (report.length > 0) {
+					rtn += '="' + report + '"';
+				}
 			}
 			return rtn;
 		});

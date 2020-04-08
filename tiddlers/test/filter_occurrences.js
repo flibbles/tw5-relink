@@ -6,11 +6,13 @@ Tests the occurrences filter.
 
 var utils = require("test/utils");
 
-function test(fields, expectedArray) {
+function test(fields, expectedArray, extraTiddlers) {
 	fromTitle = fields.from || "from";
 	var wiki = new $tw.Wiki();
 	var tiddler = $tw.utils.extend({title: "test"}, fields);
 	wiki.addTiddlers(utils.setupTiddlers());
+	extraTiddlers = extraTiddlers || [];
+	wiki.addTiddlers(extraTiddlers);
 	wiki.addTiddler(utils.fieldConf("customlist", "list"));
 	wiki.addTiddler(utils.macroConf("test", "title", "title"));
 	wiki.addTiddler(utils.macroConf("test", "filter", "filter"));
@@ -52,9 +54,18 @@ it("html", function() {
 	test({text: "<$link to='from' />"}, ["<$link to />"]);
 	test({text: "<$text text={{from}} />"}, ["<$text text={{}} />"]);
 	test({text: "<$text text={{from!!F}} />"}, ["<$text text={{!!F}} />"]);
+	test({text: "<$list filter='from' />"}, ["<$list filter />"]);
+	test({text: "<$list filter='[tag[from]]' />"}, ['<$list filter="[tag[]]" />']);
+	test({text: "<$A ref='from' />"}, ['<$A ref />'],
+		[utils.attrConf("$A", "ref", "reference")]);
+	test({text: "<$A ref='from!!field' />"}, ['<$A ref="!!field" />'],
+		[utils.attrConf("$A", "ref", "reference")]);
+
 	// Multiples
 	test({text: "<$link to='from' tooltip={{from}} />"},
 	     ["<$link to />", "<$link tooltip={{}} />"]);
+	test({text: "<$text text={{{from [tag[from]]}}} />"},
+	     ["<$text text={{{}}} />", "<$text text={{{[tag[]]}}} />"]);
 });
 
 it("macrocall", function() {
