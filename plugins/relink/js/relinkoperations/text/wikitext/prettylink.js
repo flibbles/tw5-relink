@@ -14,7 +14,7 @@ var utils = require("./utils.js");
 function PrettyLinkEntry() {};
 PrettyLinkEntry.prototype.name = "prettylink";
 PrettyLinkEntry.prototype.report = function() {
-	return ["[[link]]"];
+	return ["[[" + (this.caption || this.link) + "]]"];
 };
 
 exports.name = "prettylink";
@@ -30,6 +30,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		return undefined;
 	}
 	var entry = new PrettyLinkEntry();
+	entry.caption = caption;
+	entry.link = toTitle;
 	if (utils.canBePretty(toTitle)) {
 		entry.output = prettyLink(toTitle, caption);
 	} else if (caption === undefined) {
