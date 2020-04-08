@@ -7,6 +7,7 @@ Tests the occurrences filter.
 var utils = require("test/utils");
 
 function test(fields, expectedArray) {
+	fromTitle = fields.from || "from";
 	var wiki = new $tw.Wiki();
 	var tiddler = $tw.utils.extend({title: "test"}, fields);
 	wiki.addTiddlers(utils.setupTiddlers());
@@ -14,7 +15,7 @@ function test(fields, expectedArray) {
 	wiki.addTiddler(utils.macroConf("test", "title", "title"));
 	wiki.addTiddler(utils.macroConf("test", "filter", "filter"));
 	wiki.addTiddler(tiddler);
-	var output = wiki.filterTiddlers("[["+tiddler.title+"]relink:occurrences[from]]");
+	var output = wiki.filterTiddlers("[["+tiddler.title+"]relink:occurrences["+fromTitle+"]]");
 	expect(output).toEqual(expectedArray);
 };
 
@@ -32,6 +33,10 @@ it("prettylinks", function() {
 	test({text: "[[Caption|from]]"}, ["[[Caption]]"]);
 	// Preserve whitespace. Newlines are illegal, so don't worry about them.
 	test({text: "[[Caption |from]]"}, ["[[Caption ]]"]);
+});
+
+it("wikiLinks", function() {
+	test({text: "Text WikiFrom stuff", from: "WikiFrom"}, ["~WikiFrom"]);
 });
 
 it("html", function() {

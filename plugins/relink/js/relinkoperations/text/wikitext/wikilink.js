@@ -12,14 +12,22 @@ but not:
 \*/
 
 var utils = require("./utils.js");
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "wikilink";
+
+var WikilinkEntry = EntryNode.newType("wikilink");
+
+WikilinkEntry.prototype.report = function() {
+	return ["~" + this.link];
+};
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry = undefined;
 	this.parser.pos = this.matchRegExp.lastIndex;
 	if (this.match[0] === fromTitle && this.match[0][0] !== '~') {
-		entry = {name: "wikilink"};
+		entry = new WikilinkEntry();
+		entry.link = fromTitle;
 		if (toTitle.match(this.matchRegExp) && toTitle[0] !== '~') {
 			entry.output = toTitle;
 		} else if (utils.canBePretty(toTitle)) {
