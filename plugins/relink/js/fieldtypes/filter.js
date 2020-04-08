@@ -23,16 +23,22 @@ FilterEntry.prototype.report = function() {
 var OperatorEntry = EntryNode.newType("operator");
 
 OperatorEntry.prototype.report = function() {
-	var brackets = '[]';
+	var operand = "";
+	if (this.children[0].report) {
+		operand = this.children[0].report();
+	}
 	var op = this.operator;
+	var brackets = '[]';
 	if (this.type === "indirect") {
-		brackets = '{}';
+		operand = "{" + operand + "}";
+	} else {
+		operand = "[" + operand + "]";
 	}
 	var suffix = '';
 	if (op.suffix) {
 		suffix = ":" + op.suffix;
 	}
-	return "[" + (op.prefix || '') + op.operator + suffix + brackets + "]";
+	return "[" + (op.prefix || '') + op.operator + suffix + operand + "]";
 };
 
 /**Returns undefined if no change was made.

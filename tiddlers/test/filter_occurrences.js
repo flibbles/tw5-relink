@@ -144,8 +144,8 @@ it("filter tiddlers", function() {
 });
 
 it("filters", function() {
-	function testFilter(text, expected) {
-		test({type: "text/x-tiddler-filter", text: text}, expected);
+	function testFilter(text, expected, extraTiddlers) {
+		test({type: "text/x-tiddler-filter", text: text}, expected, extraTiddlers);
 	};
 	// Variations of title
 	testFilter("[[from]]", [""]);
@@ -163,6 +163,16 @@ it("filters", function() {
 
 	//Indirect parameters
 	testFilter("[something{from}]", ["[something{}]"]);
+	testFilter("[something{from!!f}]", ["[something{!!f}]"]);
+	testFilter("[something{from##i}]", ["[something{##i}]"]);
+
+	// Different operand types
+	testFilter("[list[from]]", ["[list[]]"]);
+	testFilter("[list[from##i]]", ["[list[##i]]"]);
+	testFilter("[enlist[A from B]]", ["[enlist[]]"],
+	           [utils.operatorConf("enlist", "list")]);
+	testFilter("[filt[from]]", ["[filt[]]"],
+	           [utils.operatorConf("filt", "filter")]);
 
 	// Multiples
 	testFilter("from [tag[from]oper{from}]", ["", "[tag[]]", "[oper{}]"]);
