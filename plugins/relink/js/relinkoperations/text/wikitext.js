@@ -15,6 +15,19 @@ var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 var Widget = require("$:/core/modules/widgets/widget.js").widget;
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
+var WikitextEntry = EntryNode.newType("wikitext");
+
+WikitextEntry.prototype.report = function() {
+	var output = [];
+	$tw.utils.each(this.children, function(child) {
+		// All wikitext children should be able to report
+		$tw.utils.each(child.report(), function(report) {
+			output.push(report);
+		});
+	});
+	return output;
+};
+
 var rules = Object.create(null);
 
 $tw.modules.forEachModuleOfType("relinkwikitextrule", function(title, exports) {
@@ -123,7 +136,7 @@ function fieldTypeMethod(text, fromTitle, toTitle, options) {
 		parser = new WikiRelinker(text, options.currentTiddler, toTitle, options),
 		extendedOptions = $tw.utils.extend({placeholder: parser}, options),
 		matchingRule,
-		entry = new EntryNode("wikitext");
+		entry = new WikitextEntry();
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		if (matchingRule.rule.relink) {
 			var newEntry = matchingRule.rule.relink(text, fromTitle, toTitle, extendedOptions);

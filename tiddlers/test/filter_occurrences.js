@@ -21,6 +21,10 @@ function test(fields, expectedArray) {
 
 describe('filter: occurrences', function() {
 
+it("works on empty reports", function() {
+	test({text: "This text has no links"}, []);
+});
+
 it("transcludes", function() {
 	test({text: "Reference {{from}} stuff"}, ["{{}}"]);
 	test({text: "{{from||template}}"}, ["{{||template}}"]);

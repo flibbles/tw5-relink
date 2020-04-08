@@ -26,6 +26,12 @@ MacrocallEntry.prototype.report = function() {
 	});
 };
 
+var MacroparamEntry = EntryNode.newType("macroparam");
+
+MacroparamEntry.prototype.report = function() {
+	return this.parameter;
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	// Get all the details of the match
 	var macroName = this.match[1],
@@ -103,7 +109,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 	outMacro.params = macro.params.slice();
 	for (var managedArg in managedMacro) {
 		var index;
-		var paramEntry = new EntryNode("macroparam");
+		var paramEntry = new MacroparamEntry();
 		try {
 			index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);
 		} catch (e) {
