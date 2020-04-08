@@ -20,16 +20,32 @@ function CannotFindMacroDefError() {};
 var MacrocallEntry = EntryNode.newType("macrocall");
 
 MacrocallEntry.prototype.report = function() {
-	var self = this;
-	return this.children.map(function(child) {
-		return "<<" + self.macro + " " + child.parameter + ">>";
+	var macro = this.macro;
+	var output = [];
+	$tw.utils.each(this.children, function(child) {
+		$tw.utils.each(child.report(), function(report) {
+			output.push("<<" + macro + " " + report + ">>");
+		});
 	});
+	return output;
 };
 
 var MacroparamEntry = EntryNode.newType("macroparam");
 
 MacroparamEntry.prototype.report = function() {
-	return this.parameter;
+	var child = this.children[0];
+	if (child.report) {
+		var parameter = this.parameter;
+		return child.report().map(function(report) {
+			if (report.length > 0) {
+				return parameter + ': "' + report + '"';
+			} else {
+				return parameter;
+			}
+		});
+	} else {
+		return [this.parameter];
+	}
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {

@@ -65,16 +65,21 @@ it("html", function() {
 });
 
 it("macrocall", function() {
-	var config = [
-		utils.macroConf("test", "title", "title"),
-		utils.macroConf("test", "filter", "filter")];
-	var def = "\\define test(title, filter) stuff\n";
-	test({text: def+"<<test title:from>>"}, ["<<test title>>"], config);
-	test({text: def+"<<test from>>"}, ["<<test title>>"], config);
-	test({text: def+"<<test from '[[from]]'>>"},
-	     ["<<test title>>", "<<test filter>>"], config);
-	test({text: def+"<<test from>>\n<<test from>>"},
-	     ["<<test title>>", "<<test title>>"], config);
+	function testMacro(text, expected) {
+		var def = "\\define test(title, filter) stuff\n";
+		test({text: def + text}, expected, [
+			utils.macroConf("test", "title", "title"),
+			utils.macroConf("test", "ref", "reference"),
+			utils.macroConf("test", "filt", "filter")]);
+	};
+	testMacro("<<test title:from>>", ["<<test title>>"]);
+	testMacro("<<test from>>", ["<<test title>>"]);
+	testMacro("<<test filt:'[tag[from]]'>>", ['<<test filt: "[tag[]]">>']);
+	testMacro("<<test filt:'from'>>", ['<<test filt>>']);
+
+	// Multiples
+	testMacro("<<test from filt:'[[from]]'>>", ["<<test title>>", "<<test filt>>"]);
+	testMacro("<<test from>>\n<<test from>>", ["<<test title>>", "<<test title>>"]);
 });
 
 it("images", function() {
