@@ -11,11 +11,7 @@ function test(fields, expectedArray, extraTiddlers) {
 	var wiki = new $tw.Wiki();
 	var tiddler = $tw.utils.extend({title: "test"}, fields);
 	wiki.addTiddlers(utils.setupTiddlers());
-	extraTiddlers = extraTiddlers || [];
-	wiki.addTiddlers(extraTiddlers);
-	wiki.addTiddler(utils.fieldConf("customlist", "list"));
-	wiki.addTiddler(utils.macroConf("test", "title", "title"));
-	wiki.addTiddler(utils.macroConf("test", "filter", "filter"));
+	wiki.addTiddlers(extraTiddlers || []);
 	wiki.addTiddler(tiddler);
 	var output = wiki.filterTiddlers("[["+tiddler.title+"]relink:occurrences["+fromTitle+"]]");
 	expect(output).toEqual(expectedArray);
@@ -69,13 +65,16 @@ it("html", function() {
 });
 
 it("macrocall", function() {
+	var config = [
+		utils.macroConf("test", "title", "title"),
+		utils.macroConf("test", "filter", "filter")];
 	var def = "\\define test(title, filter) stuff\n";
-	test({text: def+"<<test title:from>>"}, ["<<test title>>"]);
-	test({text: def+"<<test from>>"}, ["<<test title>>"]);
+	test({text: def+"<<test title:from>>"}, ["<<test title>>"], config);
+	test({text: def+"<<test from>>"}, ["<<test title>>"], config);
 	test({text: def+"<<test from '[[from]]'>>"},
-	     ["<<test title>>", "<<test filter>>"]);
+	     ["<<test title>>", "<<test filter>>"], config);
 	test({text: def+"<<test from>>\n<<test from>>"},
-	     ["<<test title>>", "<<test title>>"]);
+	     ["<<test title>>", "<<test title>>"], config);
 });
 
 it("images", function() {
@@ -111,7 +110,8 @@ it("fields", function() {
 	// tell with the "list" field. Just got to make sure we're consistent
 	// with custom list fields.
 	test({"list": "A from B from"}, ["list"]);
-	test({"customlist": "A from B from"}, ["customlist"]);
+	test({"customlist": "A from B from"}, ["customlist"],
+		[utils.fieldConf("customlist", "list")]);
 });
 
 it("filter fields", function() {
