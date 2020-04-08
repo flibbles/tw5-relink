@@ -12,6 +12,14 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "import";
 
+var ImportEntry = EntryNode.newType("import");
+
+ImportEntry.prototype.report = function() {
+	return this.children[0].report().map(function(report) {
+		return "\\import " + report;
+	});
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	// In this one case, I'll let the parser parse out the filter and move
 	// the ptr.
@@ -21,7 +29,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry = undefined;
 	var filterEntry = filterRelinker.relink(filter, fromTitle, toTitle, options);
 	if (filterEntry !== undefined) {
-		entry = new EntryNode("import");
+		entry = new ImportEntry();
 		entry.add(filterEntry);
 		var newline = text.substring(start+filter.length, this.parser.pos);
 		if (filterEntry.output) {

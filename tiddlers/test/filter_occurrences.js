@@ -64,6 +64,10 @@ it("filteredtranscludes", function() {
 	test({text: "{{{from||from}}}"}, ["{{{title}}}", "{{{||template}}}"]);
 });
 
+it("pragmas", function() {
+	test({text: "\\import [tag[from]]\n"}, ["\\import tag[]"]);
+});
+
 it("fields", function() {
 	test({"list-after": "from"}, ["list-after field"]);
 	test({"tags": "A from B"}, ["tags"]);
