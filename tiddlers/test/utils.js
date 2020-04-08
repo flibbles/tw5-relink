@@ -58,6 +58,7 @@ exports.setupTiddlers = function() {
 		exports.attrConf("$list", "filter", "filter"),
 		exports.fieldConf("list", "list"),
 		exports.fieldConf("tags", "list"),
+		exports.fieldConf("filter", "filter"),
 		exports.fieldConf("list-after", "title"),
 		exports.fieldConf("list-before", "title"),
 		exports.operatorConf("title"),

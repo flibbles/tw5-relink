@@ -47,6 +47,11 @@ it("fields", function() {
 	test({"list-after": "from"}, ["list-after field"]);
 	test({"tags": "A from B"}, ["tags"]);
 	test({"list": "A from B"}, ["list field"]);
+
+	// Multiple instances within a field are merged into a single one.
+	test({"list": "A from B from"}, ["list field"]);
+	test({"filter": "A from [tag[from]]"}, ["filter field"]);
+
 });
 
 it("filter tiddlers", function() {
