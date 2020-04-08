@@ -58,6 +58,13 @@ it('still relinks lists', function() {
 	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in list field of tiddler 'test'"]);
 });
 
+// I can't actually prevent Tiddlywiki from doing this, so might as well
+// make it defined behavior.
+it('duplicates are removed by TiddlyWiki', function() {
+	testList("[[from here]] A [[from here]]", ['to there', 'A']);
+	testField("[[from here]] A [[from here]]", "[[to there]] A", {type: "list"});
+});
+
 it('relinks filter field', function() {
 	var r = testField("[title[from here]] stuff", "[title[to there]] stuff",
 	                  {field: "filter", type: "filter"});

@@ -10,6 +10,7 @@ function test(fields, expectedArray) {
 	var wiki = new $tw.Wiki();
 	var tiddler = $tw.utils.extend({title: "test"}, fields);
 	wiki.addTiddlers(utils.setupTiddlers());
+	wiki.addTiddler(utils.fieldConf("customlist", "list"));
 	wiki.addTiddler(utils.macroConf("test", "title", "title"));
 	wiki.addTiddler(utils.macroConf("test", "filter", "filter"));
 	wiki.addTiddler(tiddler);
@@ -56,10 +57,12 @@ it("fields", function() {
 	test({"tags": "A from B"}, ["tags"]);
 	test({"list": "A from B"}, ["list field"]);
 
-	// Multiple instances within a field are merged into a single one.
+	// Multiple instances within a field are reported only once, this is
+	// because Tiddlywiki removes duplicates itself, so we can't even
+	// tell with the "list" field. Just got to make sure we're consistent
+	// with custom list fields.
 	test({"list": "A from B from"}, ["list field"]);
-	test({"filter": "A from [tag[from]]"}, ["filter field"]);
-
+	test({"customlist": "A from B from"}, ["customlist field"]);
 });
 
 it("filter tiddlers", function() {
