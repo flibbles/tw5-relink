@@ -2,9 +2,6 @@
 This specifies logic for updating filters to reflect title changes.
 \*/
 
-/**Returns undefined if no change was made.
- */
-
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
@@ -28,7 +25,7 @@ var OperatorEntry = EntryNode.newType("operator");
 OperatorEntry.prototype.report = function() {
 	var brackets = '[]';
 	var op = this.operator;
-	if (this.children[0].name == "reference") {
+	if (this.type === "indirect") {
 		brackets = '{}';
 	}
 	var suffix = '';
@@ -38,6 +35,8 @@ OperatorEntry.prototype.report = function() {
 	return "[" + (op.prefix || '') + op.operator + suffix + brackets + "]";
 };
 
+/**Returns undefined if no change was made.
+ */
 exports.relink = function(filter, fromTitle, toTitle, options) {
 	if (!filter || filter.indexOf(fromTitle) < 0) {
 		return undefined;
@@ -244,6 +243,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 						relinker.add(refEntry.output,p,nextBracketPos);
 					}
 					operatorEntry.add(refEntry);
+					operatorEntry.type = "indirect";
 					logger.add(operatorEntry);
 				}
 				break;
@@ -281,6 +281,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 				}
 				relinker.add(wrapped, p-1, nextBracketPos+1);
 				operatorEntry.add(result);
+				operatorEntry.type = "string";
 				logger.add(operatorEntry);
 				break;
 			case "<": // Angle brackets

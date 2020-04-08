@@ -70,15 +70,20 @@ it("macrocall", function() {
 		test({text: def + text}, expected, [
 			utils.macroConf("test", "title", "title"),
 			utils.macroConf("test", "ref", "reference"),
-			utils.macroConf("test", "filt", "filter")]);
+			utils.macroConf("test", "filt", "filter"),
+			utils.macroConf("test", "list", "list")]);
 	};
 	testMacro("<<test title:from>>", ["<<test title>>"]);
 	testMacro("<<test from>>", ["<<test title>>"]);
 	testMacro("<<test filt:'[tag[from]]'>>", ['<<test filt: "[tag[]]">>']);
 	testMacro("<<test filt:'from'>>", ['<<test filt>>']);
+	testMacro("<<test ref:'from'>>", ['<<test ref>>']);
+	testMacro("<<test ref:'from##index'>>", ['<<test ref: "##index">>']);
+	testMacro("<<test list:'from A B'>>", ['<<test list>>']);
 
 	// Multiples
 	testMacro("<<test from filt:'[[from]]'>>", ["<<test title>>", "<<test filt>>"]);
+	testMacro("<<test filt:'[list[from]tag[from]]'>>", ['<<test filt: "[list[]]">>', '<<test filt: "[tag[]]">>']);
 	testMacro("<<test from>>\n<<test from>>", ["<<test title>>", "<<test title>>"]);
 });
 

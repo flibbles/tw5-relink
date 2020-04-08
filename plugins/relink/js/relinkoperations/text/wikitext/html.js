@@ -38,7 +38,7 @@ AttributeEntry.prototype.report = function() {
 	var child = this.children[0];
 	if (child.report) {
 		var type = this.type;
-		var attribute = this.attribute
+		var attribute = this.attribute;
 		var output = [];
 		return child.report().map(function(report) {
 			var rtn = attribute;
