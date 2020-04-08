@@ -65,6 +65,12 @@ it("fields", function() {
 	test({"customlist": "A from B from"}, ["customlist field"]);
 });
 
+it("filter fields", function() {
+	test({"filter": "A from"}, ["filter: title"]);
+	test({"filter": "A from B from"}, ["filter: title", "filter: title"]);
+	test({"filter": "from [tag[from]]"}, ["filter: title","filter: tag[]"]);
+});
+
 it("filter tiddlers", function() {
 	test({type: "text/x-tiddler-filter", text: "[tag[from]]"}, ["tag[]"]);
 	// Also, make sure $:/DefaultTiddlers works.

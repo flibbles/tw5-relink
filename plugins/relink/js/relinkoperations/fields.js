@@ -17,13 +17,21 @@ var FieldEntry = EntryNode.newType("field");
 
 FieldEntry.prototype.occurrences = function(title) {
 	var self = this;
-	return this.children.map(function(child) {
-		if (self.field === "tags") {
-			return "tags";
+	var output = [];
+	$tw.utils.each(this.children, function(child) {
+		if (child.occurrences) {
+			$tw.utils.each(child.occurrences(), function(report) {
+				output.push(self.field + ": " + report);
+			});
 		} else {
-			return self.field + " field";
+			if (self.field === "tags") {
+				output.push("tags");
+			} else {
+				output.push(self.field + " field");
+			}
 		}
 	});
+	return output;
 };
 
 exports['fields'] = function(tiddler, fromTitle, toTitle, changes, options) {
