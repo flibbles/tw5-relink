@@ -100,4 +100,18 @@ it('code blocks', function() {
 	test("`This VarName shouldn't update.\n", true);
 });
 
+it('wikitext field', function() {
+	function test(text, options) {
+		var expected;
+		[text, expected, options] = utils.prepArgs(text, options);
+		options.wiki.addTiddler(utils.fieldConf("field", "wikitext"));
+		var results = utils.relink({field: text}, options);
+		var fails = options.fails || 0;
+		expect(results.tiddler.fields.field).toEqual(expected);
+		expect(results.fails.length).toEqual(fails, "Failure detected");
+	};
+	test("This text has nothing to replace");
+	test("A [[from here]] link");
+});
+
 });
