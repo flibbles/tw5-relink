@@ -1,4 +1,4 @@
-created: 20200408021036214
+created: 20200409040109761
 
 !! v1.7.0
 
@@ -10,3 +10,8 @@ The Wikitext field type is still coming. This release did some major refactoring
 * Fixed issue where filteredtransclude wikitext might not relink if the original title had particular patterns of the '}' character.
 * Relink wasn't properly ignoring text inside code blocks. Now it does.
 * The field `filter` is added as a core filter field.
+
+!! v1.7.1
+
+* Finished up loose ends with regards to the //Relink// References infoTab. It should provide useful contexts for all possible scenarios now.
+* Added `<$button set />` and `<$button setTitle />` to core configured attributes.
