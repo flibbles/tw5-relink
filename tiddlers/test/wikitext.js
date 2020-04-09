@@ -100,24 +100,6 @@ it('code blocks', function() {
 	test("`This VarName shouldn't update.\n", true);
 });
 
-it('wikilinks', function() {
-	var r, macro = utils.placeholder;
-	r = testText("A WikiLink please", {from: "WikiLink", to: "WikiChange"});
-	expect(r.log).toEqual(["Renaming 'WikiLink' to 'WikiChange' in CamelCase link of tiddler 'test'"]);
-	testText("A ~WikiLink please", {from: "WikiLink", ignored: true});
-	testText("A ~WikiLink please", {from: "~WikiLink", ignored: true});
-	r = testText("A WikiLink please", "A [[to there]] please", {from: "WikiLink"});
-	expect(r.log).toEqual(["%cRenaming 'WikiLink' to 'to there' in CamelCase link of tiddler 'test' %cby converting it into a prettylink"]);
-	testText("A WikiLink please", "A [[lowerCase]] please", {from: "WikiLink", to: "lowerCase"});
-	testText("A WikiLink please", "A [[~TildaCase]] please", {from: "WikiLink", to: "~TildaCase"});
-	testText("\\rules except wikilink\nA WikiLink please", {from: "WikiLink", ignored: true});
-
-	// tricky
-	var tricky = "has [[brackets]]";
-	r = testText("A WikiLink please", macro(1,tricky)+"A <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link> please", {from: "WikiLink", to: tricky});
-	expect(r.log).toEqual(["%cRenaming 'WikiLink' to '"+tricky+"' in CamelCase link of tiddler 'test' %cby converting it into a widget and creating placeholder macros"]);
-});
-
 it('placeholders', function() {
 	var from = 'End\'s with "quotes"';
 	var to = 'Another\'"quotes"';
