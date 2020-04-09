@@ -21,18 +21,39 @@ exports.name = "image";
 var ImageEntry = EntryNode.newType("image");
 
 ImageEntry.prototype.report = function() {
-	return this.children.map(function(child) {
-		return "[img" + child.report() + "]";
+	var output = [];
+	$tw.utils.each(this.children, function(child) {
+		$tw.utils.each(child.report(), function(report) {
+			output.push("[img" + report + "]");
+		});
 	});
+	return output;
 };
 
 var ImageAttrEntry = EntryNode.newType("imageattr");
 
 ImageAttrEntry.prototype.report = function() {
 	if (this.attribute === "source") {
-		return "[]";
+		return ["[]"];
 	}
-	return " " + this.attribute;
+	var reports = [''];
+	var type = this.type;
+	var attribute = this.attribute;
+	if (this.children[0].report) {
+		reports = this.children[0].report();
+	}
+	return reports.map(function(report) {
+		var value;
+		if (type === "indirect") {
+			value = "{{" + report + "}}";
+		} else if (type === "filtered") {
+			value = "{{{" + report + "}}}";
+		} else if (type === "macro") {
+			// angle brackets already added...
+			value = report;
+		}
+		return " " + attribute + "=" + value;
+	});
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -118,6 +139,7 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 	var ptr = text.indexOf(attribute.name, attribute.start);
 	ptr += attribute.name.length;
 	ptr = text.indexOf('=', ptr);
+	entry.type = attribute.type;
 	if (attribute.type === "string") {
 		ptr = text.indexOf(attribute.value, ptr)
 		var quote = utils.determineQuote(text, attribute);

@@ -101,10 +101,23 @@ it("macrocall when missing definition", function() {
 
 it("images", function() {
 	test({text: "[img[from]]"}, ["[img[]]"]);
-	test({text: "[img height={{from}} [else]]"}, ["[img height]"]);
-	test({text: "[img class={{from}} [else]]"}, ["[img class]"]);
+	test({text: "[img class={{from}} [else]]"}, ["[img class={{}}]"]);
+	test({text: "[img height={{from!!height}} [else]]"}, ["[img height={{!!height}}]"]);
+	test({text: "[img height={{{from}}} [else]]"}, ["[img height={{{}}}]"]);
+	test({text: "[img height={{{[tag[from]]}}} [else]]"}, ["[img height={{{[tag[]]}}}]"]);
+	test({text: "[img height={{{from [tag[from]]}}} [else]]"}, ["[img height={{{}}}]", "[img height={{{[tag[]]}}}]"]);
+	// macros as parameters
+	test({text: "[img height=<<test title: from>> [else]]"},
+	     ["[img height=<<test title>>]"],
+	     [utils.macroConf("test", "title", "title")]);
+	test({text: "[img height=<<test filt: '[tag[from]]'>> [else]]"},
+	     ['[img height=<<test filt: "[tag[]]">>]'],
+	     [utils.macroConf("test", "filt", "filter")]);
+	test({text: "[img height=<<test F: 'from [tag[from]]'>> [else]]"},
+	     ['[img height=<<test F>>]', '[img height=<<test F: "[tag[]]">>]'],
+	     [utils.macroConf("test", "F", "filter")]);
 	// Both are recorded separately
-	test({text: "[img height={{from}} [from]]"},["[img height]","[img[]]"]);
+	test({text: "[img height={{from}} [from]]"},["[img height={{}}]","[img[]]"]);
 });
 
 it("filteredtranscludes", function() {
