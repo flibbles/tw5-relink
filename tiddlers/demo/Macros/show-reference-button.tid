@@ -1,0 +1,17 @@
+tags: $:/tags/Macro
+title: Macros/show-reference-button
+
+\define show-reference-button()
+<$button popup=<<tiddlerInfoState>> tooltip={{$:/language/Buttons/Info/Hint}} aria-label={{$:/language/Buttons/Info/Caption}} class=<<tv-config-toolbar-class>> selectedClass="tc-selected">
+<$list filter="[<tv-config-toolbar-icons>match[yes]]">
+{{$:/core/images/info-button}}
+</$list>
+<$list filter="[<tv-config-toolbar-text>match[yes]]">
+<span class="tc-btn-text">
+<$text text={{$:/language/Buttons/Info/Caption}}/>
+</span>
+</$list>
+</$button>
+\end
+
+This will automatically show the show the //Relink// references infoTab for demonstration purposes.

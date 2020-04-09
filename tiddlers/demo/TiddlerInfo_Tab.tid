@@ -1,0 +1,12 @@
+tags: Feature
+title: TiddlerInfo Tab
+
+//Relink// provides a new tab in the tiddler info panel. This is the panel that comes up when you click the {{$:/core/images/info-button}} ''info'' button.
+
+!! //Relink// References
+
+"//Relink// References" indicates all the tiddlers that reference the given tiddler, either through fields, links, macros, transclues, or widgets. Basically, it's all the tiddlers that would update if you renamed the tiddler.
+
+It also provides a small blurb of context to give you an idea of what kind of reference it is.
+
+This new tab different than the core "References" tab, which only lists tiddlers that link to the given tiddler through `<$link>` or `[[Pretty link]]` syntax, and provides no context.
