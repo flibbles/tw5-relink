@@ -81,13 +81,13 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		entry.widget = true;
 		var resultTitle = utils.wrapAttributeValue(toTitle);
 		if (resultTitle === undefined) {
-			resultTitle = "<<"+this.parser.getPlaceholderFor(toTitle)+">>";
+			resultTitle = "<<"+options.placeholder.getPlaceholderFor(toTitle)+">>";
 			entry.placeholder = true;
 		}
 		if ($tw.utils.trim(template) === fromTitle) {
 			// Now for this bizarre-ass use-case, where both the
 			// title and template are being replaced.
-			var attrs = this.transcludeAttributes(ref.field, ref.index);
+			var attrs = this.transcludeAttributes(ref.field, ref.index, options);
 			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTitle+attrs+"/></$tiddler>";
 		} else {
 			ref.title = undefined;
@@ -97,7 +97,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var resultTemplate = utils.wrapAttributeValue(toTitle);
 		entry.widget = true;
 		if (resultTemplate === undefined) {
-			resultTemplate = "<<"+this.parser.getPlaceholderFor(toTitle)+">>";
+			resultTemplate = "<<"+options.placeholder.getPlaceholderFor(toTitle)+">>";
 			entry.placeholder = true;
 		}
 		if (ref.title) {
@@ -106,10 +106,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				// This is one of the rare cases were we need
 				// to placeholder a title OTHER than the one
 				// we're changing.
-				resultTitle = "<<"+this.parser.getPlaceholderFor(ref.title)+">>";
+				resultTitle = "<<"+options.placeholder.getPlaceholderFor(ref.title)+">>";
 				entry.placeholder = true;
 			}
-			var attrs = this.transcludeAttributes(ref.field, ref.index);
+			var attrs = this.transcludeAttributes(ref.field, ref.index, options);
 			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
 		} else {
 			rtn = "<$transclude tiddler="+resultTemplate+"/>";
@@ -134,18 +134,18 @@ function canBePrettyTemplate(value) {
  * only field or index should be used, not both, but both will return
  * the intuitive (albeit useless) result.
  */
-exports.transcludeAttributes = function(field, index) {
+exports.transcludeAttributes = function(field, index, options) {
 	return rtn = [
-		wrapAttribute(this.parser, "field", field),
-		wrapAttribute(this.parser, "index", index)
+		wrapAttribute("field", field, options),
+		wrapAttribute("index", index, options)
 	].join('');
 };
 
-function wrapAttribute(wikiRelinker, name, value) {
+function wrapAttribute(name, value, options) {
 	if (value) {
 		var wrappedValue = utils.wrapAttributeValue(value);
 		if (wrappedValue === undefined) {
-			wrappedValue = "<<"+wikiRelinker.getPlaceholderFor(value, name)+">>";
+			wrappedValue = "<<"+options.placeholder.getPlaceholderFor(value, name)+">>";
 		}
 		return " "+name+"="+wrappedValue;
 	}

@@ -40,7 +40,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		// It doesn't matter whether the toTitle is quotable
 		entry.placeholder = true;
 		entry.widget = true;
-		var ph = this.parser.getPlaceholderFor(toTitle);
+		var ph = options.placeholder.getPlaceholderFor(toTitle);
 		entry.output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 	} else if (quoted = utils.wrapAttributeValue(toTitle)) {
 		entry.widget = true;
@@ -48,7 +48,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	} else {
 		entry.placeholder = true;
 		entry.widget = true;
-		var ph = this.parser.getPlaceholderFor(toTitle);
+		var ph = options.placeholder.getPlaceholderFor(toTitle);
 		entry.output = "<$link to=<<"+ph+">>>"+caption+"</$link>";
 	}
 	return entry;

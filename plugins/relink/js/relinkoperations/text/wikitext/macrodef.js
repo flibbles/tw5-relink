@@ -37,7 +37,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var m = this.match;
 	// This macro is not available should we need to make one.
-	this.parser.reserve(m[1]);
+	options.placeholder.reserve(m[1]);
 	// !m[3] means it's not a multiline macrodef
 	var placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(m[1]);
 	if (placeholder && m[2] === '' && !m[3]) {

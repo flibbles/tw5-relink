@@ -25,14 +25,6 @@ Rebuilder.prototype.changed = function() {
 	return this.pieces.length > 0;
 };
 
-/** This sticks something on the beginning of the resulting content.
- */
-Rebuilder.prototype.prepend = function(content) {
-	if (content) {
-		this.pieces.unshift(content);
-	}
-};
-
 Rebuilder.prototype.results = function(end) {
 	if (this.changed()) {
 		this.pieces.push(this.text.substring(this.index, end));

@@ -59,9 +59,6 @@ function WikiRelinker(text, title, toTitle, options) {
 	// We work through relinkRules so we can change it later.
 	// relinkRules is inlineRules so it gets touched up by amendRules().
 	this.relinkRules = this.inlineRules;
-	this.placeholders = Object.create(null);
-	this.reverseMap = Object.create(null);
-	this.knownMacros = Object.create(null);
 	this.widget = undefined;
 };
 
@@ -69,28 +66,6 @@ WikiRelinker.prototype = Object.create(WikiParser.prototype);
 WikiRelinker.prototype.parsePragmas = function() {return []; };
 WikiRelinker.prototype.parseInlineRun = function() {};
 WikiRelinker.prototype.parseBlocks = function() {};
-
-WikiRelinker.prototype.getPlaceholderFor = function(value, category) {
-	var placeholder = this.reverseMap[value];
-	if (placeholder) {
-		return placeholder;
-	}
-	var number = 0;
-	var prefix = "relink-"
-	if (category && category !== "title") {
-		// I don't like "relink-title-1". "relink-1" should be for
-		// titles. lists, and filters can have descriptors though.
-		prefix += category + "-";
-	}
-	do {
-		number += 1;
-		placeholder = prefix + number;
-	} while (this.knownMacros[placeholder]);
-	this.placeholders[placeholder] = value;
-	this.reverseMap[value] = placeholder;
-	this.reserve(placeholder);
-	return placeholder;
-};
 
 WikiRelinker.prototype.addWidget = function(widget) {
 	this.widget = widget;
@@ -110,23 +85,6 @@ WikiRelinker.prototype.getVariableWidget = function() {
 	return this.widget;
 };
 
-WikiRelinker.prototype.reserve = function(macro) {
-	this.knownMacros[macro] = true;
-};
-
-WikiRelinker.prototype.getPreamble = function() {
-	var results = [];
-	for (var name in this.placeholders) {
-		var val = this.placeholders[name];
-		results.push("\\define "+name+"() "+val+"\n");
-	}
-	if (results.length > 0) {
-		return results.join('');
-	} else {
-		return undefined;
-	}
-};
-
 exports.relink = function(wikitext, fromTitle, toTitle, options) {
 	// fromTitle doesn't even show up plaintext. No relinking to do.
 	if (!wikitext || wikitext.indexOf(fromTitle) < 0) {
@@ -134,12 +92,11 @@ exports.relink = function(wikitext, fromTitle, toTitle, options) {
 	}
 	var builder = new Rebuilder(wikitext),
 		parser = new WikiRelinker(wikitext, options.currentTiddler, toTitle, options),
-		extendedOptions = $tw.utils.extend({placeholder: parser}, options),
 		matchingRule,
 		entry = new WikitextEntry();
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		if (matchingRule.rule.relink) {
-			var newEntry = matchingRule.rule.relink(wikitext, fromTitle, toTitle, extendedOptions);
+			var newEntry = matchingRule.rule.relink(wikitext, fromTitle, toTitle, options);
 			if (newEntry !== undefined) {
 				entry.add(newEntry);
 				if (newEntry.output) {
@@ -159,10 +116,7 @@ exports.relink = function(wikitext, fromTitle, toTitle, options) {
 		}
 	}
 	if (entry.children.length > 0) {
-		if (builder.changed()) {
-			builder.prepend(parser.getPreamble());
-			entry.output = builder.results();
-		}
+		entry.output = builder.results();
 		return entry;
 	}
 	return undefined;

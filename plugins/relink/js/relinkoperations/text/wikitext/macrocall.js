@@ -166,7 +166,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 				paramEntry.impossible = true;
 				continue;
 			}
-			var ph = parser.getPlaceholderFor(entry.output,handler.name);
+			var ph = options.placeholder.getPlaceholderFor(entry.output,handler.name);
 			newParam.newValue = "<<"+ph+">>";
 			newParam.type = "macro";
 			paramEntry.placeholder = true;

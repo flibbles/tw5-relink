@@ -112,6 +112,7 @@ it('wikitext field', function() {
 	};
 	test("This text has nothing to replace");
 	test("A [[from here]] link");
+	test("A <$link to='from here' /> link", {ignored: true, to: "]] '\"", fails: 1});
 });
 
 });

@@ -97,9 +97,14 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				if (quotedValue === undefined) {
 					// The value was unquotable. We need to make
 					// a macro in order to replace it.
-					var value = this.parser.getPlaceholderFor(entry.output,handler.name)
-					quotedValue = "<<"+value+">>";
-					attrEntry.placeholder = true;
+					if (!options.placeholder) {
+						// but we can't...
+						attrEntry.impossible = true;
+					} else {
+						var value = options.placeholder.getPlaceholderFor(entry.output,handler.name)
+						quotedValue = "<<"+value+">>";
+						attrEntry.placeholder = true;
+					}
 				}
 			}
 		} else if (attr.type === "indirect") {
