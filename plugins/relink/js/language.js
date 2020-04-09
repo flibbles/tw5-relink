@@ -18,20 +18,19 @@ exports.eachImpossible = function(rootEntry, method) {
 
 exports.logAll = function(entry, title, from, to, options) {
 	var raw = exports.log[entry.name];
+	if (entry.impossible) {
+		return;
+	}
 	if (raw) {
 		exports.logRelink(raw, entry, title, from, to, options);
+		return;
 	}
 	if (!entry.children) {
 		return;
 	}
 	for (var i = 0; i < entry.children.length; i++) {
 		var args = entry.children[i];
-		if (args.impossible) {
-			continue;
-		}
-		if (!raw) {
-			exports.logAll(args, title, from, to, options);
-		}
+		exports.logAll(args, title, from, to, options);
 	}
 };
 

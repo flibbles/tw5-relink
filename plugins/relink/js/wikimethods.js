@@ -75,17 +75,6 @@ function getRelinkFilter(wiki) {
 	});
 };
 
-/**Returns a list of tiddlers that would be renamed by a relink operations.
- */
-exports.relinkTiddlerDryRun = function(fromTitle, toTitle, options) {
-	var results = [];
-	var records = this.getRelinkableTiddlers(fromTitle, toTitle, options);
-	for (title in records) {
-		results.push(title);
-	};
-	return results;
-};
-
 var ImportVariablesWidget = require("$:/core/modules/widgets/importvariables.js").importvariables;
 
 exports.relinkGlobalMacros = function() {
