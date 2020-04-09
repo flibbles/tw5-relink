@@ -100,26 +100,4 @@ it('code blocks', function() {
 	test("`This VarName shouldn't update.\n", true);
 });
 
-it('placeholders', function() {
-	var from = 'End\'s with "quotes"';
-	var to = 'Another\'"quotes"';
-	var content = "Anything goes here";
-	var macro = utils.placeholder;
-	// placeholders get replaced too
-	var r = testText(macro(1,from)+content, {from: from, to: to});
-	expect(r.log).toEqual([`Renaming '${from}' to '${to}' in relink-1 definition of tiddler 'test'`]);
-	// Works with Windows newlines
-	testText(macro(1,from,"\r\n")+content, {from: from, to: to});
-	// Works with the filter placeholders
-	testText(macro("filter-1","[title[from here]]")+content);
-	r = testText(macro("filter-1","[title[from here]]")+content,
-	             macro(1,"to[]this")+macro("filter-1","[title<relink-1>]")+content,
-	             {to: "to[]this"});
-	expect(r.log).toEqual([`%cRenaming 'from here' to 'to[]this' in relink-filter-1 definition of tiddler 'test' %cby creating placeholder macros`]);
-	// Works with the list placeholders
-	testText(macro("list-1","A [[from here]] B")+content);
-	// Works with reference placeholders
-	testText(macro("reference-1","from here!!field")+content);
-});
-
 });
