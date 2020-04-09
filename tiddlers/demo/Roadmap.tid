@@ -5,11 +5,9 @@ This page is meant more for the developer so they don't forget what's left to do
 
 * Add in form validation for //add// fields in configuration.
 * Improve UI in configuration menu. Delete buttons shouldn't get that much space. Maybe have examples for each row in gray.
-* I think the code is supposed to be in the `./plugins/flibbles/relink` dir, not the `./plugins/relink` dir.
 * Macros cached after encountering `<$importvariables>` should be popped after encountering `</$importvariables>`.
 * Organize the unit tests better. Especially relink.js. That's kind of a misc test set that should be categorized more logically.
 * Improve documentation on README to be more clear.
-* There are TODOs scattered throughout the code which need to be addressed.
 * Document the filters included with //Relink//.
 * Write tests to confirm relink:references filter, and its interaction with the to-update filter.
 ** Also, ensure that relink:references works on input and isn't a generator. This may require creating [all[relinkable]]
@@ -17,5 +15,4 @@ This page is meant more for the developer so they don't forget what's left to do
 ** And I need to track variables set in `<$set>` even though those aren't ever involved in relinking. They may be part of an importvariables attribute value.
 * Better application of wikitext rules in ~WikiRelinking. Pragma first, then block and inline
 ** Right now, if `\define relink-??()` is encountered after pragmas should no longer be parsed, this is still relinked if its title matches the fromTitle. I'm not actually sure I should prevent this. It's a weird use case, but I think the user will still probably want it replaced.
-* Have the TiddlerInfo panel show //how// a particular tiddler links to this one.
 * macrocall relinker rule doesn't do any logging.

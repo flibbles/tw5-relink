@@ -18,18 +18,22 @@ For a demonstration, and for documentation, see the [tiddlywiki demo site](https
 
 ## How to install
 
+### For Tiddlywiki html file
+
 Visit the [demo site](https://flibbles.github.io/tw5-relink/). It will have a little thingy you can drag onto your tiddlywiki project. (The demo site will explain it better.)
 
 ### For Node.js
 
 The contents of the `plugins` directory must be copied into the `plugins`
-directory in your tiddlywiki installation. This is likely in
+directory in your tiddlywiki installation. This is likely in:
 
-`/usr/local/lib/node_modules/tiddlywiki`
+`/usr/local/lib/node_modules/tiddlywiki/flibbles`
 
-If this is the case, you can also run `npm run build` to install.
+You will likely need to make the `flibbles` directory. If you've installed it correctly, the path to the `plugin.info` file should look something like:
 
-Afterward, install this plugin into your projects' `tiddlywiki.info` file.
+`/usr/local/lib/node_modules/tiddlywiki/flibbles/relink/plugin.info`
+
+Afterward, add the plugin inside your projects' `tiddlywiki.info` file.
 The plugins section will look something like:
 ```
 {
