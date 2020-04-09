@@ -46,8 +46,10 @@ AttributeEntry.prototype.report = function() {
 				rtn += "={{{" + report + "}}}";
 			} else if (type === "indirect") {
 				rtn += "={{" + report + "}}";
-			} else {
-				// must be string. Can't possibly be macro.
+			} else if (type === "macro") {
+				rtn += "="+report;
+			} else{
+				// must be string.
 				if (report.length > 0) {
 					rtn += '="' + report + '"';
 				}

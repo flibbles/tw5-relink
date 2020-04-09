@@ -57,6 +57,17 @@ it("html", function() {
 	test({text: "<$A ref='from!!field' />"}, ['<$A ref="!!field" />'],
 		[utils.attrConf("$A", "ref", "reference")]);
 
+	// Macro attributes
+	test({text: "\\define test(title)\n<$link to=<<test from>> />"},
+	     ["<$link to=<<test title>> />"],
+	     [utils.macroConf("test", "title", "title")]);
+	test({text: "<$link to=<<test filt: '[tag[from]]'>> />"},
+	     ['<$link to=<<test filt: "[tag[]]">> />'],
+	     [utils.macroConf("test", "filt", "filter")]);
+	test({text: "<$link to=<<test filt: 'from [tag[from]]'>> />"},
+	     ['<$link to=<<test filt>> />', '<$link to=<<test filt: "[tag[]]">> />'],
+	     [utils.macroConf("test", "filt", "filter")]);
+
 	// Multiples
 	test({text: "<$link to='from' tooltip={{from}} />"},
 	     ["<$link to />", "<$link tooltip={{}} />"]);
