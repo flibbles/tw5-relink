@@ -34,7 +34,12 @@ var ImageAttrEntry = EntryNode.newType("imageattr");
 
 ImageAttrEntry.prototype.report = function() {
 	if (this.attribute === "source") {
-		return ["[]"];
+		if (this.tooltip) {
+			var tooltip = this.tooltip.value;
+			return ["["+tooltip+"]"];
+		} else {
+			return ["[]"];
+		}
 	}
 	var reports = [''];
 	var type = this.type;
@@ -106,6 +111,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 					builder.add(toTitle, ptr, ptr+fromTitle.length);
 				}
 				attrEntry.add(entry);
+				attrEntry.tooltip = this.nextImage.attributes.tooltip;
 			}
 			ptr = text.indexOf(']]', ptr);
 			if (makeWidget) {

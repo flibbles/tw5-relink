@@ -101,6 +101,9 @@ it("macrocall when missing definition", function() {
 
 it("images", function() {
 	test({text: "[img[from]]"}, ["[img[]]"]);
+	test({text: "[img[Caption|from]]"}, ["[img[Caption]]"]);
+	// We strip surrounding whitespace because it can include \n.
+	test({text: "[img[ Caption |from]]"}, ["[img[Caption]]"]);
 	test({text: "[img class={{from}} [else]]"}, ["[img class={{}}]"]);
 	test({text: "[img height={{from!!height}} [else]]"}, ["[img height={{!!height}}]"]);
 	test({text: "[img height={{{from}}} [else]]"}, ["[img height={{{}}}]"]);
