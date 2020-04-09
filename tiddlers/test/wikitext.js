@@ -122,29 +122,4 @@ it('placeholders', function() {
 	testText(macro("reference-1","from here!!field")+content);
 });
 
-it('import pragma', function() {
-	function wiki() {
-		var w = new $tw.Wiki();
-		w.addTiddler(utils.operatorConf("title"));
-		return w;
-	};
-	var r = testText("\\import [title[from here]]\nstuff.",{wiki: wiki()});
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in \\import filter of tiddler 'test'"]);
-	testText("\\rules except prettylink\n\\import [[from here]]\nnot prettylink.");
-	testText("\\import [[from|here]]\ndon't parse as prettylink.",
-	         {from: "from|here"});
-	testText("\\import [title[from here]]\n\n\nnewlines.", {wiki: wiki()});
-	testText("\\import   [title[from here]]  \nwhitespace.",{wiki: wiki()});
-	testText("\\import [[from here]]\r\nwindows return.", {wiki: wiki()});
-	testText("\\import from\nsingle to double.",
-	         "\\import [[to there]]\nsingle to double.",
-	         {from: "from", wiki: wiki()});
-
-	var to = "bad\"\"\'\'[]name";
-	r = testText("\\import [[from here]]\nstuff",
-	         utils.placeholder(1,to)+"\\import [<relink-1>]\nstuff",
-	         {wiki: wiki(), to: to});
-	expect(r.log).toEqual(["%cRenaming 'from here' to '"+to+"' in \\import filter of tiddler 'test' %cby creating placeholder macros"]);
-});
-
 });
