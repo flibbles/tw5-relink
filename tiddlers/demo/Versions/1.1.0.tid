@@ -1,7 +1,5 @@
 created: 20190825013039321
 
-!! v1.1.0
-
 * Added support for configuring operators. It wasn't there before, even though I said it was.
 * Fixed issue #1
 * Added demo site complete with documentation. Added links to it from the configuration pages.
@@ -13,7 +11,3 @@ created: 20190825013039321
 * Corrected issue where default configurations could not be removed.
 * Added support for simple transclusion syntax (i.e `{{Tiddler}}` and `{{Tiddler||Template}}`)
 * Fixed issue where Relink would fumble attribute values that had apostrophes and ended with a quoate. They are impossible, but now Relink makes a macro placeholder as an alternative.
-
-!! v.1.1.1
-
-* Corrected several broken links (and a typo)

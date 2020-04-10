@@ -1,0 +1,3 @@
+created: 20190921194558085
+
+* Removed startsWith and endsWith from the project. Also for IE11 support (#9)

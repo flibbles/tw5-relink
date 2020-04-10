@@ -1,0 +1,1 @@
+* Corrected issue where placeholdering complex titles into pragma may overwrite globally defined relink placeholders.

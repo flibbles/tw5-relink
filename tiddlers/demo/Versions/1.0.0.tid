@@ -1,7 +1,5 @@
 created: 20170821155707000
 
-!! v1.0.0
-
 * Released Relink
 * Support for Fields, Attributes, Lists, and prettyLinks
 * Customization for Fields and Attributes

@@ -1,0 +1,6 @@
+created: 20190825193402541
+
+* Corrected crash that occurred when any Relink whitelist was empty.
+* Added support for ~WikiLinks
+* prettylinks can support more difficult renames, such as `tiddler with [[brackets]]`
+* Support for the `\import` pragma

@@ -1,11 +1,17 @@
 title: Templates/Version
 
-<$tiddler tiddler=<<currentTab>> >
+<$set name="minor" filter="[<currentTab>removesuffix[.0]]">
 
-!! Version <$text text={{{[all[current]removeprefix[Versions/]]}}} />
+!! Version <$text text={{{[<minor>removeprefix[Versions/]]}}} />
+
+<$list filter="[prefix<minor>nsort[created]]">
+
+!!! <$text text={{{[all[current]removeprefix[Versions/]addprefix[v]]}}} />
 
 !!!!! <$view field="created" format="date" template="MMM DDth, YYYY" />
 
 <$transclude />
 
-</$tiddler>
+</$list>
+
+</$set>

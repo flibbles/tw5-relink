@@ -1,0 +1,4 @@
+created: 20190921173553030
+
+* Added ability to alter what tiddlers //Relink// touches through the `$:/config/flibbles/relink/to-update`. [[Documentation here.|Hackability]] (#10)
+* Fixed issue where Relink didn't work at all on IE11 (#9)

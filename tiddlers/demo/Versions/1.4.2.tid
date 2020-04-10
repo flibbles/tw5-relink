@@ -1,0 +1,5 @@
+created: 20190902120700160
+
+* Exposed Field Type dropdown on Operators whitelist
+* Put "title" at first of dropdown list, since it's the default
+* Demo improvements and documentation updates

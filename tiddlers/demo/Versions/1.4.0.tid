@@ -1,7 +1,5 @@
 created: 20190902020915207
 
-!! v1.4.0
-
 * Support for indirect attribute values
 * Support for filter attribute values
 * better handling for bad transclusion renames (e.g. `tiddlers with !! bangs`)
@@ -9,13 +7,3 @@ created: 20190902020915207
 * Revamped the popup that appears while renaming tiddlers. Now it accurately lists any tiddlers Relink will be unable to fix.
 * Added a ~TiddlerInfo tab which lists all tiddlers that reference the given one.
 * //Relink// now should handle all relinking except for macros, which I'm not sure yet how or if I should tackle.
-
-!! v1.4.1
-
-* Forgot to remove the old "Known Issues" from the list
-
-!! v1.4.2
-
-* Exposed Field Type dropdown on Operators whitelist
-* Put "title" at first of dropdown list, since it's the default
-* Demo improvements and documentation updates

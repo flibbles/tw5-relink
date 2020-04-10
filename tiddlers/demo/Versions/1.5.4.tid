@@ -1,0 +1,7 @@
+created: 20191001171937468
+
+* Modified whitelists to group configurations by core, custom, and external plugins. This subcategories are collapsible.
+* Moved add button to the top for each white list.
+* Demo site changes:
+** Added example plugin which showcases how plugin integration would work. There's also [[documentation to go along with it|Third Party Plugin Integration]].
+** Refactored certain elements, particularly, broke up the Field_Types page into individual tiddlers with tags.

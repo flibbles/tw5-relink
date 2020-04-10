@@ -1,0 +1,9 @@
+created: 20190913185820277
+
+* Added descriptive text in tiddler info tab, "//Relink// References" and added documentation about it too.
+* When renaming a tiddler, Relink lists tiddlers that //will// be updated, as well as any that can't be.
+* Removed warnings when inputting funky tiddler names. They're not in vanilla Tiddlywiki, or will be removed shortly.
+* Documentation has links to specific demo tabs for people coming to demo site through configuration hotlinks.
+* Documented filtered transcludes
+* Fixed table header on Operators whitelist page.
+* Updated demo site to Tiddlywiki v5.1.20

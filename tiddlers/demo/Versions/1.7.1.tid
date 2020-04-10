@@ -1,0 +1,4 @@
+created: 20200409040109761
+
+* Finished up loose ends with regards to the //Relink// References infoTab. It should provide useful contexts for all possible scenarios now.
+* Added `<$button set />` and `<$button setTitle />` to core configured attributes.

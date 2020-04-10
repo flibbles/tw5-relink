@@ -1,0 +1,7 @@
+created: 20190907001619669
+
+* Support for macros
+** This includes a new whitelist and everything.
+** Global macros, locally defined macros, and macro modules are all supported.
+** Documentation to go along with the new macro functionality
+* Fixed issue where filter attributes (e.g. `<$link to={{{filter}}} />`) would cause an unhandled exception of they existed on a page which requires relinking.
