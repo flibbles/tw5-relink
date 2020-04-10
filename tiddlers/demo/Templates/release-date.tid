@@ -1,0 +1,10 @@
+title: Templates/release-date
+
+<!--	This filter gets the date of the specified version. It adds a ".0"
+	to the revision if it's missing.
+-->
+{{{
+	[{$:/plugins/flibbles/relink!!version}regexp[\d+\.\d+\.\d+]]
+	~[{$:/plugins/flibbles/relink!!version}addsuffix[.0]]
+	+[addprefix[Versions/]get[created]]
+}}}
