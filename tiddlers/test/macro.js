@@ -12,8 +12,9 @@ function testText(text, expected, options) {
 		utils.macroConf("test", "Btitle"),
 		utils.macroConf("test", "Clist", "list"),
 		utils.macroConf("test", "Dref", "reference"),
+		utils.macroConf("test", "Ewiki", "wikitext"),
 		{title: "testMacro", tags: "$:/tags/Macro",
-		 text: "\\define test(A, Btitle, Clist, Dref) stuff\n"}
+		 text: "\\define test(A, Btitle, Clist, Dref, Ewiki) stuff\n"}
 	]);
 	var fields = Object.assign({text: text}, options.fields);
 	var results = utils.relink(fields, options);
@@ -31,6 +32,8 @@ it('argument orders', function() {
 	testText("Macro <<test Dref:'from here!!f' stuff 'from here'>>.");
 	testText("Macro <<test Clist:'[[from here]]' stuff 'from here'>>.");
 	testText("Macro <<test Dref:'from here!!f' Clist:'[[from here]]' stuff 'from here'>>.");
+	testText("Macro <<test Ewiki: 'a [[from here]] b'>>.");
+	testText("Macro <<test Ewiki: {{from}}>>.", "Macro <<test Ewiki: '{{to there}}'>>.", {from: "from"});
 });
 
 it("the '>' character", function() {
@@ -117,6 +120,21 @@ it('unquotable titles', function() {
 	testText('X<<test Clist: \'[[from here]] C"\'>>Y',
 	         ph("list-1",apos+' C"')+'X<$macrocall $name=test Clist=<<relink-list-1>>/>Y',
 	         {to: apos});
+});
+
+it('unquotable wikitext', function() {
+	// wikitext takes care of placeholding itself when it can.
+	var to = "' ]]}}\"";
+	var macro = utils.placeholder;
+	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>",
+	         macro(1, to)+"X<<test Ewiki: 'T <$link to=<<relink-1>> />'>>",
+	         {to: to});
+
+	// but wikitext will still be wrapped if necessary
+	to = "' \"]]}}"; // This can be wrapped in triple-quotes
+	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>",
+	         macro("wikitext-1", 'T <$link to="""'+to+'""" />')+"X<$macrocall $name=test Ewiki=<<relink-wikitext-1>>/>",
+	         {to: to});
 });
 
 it('undefined macros', function() {

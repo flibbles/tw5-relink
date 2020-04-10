@@ -267,7 +267,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					// The fromTitle wasn't in the operand.
 					break;
 				}
-				if (result.impossible) {
+				if (!result.output) {
 					logger.add(result);
 					break;
 				}
@@ -279,7 +279,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 						logger.add(result);
 						break;
 					}
-					var ph = options.placeholder.getPlaceholderFor(result.output);
+					var ph = options.placeholder.getPlaceholderFor(result.output, handler.name);
 					wrapped = "<"+ph+">";
 					result.placeholder = true;
 				} else {

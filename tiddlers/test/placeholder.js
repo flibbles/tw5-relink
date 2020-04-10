@@ -60,6 +60,11 @@ it('reference', function() {
 	testText(macro("reference-1","from here!!field")+"Tiddler body");
 });
 
+it('wikitext', function() {
+	// Works with wikitext placeholders
+	testText(macro("wikitext-1", "pretty [[from here]] link")+"Body");
+});
+
 it('Windows newlines', function() {
 	// Works with Windows newlines
 	testText(macro(1,"from here","\r\n")+"Body content");

@@ -1,1 +1,2 @@
 * Corrected issue where placeholdering complex titles into pragma may overwrite globally defined relink placeholders.
+* Corrected issue where filters would placeholder list or reference operands with the wrong type of placeholder, meaning those placeholders couldn't be relinked later on. Fixed.

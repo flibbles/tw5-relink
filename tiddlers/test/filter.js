@@ -165,7 +165,9 @@ it('ignores non-title tag configurations', function() {
 
 it('field failures', function() {
 	function fails(filter, toTitle) {
-		var options = {to: toTitle, ignored: true};
+		var wiki = new $tw.Wiki();
+		wiki.addTiddler(utils.operatorConf("wiki", "wikitext"));
+		var options = {to: toTitle, ignored: true, wiki: wiki};
 		var results = testFilter(filter, options);
 		expect(results.fails.length).toEqual(1);
 	};
@@ -174,6 +176,9 @@ it('field failures', function() {
 	fails("[{from here}]", "A\"bad'stupid}title");
 	fails("[tag{from here}]", "brackets}there");
 	fails("[tag{from here!!field}]", "brackets}there");
+	// wikitext
+	fails("[wiki[transclude {{from here}}]]", "A]]B");
+	fails("[wiki[transclude {{from here}}]]", "A}} 'B\"");
 });
 
 it("field failures don't prevent from continuing", function() {
@@ -210,6 +215,14 @@ it('resorts to placeholders when possible', function() {
 	         ph(1,to)+"\\import +[<relink-1>]\n", {to: to});
 	testText("\\import [![from here]]\n",
 	         ph(1,to)+"\\import [!<relink-1>]\n", {to: to});
+	testText("\\import [list[from here!!field]]\n",
+	         ph("reference-1", "A]]B!!field")+"\\import [list<relink-reference-1>]\n", {to: "A]]B"});
+
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.operatorConf("wiki", "wikitext"));
+	testText("\\import [wiki[X {{from here}}]]\n",
+	         ph("wikitext-1","X {{"+to+"}}")+"\\import [wiki<relink-wikitext-1>]\n",
+	         {to: to, wiki: wiki});
 });
 
 /** This is legacy support. Originally, the value of the configuration tiddlers
