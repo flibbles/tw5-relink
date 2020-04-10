@@ -34,10 +34,14 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			entry.pretty = true;
 			entry.output = "[[" + toTitle + "]]";
 		} else {
-			var ph = options.placeholder.getPlaceholderFor(toTitle);
-			entry.placeholder = true;
-			entry.widget = true;
-			entry.output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+			if (options.placeholder) {
+				var ph = options.placeholder.getPlaceholderFor(toTitle);
+				entry.placeholder = true;
+				entry.widget = true;
+				entry.output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+			} else {
+				entry.impossible = true;
+			}
 		}
 	}
 	return entry;

@@ -127,13 +127,25 @@ it('field failures without placeholdering', function() {
 		expect(results.tiddler.fields.field).toEqual(expected);
 		expect(results.fails.length).toEqual(fails, "Failure detected");
 	};
+	// html
 	fails("A <$link to='from here' /> link", {ignored: true, to: "]] '\""});
 	// Transclude
 	fails("A {{from here}}", {ignored: true, to: "A}}B ]]'\""});
 	fails("A {{X||from here}}", {ignored: true, to: "A}}B ]]'\""});
 	fails("A {{A]]'\"||from here}}", {ignored: true, to: "A}}B"});
-	fails("A {{A!!in'dex\"||from here}}", {ignored: true, to: "A}}B"});;
-	fails("A {{from here!!in'dex\"||from here}}", {ignored: true, to: "A}}B"});;
+	fails("A {{A!!in'dex\"||from here}}", {ignored: true, to: "A}}B"});
+	fails("A {{from here!!in'dex\"||from here}}", {ignored: true, to: "A}}B"});
+	// Macrocalls
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("test", "t"));
+	fails("<<test t:'from here'>>", {ignored: true, to: "'A ]]B\"", wiki: wiki});
+	// Filteredtransclude
+	fails("{{{A ||from here}}}", {ignored: true, to: "'A}}} ]]B\""});
+	// Wikilink
+	fails("Link FromHere.", {ignored: true, from: "FromHere", to:"']] \""});
+	// Prettylinks
+	fails("A [[from here]] link", {ignored: true, to: "A]]B"});
+	fails("A [[Caption|from here]] link", {ignored: true, to: "']] \""});
 });
 
 });

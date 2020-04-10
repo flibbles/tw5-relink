@@ -38,18 +38,24 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		// If we don't have a caption, we have to resort to placeholders
 		// anyway to prevent link/caption desync from later relinks.
 		// It doesn't matter whether the toTitle is quotable
-		entry.placeholder = true;
-		entry.widget = true;
-		var ph = options.placeholder.getPlaceholderFor(toTitle);
-		entry.output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+		if (options.placeholder) {
+			entry.placeholder = true;
+			entry.widget = true;
+			var ph = options.placeholder.getPlaceholderFor(toTitle);
+			entry.output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+		} else {
+			entry.impossible = true;
+		}
 	} else if (quoted = utils.wrapAttributeValue(toTitle)) {
 		entry.widget = true;
 		entry.output = "<$link to="+quoted+">"+caption+"</$link>";
-	} else {
+	} else if (options.placeholder) {
 		entry.placeholder = true;
 		entry.widget = true;
 		var ph = options.placeholder.getPlaceholderFor(toTitle);
 		entry.output = "<$link to=<<"+ph+">>>"+caption+"</$link>";
+	} else {
+		entry.impossible = true;
 	}
 	return entry;
 };

@@ -74,6 +74,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		output = prettyList(filter, tooltip, template, style, classes);
 	} else {
 		output = widget(filter, tooltip, template, style, classes, options.placeholder, entry);
+		if (output === undefined) {
+			entry.impossible = true;
+			output = '';
+		}
 	}
 	// By copying over the ending newline of the original text if present,
 	// thisrelink method thus works for both the inline and block rule
@@ -118,6 +122,7 @@ function prettyList(filter, tooltip, template, style, classes) {
 /** Returns a filtered transclude as a string of a widget.
  */
 function widget(filter, tooltip, template, style, classes, placeholder, logArguments) {
+	var cannotDo = false;
 	logArguments.widget = true;
 	if (classes !== undefined) {
 		classes = classes.split('.').join(' ');
@@ -128,6 +133,10 @@ function widget(filter, tooltip, template, style, classes, placeholder, logArgum
 		}
 		var wrappedValue = utils.wrapAttributeValue(value);
 		if (wrappedValue === undefined) {
+			if (!placeholder) {
+				cannotDo = true;
+				return undefined;
+			}
 			var category = treatAsTitle ? undefined : name;
 			wrappedValue = "<<"+placeholder.getPlaceholderFor(value,category)+">>";
 			logArguments.placeholder = true;
@@ -142,6 +151,9 @@ function widget(filter, tooltip, template, style, classes, placeholder, logArgum
 		wrap("style", style),
 		wrap("itemClass", classes),
 		"/>"
-	].join('');
-	return widget;
+	];
+	if (cannotDo) {
+		return undefined;
+	}
+	return widget.join('');
 };

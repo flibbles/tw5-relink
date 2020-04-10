@@ -162,7 +162,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		var quoted = utils.wrapParameterValue(entry.output, quote);
 		var newParam = $tw.utils.extend({}, param);
 		if (quoted === undefined) {
-			if (!mayBeWidget) {
+			if (!mayBeWidget || !options.placeholder) {
 				paramEntry.impossible = true;
 				continue;
 			}
