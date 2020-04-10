@@ -65,10 +65,19 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var ptr = this.nextImage.start;
 	var builder = new Rebuilder(text, ptr);
 	var makeWidget = false;
+	var skipSource = false;
 	var imageEntry = new ImageEntry();
 	if (this.nextImage.attributes.source.value === fromTitle && !canBePretty(toTitle, this.nextImage.attributes.tooltip)) {
-		makeWidget = true;
-		builder.add("<$image", ptr, ptr+4);
+		if (utils.wrapAttributeValue(toTitle) || options.placeholder) {
+			makeWidget = true;
+			builder.add("<$image", ptr, ptr+4);
+		} else {
+			// We won't be able to make a placeholder to replace
+			// the source attribute. We check now so we don't
+			// prematurely convert into a widget.
+			// Keep going in case other attributes need replacing.
+			skipSource = true;
+		}
 	}
 	ptr += 4; //[img
 	var inSource = false;
@@ -102,13 +111,14 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 						builder.add("source=<<"+key+">>", ptr, ptr+fromTitle.length);
 						entry.placeholder = true;
 						entry.widget = true;
-
 					} else {
 						builder.add("source="+quotedValue, ptr, ptr+fromTitle.length);
 						entry.widget = true;
 					}
-				} else {
+				} else if (!skipSource) {
 					builder.add(toTitle, ptr, ptr+fromTitle.length);
+				} else {
+					entry.impossible = true;
 				}
 				attrEntry.add(entry);
 				attrEntry.tooltip = this.nextImage.attributes.tooltip;

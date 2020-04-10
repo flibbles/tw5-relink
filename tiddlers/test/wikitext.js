@@ -123,7 +123,7 @@ it('field failures without placeholdering', function() {
 		[text, expected, options] = utils.prepArgs(text, expected, options);
 		options.wiki.addTiddler(utils.fieldConf("field", "wikitext"));
 		var results = utils.relink({field: text}, options);
-		var fails = options.fails || 1;
+		var fails = (options.fails === undefined)? 1 : options.fails;
 		expect(results.tiddler.fields.field).toEqual(expected);
 		expect(results.fails.length).toEqual(fails, "Failure detected");
 	};
@@ -139,13 +139,23 @@ it('field failures without placeholdering', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("test", "t"));
 	fails("<<test t:'from here'>>", {ignored: true, to: "'A ]]B\"", wiki: wiki});
-	// Filteredtransclude
+	// Filteredtransclude (the wikipattern fails, not the filter
 	fails("{{{A ||from here}}}", {ignored: true, to: "'A}}} ]]B\""});
+	fails("{{{A |Tooltip ']]\"||from here}}}", {ignored: true, to: "'A}}}B"});
 	// Wikilink
 	fails("Link FromHere.", {ignored: true, from: "FromHere", to:"']] \""});
 	// Prettylinks
 	fails("A [[from here]] link", {ignored: true, to: "A]]B"});
 	fails("A [[Caption|from here]] link", {ignored: true, to: "']] \""});
+	// Images
+	fails("[img[from here]]", {ignored: true, to: "']] \""});
+		// Tricky case. Even though we can't placeholder, we should
+		// still be able to downgrade images into widgets.
+	fails("[img[from here]]", "<$image source=A]]B/>", {fails: 0, to: "A]]B"});
+	fails("[img height={{from here!!height}} [from here]]",
+	      "[img height={{']] \"!!height}} [from here]]",
+	      {ignored: true, to: "']] \""});
+	fails("[img height={{from here!!height}} [from here]]", {ignored: true, to: "']]}} \"", fails: 2});
 });
 
 });
