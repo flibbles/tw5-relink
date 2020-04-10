@@ -130,6 +130,12 @@ it('field failures without placeholdering', function() {
 	};
 	// html
 	fails("A <$link to='from here' /> link", {ignored: true, to: "]] '\""});
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf("$test", "wiki", "wikitext"));
+	fails('A <$test wiki="A {{from here}} B" />',
+	      {ignored: true, to: '\' ]]"""', wiki: wiki});
+	fails('A <$test wiki="A {{from here}} B" />',
+	      {ignored: true, to: '\' ]]}}"""', wiki: wiki});
 	// Transclude
 	fails("A {{from here}}", {ignored: true, to: "A}}B ]]'\""});
 	fails("A {{X||from here}}", {ignored: true, to: "A}}B ]]'\""});
@@ -137,7 +143,6 @@ it('field failures without placeholdering', function() {
 	fails("A {{A!!in'dex\"||from here}}", {ignored: true, to: "A}}B"});
 	fails("A {{from here!!in'dex\"||from here}}", {ignored: true, to: "A}}B"});
 	// Macrocalls
-	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("test", "t"));
 	fails("<<test t:'from here'>>", {ignored: true, to: "'A ]]B\"", wiki: wiki});
 	// Filters (the filter fails

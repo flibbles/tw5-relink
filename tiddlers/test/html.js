@@ -164,6 +164,22 @@ it('uses macros for literally unquotable titles', function() {
 	         macro(2,to2)+macro(1,to)+link(1)+link(2), {to: to2});
 });
 
+it('uses macros for unquotable wikitext', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf("$test", "wiki", "wikitext"));
+	var ph = utils.placeholder;
+
+	var to = "' ]]\"\"\"";
+	testText("B <$test wiki='X{{from here}}Y' />",
+	         ph("wikitext-1", "X{{"+to+"}}Y")+"B <$test wiki=<<relink-wikitext-1>> />",
+	         {to: to, wiki: wiki});
+
+	to = "' ]]\"";
+	testText('A <$test wiki="""<$link to="from here" />""" /> B',
+	         ph(1, to)+'A <$test wiki="""<$link to=<<relink-1>> />""" /> B',
+	         {to: to, wiki: wiki});
+});
+
 it('detects when internal list uses macros', function() {
 	var to = "bad[]name";
 	var r = testText("<$list filter='[tag[from here]]'/>",

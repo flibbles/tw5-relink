@@ -90,7 +90,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			if (entry === undefined) {
 				continue;
 			}
-			if (!entry.impossible) {
+			if (entry.output) {
 				var quote = utils.determineQuote(text, attr);
 				oldLength = attr.value.length + (quote.length * 2);
 				quotedValue = utils.wrapAttributeValue(entry.output,quote);
