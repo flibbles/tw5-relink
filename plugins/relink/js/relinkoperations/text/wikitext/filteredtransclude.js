@@ -56,8 +56,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, options);
 	if (filterEntry !== undefined) {
 		entry.add(filterEntry);
-		filter = filterEntry.output;
-		modified = true;
+		if (filterEntry.output) {
+			modified = true;
+			filter = filterEntry.output;
+		}
 	}
 
 	if ($tw.utils.trim(template) === fromTitle) {
@@ -67,6 +69,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		modified = true;
 	}
 	if (!modified) {
+		if (entry.children.length > 0) {
+			entry.template = template;
+			return entry;
+		}
 		return undefined;
 	}
 	var output;

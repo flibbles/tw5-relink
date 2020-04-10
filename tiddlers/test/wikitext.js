@@ -123,6 +123,7 @@ it('field failures without placeholdering', function() {
 		[text, expected, options] = utils.prepArgs(text, expected, options);
 		options.wiki.addTiddler(utils.fieldConf("field", "wikitext"));
 		var results = utils.relink({field: text}, options);
+		// TAKE NOTE: DEFAULT IS 1 FAILURE
 		var fails = (options.fails === undefined)? 1 : options.fails;
 		expect(results.tiddler.fields.field).toEqual(expected);
 		expect(results.fails.length).toEqual(fails, "Failure detected");
@@ -139,8 +140,15 @@ it('field failures without placeholdering', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("test", "t"));
 	fails("<<test t:'from here'>>", {ignored: true, to: "'A ]]B\"", wiki: wiki});
+	// Filters (the filter fails
+	fails("{{{[tag[from here]]}}}", {ignored: true, to: "A]G"});
+	fails("{{{'from here'}}}", {ignored: true, to: "A']]\""});
+	fails("{{{[list[from here]tag[from here]]}}}",
+	      "{{{[list[from here]tag[A!!G]]}}}", {to: "A!!G"});
 	// Filteredtransclude (the wikipattern fails, not the filter
 	fails("{{{A ||from here}}}", {ignored: true, to: "'A}}} ]]B\""});
+	fails("{{{[tag[from here]] ||from here}}}",
+	      "{{{[tag[from here]] ||A]F}}}", {to: "A]F"});
 	fails("{{{A |Tooltip ']]\"||from here}}}", {ignored: true, to: "'A}}}B"});
 	// Wikilink
 	fails("Link FromHere.", {ignored: true, from: "FromHere", to:"']] \""});
@@ -156,6 +164,9 @@ it('field failures without placeholdering', function() {
 	      "[img height={{']] \"!!height}} [from here]]",
 	      {ignored: true, to: "']] \""});
 	fails("[img height={{from here!!height}} [from here]]", {ignored: true, to: "']]}} \"", fails: 2});
+	// Macrodefs
+	fails("\\define macro()\n[[from here]]", {fails: 0});
+	fails("\\define relink-filter-1() [tag[from here]]\nBody", {ignored: true, to: "A]]R"});
 });
 
 });

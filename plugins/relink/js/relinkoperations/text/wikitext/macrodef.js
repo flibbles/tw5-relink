@@ -37,7 +37,9 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var m = this.match;
 	// This macro is not available should we need to make one.
-	options.placeholder.reserve(m[1]);
+	if (options.placeholder) {
+		options.placeholder.reserve(m[1]);
+	}
 	// !m[3] means it's not a multiline macrodef
 	var placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(m[1]);
 	if (placeholder && m[2] === '' && !m[3]) {
@@ -54,7 +56,9 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				macroEntry.macro = m[1];
 				macroEntry.add(entry);
 				this.parser.pos += match[0].length;
-				macroEntry.output = "\\define "+m[1]+"() "+entry.output+match[2];
+				if (entry.output) {
+					macroEntry.output = "\\define "+m[1]+"() "+entry.output+match[2];
+				}
 				return macroEntry;
 			}
 		}
