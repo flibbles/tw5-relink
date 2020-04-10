@@ -65,4 +65,21 @@ it('Windows newlines', function() {
 	testText(macro(1,"from here","\r\n")+"Body content");
 });
 
+it('Detects globally defined placeholder macros', function() {
+	var to = "' ]]\"";
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "macros", text: "\\define relink-1() Dummy\nBody", tags: "$:/tags/Macro"});
+	testText("<$link to='from here' />\n<$text text=<<relink-1>> />",
+	         macro(2, to) + "<$link to=<<relink-2>> />\n<$text text=<<relink-1>> />", {wiki: wiki, to: to});
+});
+
+it('Detects imported placeholder macros', function() {
+	var to = "' ]]\"";
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "import", text: "\\define relink-1() D\nBody"});
+	testText("\\import import\n<$link to='from here' />",
+	         macro(2, to) + "\\import import\n<$link to=<<relink-2>> />",
+	         {wiki: wiki, to: to});
+});
+
 });

@@ -13,10 +13,18 @@ var type = 'text/vnd.tiddlywiki';
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var wikitextHandler = settings.getRelinker('wikitext');
 
-function Placeholder() {
+function Placeholder(options) {
 	this.placeholders = Object.create(null);
 	this.reverseMap = Object.create(null);
 	this.knownMacros = Object.create(null);
+	this.variableWidget = options.wiki.relinkGlobalMacros();
+};
+
+Placeholder.prototype.addWidget = function(widget) {
+	this.variableWidget = widget;
+	while (this.variableWidget.children.length > 0) {
+		this.variableWidget = this.variableWidget.children[0];
+	}
 };
 
 Placeholder.prototype.getPlaceholderFor = function(value, category) {
@@ -34,7 +42,7 @@ Placeholder.prototype.getPlaceholderFor = function(value, category) {
 	do {
 		number += 1;
 		placeholder = prefix + number;
-	} while (this.knownMacros[placeholder]);
+	} while (this.knownMacros[placeholder] || this.variableWidget.variables[placeholder]);
 	this.placeholders[placeholder] = value;
 	this.reverseMap[value] = placeholder;
 	this.reserve(placeholder);
@@ -55,7 +63,7 @@ Placeholder.prototype.getPreamble = function() {
 };
 
 exports[type] = function(tiddler, fromTitle, toTitle, options) {
-	var placeholder = new Placeholder();
+	var placeholder = new Placeholder(options);
 	var currentOptions = $tw.utils.extend(
 		{
 			currentTiddler: tiddler.fields.title,

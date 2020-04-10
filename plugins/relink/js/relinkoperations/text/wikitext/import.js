@@ -47,6 +47,9 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var parentWidget = this.parser.getVariableWidget();
 	var variableHolder = options.wiki.relinkGenerateVariableWidget(filter, parentWidget);
 	this.parser.addWidget(variableHolder);
+	if (options.placeholder) {
+		options.placeholder.addWidget(variableHolder);
+	}
 
 	return entry;
 };
