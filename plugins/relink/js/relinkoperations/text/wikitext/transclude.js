@@ -81,6 +81,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		entry.widget = true;
 		var resultTitle = utils.wrapAttributeValue(toTitle);
 		if (resultTitle === undefined) {
+			if (!options.placeholder) {
+				entry.impossible = true;
+				return entry;
+			}
 			resultTitle = "<<"+options.placeholder.getPlaceholderFor(toTitle)+">>";
 			entry.placeholder = true;
 		}
@@ -88,6 +92,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			// Now for this bizarre-ass use-case, where both the
 			// title and template are being replaced.
 			var attrs = this.transcludeAttributes(ref.field, ref.index, options);
+			if (attrs === undefined) {
+				entry.impossible = true;
+				return entry;
+			}
 			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTitle+attrs+"/></$tiddler>";
 		} else {
 			ref.title = undefined;
@@ -97,6 +105,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var resultTemplate = utils.wrapAttributeValue(toTitle);
 		entry.widget = true;
 		if (resultTemplate === undefined) {
+			if (!options.placeholder) {
+				entry.impossible = true;
+				return entry;
+			}
 			resultTemplate = "<<"+options.placeholder.getPlaceholderFor(toTitle)+">>";
 			entry.placeholder = true;
 		}
@@ -106,10 +118,18 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				// This is one of the rare cases were we need
 				// to placeholder a title OTHER than the one
 				// we're changing.
+				if (!options.placeholder) {
+					entry.impossible = true;
+					return entry;
+				}
 				resultTitle = "<<"+options.placeholder.getPlaceholderFor(ref.title)+">>";
 				entry.placeholder = true;
 			}
 			var attrs = this.transcludeAttributes(ref.field, ref.index, options);
+			if (attrs === undefined) {
+				entry.impossible = true;
+				return entry;
+			}
 			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
 		} else {
 			rtn = "<$transclude tiddler="+resultTemplate+"/>";
@@ -135,16 +155,25 @@ function canBePrettyTemplate(value) {
  * the intuitive (albeit useless) result.
  */
 exports.transcludeAttributes = function(field, index, options) {
-	return rtn = [
+	var rtn = [
 		wrapAttribute("field", field, options),
 		wrapAttribute("index", index, options)
-	].join('');
+	];
+	if (rtn[0] === undefined || rtn[1] === undefined) {
+		// This can only happen if the transclude is using an
+		// illegal key.
+		return undefined;
+	}
+	return rtn.join('');
 };
 
 function wrapAttribute(name, value, options) {
 	if (value) {
 		var wrappedValue = utils.wrapAttributeValue(value);
 		if (wrappedValue === undefined) {
+			if (!options.placeholder) {
+				return undefined;
+			}
 			wrappedValue = "<<"+options.placeholder.getPlaceholderFor(value, name)+">>";
 		}
 		return " "+name+"="+wrappedValue;

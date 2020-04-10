@@ -100,19 +100,40 @@ it('code blocks', function() {
 	test("`This VarName shouldn't update.\n", true);
 });
 
-it('wikitext field', function() {
+it('field', function() {
 	function test(text, options) {
 		var expected;
 		[text, expected, options] = utils.prepArgs(text, options);
 		options.wiki.addTiddler(utils.fieldConf("field", "wikitext"));
 		var results = utils.relink({field: text}, options);
-		var fails = options.fails || 0;
 		expect(results.tiddler.fields.field).toEqual(expected);
-		expect(results.fails.length).toEqual(fails, "Failure detected");
+		expect(results.fails.length).toEqual(0, "Failure detected");
 	};
 	test("This text has nothing to replace");
 	test("A [[from here]] link");
-	test("A <$link to='from here' /> link", {ignored: true, to: "]] '\"", fails: 1});
+});
+
+/** This tests that given pieces of wikitext will fail if they're executed
+ *  in a wikitext field other than 'text'. In other words, it's testing that
+ *  code that would otherwise request placeholders can handle it if it's
+ *  not allowed.
+ */
+it('field failures without placeholdering', function() {
+	function fails(text, expected, options) {
+		[text, expected, options] = utils.prepArgs(text, expected, options);
+		options.wiki.addTiddler(utils.fieldConf("field", "wikitext"));
+		var results = utils.relink({field: text}, options);
+		var fails = options.fails || 1;
+		expect(results.tiddler.fields.field).toEqual(expected);
+		expect(results.fails.length).toEqual(fails, "Failure detected");
+	};
+	fails("A <$link to='from here' /> link", {ignored: true, to: "]] '\""});
+	// Transclude
+	fails("A {{from here}}", {ignored: true, to: "A}}B ]]'\""});
+	fails("A {{X||from here}}", {ignored: true, to: "A}}B ]]'\""});
+	fails("A {{A]]'\"||from here}}", {ignored: true, to: "A}}B"});
+	fails("A {{A!!in'dex\"||from here}}", {ignored: true, to: "A}}B"});;
+	fails("A {{from here!!in'dex\"||from here}}", {ignored: true, to: "A}}B"});;
 });
 
 });
