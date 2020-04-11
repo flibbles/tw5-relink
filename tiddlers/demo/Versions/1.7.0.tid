@@ -2,7 +2,7 @@ created: 20200408021036214
 
 The Wikitext field type is still coming. This release did some major refactoring to make it possible, but it as itself includes enough standalone features that I'm making a minor release out of it.
 
-* The //Relink// References TiddlerInfo pane provides additional information about //how// this given tiddler shows up in others. This feature is subject to change, because I'm not sure I like the level of descriptiveness.
+* The //Relink// References ~TiddlerInfo pane provides additional information about //how// this given tiddler shows up in others. This feature is subject to change, because I'm not sure I like the level of descriptiveness.
 * $:/DefaultTiddlers is now correctly relinked as a filter tiddler.
 * If Relink encounters an instance where it can't relink, it now no longer gives up on the entire tiddler, and tries to relink all other relevant instances.
 * Fixed issue where filteredtransclude wikitext might not relink if the original title had particular patterns of the '}' character.
