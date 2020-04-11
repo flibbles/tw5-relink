@@ -111,6 +111,14 @@ it('field', function() {
 	};
 	test("This text has nothing to replace");
 	test("A [[from here]] link");
+
+	// Now test that it has proper access to global macros
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.macroConf("test", "field"),
+		{title: "macros", tags: "$:/tags/Macro", text: "\\define test(field) $field$\n"}
+	]);
+	test("Macro <<test 'from here'>>.", {wiki: wiki});
 });
 
 /** This tests that given pieces of wikitext will fail if they're executed
