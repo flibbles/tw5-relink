@@ -174,7 +174,17 @@ it('undefined macros', function() {
 	         `<<undef list:"""[[A] '\"]]""" param:'from' anon>> [[A] '\"]]`,
 	         {wiki: wiki, fails: 1, from: "from", to: "A] '\""});
 
+});
 
+it('undefined macros, no anonymous params', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("undef", "A"));
+	wiki.addTiddler(utils.macroConf("undef", "B"));
+
+	// Relink should not find B, and that should be okay. Because there
+	// aren't any anonymous parameters, so B can't be there, despite
+	// there being no definition.
+	testText("<<undef A:'from here'>>", {wiki: wiki});
 });
 
 it('imported macros', function() {

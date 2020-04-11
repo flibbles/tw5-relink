@@ -155,7 +155,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		paramEntry.add(entry);
 		paramEntry.parameter = managedArg;
 		macroEntry.add(paramEntry);
-		if (entry.impossible) {
+		if (!entry.output) {
 			continue;
 		}
 		var quote = utils.determineQuote(text, param);
@@ -231,12 +231,23 @@ function macroToStringMacro(macro, text, options) {
 	return builder.results(macro.end);
 };
 
+/** Returns -1 if param definitely isn't in macrocall.
+ */
 function getParamIndexWithinMacrocall(macroName, param, params, parser, options) {
-	var index, i;
+	var index, i, anonsExist = false;
 	for (i = 0; i < params.length; i++) {
-		if (params[i].name === param) {
+		var name = params[i].name;
+		if (name === param) {
 			return i;
 		}
+		if (name === undefined) {
+			anonsExist = true;
+		}
+	}
+	if (!anonsExist) {
+		// If no anonymous parameters are present, and we didn't find
+		// it among the named ones, it must not be there.
+		return -1;
 	}
 	var expectedIndex = indexOfParameterDef(macroName, param, parser, options);
 	// We've got to skip over all the named parameter instances.
