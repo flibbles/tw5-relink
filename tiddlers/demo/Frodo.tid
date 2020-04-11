@@ -16,7 +16,7 @@ width: 100
 </$button>
 </$vars>
 \end
-Feel free to change my name. Click <<show-reference-button>> for information on what tiddler's reference this one.
+Feel free to change my name.
 
 <<rename Sam gumption>>
 
@@ -36,3 +36,5 @@ Feel free to change my name. Click <<show-reference-button>> for information on 
 <<rename Aragorn Andúril>>
 
 <$macrocall $name="rename" name=<<bill>> weapon="hooves" />
+
+Click <<show-reference-button>> for information on what tiddler's reference me.
