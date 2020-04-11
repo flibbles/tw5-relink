@@ -1,0 +1,41 @@
+tags: Types
+title: Wikitext
+
+This type is ordinary [[wikitext, as described here|https://tiddlywiki.com/static/WikiText.html]]. It's what every standard tiddler uses in its body.
+
+This type really only makes sense for fields and macros, but operators and widget attributes can be configured as wikitext as well, if you have the need.
+
+!! Fields
+
+In your project, you may want snippets of wikitext in tiddler fields. Like this:
+
+```
+title: Movie list
+description: This tiddler contains a list of all the [[Lord of the Rings]] movies.
+
+* The Fellowship of the Ring
+* The Two Towers
+* Return of the King
+* The Hobbit
+* The Silmarillion
+```
+
+In this case, you might want that description field to update if `Lord of the Rings` is renamed. You can configure the <<link-to-config-tab Fields "relink Fields list">> to have //description// set to //wikitext//, and relink will properly parse all description fields as wikitext.
+
+!!!! inline
+
+Relink expects wikitext used in fields besides `text` to be inline, meaning it won't create any pragma in order to resolve difficult name changes. It will just report a failure to rename and move on.
+
+!! Macros
+
+Sometimes you may make macros like this:
+
+```
+\define wrap-text(text)
+<span class="my-custom-class">$text$</span>
+\end
+```
+
+Then you may call it like `<<wrap-text "See [[here]] for more details">>`.
+
+In cases like this, where you have generic wikitext as a macro parameter, you can configure <<link-to-config-tab Macros "Relink's Macro configuration list">> to handle it. In the example's case, you'd add an entry and set ''Macro'' to //wrap-text//, ''Parameter'' to //text//, and ''Type'' to //wikitext//.

@@ -8,7 +8,7 @@ title: Documentation
 
 !! Constructs
 
-The following are configurable through the //Relink// configuration panel.
+The following are configurable through the <<link-to-config-tab caption:"//Relink// configuration panel">>. See the available [[types|Types]] for more details.
 
 {{Construct||Templates/ul}}
 

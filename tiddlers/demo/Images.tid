@@ -1,5 +1,5 @@
 caption: Images
-tags: Documentation Construct
+tags: Documentation WikiText
 title: Images
 
 Relink will manage images which link to tiddlers within the project.

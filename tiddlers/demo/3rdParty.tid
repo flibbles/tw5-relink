@@ -28,7 +28,7 @@ type: application/json
 			"text": "title"
 		},
 		"$:/plugins/flibbles/3rd-party/readme": {
-			"text": "This plugin doesn't do anything. It only shows how other plugins can integrate with //Relink//. Thereby allowing any macros, widgets, fields, or filter operators they introduce to automatically be configured for //Relink// to handle.\n\nLook at the <$link to='$:/plugins/flibbles/relink/configuration'>//Relink// configuration page</$link> to see how this plugin's configurations are grouped."
+			"text": "This plugin doesn't do anything. It only shows how other plugins can integrate with //Relink//. Thereby allowing any macros, widgets, fields, or filter operators they introduce to automatically be configured for //Relink// to handle.\n\nLook at the <<link-to-config-tab caption:'//Relink// configuration page'>> to see how this plugin's configurations are grouped."
 		},
 		"$:/plugins/flibbles/3rd-party/macro": {
 			"module-type": "macro",

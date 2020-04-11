@@ -10,6 +10,23 @@ $caption$
 </$button>
 \end
 
-This creates a button which opens a specific tiddler and a tab within that tiddler. It's used on several documentation pages to link to examples or the //Relink// configuration menu.
+\define link-to-config-tab(configTab, caption)
+<$button class="tc-btn-invisible tc-tiddlylink">
+<$action-setfield
+	$tiddler="$:/state/plugin-info--1512302538-$:/plugins/flibbles/relink--2093943750"
+	text="configuration" />
+<$list filter="[<__configTab__>!match[]]">
+<$action-setfield
+	$tiddler="$:/state/tab--1862192285"
+	text={{{[[$:/plugins/flibbles/relink/ui/configuration/]addsuffix<__configTab__>]}}} />
+</$list>
+<$action-navigate $to="$:/plugins/flibbles/relink" />
+$caption$
+</$button>
+\end
+
+`link-to-tab` creates a button which opens a specific tiddler and a tab within that tiddler. It's used on several documentation pages to link to examples or the //Relink// configuration menu.
+
+`link-to-config-tab` is used exclusively to go to Relink configuration tabs.
 
 Unfortunately, due to the way the `qualify` mechanic works in Tiddlywiki, this macro must maintain a hardcoded list of qualifier hashes, and if you rename the target tiddler, the qualifier doesn't update automatically.
