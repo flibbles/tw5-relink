@@ -20,7 +20,7 @@ description: This tiddler contains a list of all the [[Lord of the Rings]] movie
 * The Silmarillion
 ```
 
-In this case, you might want that description field to update if `Lord of the Rings` is renamed. You can configure the <<link-to-config-tab Fields "relink Fields list">> to have //description// set to //wikitext//, and relink will properly parse all description fields as wikitext.
+In this case, you might want that description field to update if `Lord of the Rings` is renamed. You can configure the <<link-to-config-tab Fields "relink Fields list">> to have //description// set to //wikitext//, and relink will properly parse all description fields as wikitext. (This demo wiki has //description// configured as wikitext.)
 
 !!!! inline
 

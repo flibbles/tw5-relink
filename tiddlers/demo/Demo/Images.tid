@@ -1,9 +1,7 @@
-description: <p>Links to image tiddlers will be updated when applicable. All attributes will also be properly relinked if necessary.</p>
+description: <p>Change image name with the buttons, or [[visit it|Frodo.svg]] to change it manually.</p><p>Links to image tiddlers will be updated when applicable. All attributes will also be properly relinked if necessary.</p>
 
 [img
    height=150
    width={{Frodo!!width}}
    class="relink-demo-image"
    [Tolkien's symbol|Frodo.svg]]
-
-Change image name with the buttons, or [[visit it|Frodo.svg]] to change it manually.

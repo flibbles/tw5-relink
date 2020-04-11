@@ -3,7 +3,7 @@ tags: Documentation Construct
 title: Operators
 
 \rules except wikilink
-Whenever a filter is processed by Relink, whether in a field or an attribute<!-- or a filtered transclude expression -->, it will only update the operands of whitelisted operators.
+Whenever a filter is processed by Relink, whether in a field, an attribute, or a filtered transclude expression, it will only update the operands of whitelisted operators. Each operator must be configured a particular [[type|Types]].
 
 ''Suffixes'' can optionally be a part of a whitelist configuration. Let's say you whitelist the operator `myOperator:mySuffix`. The only instances of //myOperator//'s which will be updated are when they have the suffix //mySuffix//.
 
