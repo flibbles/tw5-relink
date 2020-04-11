@@ -56,6 +56,9 @@ it("html", function() {
 		[utils.attrConf("$A", "ref", "reference")]);
 	test({text: "<$A ref='from!!field' />"}, ['<$A ref="!!field" />'],
 		[utils.attrConf("$A", "ref", "reference")]);
+	test({text: "<$A wiki='text {{from!!field}}' />"},
+	     ['<$A wiki="{{!!field}}" />'],
+	     [utils.attrConf("$A", "wiki", "wikitext")]);
 
 	// Macro attributes
 	test({text: "\\define test(title)\n<$link to=<<test from>> />"},
@@ -77,12 +80,13 @@ it("html", function() {
 
 it("macrocall", function() {
 	function testMacro(text, expected) {
-		var def = "\\define test(title, filt, ref, list) stuff\n";
+		var def = "\\define test(title, filt, ref, list, wiki) stuff\n";
 		test({text: def + text}, expected, [
 			utils.macroConf("test", "title", "title"),
 			utils.macroConf("test", "ref", "reference"),
 			utils.macroConf("test", "filt", "filter"),
-			utils.macroConf("test", "list", "list")]);
+			utils.macroConf("test", "list", "list"),
+			utils.macroConf("test", "wiki", "wikitext")]);
 	};
 	testMacro("<<test title:from>>", ["<<test title>>"]);
 	testMacro("<<test from>>", ["<<test title>>"]);
@@ -91,6 +95,7 @@ it("macrocall", function() {
 	testMacro("<<test ref:'from'>>", ['<<test ref>>']);
 	testMacro("<<test ref:'from##index'>>", ['<<test ref: "##index">>']);
 	testMacro("<<test list:'from A B'>>", ['<<test list>>']);
+	testMacro("<<test wiki: {{from##index}}>>", ['<<test wiki: "{{##index}}">>']);
 
 	// Multiples
 	testMacro("<<test from filt:'[[from]]'>>", ["<<test title>>", "<<test filt>>"]);
@@ -162,6 +167,12 @@ it("fields", function() {
 	test({"list": "A from B from"}, ["list"]);
 	test({"customlist": "A from B from"}, ["customlist"],
 		[utils.fieldConf("customlist", "list")]);
+	test({"customwiki": "A [[from]] B"}, ["customwiki: [[from]]"],
+		[utils.fieldConf("customwiki", "wikitext")]);
+	// multiples in one field
+	test({"customwiki": "A [[from]] {{from!!field}}"},
+	     ["customwiki: [[from]]", "customwiki: {{!!field}}"],
+	     [utils.fieldConf("customwiki", "wikitext")]);
 });
 
 it("filter fields", function() {
@@ -212,6 +223,8 @@ it("filters", function() {
 	           [utils.operatorConf("enlist", "list")]);
 	testFilter("[filt[from]]", ["[filt[]]"],
 	           [utils.operatorConf("filt", "filter")]);
+	testFilter("[wiki[{{from!!field}}]]", ["[wiki[{{!!field}}]]"],
+	           [utils.operatorConf("wiki", "wikitext")]);
 
 	// Multiples
 	testFilter("from [tag[from]oper{from}]", ["", "[tag[]]", "[oper{}]"]);
