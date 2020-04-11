@@ -18,8 +18,6 @@ For a demonstration, and for documentation, see the [tiddlywiki demo site](https
 
 ## How to install
 
-### For Tiddlywiki html file
-
 Visit the [demo site](https://flibbles.github.io/tw5-relink/). It will have a little thingy you can drag onto your tiddlywiki project. (The demo site will explain it better.)
 
 ### For Node.js
