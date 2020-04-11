@@ -141,6 +141,15 @@ it('field:title operator', function() {
 	testFilter("A [tag[something]!field:title[from here]] B");
 });
 
+it('prioritizes suffixed operator defs', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.operatorConf("test:ref", "reference"));
+	wiki.addTiddler(utils.operatorConf("test", "title"));
+	testFilter("[test[from here]]", {wiki: wiki});
+	testFilter("[test[from here!!F]]", {wiki: wiki, ignored: true});
+	testFilter("[test:ref[from here!!F]]", {wiki: wiki});
+});
+
 it('tag operator', function() {
 	testFilter("A [tag[from here]] B");
 });

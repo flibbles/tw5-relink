@@ -324,9 +324,9 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 
 // Returns the relinker needed for a given operator, or returns undefined.
 function fieldType(whitelist, operator) {
-	return whitelist[operator.operator] ||
-	       (operator.suffix &&
-	        whitelist[operator.operator + ":" + operator.suffix]);
+	return (operator.suffix &&
+	        whitelist[operator.operator + ":" + operator.suffix]) ||
+	        whitelist[operator.operator];
 };
 
 function canBePrettyOperand(value) {
