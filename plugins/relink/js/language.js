@@ -67,6 +67,11 @@ exports.logRelink = function(raw, args, title, from, to, options) {
 	}
 };
 
+// This wraps alert so it can be monkeypatched during testing.
+exports.alert = function(message) {
+	alert(message);
+};
+
 exports.getString = function(title, options) {
 	title = "$:/plugins/flibbles/relink/language/" + title;
 	return options.wiki.renderTiddler("text/plain", title,

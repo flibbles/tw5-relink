@@ -20,16 +20,14 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 <$edit-text tiddler=<<field-name-tiddler>>
             tag="input" default="" placeholder="field name" />
 <$reveal type="nomatch" text="" state=<<field-name-tiddler>> >
+<$relinkmangler>
 <$button tooltip={{$(lingo-base)$NewField/Hint}}
          aria-label={{$(lingo-base)$NewField/Caption}}>
-<$set name="tiddlerName"
-      filter="[<prefix-fields>addsuffix{$(field-name-tiddler)$}]">
-<$action-setfield $tiddler=<<tiddlerName>>
-                  text={{$:/config/flibbles/relink/settings/default-type}} />
-</$set>
+<$action-sendmessage $message="relink-add-field" field={{$(field-name-tiddler)$}} />
 <$action-deletetiddler $tiddler=<<field-name-tiddler>> />
 <$text text={{$(lingo-base)$NewField/Caption}}/>
 </$button>
+</$relinkmangler>
 </$reveal>
 <$reveal type="match" text="" state=<<field-name-tiddler>> >
 <$button>
