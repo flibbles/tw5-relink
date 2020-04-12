@@ -5,7 +5,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 \import $:/plugins/flibbles/relink/ui/components/tables
 \define prefix-ops() $:/config/flibbles/relink/operators/
 \define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
-\define state-base() $:/state/flibbles/relink/
+\define operator-name-tiddler() $:/state/flibbles/relink/operator-name
 
 \define row()
 <td><$list variable="listItem" filter="[<currentTiddler>removeprefix<prefix-ops>]"><<listItem>></$list></td>
@@ -17,17 +17,24 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 {{$:/plugins/flibbles/relink/language/Help/Operators}}
 
 <em class="tc-edit">Add a new filter operator:</em>
-<$edit-text tiddler="$(state-base)$operator-name"
+<$edit-text tiddler=<<operator-name-tiddler>>
             tag="input" default="" placeholder="operator name" />
+<$reveal type="nomatch" text="" state=<<operator-name-tiddler>>>
 <$button tooltip={{$(lingo-base)$NewOperator/Hint}}
          aria-label={{$(lingo-base)$NewOperator/Caption}}>
 <$set name="tiddlerName"
-      filter="[<prefix-ops>addsuffix{$(state-base)$operator-name}]">
+      filter="[<prefix-ops>addsuffix{$(operator-name-tiddler)$}]">
 <$action-setfield $tiddler=<<tiddlerName>> text={{$:/config/flibbles/relink/settings/default-type}} />
 </$set>
-<$action-deletetiddler $tiddler="$(state-base)$operator-name" />
+<$action-deletetiddler $tiddler=<<operator-name-tiddler>> />
 <$text text={{$(lingo-base)$NewOperator/Caption}}/>
 </$button>
+</$reveal>
+<$reveal type="match" text="" state=<<operator-name-tiddler>>>
+<$button>
+<$text text={{$(lingo-base)$NewOperator/Caption}}/>
+</$button>
+</$reveal>
 
 <$macrocall $name=tables
 	category="operators"
