@@ -30,6 +30,10 @@ RelinkManglerWidget.prototype.handleAddFieldEvent = function(event) {
 		return true;
 	}
 	var trimmedName = param.field.toLowerCase().trim();
+	if (!trimmedName) {
+		// Still can't handle it, but don't warn.
+		return true;
+	}
 	if(!$tw.utils.isValidFieldName(trimmedName)) {
 		language.alert($tw.language.getString(
 			"InvalidFieldName",

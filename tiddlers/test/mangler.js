@@ -50,6 +50,18 @@ it('rejects illegal fields', function() {
 	expect(output.alerts[0]).toContain("te$t");
 });
 
+it('ignores some fields', function() {
+	function ignore(field, expectedNonexistent) {
+		var output = test("relink-add-field", {field: field});
+		var results = output.wiki.getTiddler(prefix + "fields/");
+		expect(results).toBeUndefined();
+		expect(output.alerts.length).toEqual(0);
+	}
+	ignore("   ");
+	ignore("");
+	ignore(undefined);
+});
+
 it('adds operators', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: defaultTiddler, text: "custom"});

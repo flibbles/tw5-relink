@@ -1,9 +1,10 @@
 title: Frodo
+race: hobbit
 weapon: Sting
 width: 100
 
 \define bill() Sam's pony "Bill"
-\define rename(name, weapon:"Axe")
+\define rename(name, race: "dwarf", weapon: "axe")
 <$vars fromSVG={{{[all[current]addsuffix[.svg]]}}}
        toSVG={{{[<__name__>addsuffix[.svg]]}}} >
 
@@ -12,29 +13,25 @@ width: 100
 <$text text=<<__name__>> />
 <$action-sendmessage $message="tm-rename-tiddler" to=<<__name__>> />
 <$action-setfield $tiddler=<<__name__>> $field="weapon" $value=<<__weapon__>> />
+<$action-setfield $tiddler=<<__name__>> $field="race" $value=<<__race__>> />
 <$action-sendmessage $message="tm-rename-tiddler" from=<<fromSVG>> to=<<toSVG>> />
 </$button>
 </$vars>
 \end
 Feel free to change my name.
 
-<<rename Sam gumption>>
+<<rename Sam hobbit gumption>>
 
-<<rename Legolas "Bow of the Galadhrim">>
+<<rename Legolas elf "Bow of the Galadhrim">>
 
-<<rename Gimli "broad-bladed axe">>
+<<rename Gimli dwarf "broad-bladed axe">>
 
-<<rename "Pippin & Merry" "Dúnedain daggers">>
+<<rename "Pippin & Merry" hobbits "Dúnedain daggers">>
 
-<<rename 'Gandalf the White' "Flame of Anor">>
+<<rename 'Gandalf the White' Maia "Flame of Anor">>
 
-<!-- Don't actually support this one yet
+<<rename Aragorn Dúnedain Andúril>>
 
-<<rename "Aragorn [Strider]" Andúril>>
--->
-
-<<rename Aragorn Andúril>>
-
-<$macrocall $name="rename" name=<<bill>> weapon="hooves" />
+<$macrocall $name="rename" name=<<bill>> race="horse" weapon="hooves" />
 
 Click <<show-reference-button>> for information on what tiddler's reference me.

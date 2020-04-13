@@ -8,4 +8,5 @@ fields/example-wikitext: wikitext
 macros/link-to-tab/tab: title
 macros/link-to-tab/tiddler: title
 macros/choice/item: reference
+macros/makeLink/text: wikitext
 macros/makeLink/title: title

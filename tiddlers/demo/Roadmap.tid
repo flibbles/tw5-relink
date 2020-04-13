@@ -3,7 +3,6 @@ title: Roadmap
 
 This page is meant more for the developer so they don't forget what's left to do.
 
-* Add in form validation for //add// fields in configuration.
 * Improve UI in configuration menu. Delete buttons shouldn't get that much space. Maybe have examples for each row in gray.
 * Macros cached after encountering `<$importvariables>` should be popped after encountering `</$importvariables>`.
 * Document the filters included with //Relink//.
