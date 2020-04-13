@@ -6,6 +6,8 @@ Tests the relink mangler used to add fields in configuration.
 
 var utils = require("test/utils");
 var language = require("$:/plugins/flibbles/relink/js/language.js");
+var prefix = "$:/config/flibbles/relink/";
+var defaultTiddler = "$:/config/flibbles/relink/settings/default-type";
 
 function test(type, paramObject, options) {
 	options = options || {};
@@ -30,20 +32,141 @@ function test(type, paramObject, options) {
 describe("mangler", function() {
 
 it('adds fields', function() {
-	var output = test("relink-add-field", {field: "test"});
-	var results = output.wiki.getTiddler("$:/config/flibbles/relink/fields/test");
-	expect(results.fields.text).toEqual("title");
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: defaultTiddler, text: "custom"});
+	var output = test("relink-add-field", {field: "test"}, {wiki: wiki});
+	var results = output.wiki.getTiddler(prefix + "fields/test");
+	expect(results.fields.text).toEqual("custom");
 });
 
 it('rejects illegal fields', function() {
 	var output = test("relink-add-field", {field: "te$t"});
-	var results = output.wiki.getTiddler("$:/config/flibbles/relink/fields/te$t");
+	var results = output.wiki.getTiddler(prefix + "fields/te$t");
 	expect(results).toBeUndefined();
 	expect(output.alerts.length).toEqual(1);
 	// We don't test the output, since it's Tiddlywiki's, but we do make
 	// sure we're properly supplying the field name for the warning string
 	// to embed.
 	expect(output.alerts[0]).toContain("te$t");
+});
+
+it('adds operators', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: defaultTiddler, text: "custom"});
+	var output = test("relink-add-operator", {operator: "test"}, {wiki: wiki});
+	var results = output.wiki.getTiddler(prefix + "operators/test");
+	expect(results.fields.text).toEqual("custom");
+});
+
+it('adds odd operators', function() {
+	function op(input, expectedSuffix) {
+		var output = test("relink-add-operator", {operator: input});
+		var results = output.wiki.getTiddler(prefix + expectedSuffix);
+		expect(results.fields.text).toEqual("title");
+		expect(output.alerts.length).toEqual(0);
+	}
+	op("   test ", "operators/test");
+	op("tESt", "operators/tESt");
+	// pretty sure tiddlywiki rejects these, but relink doesn't judge.
+	op("te$t", "operators/te$t");
+	op("bad/operator", "operators/bad/operator");
+});
+
+it('adds macro parameters', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: defaultTiddler, text: "custom"});
+	var output = test("relink-add-parameter",
+		{macro: "test", parameter: "field"},
+		{wiki: wiki});
+	var results = output.wiki.getTiddler(prefix + "macros/test/field");
+	expect(results.fields.text).toEqual("custom");
+});
+
+// This is the only validation we do on parameters, because it's the only one
+// that can cause malformed behavior in relink. Tiddlywiki will still fail if
+// the user is using bad param names, but that's their problem.
+it('rejects macro parameters with "/"', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "$:/plugins/flibbles/relink/language/Error/InvalidParameterName", text: "<$text text=<<parameterName>> />"});
+	var output = test("relink-add-parameter",
+	                  {macro: "test", parameter: "field/slash"},
+	                  {wiki: wiki});
+	var results = wiki.getTiddler(prefix + "macros/test/field/slash");
+	expect(results).toBeUndefined();
+	expect(output.alerts.length).toEqual(1);
+	expect(output.alerts[0]).toEqual("field/slash");
+});
+
+it('adds odd parameters', function() {
+	function op(macro, parameter, expectedSuffix) {
+		var output = test("relink-add-parameter", {macro: macro, parameter: parameter});
+		var results = output.wiki.getTiddler(prefix + expectedSuffix);
+		expect(results.fields.text).toEqual("title");
+		expect(output.alerts.length).toEqual(0);
+	}
+	op("   test ", " param  ", "macros/test/param");
+	op("tESt", "pARAm", "macros/tESt/pARAm");
+	op("te_s-t", "p_ara-m", "macros/te_s-t/p_ara-m");
+});
+
+it('adds element attributes', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: defaultTiddler, text: "custom"});
+	var output = test("relink-add-attribute",
+		{element: "test", attribute: "field"},
+		{wiki: wiki});
+	var results = output.wiki.getTiddler(prefix + "attributes/test/field");
+	expect(results.fields.text).toEqual("custom");
+});
+
+it('rejects elements with "/"', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "$:/plugins/flibbles/relink/language/Error/InvalidElementName", text: "<$text text=<<elementName>> />"});
+	var output = test("relink-add-attribute",
+	                  {element: "te/st", attribute: "attr"},
+	                  {wiki: wiki});
+	var results = wiki.getTiddler(prefix + "attributes/te/st/attr");
+	expect(results).toBeUndefined();
+	expect(output.alerts.length).toEqual(1);
+	expect(output.alerts[0]).toEqual("te/st");
+});
+
+it('rejects attributes with "/"', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "$:/plugins/flibbles/relink/language/Error/InvalidAttributeName", text: "<$text text=<<attributeName>> />"});
+	var output = test("relink-add-attribute",
+	                  {element: "test", attribute: "at/tr"},
+	                  {wiki: wiki});
+	var results = wiki.getTiddler(prefix + "attributes/test/at/tr");
+	expect(results).toBeUndefined();
+	expect(output.alerts.length).toEqual(1);
+	expect(output.alerts[0]).toEqual("at/tr");
+});
+
+it('adds odd attributes', function() {
+	function op(element, attribute, expectedSuffix) {
+		var output = test("relink-add-attribute", {element: element, attribute: attribute});
+		var results = output.wiki.getTiddler(prefix + expectedSuffix);
+		expect(results.fields.text).toEqual("title");
+		expect(output.alerts.length).toEqual(0);
+	}
+	op("   test ", " attr  ", "attributes/test/attr");
+	op("tESt", "aTTr", "attributes/tESt/aTTr");
+	op("$te-st", "a_tt-r", "attributes/$te-st/a_tt-r");
+});
+
+it("won't crash with bad input", function() {
+	test("relink-add-field", {wrong: "parameter"});
+	test("relink-add-field", undefined);
+	test("relink-add-operator", {wrong: "parameter"});
+	test("relink-add-operator", undefined);
+	// too few
+	test("relink-add-parameter", {parameter: "parameter"});
+	test("relink-add-parameter", {macro: "parameter"});
+	test("relink-add-parameter", undefined);
+	test("relink-add-attribute", {attribute: "parameter"});
+	test("relink-add-attribute", {element: "parameter"});
+	test("relink-add-attribute", undefined);
 });
 
 });

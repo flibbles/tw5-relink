@@ -17,13 +17,19 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 {{$:/plugins/flibbles/relink/language/Help/Fields}}
 
 <em class="tc-edit">Add a new field:</em>
-<$edit-text tiddler=<<field-name-tiddler>>
-            tag="input" default="" placeholder="field name" />
+<$edit-text
+	tiddler=<<field-name-tiddler>>
+	tag="input"
+	default=""
+	placeholder="field name" />
 <$reveal type="nomatch" text="" state=<<field-name-tiddler>> >
 <$relinkmangler>
-<$button tooltip={{$(lingo-base)$NewField/Hint}}
-         aria-label={{$(lingo-base)$NewField/Caption}}>
-<$action-sendmessage $message="relink-add-field" field={{$(field-name-tiddler)$}} />
+<$button
+	tooltip={{$(lingo-base)$NewField/Hint}}
+	aria-label={{$(lingo-base)$NewField/Caption}}>
+<$action-sendmessage
+	$message="relink-add-field"
+	field={{$(field-name-tiddler)$}} />
 <$action-deletetiddler $tiddler=<<field-name-tiddler>> />
 <$text text={{$(lingo-base)$NewField/Caption}}/>
 </$button>
@@ -36,7 +42,8 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 </$reveal>
 
 
-<$macrocall $name=tables
+<$macrocall
+	$name=tables
 	category="fields"
 	header-list="[[Field Name]] [[Field Type]] Delete"
 	list-row-macro="row" />

@@ -24,23 +24,31 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
 {{$:/plugins/flibbles/relink/language/Help/Macros}}
 
 <em class="tc-edit">Add a new macro parameter:</em>
-<$edit-text tiddler=<<macro-name-tiddler>>
-            tag="input" default="" placeholder="macro" />
-<$edit-text tiddler=<<parameter-name-tiddler>>
-            tag="input" default="" placeholder="parameter" />
+<$edit-text
+	tiddler=<<macro-name-tiddler>>
+	tag="input"
+	default=""
+	placeholder="macro" />
+<$edit-text
+	tiddler=<<parameter-name-tiddler>>
+	tag="input"
+	default=""
+	placeholder="parameter" />
 <$reveal type="nomatch" text="" state=<<macro-name-tiddler>> >
 <$reveal type="nomatch" text="" state=<<parameter-name-tiddler>> >
-<$button tooltip={{$(lingo-base)$NewParameter/Hint}}
-         aria-label={{$(lingo-base)$NewParameter/Caption}}>
-<$set name="tiddlerName"
-      filter="[<prefix-macro>addsuffix{$(macro-name-tiddler)$}addsuffix[/]addsuffix{$(parameter-name-tiddler)$}]">
-<$action-setfield $tiddler=<<tiddlerName>>
-                  text={{$:/config/flibbles/relink/settings/default-type}} />
-</$set>
+<$relinkmangler>
+<$button
+	tooltip={{$(lingo-base)$NewParameter/Hint}}
+	aria-label={{$(lingo-base)$NewParameter/Caption}}>
+<$action-sendmessage
+	$message="relink-add-parameter"
+	macro={{$(macro-name-tiddler)$}}
+	parameter={{$(parameter-name-tiddler)$}} />
 <$action-deletetiddler $tiddler=<<parameter-name-tiddler>> />
 <$action-deletetiddler $tiddler=<<macro-name-tiddler>> />
 <$text text={{$(lingo-base)$NewParameter/Caption}}/>
 </$button>
+</$relinkmangler>
 </$reveal>
 <$reveal type="match" text="" state=<<parameter-name-tiddler>> >
 <$button>
@@ -55,7 +63,8 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
 </$reveal>
 
 
-<$macrocall $name=tables
+<$macrocall
+	$name=tables
 	category="macros"
 	header-list="Macro Parameter Type Delete"
 	list-row-macro="row" />

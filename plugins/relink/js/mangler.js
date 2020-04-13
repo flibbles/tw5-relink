@@ -12,7 +12,10 @@ var language = require('$:/plugins/flibbles/relink/js/language.js');
 var RelinkManglerWidget = function(parseTreeNode,options) {
 	this.initialise(parseTreeNode,options);
 	this.addEventListeners([
-		{type: "relink-add-field", handler: "handleAddFieldEvent"}
+		{type: "relink-add-field", handler: "handleAddFieldEvent"},
+		{type: "relink-add-operator", handler: "handleAddOperatorEvent"},
+		{type: "relink-add-parameter", handler: "handleAddParameterEvent"},
+		{type: "relink-add-attribute", handler: "handleAddAttributeEvent"}
 	]);
 };
 
@@ -21,12 +24,12 @@ exports.relinkmangler = RelinkManglerWidget;
 RelinkManglerWidget.prototype = new Widget();
 
 RelinkManglerWidget.prototype.handleAddFieldEvent = function(event) {
-	var paramObject = event.paramObject;
-	if (typeof paramObject !== "object") {
+	var param = event.paramObject;
+	if (typeof param !== "object" || !param.field) {
 		// Can't handle it.
 		return true;
 	}
-	var trimmedName = paramObject.field.toLowerCase().trim();
+	var trimmedName = param.field.toLowerCase().trim();
 	if(!$tw.utils.isValidFieldName(trimmedName)) {
 		language.alert($tw.language.getString(
 			"InvalidFieldName",
@@ -35,10 +38,76 @@ RelinkManglerWidget.prototype.handleAddFieldEvent = function(event) {
 			}
 		));
 	} else {
-		var def = getDefaultType(this.wiki);
-		this.wiki.addTiddler({title: "$:/config/flibbles/relink/fields/" + trimmedName, text: def});
+		add(this.wiki, "fields", trimmedName);
 	}
 	return true;
+};
+
+/**Not much validation, even though there are definitely illegal
+ * operator names. If you input on, Relink won't relink it, but it
+ * won't choke on it either. Tiddlywiki will...
+ */
+RelinkManglerWidget.prototype.handleAddOperatorEvent = function(event) {
+	var param = event.paramObject;
+	if (param) {
+		add(this.wiki, "operators", param.operator);
+	}
+	return true;
+};
+
+RelinkManglerWidget.prototype.handleAddParameterEvent = function(event) {
+	var param = event.paramObject;
+	if (param && param.parameter) {
+		if (param.parameter.indexOf('/') >= 0) {
+			language.alert(language.getString(
+				"Error/InvalidParameterName",
+				{ variables: {parameterName: param.parameter},
+				  wiki: this.wiki
+				}
+			));
+		} else {
+			add(this.wiki, "macros", param.macro, param.parameter);
+		}
+	}
+	return true;
+};
+
+RelinkManglerWidget.prototype.handleAddAttributeEvent = function(event) {
+	var param = event.paramObject;
+	if (param && param.element && param.attribute) {
+		if (param.element.indexOf('/') >= 0) {
+			language.alert(language.getString(
+				"Error/InvalidElementName",
+				{ variables: {elementName: param.element},
+				  wiki: this.wiki
+				}
+			));
+		} else if (param.attribute.indexOf('/') >= 0) {
+			language.alert(language.getString(
+				"Error/InvalidAttributeName",
+				{ variables: {attributeName: param.attribute},
+				  wiki: this.wiki
+				}
+			));
+		} else {
+			add(this.wiki, "attributes", param.element, param.attribute);
+		}
+	}
+	return true;
+};
+
+function add(wiki, category/*, path parts*/) {
+	var path = "$:/config/flibbles/relink/" + category;
+	for (var x = 2; x < arguments.length; x++) {
+		var part = arguments[x];
+		// Abort if it's falsy, or only whitespace. Also, trim spaces
+		if (!part || !(part = part.trim())) {
+			return;
+		}
+		path = path + "/" + part;
+	}
+	var def = getDefaultType(wiki);
+	wiki.addTiddler({title: path, text: def});
 };
 
 function getDefaultType(wiki) {

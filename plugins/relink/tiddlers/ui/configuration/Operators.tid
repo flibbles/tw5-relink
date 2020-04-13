@@ -17,18 +17,23 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 {{$:/plugins/flibbles/relink/language/Help/Operators}}
 
 <em class="tc-edit">Add a new filter operator:</em>
-<$edit-text tiddler=<<operator-name-tiddler>>
-            tag="input" default="" placeholder="operator name" />
+<$edit-text
+	tiddler=<<operator-name-tiddler>>
+	tag="input"
+	default=""
+	placeholder="operator name" />
 <$reveal type="nomatch" text="" state=<<operator-name-tiddler>>>
-<$button tooltip={{$(lingo-base)$NewOperator/Hint}}
-         aria-label={{$(lingo-base)$NewOperator/Caption}}>
-<$set name="tiddlerName"
-      filter="[<prefix-ops>addsuffix{$(operator-name-tiddler)$}]">
-<$action-setfield $tiddler=<<tiddlerName>> text={{$:/config/flibbles/relink/settings/default-type}} />
-</$set>
+<$relinkmangler>
+<$button
+	tooltip={{$(lingo-base)$NewOperator/Hint}}
+	aria-label={{$(lingo-base)$NewOperator/Caption}}>
+<$action-sendmessage
+	$message="relink-add-operator"
+	operator={{$(operator-name-tiddler)$}} />
 <$action-deletetiddler $tiddler=<<operator-name-tiddler>> />
 <$text text={{$(lingo-base)$NewOperator/Caption}}/>
 </$button>
+</$relinkmangler>
 </$reveal>
 <$reveal type="match" text="" state=<<operator-name-tiddler>>>
 <$button>
@@ -36,7 +41,8 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 </$button>
 </$reveal>
 
-<$macrocall $name=tables
+<$macrocall
+	$name=tables
 	category="operators"
 	header-list="[[Filter Operator]] [[Operand Type]] Delete"
 	list-row-macro="row" />

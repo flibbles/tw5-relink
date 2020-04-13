@@ -24,23 +24,31 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 {{$:/plugins/flibbles/relink/language/Help/Attributes}}
 
 <em class="tc-edit">Add a new attribute:</em>
-<$edit-text tiddler=<<element-name-tiddler>>
-            tag="input" default="" placeholder="widget/element" />
-<$edit-text tiddler=<<attribute-name-tiddler>>
-            tag="input" default="" placeholder="attribute" />
+<$edit-text
+	tiddler=<<element-name-tiddler>>
+	tag="input"
+	default=""
+	placeholder="widget/element" />
+<$edit-text
+	tiddler=<<attribute-name-tiddler>>
+	tag="input"
+	default=""
+	placeholder="attribute" />
 <$reveal type="nomatch" text="" state=<<element-name-tiddler>> >
 <$reveal type="nomatch" text="" state=<<attribute-name-tiddler>> >
-<$button tooltip={{$(lingo-base)$NewAttribute/Hint}}
-         aria-label={{$(lingo-base)$NewAttribute/Caption}}>
-<$set name="tiddlerName"
-      filter="[<prefix-attr>addsuffix{$(element-name-tiddler)$}addsuffix[/]addsuffix{$(attribute-name-tiddler)$}]">
-<$action-setfield $tiddler=<<tiddlerName>>
-                  text={{$:/config/flibbles/relink/settings/default-type}} />
-</$set>
+<$relinkmangler>
+<$button
+	tooltip={{$(lingo-base)$NewAttribute/Hint}}
+	aria-label={{$(lingo-base)$NewAttribute/Caption}}>
+<$action-sendmessage
+	$message="relink-add-attribute"
+	element={{$(element-name-tiddler)$}}
+	attribute={{$(attribute-name-tiddler)$}} />
 <$action-deletetiddler $tiddler=<<attribute-name-tiddler>> />
 <$action-deletetiddler $tiddler=<<element-name-tiddler>> />
 <$text text={{$(lingo-base)$NewAttribute/Caption}}/>
 </$button>
+</$relinkmangler>
 </$reveal>
 <$reveal type="match" text="" state=<<attribute-name-tiddler>> >
 <$button>
@@ -54,7 +62,8 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 </$button>
 </$reveal>
 
-<$macrocall $name=tables
+<$macrocall
+	$name=tables
 	category="attributes"
 	header-list="[[Widget/HTML Element]] Attribute Type Delete"
 	list-row-macro="row" />
