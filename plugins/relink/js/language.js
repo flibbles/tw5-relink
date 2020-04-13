@@ -56,8 +56,7 @@ exports.logRelink = function(raw, args, title, from, to, options) {
 		if (key === "field") {
 			value = descriptor(value);
 		};
-		return value || ("<<"+key+">>");
-	});
+		return value || ("<<"+key+">>"); });
 	if (raw.indexOf('%c') >= 0) {
 		// Doing a little bit of bold so the user sees
 		// where we had to jump through hoops.
@@ -74,15 +73,21 @@ exports.alert = function(message) {
 
 exports.getString = function(title, options) {
 	title = "$:/plugins/flibbles/relink/language/" + title;
-	return options.wiki.renderTiddler("text/plain", title,
-	                                  {variables: options.variables});
+	return options.wiki.renderTiddler("text/plain", title, options);
 };
 
 exports.failureAlert = "Relink was unable to update the following tiddlers due to the complexity of the title:";
+var logger;
 
-exports.reportFailures = function(failureList) {
-	var reportList = failureList.map(function(f) {return "\n   " + f});
-	console.warn(exports.failureAlert + reportList);
+exports.reportFailures = function(failureList, options) {
+	if (!logger) {
+		logger = new $tw.utils.Logger("Relinker");
+	}
+	var alertString = this.getString("Error/ReportFailedRelinks", options)
+	var reportList = failureList.map(function(f) {
+		return "\n* [[" + f + "]]"
+	}).join("");
+	logger.alert(alertString + "\n" + reportList);
 };
 
 exports.log = {

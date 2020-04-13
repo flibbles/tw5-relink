@@ -56,7 +56,11 @@ function relinkTiddler(fromTitle, toTitle, options) {
 		}
 	};
 	if (failures.length > 0) {
-		language.reportFailures(failures);
+		var options = $tw.utils.extend(
+			{ variables: {to: toTitle, from: fromTitle},
+			  wiki: this},
+			options );
+		language.reportFailures(failures, options);
 	}
 };
 

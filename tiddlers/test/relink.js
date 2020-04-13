@@ -99,6 +99,28 @@ it("handles errors with at least some grace", function() {
 	thrower('Boom', "Boom\nWhen relinking 'tiddlertest'");
 });
 
+it("alerts about failed relinks", function() {
+	var wiki = new $tw.Wiki();
+	var results = [];
+	wiki.addTiddlers([
+		{title: "$:/plugins/flibbles/relink/language/Error/ReportFailedRelinks", text: "<<from>>-<<to>>"},
+		{title: "from here"},
+		{title: "TiddlerA", text: "{{{[tag{from here}]}}}"},
+		{title: "TiddlerB", text: "{{{[tag{from here}]}}}"}]);
+	function alert(msg) { results.push(msg); }
+	utils.monkeyPatch($tw.utils.Logger.prototype, "alert", alert, function() {
+		utils.collect("log", function() {
+			// deliberately not passing options.
+			// renameTiddler should work without it.
+			wiki.renameTiddler("from here", "to}}there");
+		});
+	});
+	expect(results.length).toEqual(1);
+	expect(results[0]).toContain("from here-to}}there");
+	expect(results[0]).toContain("TiddlerA");
+	expect(results[0]).toContain("TiddlerB");
+});
+
 it("doesn't relink if from and to are the same", function() {
 	var results = utils.relink({text: "[[from here]]"}, {to: "from here"});
 	expect(results.log.length).toEqual(0);

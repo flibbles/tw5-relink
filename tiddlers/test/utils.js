@@ -99,27 +99,34 @@ exports.prepArgs = function(input, expected, options) {
  * returns: Array of the emitted log messages.
  */
 exports.collect = function(output, scope) {
-	var oldOutput = console[output],
-		messages = [];
-	console[output] = function (message) { messages.push(message); };
-	try {
+	var messages = [];
+	function pusher(message) { messages.push(message); };
+	this.monkeyPatch(console, output, pusher, function() {
 		scope.call();
-	} finally {
-		console[output] = oldOutput;
-	}
+	});
 	return messages;
 };
 
 exports.collectFailures = function(scope) {
-	var oldReport = language.reportFailures,
-		failures = [];
-	language.reportFailures= function (list) { failures.push.apply(failures, list); };
-	try {
+	var failures = [];
+	function newReport(list) { failures.push.apply(failures, list); };
+	this.monkeyPatch(language, "reportFailures", newReport, function() {
 		scope.call();
-	} finally {
-		language.reportFailures = oldReport;
-	}
+	});
 	return failures;
+};
+
+/** This allows some method to be swapped out with a mock method for the
+ *  purpose of testing a block. Afterward, it replaces the old method.
+ */
+exports.monkeyPatch = function(container, method, alternative, block) {
+	var old = container[method];
+	container[method] = alternative;
+	try {
+		block();
+	} finally {
+		container[method] = old;
+	}
 };
 
 /**Returns the placeholder pragma
