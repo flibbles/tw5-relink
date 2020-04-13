@@ -57,8 +57,15 @@ RelinkManglerWidget.prototype.handleAddOperatorEvent = function(event) {
 
 RelinkManglerWidget.prototype.handleAddParameterEvent = function(event) {
 	var param = event.paramObject;
-	if (param && param.parameter) {
-		if (param.parameter.indexOf('/') >= 0) {
+	if (param && param.macro && param.parameter) {
+		if (/\s/.test(param.macro.trim())) {
+			language.alert(language.getString(
+				"Error/InvalidMacroName",
+				{ variables: {macroName: param.macro},
+				  wiki: this.wiki
+				}
+			));
+		} else if (/[ \/]/.test(param.parameter.trim())) {
 			language.alert(language.getString(
 				"Error/InvalidParameterName",
 				{ variables: {parameterName: param.parameter},
@@ -75,14 +82,14 @@ RelinkManglerWidget.prototype.handleAddParameterEvent = function(event) {
 RelinkManglerWidget.prototype.handleAddAttributeEvent = function(event) {
 	var param = event.paramObject;
 	if (param && param.element && param.attribute) {
-		if (param.element.indexOf('/') >= 0) {
+		if (/[ \/]/.test(param.element.trim())) {
 			language.alert(language.getString(
 				"Error/InvalidElementName",
 				{ variables: {elementName: param.element},
 				  wiki: this.wiki
 				}
 			));
-		} else if (param.attribute.indexOf('/') >= 0) {
+		} else if (/[ \/]/.test(param.attribute.trim())) {
 			language.alert(language.getString(
 				"Error/InvalidAttributeName",
 				{ variables: {attributeName: param.attribute},

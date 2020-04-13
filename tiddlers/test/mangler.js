@@ -85,16 +85,25 @@ it('adds macro parameters', function() {
 // This is the only validation we do on parameters, because it's the only one
 // that can cause malformed behavior in relink. Tiddlywiki will still fail if
 // the user is using bad param names, but that's their problem.
-it('rejects macro parameters with "/"', function() {
-	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: "$:/plugins/flibbles/relink/language/Error/InvalidParameterName", text: "<$text text=<<parameterName>> />"});
-	var output = test("relink-add-parameter",
-	                  {macro: "test", parameter: "field/slash"},
-	                  {wiki: wiki});
-	var results = wiki.getTiddler(prefix + "macros/test/field/slash");
-	expect(results).toBeUndefined();
-	expect(output.alerts.length).toEqual(1);
-	expect(output.alerts[0]).toEqual("field/slash");
+it('rejects bad macros and parameters', function() {
+	function fail(macro, parameter, error) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddlers([
+			{title: "$:/plugins/flibbles/relink/language/Error/InvalidMacroName", text: "<$text text=<<macroName>> />"},
+			{title: "$:/plugins/flibbles/relink/language/Error/InvalidParameterName", text: "<$text text=<<parameterName>> />"}]);
+		var output = test(
+			"relink-add-parameter",
+			{macro: macro, parameter: parameter},
+			{wiki: wiki});
+		var results = wiki.getTiddler(
+			prefix + "macros/"+macro+"/"+parameter);
+		expect(results).toBeUndefined();
+		expect(output.alerts.length).toEqual(1);
+		expect(output.alerts[0]).toEqual(error);
+	};
+	fail("test space", "param", "test space");
+	fail("test", "field/slash", "field/slash");
+	fail("test", "field space", "field space");
 });
 
 it('adds odd parameters', function() {
@@ -105,6 +114,10 @@ it('adds odd parameters', function() {
 		expect(output.alerts.length).toEqual(0);
 	}
 	op("   test ", " param  ", "macros/test/param");
+	op("test/slash", "param", "macros/test/slash/param");
+	// Technically, the angle bracket isn't allowed, but it can still be
+	// used by Tiddlywiki through $macrocall
+	op("test>angle", "param", "macros/test>angle/param");
 	op("tESt", "pARAm", "macros/tESt/pARAm");
 	op("te_s-t", "p_ara-m", "macros/te_s-t/p_ara-m");
 });
@@ -119,28 +132,24 @@ it('adds element attributes', function() {
 	expect(results.fields.text).toEqual("custom");
 });
 
-it('rejects elements with "/"', function() {
-	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: "$:/plugins/flibbles/relink/language/Error/InvalidElementName", text: "<$text text=<<elementName>> />"});
-	var output = test("relink-add-attribute",
-	                  {element: "te/st", attribute: "attr"},
-	                  {wiki: wiki});
-	var results = wiki.getTiddler(prefix + "attributes/te/st/attr");
-	expect(results).toBeUndefined();
-	expect(output.alerts.length).toEqual(1);
-	expect(output.alerts[0]).toEqual("te/st");
-});
-
-it('rejects attributes with "/"', function() {
-	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: "$:/plugins/flibbles/relink/language/Error/InvalidAttributeName", text: "<$text text=<<attributeName>> />"});
-	var output = test("relink-add-attribute",
-	                  {element: "test", attribute: "at/tr"},
-	                  {wiki: wiki});
-	var results = wiki.getTiddler(prefix + "attributes/test/at/tr");
-	expect(results).toBeUndefined();
-	expect(output.alerts.length).toEqual(1);
-	expect(output.alerts[0]).toEqual("at/tr");
+it('rejects bad elements and attributes', function() {
+	function fail(element, attribute, error) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddlers([
+			{title: "$:/plugins/flibbles/relink/language/Error/InvalidElementName", text: "<$text text=<<elementName>> />"},
+			{title: "$:/plugins/flibbles/relink/language/Error/InvalidAttributeName", text: "<$text text=<<attributeName>> />"}]);
+		var output = test("relink-add-attribute",
+		                  {element: element, attribute: attribute},
+		                  {wiki: wiki});
+		var results = wiki.getTiddler(prefix + "attributes/"+element+"/"+attribute);
+		expect(results).toBeUndefined();
+		expect(output.alerts.length).toEqual(1);
+		expect(output.alerts[0]).toEqual(error);
+	};
+	fail("te/st", "attr", "te/st");
+	fail("te st", "attr", "te st");
+	fail("test", "at/tr", "at/tr");
+	fail("test", "at tr", "at tr");
 });
 
 it('adds odd attributes', function() {
