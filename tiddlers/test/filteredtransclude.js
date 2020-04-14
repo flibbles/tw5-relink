@@ -13,12 +13,8 @@ function testText(text, expected, options) {
 	return results;
 };
 
-function logMessage(toThere, but) {
-	var msg = "Renaming 'from here' to '"+toThere+"' in filtered transclusion of tiddler 'test'"
-	if (but) {
-		msg = "%c" + msg + " %c" + but;
-	}
-	return msg;
+function logMessage(toThere) {
+	return "Renaming 'from here' to '"+toThere+"' in filtered transclusion of tiddler 'test'"
 };
 
 describe("filtered transcludes", function() {
@@ -72,7 +68,7 @@ it('rightly judges unpretty', function() {
 it('unpretty (degrades to widget)', function() {
 	function test(to, text, expected) {
 		var results = testText(text, expected, {to: to});
-		var message = logMessage(to, "by converting it into a widget");
+		var message = logMessage(to);
 		expect(results.log).toEqual([message]);
 	};
 	test("bar|here", "{{{[[from here]]}}}", "<$list filter=bar|here/>");
@@ -90,18 +86,16 @@ it('unpretty (degrades to widget)', function() {
 
 it('unpretty and unquotable', function() {
 	var ph = utils.placeholder;
-	function test(to, text, expected, message) {
-		var message = message ||  "by converting it into a widget and creating placeholder macros";
+	function test(to, text, expected) {
+		var message = message;
 		var results = testText(text, expected, {to: to});
-		expect(results.log).toEqual([logMessage(to,message)]);
 	};
 	var weird = 'a\'|" """x';
 	//test(`{{{[[""""'']] [[from here]]}}}`
 	//test(weird, `{{{[[from here]]}}}`, ph(1,weird) + "<$list filter='[<relink-1>]'");
 	test("bad[]title",
 	     "{{{[title[from here]]}}}",
-	     ph(1, "bad[]title")+"{{{[title<relink-1>]}}}",
-	     "by creating placeholder macros");
+	     ph(1, "bad[]title")+"{{{[title<relink-1>]}}}");
 	var tooltip = `"tooltips's"`;
 	test(weird, "{{{Title||from here}}}", ph(1,weird) + "<$list filter=Title template=<<relink-1>>/>");
 	test("bar|bar", "{{{Title|"+tooltip+"||from here}}}", ph("tooltip-1",tooltip) + "<$list filter=Title tooltip=<<relink-tooltip-1>> template=bar|bar/>");
