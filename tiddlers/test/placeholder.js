@@ -65,6 +65,11 @@ it('wikitext', function() {
 	testText(macro("wikitext-1", "pretty [[from here]] link")+"Body");
 });
 
+it('does not crash when given invalid category', function() {
+	// Instead, it's just treated as wikitext
+	testText(macro("wrong-1", "[[from here]]")+"[[from here]]");
+});
+
 it('Windows newlines', function() {
 	// Works with Windows newlines
 	testText(macro(1,"from here","\r\n")+"Body content");

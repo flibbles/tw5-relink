@@ -48,7 +48,11 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		valueRegExp.lastIndex = this.parser.pos;
 		var match = valueRegExp.exec(text);
 		if (match) {
-			var handler = settings.getRelinker(placeholder[1] || 'title');
+			var category = placeholder[1] || 'title';
+			var handler = settings.getRelinker(category);
+			if (!handler) {
+				return undefined;
+			}
 			// This is a filter
 			var entry = handler.relink(match[1], fromTitle, toTitle, options);
 			if (entry !== undefined) {
