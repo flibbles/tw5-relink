@@ -81,27 +81,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 
 exports.makeTransclude = function(reference, template, options) {
 	var rtn;
-	if (!refHandler.canBePretty(reference.title) || !canBePrettyTemplate(reference.title)) {
-		// This block and the next account for the 1%...
-		var resultTitle = wrap(reference.title, options);
-		if (resultTitle === undefined) {
-			return undefined;
-		}
-		if (!canBePrettyTemplate(template)) {
-			var attrs = this.transcludeAttributes(reference.field, reference.index, options);
-			if (attrs === undefined) {
-				return undefined;
-			}
-			var resultTemplate = wrap(template, options);
-			if (resultTemplate === undefined) {
-				return undefined;
-			}
-			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
-		} else {
-			reference.title = undefined;
-			rtn = "<$tiddler tiddler="+resultTitle+">"+prettyTransclude(reference, template)+"</$tiddler>";
-		}
-	} else if (!canBePrettyTemplate(template)) {
+	if (!canBePrettyTemplate(template)) {
 		var resultTemplate = wrap(template, options);
 		if (resultTemplate === undefined) {
 			return undefined;
@@ -119,6 +99,14 @@ exports.makeTransclude = function(reference, template, options) {
 		} else {
 			rtn = "<$transclude tiddler="+resultTemplate+"/>";
 		}
+	} else if (!canBePrettyTitle(reference.title)) {
+		// This block and the next account for the 1%...
+		var resultTitle = wrap(reference.title, options);
+		if (resultTitle === undefined) {
+			return undefined;
+		}
+		reference.title = undefined;
+		rtn = "<$tiddler tiddler="+resultTitle+">"+prettyTransclude(reference, template)+"</$tiddler>";
 	} else {
 		// This block takes care of 99% of all cases
 		rtn = prettyTransclude(reference, template);
@@ -135,6 +123,10 @@ function wrap(tiddler, options) {
 		}
 	}
 	return result;
+};
+
+function canBePrettyTitle(value) {
+	return refHandler.canBePretty(value) && canBePrettyTemplate(value);
 };
 
 function canBePrettyTemplate(value) {

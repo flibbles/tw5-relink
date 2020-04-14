@@ -161,9 +161,9 @@ it('makeWidget with unpretty title and template', function() {
 	var template =  " C}} 'D\" ";
 	output = test({title: title}, template);
 	expect(output).toEqual(
-		utils.placeholder(1, $tw.utils.trim(title)) +
-		utils.placeholder(2, $tw.utils.trim(template)) +
-		"<$tiddler tiddler=<<relink-1>>><$transclude tiddler=<<relink-2>>/></$tiddler>");
+		utils.placeholder(1, $tw.utils.trim(template)) +
+		utils.placeholder(2, $tw.utils.trim(title)) +
+		"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>>/></$tiddler>");
 });
 
 it('transclude obeys rules', function() {
