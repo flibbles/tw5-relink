@@ -5,6 +5,9 @@ This handles all logging and alerts Relink emits.
 
 \*/
 
+var prettylink = require("$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js");
+var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
+
 exports.eachImpossible = function(rootEntry, method) {
 	if (rootEntry.children && rootEntry.children.length > 0) {
 		for (var i = 0; i < rootEntry.children.length; i++) {
@@ -84,10 +87,17 @@ exports.reportFailures = function(failureList, options) {
 		logger = new $tw.utils.Logger("Relinker");
 	}
 	var alertString = this.getString("Error/ReportFailedRelinks", options)
-	var reportList = failureList.map(function(f) {
-		return "\n* [[" + f + "]]"
-	}).join("");
-	logger.alert(alertString + "\n" + reportList);
+	var placeholder = new Placeholder(options);
+	var phOptions = $tw.utils.extend({placeholder: placeholder}, options);
+	var alreadyReported = Object.create(null);
+	var reportList = [];
+	$tw.utils.each(failureList, function(f) {
+		if (!alreadyReported[f]) {
+			reportList.push("\n* " + prettylink.makeLink(f, undefined, phOptions));
+			alreadyReported[f] = true;
+		}
+	});
+	logger.alert(placeholder.getPreamble() + alertString + "\n" + reportList.join(""));
 };
 
 exports.log = {
