@@ -2,3 +2,4 @@
 * Form validation for Relink configuration page. It no longer allows illegal input which may cause Relink to behave badly.
 * Improvements to demo site, including macro wikitext parameter example.
 * Fixed issue where invalid placeholder macros would cause RSoD.
+* Fixed issue where unsanitary prettylink captions could corrupt tiddler if downgraded into a widget link.

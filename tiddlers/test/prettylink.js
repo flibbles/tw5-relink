@@ -50,6 +50,34 @@ it('unpretty and without caption', function() {
 	expect(r.log).toEqual(["%cRenaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test' %cby converting it into a widget and creating placeholder macros"]);
 });
 
+it('has dangerous caption content', function() {
+	function wraps(caption, expected) {
+		testText("[["+caption+"|from here]]",
+	         "<$link to=to]]there>"+expected+"</$link>",
+	         {to: "to]]there"});
+	}
+	// doesn't require <$text />
+	wraps("Unsafe</$list>", "Unsafe</$list>");
+
+	// requires <$text>
+	wraps("Unsafe//caption", "<$text text='Unsafe//caption'/>");
+	wraps("back`tick", "<$text text=back`tick/>");
+	wraps("Unsafe<$link>", "<$text text='Unsafe<$link>'/>");
+	// This one is tricky. That close link will close the widget we must
+	// wrap the link in, but on its own, it renders same as plaintext.
+	wraps("Unsafe</$link>", "<$text text='Unsafe</$link>'/>");
+	// Another possibly tricky one. the <!-- might be inactive without -->
+	testText("[[D<!--|from here]] --> C",
+	         "<$link to=to]]there><$text text='D<!--'/></$link> --> C",
+	         {to: "to]]there"});
+});
+
+it('has dangerous and unquotable caption content', function() {
+	var caption = 'Misty\'s "{{crabshack}}"';
+	testText("[["+caption+"|from here]]",
+	         utils.placeholder("plaintext-1", caption)+"<$link to=to]]there><$text text=<<relink-plaintext-1>>/></$link>", {to: "to]]there"});
+});
+
 it('unquotable and unpretty', function() {
 	// We also have to go to to placeholders if title doesn't work for
 	// prettylinks or widgets.

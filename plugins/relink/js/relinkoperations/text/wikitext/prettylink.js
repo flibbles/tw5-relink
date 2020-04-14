@@ -48,16 +48,41 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		}
 	} else if (quoted = utils.wrapAttributeValue(toTitle)) {
 		entry.widget = true;
-		entry.output = "<$link to="+quoted+">"+caption+"</$link>";
+		var safeCaption = sanitizeCaption(caption, options);
+		if (safeCaption === undefined) {
+			entry.impossible = true;
+		} else {
+			entry.output = "<$link to="+quoted+">"+safeCaption+"</$link>";
+		}
 	} else if (options.placeholder) {
 		entry.placeholder = true;
 		entry.widget = true;
 		var ph = options.placeholder.getPlaceholderFor(toTitle);
-		entry.output = "<$link to=<<"+ph+">>>"+caption+"</$link>";
+		// We don't test if caption is undefined here, because it
+		// never will be. options.placeholder exists.
+		var safeCaption = sanitizeCaption(caption, options);
+		entry.output = "<$link to=<<"+ph+">>>"+safeCaption+"</$link>";
 	} else {
 		entry.impossible = true;
 	}
 	return entry;
+};
+
+function sanitizeCaption(caption, options) {
+	var plaintext = options.wiki.renderText("text/plain", "text/vnd.tiddlywiki", caption);
+	if (plaintext === caption && caption.indexOf("</$link>") <= 0) {
+		return caption;
+	} else {
+		var wrapped = utils.wrapAttributeValue(caption);
+		if (wrapped) {
+			return "<$text text="+wrapped+"/>";
+		} else if (options.placeholder) {
+			var ph = options.placeholder.getPlaceholderFor(caption, "plaintext");
+			return "<$text text=<<"+ph+">>/>";
+		} else {
+			return undefined;
+		}
+	}
 };
 
 function prettyLink(title, caption) {

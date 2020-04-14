@@ -170,6 +170,9 @@ it('field failures without placeholdering', function() {
 	// Prettylinks
 	fails("A [[from here]] link", {ignored: true, to: "A]]B"});
 	fails("A [[Caption|from here]] link", {ignored: true, to: "']] \""});
+	fails("A [[B'// \"\"\"|from here]] link", {ignored: true, to: "to]]there"});
+		// This one would have required placeholdering twice
+	fails("A [[B'// \"\"\"|from here]] link", {ignored: true, to: "to]]' there\""});
 	// Images
 	fails("[img[from here]]", {ignored: true, to: "']] \""});
 		// Tricky case. Even though we can't placeholder, we should

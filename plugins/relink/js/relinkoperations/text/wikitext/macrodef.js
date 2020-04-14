@@ -49,6 +49,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var match = valueRegExp.exec(text);
 		if (match) {
 			var category = placeholder[1] || 'title';
+			if (category === "plaintext") {
+				this.parser.pos += match[0].length;
+				return undefined;
+			}
 			var handler = settings.getRelinker(category);
 			if (!handler) {
 				return undefined;

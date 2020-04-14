@@ -65,6 +65,12 @@ it('wikitext', function() {
 	testText(macro("wikitext-1", "pretty [[from here]] link")+"Body");
 });
 
+it('plaintext', function() {
+	// Is allowed, but completely ignored
+	var m = macro("plaintext-1", "from [[from]] {{from}}");
+	testText(m+"[[from]]", m+"[[to there]]", {from: "from"});
+});
+
 it('does not crash when given invalid category', function() {
 	// Instead, it's just treated as wikitext
 	testText(macro("wrong-1", "[[from here]]")+"[[from here]]");
