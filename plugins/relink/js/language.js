@@ -93,7 +93,11 @@ exports.reportFailures = function(failureList, options) {
 	var reportList = [];
 	$tw.utils.each(failureList, function(f) {
 		if (!alreadyReported[f]) {
-			reportList.push("\n* " + prettylink.makeLink(f, undefined, phOptions));
+			if ($tw.browser) {
+				reportList.push("\n* " + prettylink.makeLink(f, undefined, phOptions));
+			} else {
+				reportList.push("\n* " + f);
+			}
 			alreadyReported[f] = true;
 		}
 	});
