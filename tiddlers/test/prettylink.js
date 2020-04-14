@@ -33,7 +33,7 @@ it('unpretty with caption', function() {
 	var r = testText("Link to [[caption|from here]].",
 	                 "Link to <$link to='to [bracks]'>caption</$link>.",
 	                 {to: "to [bracks]"});
-	expect(r.log).toEqual(["%cRenaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test' %cby converting it into a widget"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test'"]);
 	// double brackets in middle can also disqualify prettylinks
 	testText("Link to [[caption|from here]].",
 	         "Link to <$link to='bracks [[in]] middle'>caption</$link>.",
@@ -47,7 +47,7 @@ it('unpretty and without caption', function() {
 	                 utils.placeholder(1, "to [bracks]") +
 	                 "Link to <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link>.",
 	                 {to: "to [bracks]"});
-	expect(r.log).toEqual(["%cRenaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test' %cby converting it into a widget and creating placeholder macros"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test'"]);
 });
 
 it('has dangerous caption content', function() {
@@ -86,7 +86,7 @@ it('unquotable and unpretty', function() {
 	                utils.placeholder(1, to) +
 	                "Link to <$link to=<<relink-1>>>caption</$link>.",
 	                {to: to});
-	expect(r.log).toEqual(["%cRenaming 'from here' to '"+to+"' in prettylink of tiddler 'test' %cby converting it into a widget and creating placeholder macros"]);
+	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in prettylink of tiddler 'test'"]);
 });
 
 it('respects rules', function() {

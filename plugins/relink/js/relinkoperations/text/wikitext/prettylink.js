@@ -32,40 +32,38 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry = new PrettyLinkEntry();
 	entry.caption = caption;
 	entry.link = toTitle;
-	if (utils.canBePretty(toTitle)) {
-		entry.output = prettyLink(toTitle, caption);
-	} else if (caption === undefined) {
-		// If we don't have a caption, we have to resort to placeholders
-		// anyway to prevent link/caption desync from later relinks.
-		// It doesn't matter whether the toTitle is quotable
-		if (options.placeholder) {
-			entry.placeholder = true;
-			entry.widget = true;
-			var ph = options.placeholder.getPlaceholderFor(toTitle);
-			entry.output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
-		} else {
-			entry.impossible = true;
-		}
-	} else if (quoted = utils.wrapAttributeValue(toTitle)) {
-		entry.widget = true;
-		var safeCaption = sanitizeCaption(caption, options);
-		if (safeCaption === undefined) {
-			entry.impossible = true;
-		} else {
-			entry.output = "<$link to="+quoted+">"+safeCaption+"</$link>";
-		}
-	} else if (options.placeholder) {
-		entry.placeholder = true;
-		entry.widget = true;
-		var ph = options.placeholder.getPlaceholderFor(toTitle);
-		// We don't test if caption is undefined here, because it
-		// never will be. options.placeholder exists.
-		var safeCaption = sanitizeCaption(caption, options);
-		entry.output = "<$link to=<<"+ph+">>>"+safeCaption+"</$link>";
-	} else {
+	entry.output = this.makeLink(toTitle, caption, options);
+	if (entry.output === undefined) {
 		entry.impossible = true;
 	}
 	return entry;
+};
+
+exports.makeLink = function(tiddler, caption, options) {
+	var output;
+	if (utils.canBePretty(tiddler)) {
+		output = prettyLink(tiddler, caption);
+	} else if (caption === undefined) {
+		// If we don't have a caption, we have to resort to placeholders
+		// anyway to prevent link/caption desync from later relinks.
+		// It doesn't matter whether the tiddler is quotable
+		if (options.placeholder) {
+			var ph = options.placeholder.getPlaceholderFor(tiddler);
+			output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+		}
+	} else if (quoted = utils.wrapAttributeValue(tiddler)) {
+		var safeCaption = sanitizeCaption(caption, options);
+		if (safeCaption !== undefined) {
+			output = "<$link to="+quoted+">"+safeCaption+"</$link>";
+		}
+	} else if (options.placeholder) {
+		var ph = options.placeholder.getPlaceholderFor(tiddler);
+		// We don't test if caption is undefined here, because it
+		// never will be. options.placeholder exists.
+		var safeCaption = sanitizeCaption(caption, options);
+		output = "<$link to=<<"+ph+">>>"+safeCaption+"</$link>";
+	}
+	return output;
 };
 
 function sanitizeCaption(caption, options) {
