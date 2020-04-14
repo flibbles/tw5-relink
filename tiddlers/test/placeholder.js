@@ -73,7 +73,8 @@ it('plaintext', function() {
 
 it('does not crash when given invalid category', function() {
 	// Instead, it's just treated as wikitext
-	testText(macro("wrong-1", "[[from here]]")+"[[from here]]");
+	testText(macro("wrong-1", "[[from here]]")+"[[from here]]",
+	         macro("wrong-1", "[[from here]]")+"[[to there]]");
 });
 
 it('Windows newlines', function() {

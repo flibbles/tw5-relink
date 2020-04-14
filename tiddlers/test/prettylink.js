@@ -75,7 +75,7 @@ it('has dangerous caption content', function() {
 it('has dangerous and unquotable caption content', function() {
 	var caption = 'Misty\'s "{{crabshack}}"';
 	testText("[["+caption+"|from here]]",
-	         utils.placeholder("plaintext-1", caption)+"<$link to=to]]there><$text text=<<relink-plaintext-1>>/></$link>", {to: "to]]there"});
+	         utils.placeholder("caption-1", caption)+"<$link to=to]]there><$text text=<<relink-caption-1>>/></$link>", {to: "to]]there"});
 });
 
 it('unquotable and unpretty', function() {

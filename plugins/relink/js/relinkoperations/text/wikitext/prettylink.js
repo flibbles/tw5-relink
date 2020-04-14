@@ -75,7 +75,7 @@ function sanitizeCaption(caption, options) {
 		if (wrapped) {
 			return "<$text text="+wrapped+"/>";
 		} else if (options.placeholder) {
-			var ph = options.placeholder.getPlaceholderFor(caption, "plaintext");
+			var ph = options.placeholder.getPlaceholderFor(caption, "caption");
 			return "<$text text=<<"+ph+">>/>";
 		} else {
 			return undefined;
