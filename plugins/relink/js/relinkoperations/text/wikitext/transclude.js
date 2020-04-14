@@ -79,34 +79,31 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	return undefined;
 };
 
+/** This converts a reference and a template into a string representation
+ *  of a transclude.
+ */
 exports.makeTransclude = function(reference, template, options) {
 	var rtn;
 	if (!canBePrettyTemplate(template)) {
 		var resultTemplate = wrap(template, options);
-		if (resultTemplate === undefined) {
-			return undefined;
-		}
-		if (reference.title) {
-			var resultTitle = wrap(reference.title, options);
-			if (resultTitle === undefined) {
-				return undefined;
+		if (resultTemplate !== undefined) {
+			if (reference.title) {
+				var resultTitle = wrap(reference.title, options);
+				var attrs = transcludeAttributes(reference.field, reference.index, options);
+				if (resultTitle !== undefined && attrs !== undefined) {
+					rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
+				}
+			} else {
+				rtn = "<$transclude tiddler="+resultTemplate+"/>";
 			}
-			var attrs = this.transcludeAttributes(reference.field, reference.index, options);
-			if (attrs === undefined) {
-				return undefined;
-			}
-			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
-		} else {
-			rtn = "<$transclude tiddler="+resultTemplate+"/>";
 		}
 	} else if (!canBePrettyTitle(reference.title)) {
 		// This block and the next account for the 1%...
 		var resultTitle = wrap(reference.title, options);
-		if (resultTitle === undefined) {
-			return undefined;
+		if (resultTitle !== undefined) {
+			var reducedRef = {field: reference.field, index: reference.index};
+			rtn = "<$tiddler tiddler="+resultTitle+">"+prettyTransclude(reducedRef, template)+"</$tiddler>";
 		}
-		reference.title = undefined;
-		rtn = "<$tiddler tiddler="+resultTitle+">"+prettyTransclude(reference, template)+"</$tiddler>";
 	} else {
 		// This block takes care of 99% of all cases
 		rtn = prettyTransclude(reference, template);
@@ -137,7 +134,7 @@ function canBePrettyTemplate(value) {
  * only field or index should be used, not both, but both will return
  * the intuitive (albeit useless) result.
  */
-exports.transcludeAttributes = function(field, index, options) {
+function transcludeAttributes(field, index, options) {
 	var rtn = [
 		wrapAttribute("field", field, options),
 		wrapAttribute("index", index, options)
