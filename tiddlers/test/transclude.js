@@ -5,6 +5,8 @@ Tests transcludes.
 \*/
 
 var utils = require("test/utils");
+var transclude = require("$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/transclude.js");
+var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
 
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
@@ -87,7 +89,7 @@ it('rightly judges unpretty', function() {
 it('unpretty (degrades to widget)', function() {
 	var to = "curly {}";
 	function test(text, expected) {
-		testTextAndLog(text, to, expected, "by converting it into a widget");
+		testTextAndLog(text, to, expected);
 	}
 	test("{{from here}}.", "<$tiddler tiddler='"+to+"'>{{}}</$tiddler>.");
 	test("{{||from here}}.", "<$transclude tiddler='"+to+"'/>.");
@@ -108,13 +110,13 @@ it('unpretty (degrades to widget)', function() {
 it('unpretty, but the title is unquotable', function() {
 	var to = "curly {}";
 	var other = "a'\"";
-	testTextAndLog("{{"+other+"||from here}}.", to, utils.placeholder(1,other)+"<$tiddler tiddler=<<relink-1>>><$transclude tiddler='"+to+"'/></$tiddler>.", "by converting it into a widget and creating placeholder macros");
+	testTextAndLog("{{"+other+"||from here}}.", to, utils.placeholder(1,other)+"<$tiddler tiddler=<<relink-1>>><$transclude tiddler='"+to+"'/></$tiddler>.");
 });
 
 it('unpretty and unquotable', function() {
 	var to = "has {curly} 'apos' \"quotes\"";
 	function test(text, expected) {
-		testTextAndLog(text, to, expected, "by converting it into a widget and creating placeholder macros");
+		testTextAndLog(text, to, expected);
 	}
 	test("{{from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{}}</$tiddler>.");
 	test("{{||from here}}.", utils.placeholder(1,to)+"<$transclude tiddler=<<relink-1>>/>.");
@@ -134,6 +136,34 @@ it('unpretty and unquotable', function() {
 	test("{{a'\"||from here}}.", utils.placeholder(1,to)+utils.placeholder(2,other)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>>/></$tiddler>.");
 	// This case is so preposterous, I'm not sure I even want to cover it.
 	test("{{  "+other+"##"+index+"||from here  }}.", utils.placeholder(1,to)+utils.placeholder(2,other)+utils.placeholder("index-1",index)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>> index=<<relink-index-1>>/></$tiddler>.");
+});
+
+/** This test has to call the makeTemplate function directly because it's
+ *  impossible to hit this code path through renaming tiddlers.
+ *  When relinking, if both the title and template are unpretty, it's because
+ *  they're the same.
+ */
+it('makeWidget with unpretty title and template', function() {
+	function test(ref, template) {
+		var options = {wiki: new $tw.Wiki()};
+		var wiki = new $tw.Wiki();
+		options.placeholder = new Placeholder(options);
+		var rtn = transclude.makeTransclude(ref, template, options);
+		return options.placeholder.getPreamble() + rtn;
+	};
+	var output = test({title: "A}}B"}, "C}}D");
+	expect(output).toEqual("<$tiddler tiddler=A}}B><$transclude tiddler=C}}D/></$tiddler>");
+	output = test({title: "  A}}B  "}, "  C}}D  ");
+	expect(output).toEqual("<$tiddler tiddler=A}}B><$transclude tiddler=C}}D/></$tiddler>");
+	output = test({title: "  A}}B  ", field: "F"}, "  C}}D  ");
+	expect(output).toEqual("<$tiddler tiddler=A}}B><$transclude tiddler=C}}D field=F/></$tiddler>");
+	var title =  " A}} 'B\" ";
+	var template =  " C}} 'D\" ";
+	output = test({title: title}, template);
+	expect(output).toEqual(
+		utils.placeholder(1, $tw.utils.trim(title)) +
+		utils.placeholder(2, $tw.utils.trim(template)) +
+		"<$tiddler tiddler=<<relink-1>>><$transclude tiddler=<<relink-2>>/></$tiddler>");
 });
 
 it('transclude obeys rules', function() {

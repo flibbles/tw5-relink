@@ -46,108 +46,104 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match,
 		reference = m[1],
 		template = m[2],
-		quoted,
-		trimmedRef = $tw.utils.trim(reference),
-		ref = $tw.utils.parseTextReference(trimmedRef),
-		entry = new TranscludeEntry(),
-		rtn;
+		ref = $tw.utils.parseTextReference(reference),
+		entry = new TranscludeEntry();
 	entry.reference = ref;
 	entry.template = template;
 	this.parser.pos = this.matchRegExp.lastIndex;
-	// This block takes care of 99% of all cases
-	if (canBePrettyTemplate(toTitle) &&
-		// title part has one extra restriction
-	    (ref.title !== fromTitle || refHandler.canBePretty(toTitle))) {
-		var modified = false;
-		if (ref.title === fromTitle) {
-			modified = true;
-			ref.title = toTitle;
-			var refString = refHandler.toString(ref);
-			// preserve user's whitespace
-			reference = reference.replace(trimmedRef, refString);
-			entry.add({name: "reference"});
-		}
-		if ($tw.utils.trim(template) === fromTitle) {
-			modified = true;
-			// preserve user's whitespace
-			template = template.replace(fromTitle, toTitle);
-			entry.add({name: "template"});
-		}
-		if (modified) {
-			rtn = prettyTransclude(reference, template);
-		}
-	} else if (ref.title === fromTitle) {
-		// This block and the next account for the 1%...
-		entry.widget = true;
-		var resultTitle = utils.wrapAttributeValue(toTitle);
-		if (resultTitle === undefined) {
-			if (!options.placeholder) {
-				entry.impossible = true;
-				return entry;
-			}
-			resultTitle = "<<"+options.placeholder.getPlaceholderFor(toTitle)+">>";
-			entry.placeholder = true;
-		}
-		if ($tw.utils.trim(template) === fromTitle) {
-			// Now for this bizarre-ass use-case, where both the
-			// title and template are being replaced.
-			var attrs = this.transcludeAttributes(ref.field, ref.index, options);
-			if (attrs === undefined) {
-				entry.impossible = true;
-				return entry;
-			}
-			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTitle+attrs+"/></$tiddler>";
-		} else {
-			ref.title = undefined;
-			rtn = "<$tiddler tiddler="+resultTitle+">"+prettyTransclude(ref, template)+"</$tiddler>";
-		}
-	} else if ($tw.utils.trim(template) === fromTitle) {
-		var resultTemplate = utils.wrapAttributeValue(toTitle);
-		entry.widget = true;
-		if (resultTemplate === undefined) {
-			if (!options.placeholder) {
-				entry.impossible = true;
-				return entry;
-			}
-			resultTemplate = "<<"+options.placeholder.getPlaceholderFor(toTitle)+">>";
-			entry.placeholder = true;
-		}
-		if (ref.title) {
-			var resultTitle = utils.wrapAttributeValue(ref.title);
-			if (resultTitle === undefined) {
-				// This is one of the rare cases were we need
-				// to placeholder a title OTHER than the one
-				// we're changing.
-				if (!options.placeholder) {
-					entry.impossible = true;
-					return entry;
-				}
-				resultTitle = "<<"+options.placeholder.getPlaceholderFor(ref.title)+">>";
-				entry.placeholder = true;
-			}
-			var attrs = this.transcludeAttributes(ref.field, ref.index, options);
-			if (attrs === undefined) {
-				entry.impossible = true;
-				return entry;
-			}
-			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
-		} else {
-			rtn = "<$transclude tiddler="+resultTemplate+"/>";
-		}
+	var modified = false;
+	if ($tw.utils.trim(ref.title) === fromTitle) {
+		// preserve user's whitespace
+		ref.title = ref.title.replace(fromTitle, toTitle);
+		modified = true;
+		entry.add({name: "reference"});
 	}
-	if (rtn) {
-		// Adding any newline that might have existed is what allows
-		// this relink method to work for both the block and inline
-		// filter wikitext rule.
-		rtn = rtn + utils.getEndingNewline(m[0]);
-		entry.output = rtn;
+	if ($tw.utils.trim(template) === fromTitle) {
+		template = template.replace(fromTitle, toTitle);
+		modified = true;
+		entry.add({name: "template"});
+	}
+	if (modified) {
+		var output = this.makeTransclude(ref, template, options);
+		if (output) {
+			// Adding any newline that might have existed is
+			// what allows this relink method to work for both
+			// the block and inline filter wikitext rule.
+			output = output + utils.getEndingNewline(m[0]);
+			entry.output = output;
+		} else {
+			entry.impossible = true;
+		}
 		return entry;
 	}
 	return undefined;
 };
 
+exports.makeTransclude = function(reference, template, options) {
+	var rtn;
+	if (reference.title && (!refHandler.canBePretty(reference.title) || !canBePrettyTemplate(reference.title))) {
+		// This block and the next account for the 1%...
+		reference.title = $tw.utils.trim(reference.title);
+		var resultTitle = utils.wrapAttributeValue(reference.title);
+		if (resultTitle === undefined) {
+			if (!options.placeholder) {
+				return undefined;
+			}
+			resultTitle = "<<"+options.placeholder.getPlaceholderFor(reference.title)+">>";
+		}
+		if (!canBePrettyTemplate(template)) {
+			template = $tw.utils.trim(template);
+			var attrs = this.transcludeAttributes(reference.field, reference.index, options);
+			if (attrs === undefined) {
+				return undefined;
+			}
+			var resultTemplate = utils.wrapAttributeValue(template);
+			if (resultTemplate === undefined) {
+				if (!options.placeholder) {
+					return undefined;
+				}
+				resultTemplate = "<<" + options.placeholder.getPlaceholderFor(template) + ">>";
+			}
+			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
+		} else {
+			reference.title = undefined;
+			rtn = "<$tiddler tiddler="+resultTitle+">"+prettyTransclude(reference, template)+"</$tiddler>";
+		}
+	} else if (!canBePrettyTemplate(template)) {
+		template = $tw.utils.trim(template);
+		var resultTemplate = utils.wrapAttributeValue(template);
+		if (resultTemplate === undefined) {
+			if (!options.placeholder) {
+				return undefined;
+			}
+			resultTemplate = "<<"+options.placeholder.getPlaceholderFor(template)+">>";
+		}
+		if (reference.title) {
+			reference.title = $tw.utils.trim(reference.title);
+			var resultTitle = utils.wrapAttributeValue(reference.title);
+			if (resultTitle === undefined) {
+				if (!options.placeholder) {
+					return undefined;
+				}
+				resultTitle = "<<"+options.placeholder.getPlaceholderFor(reference.title)+">>";
+			}
+			var attrs = this.transcludeAttributes(reference.field, reference.index, options);
+			if (attrs === undefined) {
+				return undefined;
+			}
+			rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
+		} else {
+			rtn = "<$transclude tiddler="+resultTemplate+"/>";
+		}
+	} else {
+		// This block takes care of 99% of all cases
+		rtn = prettyTransclude(reference, template);
+	}
+	return rtn;
+};
+
 function canBePrettyTemplate(value) {
-	return value.indexOf('}') < 0 && value.indexOf('{') < 0 && value.indexOf('|') < 0;
+	return !value || (value.indexOf('}') < 0 && value.indexOf('{') < 0 && value.indexOf('|') < 0);
 };
 
 /**Returns attributes for a transclude widget.
