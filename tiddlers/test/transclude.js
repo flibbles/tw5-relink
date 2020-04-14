@@ -73,6 +73,10 @@ it('from titles with curlies', function() {
 	testText("{{has{curls}}} inline", {from: "has{curls}", ignored: true});
 });
 
+it('ignores malformed transcludes', function() {
+	testText("{{from here||}}", {ignored: true});
+});
+
 it('rightly judges unpretty', function() {
 	function testUnpretty(to) {
 		testText("{{from here}}.",

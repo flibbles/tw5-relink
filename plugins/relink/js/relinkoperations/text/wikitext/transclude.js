@@ -44,17 +44,14 @@ TranscludeEntry.prototype.report = function() {
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match,
-		reference = m[1],
+		reference = $tw.utils.parseTextReference(m[1]),
 		template = m[2],
-		ref = $tw.utils.parseTextReference(reference),
-		entry = new TranscludeEntry();
-	entry.reference = ref;
-	entry.template = template;
+		entry = new TranscludeEntry(),
+		modified = false;
 	this.parser.pos = this.matchRegExp.lastIndex;
-	var modified = false;
-	if ($tw.utils.trim(ref.title) === fromTitle) {
+	if ($tw.utils.trim(reference.title) === fromTitle) {
 		// preserve user's whitespace
-		ref.title = ref.title.replace(fromTitle, toTitle);
+		reference.title = reference.title.replace(fromTitle, toTitle);
 		modified = true;
 		entry.add({name: "reference"});
 	}
@@ -64,7 +61,9 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		entry.add({name: "template"});
 	}
 	if (modified) {
-		var output = this.makeTransclude(ref, template, options);
+		entry.reference = reference;
+		entry.template = template;
+		var output = this.makeTransclude(reference, template, options);
 		if (output) {
 			// Adding any newline that might have existed is
 			// what allows this relink method to work for both
