@@ -62,5 +62,5 @@ exports.toString = function(textReference) {
 };
 
 exports.canBePretty = function(title)  {
-	return title.indexOf("!!") < 0 && title.indexOf("##") < 0;
+	return !title || (title.indexOf("!!") < 0 && title.indexOf("##") < 0);
 };

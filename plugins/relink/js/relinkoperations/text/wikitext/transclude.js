@@ -81,7 +81,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 
 exports.makeTransclude = function(reference, template, options) {
 	var rtn;
-	if (reference.title && (!refHandler.canBePretty(reference.title) || !canBePrettyTemplate(reference.title))) {
+	if (!refHandler.canBePretty(reference.title) || !canBePrettyTemplate(reference.title)) {
 		// This block and the next account for the 1%...
 		var resultTitle = wrap(reference.title, options);
 		if (resultTitle === undefined) {
