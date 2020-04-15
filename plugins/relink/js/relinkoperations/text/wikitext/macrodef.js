@@ -62,11 +62,15 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				macroEntry.add(entry);
 				this.parser.pos += match[0].length;
 				if (entry.output) {
-					macroEntry.output = "\\define "+m[1]+"() "+entry.output+match[2];
+					macroEntry.output = this.makePlaceholder(m[1], entry.output+match[2]);
 				}
 				return macroEntry;
 			}
 		}
 	}
 	return undefined;
+};
+
+exports.makePlaceholder = function(name, content) {
+	return "\\define " + name + "() " + content;
 };
