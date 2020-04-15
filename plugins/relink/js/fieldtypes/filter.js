@@ -130,7 +130,6 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 					}
 
 					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]";
-					entry.placeholder = true;
 				}
 				if (newVal[0] != '[') {
 					// not bracket enclosed
@@ -281,7 +280,6 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					}
 					var ph = options.placeholder.getPlaceholderFor(result.output, handler.name);
 					wrapped = "<"+ph+">";
-					result.placeholder = true;
 				} else {
 					wrapped = "["+result.output+"]";
 				}

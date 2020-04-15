@@ -38,7 +38,7 @@ it('tricky downgrade', function() {
 	var r = testText("\\import [[from here]]\nstuff",
 	         utils.placeholder(1,to)+"\\import [<relink-1>]\nstuff",
 	         {to: to});
-	expect(r.log).toEqual(["%cRenaming 'from here' to '"+to+"' in \\import filter of tiddler 'test' %cby creating placeholder macros"]);
+	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in \\import filter of tiddler 'test'"]);
 });
 
 });

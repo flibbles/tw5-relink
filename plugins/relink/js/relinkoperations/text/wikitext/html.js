@@ -103,7 +103,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 					} else {
 						var value = options.placeholder.getPlaceholderFor(entry.output,handler.name)
 						quotedValue = "<<"+value+">>";
-						attrEntry.placeholder = true;
 					}
 				}
 			}

@@ -47,7 +47,7 @@ it('filter', function() {
 		macro("filter-1","[title[from here]]")+"Tiddler body",
 		macro(1,"to[]this")+macro("filter-1","[title<relink-1>]")+"Tiddler body",
 		{to: "to[]this"});
-	expect(r.log).toEqual([`%cRenaming 'from here' to 'to[]this' in relink-filter-1 definition of tiddler 'test' %cby creating placeholder macros`]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to[]this' in relink-filter-1 definition of tiddler 'test'"]);
 });
 
 it('list', function() {

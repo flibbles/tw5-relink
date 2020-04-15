@@ -18,7 +18,5 @@ EntryNode.newType = function(name) {
 };
 
 EntryNode.prototype.add = function(entry) {
-	this.placeholder = this.placeholder || entry.placeholder;
-	this.widget = this.widget || entry.widget;
 	this.children.push(entry);
 };

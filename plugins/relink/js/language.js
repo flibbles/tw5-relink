@@ -39,18 +39,6 @@ exports.logAll = function(entry, title, from, to, options) {
 
 exports.logRelink = function(raw, args, title, from, to, options) {
 	raw = "Renaming '"+from+"' to '"+to+"' in " + raw + " of tiddler '"+title+"'";
-	if (args.placeholder) {
-		if (args.widget) {
-			raw = raw + " %cby converting it into a widget and creating placeholder macros";
-		} else {
-			raw = raw + " %cby creating placeholder macros";
-		}
-	} else if (args.widget) {
-		raw = raw + " %cby converting it into a widget";
-	}
-	if (args.pretty) {
-		raw = raw + " %cby converting it into a prettylink";
-	}
 	// This is cheap, but whatevs. To do a proper
 	// rendering would require working through a wiki
 	// object. Too heavy weight for log messages.
@@ -59,14 +47,9 @@ exports.logRelink = function(raw, args, title, from, to, options) {
 		if (key === "field") {
 			value = descriptor(value);
 		};
-		return value || ("<<"+key+">>"); });
-	if (raw.indexOf('%c') >= 0) {
-		// Doing a little bit of bold so the user sees
-		// where we had to jump through hoops.
-		console.log("%c" + msg, "", "font-weight: bold;");
-	} else {
-		console.log(msg);
-	}
+		return value || ("<<"+key+">>");
+	});
+	console.log(msg);
 };
 
 // This wraps alert so it can be monkeypatched during testing.
@@ -79,7 +62,6 @@ exports.getString = function(title, options) {
 	return options.wiki.renderTiddler("text/plain", title, options);
 };
 
-exports.failureAlert = "Relink was unable to update the following tiddlers due to the complexity of the title:";
 var logger;
 
 exports.reportFailures = function(failureList, options) {
