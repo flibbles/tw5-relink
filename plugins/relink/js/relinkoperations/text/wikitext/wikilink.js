@@ -25,24 +25,26 @@ WikilinkEntry.prototype.report = function() {
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry = undefined;
 	this.parser.pos = this.matchRegExp.lastIndex;
-	if (this.match[0] === fromTitle && this.match[0][0] !== '~') {
+	if (this.match[0] === fromTitle && this.match[0][0] !== $tw.config.textPrimitives.unWikiLink) {
 		entry = new WikilinkEntry();
 		entry.link = fromTitle;
-		if (toTitle.match(this.matchRegExp) && toTitle[0] !== '~') {
-			entry.output = toTitle;
-		} else if (utils.canBePretty(toTitle)) {
-			entry.pretty = true;
-			entry.output = "[[" + toTitle + "]]";
-		} else {
-			if (options.placeholder) {
-				var ph = options.placeholder.getPlaceholderFor(toTitle);
-				entry.placeholder = true;
-				entry.widget = true;
-				entry.output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
-			} else {
-				entry.impossible = true;
-			}
+		entry.output = this.makeWikilink(toTitle, options);
+		if (entry.output === undefined) {
+			entry.impossible = true;
 		}
 	}
 	return entry;
+};
+
+exports.makeWikilink = function(title, options) {
+	var rtn = undefined;
+	if (title.match(this.matchRegExp) && title[0] !== $tw.config.textPrimitives.unWikiLink) {
+		rtn = title;
+	} else if (utils.canBePretty(title)) {
+		rtn = "[[" + title + "]]";
+	} else if (options.placeholder) {
+		var ph = options.placeholder.getPlaceholderFor(title);
+		rtn = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+	}
+	return rtn;
 };
