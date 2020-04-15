@@ -109,11 +109,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 					if (quotedValue === undefined) {
 						var key = options.placeholder.getPlaceholderFor(toTitle);
 						builder.add("source=<<"+key+">>", ptr, ptr+fromTitle.length);
-						entry.placeholder = true;
-						entry.widget = true;
 					} else {
 						builder.add("source="+quotedValue, ptr, ptr+fromTitle.length);
-						entry.widget = true;
 					}
 				} else if (!skipSource) {
 					builder.add(toTitle, ptr, ptr+fromTitle.length);
