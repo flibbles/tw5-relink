@@ -22,35 +22,34 @@ var MacrocallEntry = EntryNode.newType("macrocall");
 MacrocallEntry.prototype.report = function() {
 	var macro = this.macro;
 	var output = [];
-	$tw.utils.each(this.children, function(child) {
-		$tw.utils.each(child.report(), function(report) {
-			output.push("<<" + macro + " " + report + ">>");
+	$tw.utils.each(this.parameters, function(child, parameter) {
+		// This means we had a definition lookup error. I may want to
+		// do something more elaborate here later.
+		if (child.impossible) {
+			return;
+		}
+		var reports = child.report ? child.report() : [""];
+		$tw.utils.each(reports, function(report) {
+			var rtn;
+			if (report.length > 0) {
+				rtn = parameter + ': "' + report + '"';
+			} else {
+				rtn = parameter;
+			}
+			output.push("<<" + macro + " " + rtn + ">>");
 		});
 	});
 	return output;
 };
 
-var MacroparamEntry = EntryNode.newType("macroparam");
+MacrocallEntry.prototype.eachChild = function(method) {
+	for (var parameter in this.parameters) {
+		method(this.parameters[parameter]);
+	}
+};
 
-MacroparamEntry.prototype.report = function() {
-	var child = this.children[0];
-	if (!child) {
-		// This means we had a definition lookup error. I may want to
-		// do something more elaborate here later.
-		return [];
-	}
-	if (child.report) {
-		var parameter = this.parameter;
-		return child.report().map(function(report) {
-			if (report.length > 0) {
-				return parameter + ': "' + report + '"';
-			} else {
-				return parameter;
-			}
-		});
-	} else {
-		return [this.parameter];
-	}
+MacrocallEntry.prototype.addParameter = function(parameter, entry) {
+	this.parameters[parameter] = entry;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -127,16 +126,15 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 	}
 	var outMacro = $tw.utils.extend({}, macro);
 	var macroEntry = new MacrocallEntry();
+	macroEntry.parameters = Object.create(null);
 	outMacro.params = macro.params.slice();
 	for (var managedArg in managedMacro) {
 		var index;
-		var paramEntry = new MacroparamEntry();
 		try {
 			index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);
 		} catch (e) {
 			if (e instanceof CannotFindMacroDefError) {
-				paramEntry.impossible = true;
-				macroEntry.add(paramEntry);
+				macroEntry.addParameter(managedArg, {name: "macroparam", impossible: true});
 				continue;
 			}
 		}
@@ -152,9 +150,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		if (entry === undefined) {
 			continue;
 		}
-		paramEntry.add(entry);
-		paramEntry.parameter = managedArg;
-		macroEntry.add(paramEntry);
+		macroEntry.addParameter(managedArg, entry);
 		if (!entry.output) {
 			continue;
 		}
@@ -163,7 +159,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		var newParam = $tw.utils.extend({}, param);
 		if (quoted === undefined) {
 			if (!mayBeWidget || !options.placeholder) {
-				paramEntry.impossible = true;
+				entry.impossible = true;
 				continue;
 			}
 			var ph = options.placeholder.getPlaceholderFor(entry.output,handler.name);
@@ -177,7 +173,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		outMacro.params[index] = newParam;
 		modified = true;
 	}
-	if (macroEntry.children.length > 0) {
+	if (Object.keys(macroEntry.parameters).length > 0) {
 		macroEntry.macro = macro.name;
 		if (modified) {
 			macroEntry.output = outMacro;

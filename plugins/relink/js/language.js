@@ -9,10 +9,10 @@ var prettylink = require("$:/plugins/flibbles/relink/js/relinkoperations/text/wi
 var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
 
 exports.eachImpossible = function(rootEntry, method) {
-	if (rootEntry.children && rootEntry.children.length > 0) {
-		for (var i = 0; i < rootEntry.children.length; i++) {
-			exports.eachImpossible.call(this, rootEntry.children[i], method);
-		}
+	if (rootEntry.eachChild) {
+		rootEntry.eachChild(function(child) {
+			exports.eachImpossible.call(this, child, method);
+		});
 	}
 	if (rootEntry.impossible) {
 		method(rootEntry);
@@ -28,12 +28,10 @@ exports.logAll = function(entry, title, from, to, options) {
 		exports.logRelink(raw, entry, title, from, to, options);
 		return;
 	}
-	if (!entry.children) {
-		return;
-	}
-	for (var i = 0; i < entry.children.length; i++) {
-		var args = entry.children[i];
-		exports.logAll(args, title, from, to, options);
+	if (entry.eachChild) {
+		entry.eachChild(function(child) {
+			exports.logAll(child, title, from, to, options);
+		});
 	}
 };
 

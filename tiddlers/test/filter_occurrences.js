@@ -121,6 +121,8 @@ it("macrocall when missing definition", function() {
 	};
 	testMacro("<<test title:from>>", ["<<test title>>"]);
 	testMacro("<<test from>>", []);
+	// One possible, one not.
+	testMacro("<<test title:from from>>", ["<<test title>>"]);
 });
 
 it("images", function() {
