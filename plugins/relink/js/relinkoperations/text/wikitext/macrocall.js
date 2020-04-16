@@ -23,7 +23,7 @@ CannotFindMacroDef.prototype.report = function() { return []; };
 
 var MacrocallEntry = EntryNode.newCollection("macrocall");
 
-MacrocallEntry.prototype.reportChild = function(report, parameter, type) {
+MacrocallEntry.prototype.forEachChildReport = function(report, parameter, type) {
 	var rtn;
 	if (report.length > 0) {
 		rtn = parameter + ': "' + report + '"';
@@ -157,7 +157,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		outMacro.params[index] = newParam;
 		modified = true;
 	}
-	if (macroEntry.isModified()) {
+	if (macroEntry.hasChildren()) {
 		macroEntry.macro = macro.name;
 		if (modified) {
 			macroEntry.output = outMacro;

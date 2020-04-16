@@ -21,8 +21,8 @@ exports.name = "html";
 
 var HtmlEntry = EntryNode.newCollection("html");
 
-HtmlEntry.prototype.reportChild = function(report, name, type) {
-	var rtn = name;
+HtmlEntry.prototype.forEachChildReport = function(report, attribute, type) {
+	var rtn = attribute;
 	if (type === "filtered") {
 		rtn += "={{{" + report + "}}}";
 	} else if (type === "indirect") {
@@ -133,7 +133,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		processImportFilter(importFilterAttr, this.parser, options);
 	}
 	this.parser.pos = this.nextTag.end;
-	if (widgetEntry.isModified()) {
+	if (widgetEntry.hasChildren()) {
 		widgetEntry.output = builder.results(this.nextTag.end);
 		return widgetEntry;
 	}

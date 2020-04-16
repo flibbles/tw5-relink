@@ -65,16 +65,16 @@ EntryCollection.prototype.report = function() {
 		if (child.report) {
 			var reports = child.report();
 			for (var i = 0; i < reports.length; i++) {
-				output.push(this.reportChild(reports[i], name, type));
+				output.push(this.forEachChildReport(reports[i], name, type));
 			}
 		} else {
-			output.push(this.reportChild('', name, type));
+			output.push(this.forEachChildReport('', name, type));
 
 		}
 	}
 	return output;
 };
 
-EntryCollection.prototype.isModified = function() {
+EntryCollection.prototype.hasChildren = function() {
 	return Object.keys(this.children).length > 0;
 };

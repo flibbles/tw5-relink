@@ -20,7 +20,7 @@ exports.name = "image";
 
 var ImageEntry = EntryNode.newCollection("image");
 
-ImageEntry.prototype.reportChild = function(report, attribute, type) {
+ImageEntry.prototype.forEachChildReport = function(report, attribute, type) {
 	var value;
 	if (attribute === "source") {
 		if (this.tooltip) {
@@ -117,7 +117,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		}
 	}
 	this.parser.pos = ptr;
-	if (imageEntry.isModified()) {
+	if (imageEntry.hasChildren()) {
 		imageEntry.output = builder.results(ptr);
 		return imageEntry;
 	}
@@ -127,13 +127,14 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, options) {
 	var text = builder.text;
 	var ptr = text.indexOf(attribute.name, attribute.start);
+	var end;
 	ptr += attribute.name.length;
 	ptr = text.indexOf('=', ptr);
 	if (attribute.type === "string") {
 		ptr = text.indexOf(attribute.value, ptr)
 		var quote = utils.determineQuote(text, attribute);
 		// ignore first quote. We already passed it
-		ptr += quote.length + attribute.value.length;
+		end = ptr + quote.length + attribute.value.length;
 	} else if (attribute.type === "indirect") {
 		ptr = text.indexOf('{{', ptr);
 		var end = ptr + attribute.textReference.length + 4;
@@ -144,7 +145,6 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 				builder.add("{{"+ref.output+"}}", ptr, end);
 			}
 		}
-		ptr = end;
 	} else if (attribute.type === "filtered") {
 		ptr = text.indexOf('{{{', ptr);
 		var end = ptr + attribute.filter.length + 6;
@@ -156,7 +156,6 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 				builder.add(quoted, ptr, end);
 			}
 		}
-		ptr = end;
 	} else if (attribute.type === "macro") {
 		ptr = text.indexOf("<<", ptr);
 		var end = attribute.value.end;
@@ -169,9 +168,8 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 				builder.add(macroEntry.output, ptr, end);
 			}
 		}
-		ptr = end;
 	}
-	return ptr;
+	return end;
 };
 
 function canBePretty(title, tooltip) {
