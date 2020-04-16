@@ -24,23 +24,10 @@ var HtmlEntry = EntryNode.newType("html");
 HtmlEntry.prototype.report = function() {
 	var element = this.element;
 	var output = [];
-	$tw.utils.each(this.children, function(child) {
-		$tw.utils.each(child.report(), function(report) {
-			output.push("<" + element + " " + report + " />");
-		});
-	});
-	return output;
-};
-
-var AttributeEntry = EntryNode.newType("attribute");
-
-AttributeEntry.prototype.report = function() {
-	var child = this.children[0];
-	if (child.report) {
-		var type = this.type;
-		var attribute = this.attribute;
-		var output = [];
-		return child.report().map(function(report) {
+	$tw.utils.each(this.attributes, function(child, attribute) {
+		var type = child.type;
+		var reports = child.report ? child.report() : [""];
+		$tw.utils.each(reports, function(report) {
 			var rtn = attribute;
 			if (type === "filtered") {
 				rtn += "={{{" + report + "}}}";
@@ -54,7 +41,31 @@ AttributeEntry.prototype.report = function() {
 					rtn += '="' + report + '"';
 				}
 			}
-			return rtn;
+			output.push("<" + element + " " + rtn + " />");
+		});
+	});
+	return output;
+};
+
+HtmlEntry.prototype.eachChild = function(method) {
+	for (var attribute in this.attributes) {
+		method(this.attributes[attribute]);
+	}
+};
+
+HtmlEntry.prototype.addAttribute = function(attribute, entry) {
+	this.attributes[attribute] = entry;
+};
+
+var AttributeEntry = EntryNode.newType("attribute");
+
+AttributeEntry.prototype.report = function() {
+	var child = this.children[0];
+	if (child.report) {
+		var type = this.type;
+		var attribute = this.attribute;
+		var output = [];
+		return child.report().map(function(report) {
 		});
 	} else {
 		return [this.attribute];
@@ -66,6 +77,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		builder = new Rebuilder(text, this.nextTag.start);
 	var importFilterAttr;
 	var widgetEntry = new HtmlEntry();
+	widgetEntry.attributes = Object.create(null);
+	widgetEntry.element = this.nextTag.tag;
 	for (var attributeName in this.nextTag.attributes) {
 		var attr = this.nextTag.attributes[attributeName];
 		var nextEql = text.indexOf('=', attr.start);
@@ -78,8 +91,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
 			importFilterAttr = attr;
 		}
-		var oldLength, quotedValue, entry,
-			attrEntry = new AttributeEntry();
+		var oldLength, quotedValue, entry;
 		if (attr.type === "string") {
 			var handler = getAttributeHandler(this.nextTag, attributeName, options);
 			if (!handler) {
@@ -99,7 +111,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 					// a macro in order to replace it.
 					if (!options.placeholder) {
 						// but we can't...
-						attrEntry.impossible = true;
+						entry.impossible = true;
 					} else {
 						var value = options.placeholder.getPlaceholderFor(entry.output,handler.name)
 						quotedValue = "<<"+value+">>";
@@ -138,12 +150,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				quotedValue = entry.output;
 			}
 		}
-		attrEntry.add(entry);
-		attrEntry.element = this.nextTag.tag,
-		widgetEntry.element = this.nextTag.tag,
-		attrEntry.attribute = attributeName
-		attrEntry.type = attr.type;
-		widgetEntry.add(attrEntry);
+		entry.type = attr.type;
+		widgetEntry.addAttribute(attributeName, entry);
 		if (quotedValue === undefined) {
 			continue;
 		}
@@ -160,7 +168,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		processImportFilter(importFilterAttr, this.parser, options);
 	}
 	this.parser.pos = this.nextTag.end;
-	if (widgetEntry.children.length > 0) {
+	if (Object.keys(widgetEntry.attributes).length > 0) {
 		widgetEntry.output = builder.results(this.nextTag.end);
 		return widgetEntry;
 	}

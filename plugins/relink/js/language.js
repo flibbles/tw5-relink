@@ -85,7 +85,7 @@ exports.reportFailures = function(failureList, options) {
 };
 
 exports.log = {
-	"attribute": "<<<element>> <<attribute>> /> attribute",
+	"html": "<<<element>> /> element",
 	"field": "<<field>>",
 	"filteredtransclude": "filtered transclusion",
 	"image": "image",
