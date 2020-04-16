@@ -232,6 +232,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 			operator.operator = "title";
 		}
 
+		var entry;
 		var operatorEntry = new OperatorEntry();
 		operatorEntry.operator = operator;
 
@@ -240,14 +241,14 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 			case "{": // Curly brackets
 				nextBracketPos = filterString.indexOf("}",p);
 				var operand = filterString.substring(p,nextBracketPos);
-				var refEntry = refHandler.relinkInBraces(operand, fromTitle, toTitle, options);
-				if (refEntry) {
-					if (refEntry.output) {
+				entry = refHandler.relinkInBraces(operand, fromTitle, toTitle, options);
+				if (entry) {
+					if (entry.output) {
 						// We don't check the whitelist.
 						// All indirect operands convert.
-						relinker.add(refEntry.output,p,nextBracketPos);
+						relinker.add(entry.output,p,nextBracketPos);
 					}
-					operatorEntry.add(refEntry);
+					operatorEntry.add(entry);
 					operatorEntry.type = "indirect";
 					logger.add(operatorEntry);
 				}
@@ -261,30 +262,30 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					// This operator isn't managed. Bye.
 					break;
 				}
-				var result = handler.relink(operand, fromTitle, toTitle, options);
-				if (!result) {
+				entry = handler.relink(operand, fromTitle, toTitle, options);
+				if (!entry) {
 					// The fromTitle wasn't in the operand.
 					break;
 				}
-				if (!result.output) {
-					logger.add(result);
+				if (!entry.output) {
+					logger.add(entry);
 					break;
 				}
 				var wrapped;
-				if (!canBePrettyOperand(result.output)) {
+				if (!canBePrettyOperand(entry.output)) {
 					if (!options.placeholder) {
-						delete result.output;
-						result.impossible = true;
-						logger.add(result);
+						delete entry.output;
+						entry.impossible = true;
+						logger.add(entry);
 						break;
 					}
-					var ph = options.placeholder.getPlaceholderFor(result.output, handler.name);
+					var ph = options.placeholder.getPlaceholderFor(entry.output, handler.name);
 					wrapped = "<"+ph+">";
 				} else {
-					wrapped = "["+result.output+"]";
+					wrapped = "["+entry.output+"]";
 				}
 				relinker.add(wrapped, p-1, nextBracketPos+1);
-				operatorEntry.add(result);
+				operatorEntry.add(entry);
 				operatorEntry.type = "string";
 				logger.add(operatorEntry);
 				break;
