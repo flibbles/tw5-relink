@@ -15,42 +15,24 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 exports.name = ["macrocallinline", "macrocallblock"];
 
 // Error thrown when a macro's definition is needed, but can't be found.
-function CannotFindMacroDefError() {};
+var CannotFindMacroDef = EntryNode.newType("macroparam");
+CannotFindMacroDef.prototype.impossible = true;
+// Failed relinks due to missing definitions aren't reported for now.
+// I may want to do something special later on.
+CannotFindMacroDef.prototype.report = function() { return []; };
 
-var MacrocallEntry = EntryNode.newType("macrocall");
+var MacrocallEntry = EntryNode.newCollection("macrocall");
 
-MacrocallEntry.prototype.report = function() {
-	var macro = this.macro;
-	var output = [];
-	$tw.utils.each(this.parameters, function(child, parameter) {
-		// This means we had a definition lookup error. I may want to
-		// do something more elaborate here later.
-		if (child.impossible) {
-			return;
-		}
-		var reports = child.report ? child.report() : [""];
-		$tw.utils.each(reports, function(report) {
-			var rtn;
-			if (report.length > 0) {
-				rtn = parameter + ': "' + report + '"';
-			} else {
-				rtn = parameter;
-			}
-			output.push("<<" + macro + " " + rtn + ">>");
-		});
-	});
-	return output;
-};
-
-MacrocallEntry.prototype.eachChild = function(method) {
-	for (var parameter in this.parameters) {
-		method(this.parameters[parameter]);
+MacrocallEntry.prototype.reportChild = function(report, parameter, type) {
+	var rtn;
+	if (report.length > 0) {
+		rtn = parameter + ': "' + report + '"';
+	} else {
+		rtn = parameter;
 	}
+	return "<<" + this.macro + " " + rtn + ">>";
 };
 
-MacrocallEntry.prototype.addParameter = function(parameter, entry) {
-	this.parameters[parameter] = entry;
-};
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	// Get all the details of the match
@@ -133,8 +115,8 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		try {
 			index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, parser, options);
 		} catch (e) {
-			if (e instanceof CannotFindMacroDefError) {
-				macroEntry.addParameter(managedArg, {name: "macroparam", impossible: true});
+			if (e instanceof CannotFindMacroDef) {
+				macroEntry.addChild(e);
 				continue;
 			}
 		}
@@ -150,7 +132,9 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		if (entry === undefined) {
 			continue;
 		}
-		macroEntry.addParameter(managedArg, entry);
+		// Macro parameters can only be string parameters, not
+		// indirect, or macro, or filtered
+		macroEntry.addChild(entry, managedArg, "string");
 		if (!entry.output) {
 			continue;
 		}
@@ -173,7 +157,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 		outMacro.params[index] = newParam;
 		modified = true;
 	}
-	if (Object.keys(macroEntry.parameters).length > 0) {
+	if (macroEntry.isModified()) {
 		macroEntry.macro = macro.name;
 		if (modified) {
 			macroEntry.output = outMacro;
@@ -270,7 +254,7 @@ function getParamIndexWithinMacrocall(macroName, param, params, parser, options)
 function indexOfParameterDef(macroName, paramName, parser, options) {
 	var def = getDefinition(macroName, parser, options);
 	if (def === undefined) {
-		throw new CannotFindMacroDefError();
+		throw new CannotFindMacroDef();
 	}
 	var params = def.params || [];
 	for (var i = 0; i < params.length; i++) {

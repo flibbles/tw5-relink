@@ -18,48 +18,28 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "image";
 
-var ImageEntry = EntryNode.newType("image");
+var ImageEntry = EntryNode.newCollection("image");
 
-ImageEntry.prototype.report = function() {
-	var output = [];
-	var self = this;
-	$tw.utils.each(this.attributes, function(child, attribute) {
-		var value;
-		if (attribute === "source") {
-			var tooltip = "";
-			if (self.tooltip) {
-				tooltip = self.tooltip.value;
-			}
-			output.push("[img["+tooltip+"]]");
+ImageEntry.prototype.reportChild = function(report, attribute, type) {
+	var value;
+	if (attribute === "source") {
+		if (this.tooltip) {
+			value = "[img[" + this.tooltip.value + "]]";
 		} else {
-			var reports = child.report ? child.report() : [""];
-			var type = child.type;
-			$tw.utils.each(reports, function(report) {
-				var value;
-				if (type === "indirect") {
-					value = "{{" + report + "}}";
-				} else if (type === "filtered") {
-					value = "{{{" + report + "}}}";
-				} else if (type === "macro") {
-					// angle brackets already added...
-					value = report;
-				}
-				value = " " + attribute + "=" + value;
-				output.push("[img" + value + "]");
-			});
+			value = "[img[]]";
 		}
-	});
-	return output;
-};
-
-ImageEntry.prototype.eachChild = function(method) {
-	for (var attribute in this.attributes) {
-		method(this.attributes[attribute]);
+	} else {
+		if (type === "indirect") {
+			value = "{{" + report + "}}";
+		} else if (type === "filtered") {
+			value = "{{{" + report + "}}}";
+		} else if (type === "macro") {
+			// angle brackets already added...
+			value = report;
+		}
+		value = "[img " + attribute + "="+ value + "]";
 	}
-};
-
-ImageEntry.prototype.addAttribute = function(attribute, entry) {
-	this.attributes[attribute] = entry;
+	return value;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -118,7 +98,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				} else {
 					entry.impossible = true;
 				}
-				imageEntry.addAttribute(attributeName, entry);
+				imageEntry.addChild(entry, attributeName, "string");
 			}
 			ptr = text.indexOf(']]', ptr);
 			if (makeWidget) {
@@ -137,7 +117,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		}
 	}
 	this.parser.pos = ptr;
-	if (Object.keys(imageEntry.attributes).length > 0) {
+	if (imageEntry.isModified()) {
 		imageEntry.output = builder.results(ptr);
 		return imageEntry;
 	}
@@ -159,8 +139,7 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 		var end = ptr + attribute.textReference.length + 4;
 		var ref = refHandler.relinkInBraces(attribute.textReference, fromTitle, toTitle, options);
 		if (ref) {
-			ref.type = "indirect";
-			entry.addAttribute(attribute.name, ref);
+			entry.addChild(ref, attribute.name, "indirect");
 			if (ref.output) {
 				builder.add("{{"+ref.output+"}}", ptr, end);
 			}
@@ -171,10 +150,8 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 		var end = ptr + attribute.filter.length + 6;
 		var filter = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, options);
 		if (filter !== undefined) {
-			filter.type = "filtered";
-			entry.addAttribute(attribute.name, filter);
+			entry.addChild(filter, attribute.name, "filtered");
 			if (filter.output) {
-				attribute.filter = filter.output;
 				var quoted = "{{{"+filter.output+"}}}";
 				builder.add(quoted, ptr, end);
 			}
@@ -187,8 +164,7 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 		oldValue = attribute.value;
 		var macroEntry = macrocall.relinkAttribute(macro, text, parser, fromTitle, toTitle, options);
 		if (macroEntry !== undefined) {
-			macroEntry.type = "macro";
-			entry.addAttribute(attribute.name, macroEntry);
+			entry.addChild(macroEntry, attribute.name, "macro");
 			if (macroEntry.output) {
 				builder.add(macroEntry.output, ptr, end);
 			}

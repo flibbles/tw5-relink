@@ -19,57 +19,23 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "html";
 
-var HtmlEntry = EntryNode.newType("html");
+var HtmlEntry = EntryNode.newCollection("html");
 
-HtmlEntry.prototype.report = function() {
-	var element = this.element;
-	var output = [];
-	$tw.utils.each(this.attributes, function(child, attribute) {
-		var type = child.type;
-		var reports = child.report ? child.report() : [""];
-		$tw.utils.each(reports, function(report) {
-			var rtn = attribute;
-			if (type === "filtered") {
-				rtn += "={{{" + report + "}}}";
-			} else if (type === "indirect") {
-				rtn += "={{" + report + "}}";
-			} else if (type === "macro") {
-				rtn += "="+report;
-			} else{
-				// must be string.
-				if (report.length > 0) {
-					rtn += '="' + report + '"';
-				}
-			}
-			output.push("<" + element + " " + rtn + " />");
-		});
-	});
-	return output;
-};
-
-HtmlEntry.prototype.eachChild = function(method) {
-	for (var attribute in this.attributes) {
-		method(this.attributes[attribute]);
+HtmlEntry.prototype.reportChild = function(report, name, type) {
+	var rtn = name;
+	if (type === "filtered") {
+		rtn += "={{{" + report + "}}}";
+	} else if (type === "indirect") {
+		rtn += "={{" + report + "}}";
+	} else if (type === "macro") {
+		rtn += "="+report;
+	} else{
+		// must be string.
+		if (report.length > 0) {
+			rtn += '="' + report + '"';
+		}
 	}
-};
-
-HtmlEntry.prototype.addAttribute = function(attribute, entry) {
-	this.attributes[attribute] = entry;
-};
-
-var AttributeEntry = EntryNode.newType("attribute");
-
-AttributeEntry.prototype.report = function() {
-	var child = this.children[0];
-	if (child.report) {
-		var type = this.type;
-		var attribute = this.attribute;
-		var output = [];
-		return child.report().map(function(report) {
-		});
-	} else {
-		return [this.attribute];
-	}
+	return "<" + this.element + " " + rtn + " />";
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -150,8 +116,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				quotedValue = entry.output;
 			}
 		}
-		entry.type = attr.type;
-		widgetEntry.addAttribute(attributeName, entry);
+		widgetEntry.addChild(entry, attributeName, attr.type);
 		if (quotedValue === undefined) {
 			continue;
 		}
@@ -168,7 +133,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		processImportFilter(importFilterAttr, this.parser, options);
 	}
 	this.parser.pos = this.nextTag.end;
-	if (Object.keys(widgetEntry.attributes).length > 0) {
+	if (widgetEntry.isModified()) {
 		widgetEntry.output = builder.results(this.nextTag.end);
 		return widgetEntry;
 	}

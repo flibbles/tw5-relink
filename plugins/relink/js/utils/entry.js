@@ -28,3 +28,53 @@ EntryNode.prototype.eachChild = function(method) {
 EntryNode.prototype.add = function(entry) {
 	this.children.push(entry);
 };
+
+function EntryCollection() {
+	EntryNode.apply(this, arguments);
+	this.children = Object.create(null);
+	this.types = Object.create(null);
+};
+
+EntryCollection.prototype = Object.create(EntryNode.prototype);
+
+EntryNode.newCollection = function(name) {
+	function NewCollection() {
+		EntryCollection.apply(this, arguments);
+	};
+	NewCollection.prototype = Object.create(EntryCollection.prototype);
+	NewCollection.prototype.name = name;
+	return NewCollection;
+};
+
+EntryCollection.prototype.eachChild = function(method) {
+	for (var child in this.children) {
+		method(this.children[child]);
+	}
+};
+
+EntryCollection.prototype.addChild = function(child, name, type) {
+	this.children[name] = child;
+	this.types[name] = type;
+};
+
+EntryCollection.prototype.report = function() {
+	var output = [];
+	for (var name in this.children) {
+		var child = this.children[name];
+		var type = this.types[name];
+		if (child.report) {
+			var reports = child.report();
+			for (var i = 0; i < reports.length; i++) {
+				output.push(this.reportChild(reports[i], name, type));
+			}
+		} else {
+			output.push(this.reportChild('', name, type));
+
+		}
+	}
+	return output;
+};
+
+EntryCollection.prototype.isModified = function() {
+	return Object.keys(this.children).length > 0;
+};
