@@ -22,43 +22,44 @@ var ImageEntry = EntryNode.newType("image");
 
 ImageEntry.prototype.report = function() {
 	var output = [];
-	$tw.utils.each(this.children, function(child) {
-		$tw.utils.each(child.report(), function(report) {
-			output.push("[img" + report + "]");
-		});
+	var self = this;
+	$tw.utils.each(this.attributes, function(child, attribute) {
+		var value;
+		if (attribute === "source") {
+			var tooltip = "";
+			if (self.tooltip) {
+				tooltip = self.tooltip.value;
+			}
+			output.push("[img["+tooltip+"]]");
+		} else {
+			var reports = child.report ? child.report() : [""];
+			var type = child.type;
+			$tw.utils.each(reports, function(report) {
+				var value;
+				if (type === "indirect") {
+					value = "{{" + report + "}}";
+				} else if (type === "filtered") {
+					value = "{{{" + report + "}}}";
+				} else if (type === "macro") {
+					// angle brackets already added...
+					value = report;
+				}
+				value = " " + attribute + "=" + value;
+				output.push("[img" + value + "]");
+			});
+		}
 	});
 	return output;
 };
 
-var ImageAttrEntry = EntryNode.newType("imageattr");
+ImageEntry.prototype.eachChild = function(method) {
+	for (var attribute in this.attributes) {
+		method(this.attributes[attribute]);
+	}
+};
 
-ImageAttrEntry.prototype.report = function() {
-	if (this.attribute === "source") {
-		if (this.tooltip) {
-			var tooltip = this.tooltip.value;
-			return ["["+tooltip+"]"];
-		} else {
-			return ["[]"];
-		}
-	}
-	var reports = [''];
-	var type = this.type;
-	var attribute = this.attribute;
-	if (this.children[0].report) {
-		reports = this.children[0].report();
-	}
-	return reports.map(function(report) {
-		var value;
-		if (type === "indirect") {
-			value = "{{" + report + "}}";
-		} else if (type === "filtered") {
-			value = "{{{" + report + "}}}";
-		} else if (type === "macro") {
-			// angle brackets already added...
-			value = report;
-		}
-		return " " + attribute + "=" + value;
-	});
+ImageEntry.prototype.addAttribute = function(attribute, entry) {
+	this.attributes[attribute] = entry;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -67,6 +68,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var makeWidget = false;
 	var skipSource = false;
 	var imageEntry = new ImageEntry();
+	imageEntry.attributes = Object.create(null);
 	if (this.nextImage.attributes.source.value === fromTitle && !canBePretty(toTitle, this.nextImage.attributes.tooltip)) {
 		if (utils.wrapAttributeValue(toTitle) || options.placeholder) {
 			makeWidget = true;
@@ -82,7 +84,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	ptr += 4; //[img
 	var inSource = false;
 	for (var attributeName in this.nextImage.attributes) {
-		var attrEntry = new ImageAttrEntry();
 		var attr = this.nextImage.attributes[attributeName];
 		if (attributeName === "source" || attributeName === "tooltip") {
 			if (inSource) {
@@ -117,8 +118,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				} else {
 					entry.impossible = true;
 				}
-				attrEntry.add(entry);
-				attrEntry.tooltip = this.nextImage.attributes.tooltip;
+				imageEntry.addAttribute(attributeName, entry);
 			}
 			ptr = text.indexOf(']]', ptr);
 			if (makeWidget) {
@@ -131,16 +131,13 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				var quotedValue = utils.wrapAttributeValue(attr.value);
 				builder.add("tooltip="+quotedValue, ptr, ptr+attr.value.length);
 			}
+			imageEntry.tooltip = this.nextImage.attributes.tooltip;
 		} else {
-			ptr = relinkAttribute(attr, this.parser, builder, fromTitle, toTitle, attrEntry, options);
-		}
-		if (attrEntry.children.length > 0) {
-			attrEntry.attribute = attributeName;
-			imageEntry.add(attrEntry);
+			ptr = relinkAttribute(attr, this.parser, builder, fromTitle, toTitle, imageEntry, options);
 		}
 	}
 	this.parser.pos = ptr;
-	if (imageEntry.children.length > 0) {
+	if (Object.keys(imageEntry.attributes).length > 0) {
 		imageEntry.output = builder.results(ptr);
 		return imageEntry;
 	}
@@ -152,7 +149,6 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 	var ptr = text.indexOf(attribute.name, attribute.start);
 	ptr += attribute.name.length;
 	ptr = text.indexOf('=', ptr);
-	entry.type = attribute.type;
 	if (attribute.type === "string") {
 		ptr = text.indexOf(attribute.value, ptr)
 		var quote = utils.determineQuote(text, attribute);
@@ -163,7 +159,8 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 		var end = ptr + attribute.textReference.length + 4;
 		var ref = refHandler.relinkInBraces(attribute.textReference, fromTitle, toTitle, options);
 		if (ref) {
-			entry.add(ref);
+			ref.type = "indirect";
+			entry.addAttribute(attribute.name, ref);
 			if (ref.output) {
 				builder.add("{{"+ref.output+"}}", ptr, end);
 			}
@@ -174,7 +171,8 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 		var end = ptr + attribute.filter.length + 6;
 		var filter = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, options);
 		if (filter !== undefined) {
-			entry.add(filter);
+			filter.type = "filtered";
+			entry.addAttribute(attribute.name, filter);
 			if (filter.output) {
 				attribute.filter = filter.output;
 				var quoted = "{{{"+filter.output+"}}}";
@@ -189,7 +187,8 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 		oldValue = attribute.value;
 		var macroEntry = macrocall.relinkAttribute(macro, text, parser, fromTitle, toTitle, options);
 		if (macroEntry !== undefined) {
-			entry.add(macroEntry);
+			macroEntry.type = "macro";
+			entry.addAttribute(attribute.name, macroEntry);
 			if (macroEntry.output) {
 				builder.add(macroEntry.output, ptr, end);
 			}
