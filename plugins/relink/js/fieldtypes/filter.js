@@ -22,10 +22,12 @@ FilterEntry.prototype.report = function() {
 
 var OperatorEntry = EntryNode.newType("operator");
 
+OperatorEntry.prototype.eachChild = function(method) { method(this.child); }
+
 OperatorEntry.prototype.report = function() {
 	var operand = "";
-	if (this.children[0].report) {
-		operand = this.children[0].report();
+	if (this.child.report) {
+		operand = this.child.report();
 	}
 	var op = this.operator;
 	var brackets = '[]';
@@ -232,28 +234,23 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 			operator.operator = "title";
 		}
 
-		var entry;
-		var operatorEntry = new OperatorEntry();
-		operatorEntry.operator = operator;
+		var entry, type;
 
 		p = nextBracketPos + 1;
 		switch (bracket) {
 			case "{": // Curly brackets
+				type = "indirect";
 				nextBracketPos = filterString.indexOf("}",p);
 				var operand = filterString.substring(p,nextBracketPos);
 				entry = refHandler.relinkInBraces(operand, fromTitle, toTitle, options);
-				if (entry) {
-					if (entry.output) {
-						// We don't check the whitelist.
-						// All indirect operands convert.
-						relinker.add(entry.output,p,nextBracketPos);
-					}
-					operatorEntry.add(entry);
-					operatorEntry.type = "indirect";
-					logger.add(operatorEntry);
+				if (entry && entry.output) {
+					// We don't check the whitelist.
+					// All indirect operands convert.
+					relinker.add(entry.output,p,nextBracketPos);
 				}
 				break;
 			case "[": // Square brackets
+				type = "string";
 				nextBracketPos = filterString.indexOf("]",p);
 				var operand = filterString.substring(p,nextBracketPos);
 				// Check if this is a relevant operator
@@ -268,7 +265,6 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					break;
 				}
 				if (!entry.output) {
-					logger.add(entry);
 					break;
 				}
 				var wrapped;
@@ -276,7 +272,6 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					if (!options.placeholder) {
 						delete entry.output;
 						entry.impossible = true;
-						logger.add(entry);
 						break;
 					}
 					var ph = options.placeholder.getPlaceholderFor(entry.output, handler.name);
@@ -285,9 +280,6 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					wrapped = "["+entry.output+"]";
 				}
 				relinker.add(wrapped, p-1, nextBracketPos+1);
-				operatorEntry.add(entry);
-				operatorEntry.type = "string";
-				logger.add(operatorEntry);
 				break;
 			case "<": // Angle brackets
 				nextBracketPos = filterString.indexOf(">",p);
@@ -303,6 +295,13 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					return undefined;
 				}
 				break;
+		}
+		if (entry) {
+			var operatorEntry = new OperatorEntry();
+			operatorEntry.operator = operator;
+			operatorEntry.type = type;
+			operatorEntry.child = entry;
+			logger.add(operatorEntry);
 		}
 
 		if(nextBracketPos === -1) {
