@@ -46,6 +46,11 @@ it("wikiLinks", function() {
 	test({text: "Text WikiFrom stuff", from: "WikiFrom"}, ["~WikiFrom"]);
 });
 
+it("syslinks", function() {
+	test({text: "Text $:/sys/link stuff", from: "$:/sys/link"},
+	     ["~$:/sys/link"]);
+});
+
 it("html", function() {
 	test({text: "<$link to='from' />"}, ["<$link to />"]);
 	test({text: "<$text text={{from}} />"}, ["<$text text={{}} />"]);

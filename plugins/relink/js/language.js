@@ -94,6 +94,7 @@ exports.log = {
 	"import": "\\import filter",
 	"macrodef": "<<macro>> definition",
 	"prettylink": "prettylink",
+	"syslink": "syslink",
 	"transclude": "transclusion",
 	"wikilink": "CamelCase link",
 };
