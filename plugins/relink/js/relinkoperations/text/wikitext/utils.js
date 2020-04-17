@@ -78,12 +78,6 @@ function wrap(value, wrapper) {
 	}
 };
 
-/**Return true if value can be used inside a prettylink.
- */
-exports.canBePretty = function(value) {
-	return value.indexOf("]]") < 0 && value[value.length-1] !== ']';
-};
-
 exports.canBePrettyOperand = function(value) {
 	return value.indexOf(']') < 0;
 };
