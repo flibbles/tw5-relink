@@ -13,6 +13,7 @@ but not:
 
 var utils = require("./utils.js");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
+var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js');
 
 exports.name = "syslink";
 
@@ -37,15 +38,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 };
 
 exports.makeSyslink = function(title, options) {
-	var rtn = undefined;
 	var match = title.match(this.matchRegExp);
 	if (match && match[0] === title && title[0] !== "~") {
-		rtn = title;
-	} else if (utils.canBePretty(title)) {
-		rtn = "[[" + title + "]]";
-	} else if (options.placeholder) {
-		var ph = options.placeholder.getPlaceholderFor(title);
-		rtn = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+		return title;
+	} else {
+		return prettylink.makeLink(title, undefined, options);
 	}
-	return rtn;
 };
