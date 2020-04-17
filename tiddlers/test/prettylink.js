@@ -5,6 +5,7 @@ Tests prettylinks.
 \*/
 
 var utils = require("test/utils");
+var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js');
 
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
@@ -41,13 +42,29 @@ it('unpretty with caption', function() {
 });
 
 it('unpretty and without caption', function() {
+	testText("Link to [[from here]].", "Link to <$link to=A]]B/>.",
+	         {to: "A]]B"});
+	var unquotable =  "very' bad]]title\"";
 	// without a caption, we have to go straight to placeholders weird,
 	// or we might desync the link with its caption with later name changes.
 	var r = testText("Link to [[from here]].",
-	                 utils.placeholder(1, "to [bracks]") +
-	                 "Link to <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link>.",
-	                 {to: "to [bracks]"});
-	expect(r.log).toEqual(["Renaming 'from here' to 'to [bracks]' in prettylink of tiddler 'test'"]);
+	                 utils.placeholder(1,unquotable) +
+	                 "Link to <$link to=<<relink-1>>/>.",
+	                 {to: unquotable});
+	expect(r.log).toEqual(["Renaming 'from here' to '"+unquotable+"' in prettylink of tiddler 'test'"]);
+});
+
+it('unpretty, without caption, and pre 5.1.20', function() {
+	// without a caption, we have to go straight to placeholders in <5.1.20,
+	// It doesn't fill in <$link to="tiddler" /> with the caption of
+	// "tiddler". Also, we must placeholder both caption and "to", or else
+	// we might desync the link with its caption with later name changes.
+	utils.monkeyPatch(prettylink, "shorthandSupported", () => false, function() {
+		testText("Link to [[from here]].",
+		         utils.placeholder(1, "to [bracks]") +
+		         "Link to <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link>.",
+		         {to: "to [bracks]"});
+	});
 });
 
 it('has dangerous caption content', function() {

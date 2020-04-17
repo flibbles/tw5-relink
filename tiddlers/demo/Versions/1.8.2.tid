@@ -1,0 +1,1 @@
+* If prettylinks must downgraade, they take advantage of Tiddlywiki's 5.1.20's shorthand link syntax if it's available (i.e. `<$link to="tiddler"/>` eqv `<$link to="tiddler">tiddler</$link>`)

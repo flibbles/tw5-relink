@@ -21,7 +21,7 @@ exports.name = "prettylink";
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
-	var caption, quoted, m = this.match;
+	var caption, m = this.match;
 	if (m[2] === fromTitle) {
 		// format is [[caption|MyTiddler]]
 		caption = m[1];
@@ -40,16 +40,28 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 };
 
 exports.makeLink = function(tiddler, caption, options) {
-	var output;
+	var output, quoted;
 	if (utils.canBePretty(tiddler)) {
 		output = prettyLink(tiddler, caption);
 	} else if (caption === undefined) {
-		// If we don't have a caption, we have to resort to placeholders
-		// anyway to prevent link/caption desync from later relinks.
-		// It doesn't matter whether the tiddler is quotable
-		if (options.placeholder) {
-			var ph = options.placeholder.getPlaceholderFor(tiddler);
-			output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+		if (exports.shorthandSupported(options)) {
+			quoted = utils.wrapAttributeValue(tiddler);
+			if (!quoted) {
+				if (!options.placeholder) {
+					return undefined;
+				}
+				quoted = "<<" + options.placeholder.getPlaceholderFor(tiddler) + ">>";
+			}
+			output = "<$link to="+quoted+"/>";
+		} else {
+			// If we don't have a caption, we must resort to
+			// placeholders anyway to prevent link/caption desync
+			// from later relinks.
+			// It doesn't matter whether the tiddler is quotable.
+			if (options.placeholder) {
+				var ph = options.placeholder.getPlaceholderFor(tiddler);
+				output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
+			}
 		}
 	} else if (quoted = utils.wrapAttributeValue(tiddler)) {
 		var safeCaption = sanitizeCaption(caption, options);
@@ -64,6 +76,20 @@ exports.makeLink = function(tiddler, caption, options) {
 		output = "<$link to=<<"+ph+">>>"+safeCaption+"</$link>";
 	}
 	return output;
+};
+
+/**In version 5.1.20, Tiddlywiki made it so <$link to"something" /> would
+ * use "something" as a caption. This is preferable. However, Relink works
+ * going back to 5.1.14, so we need to have different handling for both
+ * cases.
+ */
+var _supported;
+exports.shorthandSupported = function(options) {
+	if (_supported === undefined) {
+		var test = options.wiki.renderText("text/plain", "text/vnd.tiddlywiki", "<$link to=test/>");
+		_supported = (test === "test");
+	}
+	return _supported;
 };
 
 function sanitizeCaption(caption, options) {

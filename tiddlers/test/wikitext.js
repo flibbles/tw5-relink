@@ -5,6 +5,7 @@ Tests the new relinking wiki methods.
 \*/
 
 var utils = require("test/utils");
+var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js');
 
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
@@ -168,8 +169,11 @@ it('field failures without placeholdering', function() {
 	// Wikilink
 	fails("Link FromHere.", {ignored: true, from: "FromHere", to:"']] \""});
 	// Prettylinks
-	fails("A [[from here]] link", {ignored: true, to: "A]]B"});
-	fails("A [[Caption|from here]] link", {ignored: true, to: "']] \""});
+	fails("A [[from here]] link", {ignored: true, to: "'A]]B \""});
+	fails("A [[Caption|from here]] link", {ignored: true, to: "'A]]B \""});
+	utils.monkeyPatch(prettylink, "shorthandSupported", () => false, function() {
+		fails("A [[from here]] link", {ignored: true, to: "A]]B"});
+	});
 	fails("A [[B'// \"\"\"|from here]] link", {ignored: true, to: "to]]there"});
 		// This one would have required placeholdering twice
 	fails("A [[B'// \"\"\"|from here]] link", {ignored: true, to: "to]]' there\""});

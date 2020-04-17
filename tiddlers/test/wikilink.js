@@ -41,9 +41,9 @@ it('altered unWikiLink char', function() {
 });
 
 it('tricky cases', function() {
-	var tricky = "has [[brackets]]";
+	var tricky = "bad' title]]\"";
 	var macro = utils.placeholder;
-	var r = testText("A WikiLink please", macro(1,tricky)+"A <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link> please", {to: tricky});
+	var r = testText("A WikiLink please", macro(1,tricky)+"A <$link to=<<relink-1>>/> please", {to: tricky});
 	expect(r.log).toEqual(["Renaming 'WikiLink' to '"+tricky+"' in CamelCase link of tiddler 'test'"]);
 });
 

@@ -35,9 +35,9 @@ it('rules pragma', function() {
 });
 
 it('tricky cases', function() {
-	var tricky = "has [[brackets]]";
+	var tricky = "bad' title]]\"";
 	var macro = utils.placeholder;
-	var r = testText("A $:/sys/link please", macro(1,tricky)+"A <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link> please", {to: tricky});
+	var r = testText("A $:/sys/link please", macro(1,tricky)+"A <$link to=<<relink-1>>/> please", {to: tricky});
 });
 
 });

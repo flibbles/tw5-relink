@@ -63,10 +63,15 @@ it("pretty titles", function() {
 });
 
 it("unpretty titles", function() {
-	var message = testAlert(new $tw.Wiki(), ["Unpre]]y"], true);
-	var preamble = "\\define relink-1() Unpre]]y\n";
+	var message = testAlert(new $tw.Wiki(), ["Pre]]y"], true);
+	expect(message).toContain("<$link to=Pre]]y/>");
+});
+
+it("unquotable titles", function() {
+	var message = testAlert(new $tw.Wiki(), ["Unpre']]y\""], true);
+	var preamble = "\\define relink-1() Unpre']]y\"\n";
 	expect(message.substr(0, preamble.length)).toEqual(preamble);
-	expect(message).toContain("<$link to=<<relink-1>>><$text text=<<relink-1>>/></$link>");
+	expect(message).toContain("<$link to=<<relink-1>>/>");
 });
 
 it("prints simple if not on browser", function() {
