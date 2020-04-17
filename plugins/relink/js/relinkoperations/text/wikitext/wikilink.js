@@ -19,7 +19,7 @@ exports.name = "wikilink";
 var WikilinkEntry = EntryNode.newType("wikilink");
 
 WikilinkEntry.prototype.report = function() {
-	return ["~" + this.link];
+	return [$tw.config.textPrimitives.unWikiLink + this.link];
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {

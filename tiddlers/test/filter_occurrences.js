@@ -44,6 +44,9 @@ it("prettylinks", function() {
 
 it("wikiLinks", function() {
 	test({text: "Text WikiFrom stuff", from: "WikiFrom"}, ["~WikiFrom"]);
+	utils.monkeyPatch($tw.config.textPrimitives, "unWikiLink", "%", function() {
+		test({text: "Text WikiFrom stuff", from: "WikiFrom"}, ["%WikiFrom"]);
+	});
 });
 
 it("syslinks", function() {
