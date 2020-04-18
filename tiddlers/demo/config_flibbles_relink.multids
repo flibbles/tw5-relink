@@ -3,7 +3,7 @@ title: $:/config/flibbles/relink/
 fields/description: wikitext
 fields/example-filter: filter
 fields/example-list: list
-fields/example-single: title
+fields/example-title: title
 fields/example-wikitext: wikitext
 macros/link-to-tab/tab: title
 macros/link-to-tab/tiddler: title
