@@ -4,8 +4,8 @@ title: $:/plugins/flibbles/relink/ui/TiddlerInfo/ReferencesTemplate
 <td class="tc-relink-references-title">
 <$link to=<<listItem>>/>
 </td>
-<td class="tc-relink-references-occurrence">
-<$list filter="[<listItem>relink:occurrences<currentTiddler>]">
+<td class="tc-relink-references-report">
+<$list filter="[<listItem>relink:report<currentTiddler>]">
 
 <$text text=<<currentTiddler>> />
 </$list>

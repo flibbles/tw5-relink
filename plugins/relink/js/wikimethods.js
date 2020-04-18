@@ -11,17 +11,17 @@ $tw.modules.applyMethods('relinkoperator', relinkOperations);
 /** Returns a pair like this,
  *  { title: {field: entry, ... }, ... }
  */
-exports.getRelinkableTiddlers = function(fromTitle, toTitle, options) {
+exports.getRelinkReport = function(fromTitle, toTitle, options) {
 	var cache = this.getGlobalCache("relink-"+fromTitle, function() {
 		return Object.create(null);
 	});
 	if (!cache[toTitle]) {
-		cache[toTitle] = getFreshRelinkableTiddlers(this, fromTitle, toTitle, options);
+		cache[toTitle] = getFreshRelinkReport(this, fromTitle, toTitle, options);
 	}
 	return cache[toTitle];
 };
 
-function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
+function getFreshRelinkReport(wiki, fromTitle, toTitle, options) {
 	options = options || {};
 	options.wiki = options.wiki || wiki;
 	fromTitle = (fromTitle || "").trim();
@@ -76,6 +76,7 @@ exports.getRelinkableTitles = function() {
 
 var ImportVariablesWidget = require("$:/core/modules/widgets/importvariables.js").importvariables;
 
+// Meant for internal use and is subject to change.
 exports.relinkGlobalMacros = function() {
 	if (!this._relinkWidget) {
 		var importWidget = this.relinkGenerateVariableWidget( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
@@ -91,6 +92,7 @@ exports.relinkGlobalMacros = function() {
 	return rtn;
 };
 
+// Meant for internal use and is subject to change
 exports.relinkGenerateVariableWidget = function(filter, parent) {
 	var treeNode = { attributes: {
 		"filter": {

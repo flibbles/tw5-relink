@@ -31,7 +31,7 @@ exports.startup = function() {
 function relinkTiddler(fromTitle, toTitle, options) {
 	var self = this;
 	var failures = [];
-	var records = this.getRelinkableTiddlers(fromTitle, toTitle, options);
+	var records = this.getRelinkReport(fromTitle, toTitle, options);
 	for (var title in records) {
 		var entries = records[title];
 		var changes = Object.create(null);

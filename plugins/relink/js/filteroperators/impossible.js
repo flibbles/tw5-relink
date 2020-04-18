@@ -19,7 +19,7 @@ exports.impossible = function(source,operator,options) {
 	var to = operator.operand,
 		results = [];
 	if (from) {
-		var records = options.wiki.getRelinkableTiddlers(
+		var records = options.wiki.getRelinkReport(
 			from, to, options);
 		source(function(tiddler, title) {
 			var fields = records[title];

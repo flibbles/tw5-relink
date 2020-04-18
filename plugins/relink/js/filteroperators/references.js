@@ -18,7 +18,7 @@ exports.references = function(source,operator,options) {
 	var fromTitle = operator.operand,
 		results = [];
 	if (fromTitle) {
-		var records = options.wiki.getRelinkableTiddlers(
+		var records = options.wiki.getRelinkReport(
 			fromTitle, "$:/plugins/flibbles/relink/dummy", options);
 		for (var title in records) {
 			results.push(title);

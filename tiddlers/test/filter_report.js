@@ -13,7 +13,7 @@ function test(fields, expectedArray, extraTiddlers) {
 	wiki.addTiddlers(utils.setupTiddlers());
 	wiki.addTiddlers(extraTiddlers || []);
 	wiki.addTiddler(tiddler);
-	var output = wiki.filterTiddlers("[["+tiddler.title+"]relink:occurrences["+fromTitle+"]]");
+	var output = wiki.filterTiddlers("[["+tiddler.title+"]relink:report["+fromTitle+"]]");
 	expect(output).toEqual(expectedArray);
 };
 
