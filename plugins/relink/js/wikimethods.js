@@ -28,8 +28,7 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 	toTitle = (toTitle || "").trim();
 	var changeList = Object.create(null);
 	if(fromTitle && toTitle) {
-		var toUpdate = getRelinkFilter(wiki);
-		var tiddlerList = toUpdate.call(wiki); // no source or widget
+		var tiddlerList = wiki.getRelinkableTitles();
 		for (var i = 0; i < tiddlerList.length; i++) {
 			var title = tiddlerList[i];
 			var tiddler = wiki.getTiddler(title);
@@ -62,17 +61,17 @@ function getFreshRelinkableTiddlers(wiki, fromTitle, toTitle, options) {
 	return changeList;
 };
 
-function getRelinkFilter(wiki) {
+exports.getRelinkableTitles = function() {
 	var toUpdate = "$:/config/flibbles/relink/to-update";
-	return wiki.getCacheForTiddler(toUpdate, "relink-toUpdate", function() {
-		var tiddler = wiki.getTiddler(toUpdate);
+	var self = this;
+	return this.getCacheForTiddler(toUpdate, "relink-toUpdate", function() {
+		var tiddler = self.getTiddler(toUpdate);
 		if (tiddler) {
-			var filter = wiki.compileFilter(tiddler.fields.text);
-			return filter;
+			return self.compileFilter(tiddler.fields.text);
 		} else {
-			return wiki.allTitles;
+			return self.allTitles;
 		}
-	});
+	})();
 };
 
 var ImportVariablesWidget = require("$:/core/modules/widgets/importvariables.js").importvariables;

@@ -16,6 +16,7 @@ function testConfig(options, /* tiddler objects */) {
 	options.wiki.addTiddlers(Array.prototype.slice.call(arguments, 1));
 	var results = utils.relink(tiddlerObj, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
+	return results;
 };
 
 it("handles getting no configuration at all", function() {
@@ -33,6 +34,18 @@ it("properly ignores tiddlers outside of to-update", function() {
 
 it("to-update handles non-existent tiddlers", function() {
 	testConfig({}, utils.toUpdateConf("test non-existent"));
+});
+
+it("properly updates to-update cached list on any change", function() {
+	var wiki = new $tw.Wiki();
+	expect(wiki.getRelinkableTitles().indexOf("new")).toBeLessThan(0);
+	wiki.addTiddler({title: "new"});
+	expect(wiki.getRelinkableTitles()).toContain("new");
+
+	wiki.addTiddler(utils.toUpdateConf("[tag[relink]]"));
+	expect(wiki.getRelinkableTitles().length).toEqual(0);
+	wiki.addTiddler({title: "next", tags: "relink"});
+	expect(wiki.getRelinkableTitles()).toContain("next");
 });
 
 var shadowTiddler = "$:/plugins/flibbles/test/tiddler";
@@ -129,20 +142,26 @@ it('can filter for all impossible tiddlers', function() {
 		wiki.addTiddlers([
 			{title: "$:/plugins/flibbles/relink/language/Error/RelinkFilterOperator", text: "This text is pulled"},
 			{title: "from"},
-			{title: "A", list: "from"},
+			{title: "A", text: "{{{[tag{from}]}}}"},
 			{title: "B"},
 			{title: "C", text: "[[from]]"}
 		]);
+		var widget = wiki.makeWidget( { tree: [{type: "widget"}]} );
+		widget.setVariable("currentTiddler", "from");
+		widget.execute();
+		while (widget.children.length > 0) {
+			widget = widget.children[0];
+		}
 		var warn = utils.collect("warn", function() {
 			var log = utils.collect("log", function() {
-				result = wiki.filterTiddlers(filter);
+				result = wiki.filterTiddlers(filter, widget);
 			});
 			expect(log).toEqual([]);
 		});
 		expect(warn).toEqual([]);
 		expect(result).toEqual(expected);
 	};
-	test("'bad]] t' +[relink:impossible[from]]", ["A"]);
+	test("[relink:impossible[to}this]]", ["A"]);
 	test("[relink:references[from]]", ["A", "C"]);
 	test("[relink:nonexistent[]]", ["This text is pulled"]);
 });

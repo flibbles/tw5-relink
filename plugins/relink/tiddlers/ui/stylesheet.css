@@ -26,3 +26,7 @@
 	padding-left: 25px;
 	vertical-align: top;
 }
+
+.tc-relink-impossible a.tc-tiddlylink {
+	color: red;
+}

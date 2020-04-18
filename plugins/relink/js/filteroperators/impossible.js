@@ -1,32 +1,29 @@
 /*\
 module-type: relinkfilteroperator
 
-Given an input of toTitles, (probably just one), outputs all the tiddlers in
-which Relink would fail to update the operand to any of those given titles.
+This filter is meant for internal Relink use only, thus it's
+undocumented and subject to change. Also, it's really not great.
 
-`[[{terrible'}!!"title"]relink:impossible[fromTiddler]]`
+Given an input of targets, (possibly just one), outputs all the tiddlers in
+which Relink would fail to update <<currentTiddler>> to the operand in ALL
+cases.
 
-Would output all the tiddlers where Relink would fail to update `from here` to
-`{terrible'}!!"title"`
+`[all[tiddlers+system]relink:impossible<toTiddler>]`
 
-I know, it's weird. You'd think it would test all incoming inputs instead of
-using them as to fromTitle, but this is the only way to input both a fromTitle
-and a toTitle.
-
-Results are dominantly appanded if more than one input tiddler is given.
 \*/
 
 var language = require("$:/plugins/flibbles/relink/js/language.js");
 
 exports.impossible = function(source,operator,options) {
-	var fromTitle = operator.operand,
+	var from = options.widget && options.widget.getVariable("currentTiddler");
+	var to = operator.operand,
 		results = [];
-	if (fromTitle) {
-		source(function(toTiddler, toTitle) {
-			var records = options.wiki.getRelinkableTiddlers(
-				fromTitle, toTitle, options);
-			for (var title in records) {
-				var fields = records[title];
+	if (from) {
+		var records = options.wiki.getRelinkableTiddlers(
+			from, to, options);
+		source(function(tiddler, title) {
+			var fields = records[title];
+			if (fields) {
 				var impossible = false;
 				for (var field in fields) {
 					language.eachImpossible(fields[field], function() {
@@ -34,9 +31,9 @@ exports.impossible = function(source,operator,options) {
 					});
 				}
 				if (impossible) {
-					$tw.utils.pushTop(results, title);
+					results.push(title);
 				}
-			};
+			}
 		});
 	}
 	return results;

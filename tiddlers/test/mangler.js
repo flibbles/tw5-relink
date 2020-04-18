@@ -19,13 +19,10 @@ function test(type, paramObject, options) {
 	var mangler = parentWidget.children[0];
 	var event = { type: type, paramObject: paramObject };
 	var results = {wiki: wiki, alerts: []};
-	var oldAlert = language.alert;
-	language.alert = function(message) { results.alerts.push(message); }
-	try {
+	var appendAlert = function(message) { results.alerts.push(message); };
+	utils.monkeyPatch(language, "alert", appendAlert, function() {
 		results.output = mangler.dispatchEvent(event);
-	} finally {
-		language.alert = oldAlert;
-	}
+	});
 	return results;
 };
 
@@ -188,6 +185,9 @@ it("won't crash with bad input", function() {
 	test("relink-add-attribute", {attribute: "parameter"});
 	test("relink-add-attribute", {element: "parameter"});
 	test("relink-add-attribute", undefined);
+	// This just suppresses the jasmine warning. The real test is that
+	// we can run all those methods above without an error being thrown.
+	expect(true).toEqual(true);
 });
 
 });
