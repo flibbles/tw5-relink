@@ -20,14 +20,15 @@ FilterEntry.prototype.report = function() {
 	});
 };
 
-var OperatorEntry = EntryNode.newType("operator");
+function OperatorEntry(operandEntry) { this.entry = operandEntry; };
+OperatorEntry.prototype.name = "operator";
 
-OperatorEntry.prototype.eachChild = function(method) { method(this.child); }
+OperatorEntry.prototype.eachChild = function(method) { method(this.entry); }
 
 OperatorEntry.prototype.report = function() {
 	var operand = "";
-	if (this.child.report) {
-		operand = this.child.report();
+	if (this.entry.report) {
+		operand = this.entry.report();
 	}
 	var op = this.operator;
 	var brackets = '[]';
@@ -297,10 +298,9 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 				break;
 		}
 		if (entry) {
-			var operatorEntry = new OperatorEntry();
+			var operatorEntry = new OperatorEntry(entry);
 			operatorEntry.operator = operator;
 			operatorEntry.type = type;
-			operatorEntry.child = entry;
 			logger.add(operatorEntry);
 		}
 

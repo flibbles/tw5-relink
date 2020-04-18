@@ -30,12 +30,9 @@ EntryNode.prototype.add = function(entry) {
 };
 
 function EntryCollection() {
-	EntryNode.apply(this, arguments);
 	this.children = Object.create(null);
 	this.types = Object.create(null);
 };
-
-EntryCollection.prototype = Object.create(EntryNode.prototype);
 
 EntryNode.newCollection = function(name) {
 	function NewCollection() {
