@@ -74,8 +74,6 @@ exports.getRelinkableTitles = function() {
 	})();
 };
 
-var ImportVariablesWidget = require("$:/core/modules/widgets/importvariables.js").importvariables;
-
 // Meant for internal use and is subject to change.
 exports.relinkGlobalMacros = function() {
 	if (!this._relinkWidget) {
@@ -94,18 +92,17 @@ exports.relinkGlobalMacros = function() {
 
 // Meant for internal use and is subject to change
 exports.relinkGenerateVariableWidget = function(filter, parent) {
-	var treeNode = { attributes: {
-		"filter": {
-			type: "string",
-			value: filter
+	var widget = this.makeWidget( { tree: [{
+		type: "importvariables",
+		attributes: {
+			"filter": {
+				type: "string",
+				value: filter
+			}
 		}
-	}};
-	var importWidget = new ImportVariablesWidget(treeNode,{parentWidget: parent, wiki: this});
-	importWidget.computeAttributes();
-	importWidget.execute();
-	// These two functions neuter the widget, so it never tries
-	// to render.
-	importWidget.findNextSiblingDomNode = function() {};
-	importWidget.renderChildren(this.parentDomNode);
+	}] }, { parentWidget: parent} );
+	widget.execute();
+	widget.renderChildren();
+	var importWidget = widget.children[0];
 	return importWidget;
 };
