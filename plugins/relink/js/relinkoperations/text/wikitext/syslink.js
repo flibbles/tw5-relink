@@ -12,13 +12,12 @@ but not:
 \*/
 
 var utils = require("./utils.js");
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js');
 
 exports.name = "syslink";
 
-var SyslinkEntry = EntryNode.newType("syslink");
-
+function SyslinkEntry() {};
+SyslinkEntry.prototype.name = "syslink";
 SyslinkEntry.prototype.report = function() {
 	return ["~" + this.link];
 };

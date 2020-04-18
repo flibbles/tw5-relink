@@ -8,14 +8,16 @@ Handles import pragmas
 
 var settings = require("$:/plugins/flibbles/relink/js/settings.js");
 var filterRelinker = settings.getRelinker('filter');
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "import";
 
-var ImportEntry = EntryNode.newType("import");
-
+function ImportEntry(filterEntry) {
+	this.filter = filterEntry;
+};
+ImportEntry.prototype.name = "import";
+ImportEntry.prototype.eachChild = function(block) { return block(this.filter);};
 ImportEntry.prototype.report = function() {
-	return this.children[0].report().map(function(report) {
+	return this.filter.report().map(function(report) {
 		if (report.length > 0) {
 			return "\\import " + report;
 		} else {
@@ -33,8 +35,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry = undefined;
 	var filterEntry = filterRelinker.relink(filter, fromTitle, toTitle, options);
 	if (filterEntry !== undefined) {
-		entry = new ImportEntry();
-		entry.add(filterEntry);
+		entry = new ImportEntry(filterEntry);
 		var newline = text.substring(start+filter.length, this.parser.pos);
 		if (filterEntry.output) {
 			filter = filterEntry.output;

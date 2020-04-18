@@ -41,4 +41,9 @@ it('tricky downgrade', function() {
 	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in \\import filter of tiddler 'test'"]);
 });
 
+it('reports failures', function() {
+	var r = testText("\\import [tag{from here}]\nstuff",
+	                 {ignored: true, to: "to}there", fails: 1});
+});
+
 });

@@ -15,8 +15,9 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 exports.name = ["macrocallinline", "macrocallblock"];
 
 // Error thrown when a macro's definition is needed, but can't be found.
-var CannotFindMacroDef = EntryNode.newType("macroparam");
+function CannotFindMacroDef() {};
 CannotFindMacroDef.prototype.impossible = true;
+CannotFindMacroDef.prototype.name = "macroparam";
 // Failed relinks due to missing definitions aren't reported for now.
 // I may want to do something special later on.
 CannotFindMacroDef.prototype.report = function() { return []; };

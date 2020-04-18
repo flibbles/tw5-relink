@@ -12,13 +12,12 @@ but not:
 \*/
 
 var utils = require("./utils.js");
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js');
 
 exports.name = "wikilink";
 
-var WikilinkEntry = EntryNode.newType("wikilink");
-
+function WikilinkEntry() {};
+WikilinkEntry.prototype.name = "wikilink";
 WikilinkEntry.prototype.report = function() {
 	return [$tw.config.textPrimitives.unWikiLink + this.link];
 };

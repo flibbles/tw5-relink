@@ -12,34 +12,33 @@ This renames both the tiddler and the template field.
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var utils = require("./utils.js");
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = ['transcludeinline', 'transcludeblock'];
 
-var TranscludeEntry = EntryNode.newType("transclude");
-
+var TranscludeEntry = function() {};
+TranscludeEntry.prototype.name = "transclude";
 TranscludeEntry.prototype.report = function() {
 	var ref = this.reference || {};
-	var self = this;
-	return this.children.map(function(child) {
-		if (child.name === "reference") {
-			var suffix = "";
-			if (ref.field) {
-				suffix = "!!" + ref.field;
-			}
-			if (ref.index) {
-				suffix = "##" + ref.index;
-			}
-			if (self.template) {
-				suffix = suffix + "||" + self.template;
-			}
-			return "{{" + suffix + "}}";
-		} else {
-			// Must be template
-			var refString = refHandler.toString(ref);
-			return "{{" + refString + "||}}";
+	var output = [];
+	if (this.referenceChanged) {
+		var suffix = "";
+		if (ref.field) {
+			suffix = "!!" + ref.field;
 		}
-	});
+		if (ref.index) {
+			suffix = "##" + ref.index;
+		}
+		if (this.template) {
+			suffix = suffix + "||" + this.template;
+		}
+		output.push("{{" + suffix + "}}");
+	}
+	if (this.templateChanged) {
+		// Must be template
+		var refString = refHandler.toString(ref);
+		output.push("{{" + refString + "||}}");
+	}
+	return output;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -53,12 +52,12 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		// preserve user's whitespace
 		reference.title = reference.title.replace(fromTitle, toTitle);
 		modified = true;
-		entry.add({name: "reference"});
+		entry.referenceChanged = true;
 	}
 	if ($tw.utils.trim(template) === fromTitle) {
 		template = template.replace(fromTitle, toTitle);
 		modified = true;
-		entry.add({name: "template"});
+		entry.templateChanged = true;
 	}
 	if (modified) {
 		entry.reference = reference;

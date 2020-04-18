@@ -9,16 +9,19 @@ that we may have previously install.
 \*/
 
 var settings = require("$:/plugins/flibbles/relink/js/settings");
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = "macrodef";
 
-var MacrodefEntry = EntryNode.newType("macrodef");
-
+function MacrodefEntry(macroName, bodyEntry) {
+	this.macro = macroName;
+	this.body = bodyEntry;
+};
+MacrodefEntry.prototype.name = "macrodef";
+MacrodefEntry.prototype.eachChild = function(block) { return block(this.body);};
 MacrodefEntry.prototype.report = function() {
 	var macroStr = "\\define " + this.macro + "()";
-	if (this.children[0].report) {
-		return this.children[0].report().map(function(report) {
+	if (this.body.report) {
+		return this.body.report().map(function(report) {
 			return macroStr + " " + report;
 		});
 	} else {
@@ -57,9 +60,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			// This is a filter
 			var entry = handler.relink(match[1], fromTitle, toTitle, options);
 			if (entry !== undefined) {
-				var macroEntry = new MacrodefEntry();
-				macroEntry.macro = m[1];
-				macroEntry.add(entry);
+				var macroEntry = new MacrodefEntry(m[1], entry);
 				this.parser.pos += match[0].length;
 				if (entry.output) {
 					macroEntry.output = this.makePlaceholder(m[1], entry.output+match[2]);
