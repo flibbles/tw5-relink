@@ -5,6 +5,8 @@ Introduces some utility methods used by Relink.
 
 \*/
 
+var MacroSettings = require('$:/plugins/flibbles/relink/js/utils/macroConfig.js');
+
 var relinkOperations = Object.create(null);
 $tw.modules.applyMethods('relinkoperator', relinkOperations);
 
@@ -74,6 +76,14 @@ exports.getRelinkableTitles = function() {
 	})();
 };
 
+
+exports.getRelinkConfig = function() {
+	if (this._relinkConfig === undefined) {
+		this._relinkConfig = new MacroSettings();
+	}
+	return this._relinkConfig;
+};
+
 // Meant for internal use and is subject to change.
 exports.relinkGlobalMacros = function() {
 	if (!this._relinkWidget) {
@@ -82,6 +92,7 @@ exports.relinkGlobalMacros = function() {
 			importWidget.refresh(changes);
 		});
 		this._relinkWidget = importWidget;
+		this.getRelinkConfig().import(importWidget, {wiki: this});
 	}
 	var rtn = this._relinkWidget;
 	while (rtn.children.length > 0) {

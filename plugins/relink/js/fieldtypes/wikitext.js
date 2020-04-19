@@ -60,6 +60,7 @@ function WikiRelinker(text, title, toTitle, options) {
 	// relinkRules is inlineRules so it gets touched up by amendRules().
 	this.relinkRules = this.inlineRules;
 	this.widget = undefined;
+	this.macros = this.wiki.getRelinkConfig().createChildLibrary();
 };
 
 WikiRelinker.prototype = Object.create(WikiParser.prototype);

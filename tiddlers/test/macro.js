@@ -229,6 +229,40 @@ it('imported macros', function() {
 	test("<$importvariables filter=<<ptr otherTiddler>>><<other Z otherTiddler>></$importvariables>", {from: "otherTiddler", to: "toThereAgain"});
 });
 
+it('linedef macros', function() {
+	var wiki = new $tw.Wiki();
+	// local
+	testText("\\relink test field:title\n<<test field: 'from here'>>");
+	// imported
+	wiki.addTiddler({title: "import", text: "\\relink test field:title"});
+	testText("\\import import\n<<test field: 'from here'>>", {wiki: wiki});
+	// global
+	wiki = new $tw.Wiki();
+	wiki.addTiddler({
+		title: "global",
+		text: "\\relink global field:title",
+		tags: "$:/tags/Macro"});
+	testText("<<global field: 'from here'>>", {wiki: wiki});
+});
+
+it("linedef macros don't parse too much", function() {
+	var wiki = new $tw.Wiki(), text;
+	// Fully formed, it renders as nothing, but doesn't prevent later
+	// macrodefs rom parsing.
+	text = wiki.renderText( "text/plain", "text/vnd.tiddlywiki",
+		"\\relink test p:title\n\\define test(p) Content\n<<test>>");
+	expect(text).toEqual("Content");
+	// When no parameters are assigned, it's ignored.
+	text = wiki.renderText( "text/plain", "text/vnd.tiddlywiki",
+		"\\relink test\n\\define test() Content\n<<test>>");
+	expect(text).toEqual("Content");
+	// If the \relink doesn't even specify a macro, then it won't parse
+	// at all.
+	text = wiki.renderText( "text/plain", "text/vnd.tiddlywiki",
+		"\\relink\n\\define test() Content\n<<test>>");
+	expect(text).toEqual("\\relink\n\\define test() Content\n");
+});
+
 it('local macros', function() {
 	function test(text, options) {
 		var wiki = new $tw.Wiki();
