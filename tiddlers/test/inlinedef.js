@@ -46,6 +46,21 @@ it('parses multiple parameters in one declaration', function() {
 	testText("\\relink test filt:filter ref:reference\n<<test ref: 'from here##i' filt: '[tag[from here]]'>>");
 });
 
+it("doesn't prevent macros from importing", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "import",
+		text: "\\define A() a\n\\relink A a\n\\define B(field) b"});
+	var output = wiki.renderText("text/plain", "text/vnd.tiddlywiki", "\\import import\n<<A>>-<<B>>");
+	expect(output).toEqual("a-b");
+});
+
+it("doesn't register for events too late", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "import", tags: "$:/tags/Macro",
+		text: "\\define register(field) a\n\\relink register field"});
+	testText("<<register 'from here'>>", {wiki: wiki});
+});
+
 it('handles illegal type', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: "$:/plugins/flibbles/relink/language/Error/UnrecognizedType", text: "Type: <<type>>"});
@@ -53,7 +68,7 @@ it('handles illegal type', function() {
 	// Ignores the illegal rule
 	testText(text, {wiki: wiki, ignored: true});
 	// Renders a warning
-	var plain =wiki.renderText("text/plain", "text/vnd.tiddlywiki",text);
+	var plain = wiki.renderText("text/plain", "text/vnd.tiddlywiki",text);
 	expect(plain).toEqual("Type: illegal");
 });
 
