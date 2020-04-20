@@ -92,7 +92,7 @@ MacroConfig.prototype.getVariableWidget = function(title) {
 };
 
 
-MacroConfig.prototype.importFilter= function(filter, parent) {
+MacroConfig.prototype.importFilter = function(filter, parent) {
 	var importWidget = this.createVariableWidget(filter, parent);
 	this.import(importWidget);
 	// This only works if only one filter is imported
@@ -108,7 +108,6 @@ MacroConfig.prototype.varWidget = function() {
 };
 
 MacroConfig.prototype.import = function(importvariablesWidget) {
-	var self = this;
 	this._compileList(importvariablesWidget.tiddlerList);
 	this.widgetList.push(importvariablesWidget);
 };
