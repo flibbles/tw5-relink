@@ -87,36 +87,19 @@ exports.getRelinkConfig = function() {
 // Meant for internal use and is subject to change.
 exports.relinkGlobalMacros = function() {
 	if (!this._relinkWidget) {
-		var importWidget = this.relinkGenerateVariableWidget( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
-		var self = this;
+		var config = this.getRelinkConfig();
+		var importWidget = config.createVariableWidget( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
 		this.addEventListener("change", function(changes) {
 			if (importWidget.refresh(changes)) {
-				self.getRelinkConfig().refresh();
+				config.refresh();
 			}
 		});
 		this._relinkWidget = importWidget;
-		this.getRelinkConfig().import(importWidget);
+		config.import(importWidget);
 	}
 	var rtn = this._relinkWidget;
 	while (rtn.children.length > 0) {
 		rtn = rtn.children[0];
 	}
 	return rtn;
-};
-
-// Meant for internal use and is subject to change
-exports.relinkGenerateVariableWidget = function(filter, parent) {
-	var widget = this.makeWidget( { tree: [{
-		type: "importvariables",
-		attributes: {
-			"filter": {
-				type: "string",
-				value: filter
-			}
-		}
-	}] }, { parentWidget: parent} );
-	widget.execute();
-	widget.renderChildren();
-	var importWidget = widget.children[0];
-	return importWidget;
 };

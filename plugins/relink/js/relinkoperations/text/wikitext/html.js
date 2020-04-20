@@ -186,6 +186,6 @@ function processImportFilter(importAttribute, parser, options) {
 	}
 	var importFilter = computeAttribute(importAttribute, parser, options);
 	var parentWidget = parser.getVariableWidget();
-	var varHolder = options.wiki.relinkGenerateVariableWidget(importFilter, parentWidget);
+	var varHolder = options.wiki.getRelinkConfig().createVariableWidget(importFilter, parentWidget);
 	parser.addWidget(varHolder);
 };

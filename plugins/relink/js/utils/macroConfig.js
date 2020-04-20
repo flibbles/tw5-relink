@@ -52,6 +52,22 @@ MacroConfig.prototype.createChildLibrary = function() {
 	return new MacroConfig(this.wiki, this);
 };
 
+MacroConfig.prototype.createVariableWidget = function(filter, parent) {
+	var widget = this.wiki.makeWidget( { tree: [{
+		type: "importvariables",
+		attributes: {
+			"filter": {
+				type: "string",
+				value: filter
+			}
+		}
+	}] }, { parentWidget: parent} );
+	widget.execute();
+	widget.renderChildren();
+	var importWidget = widget.children[0];
+	return importWidget;
+};
+
 MacroConfig.prototype.import = function(importvariablesWidget) {
 	var self = this;
 	this._compileList(importvariablesWidget.tiddlerList);
