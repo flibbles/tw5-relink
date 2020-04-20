@@ -8,9 +8,10 @@ This handles the fetching and distribution of relink settings.
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var Widget = require("$:/core/modules/widgets/widget.js").widget;
 
-function MacroConfig(wiki, parent) {
+function MacroConfig(wiki, parent, title) {
 	this.macros = Object.create(null);
 	this.parent = parent;
+	this.title = title;
 	this.wiki = wiki;
 	this.widgetList = [];
 };
@@ -53,8 +54,8 @@ MacroConfig.prototype.addSetting = function(macroName, parameter, type) {
 	}
 };
 
-MacroConfig.prototype.createChildLibrary = function() {
-	return new MacroConfig(this.wiki, this);
+MacroConfig.prototype.createChildLibrary = function(title) {
+	return new MacroConfig(this.wiki, this, title);
 };
 
 MacroConfig.prototype.createVariableWidget = function(filter, parent) {
@@ -80,11 +81,11 @@ MacroConfig.prototype.addWidget = function(widget) {
 	}
 };
 
-MacroConfig.prototype.getVariableWidget = function(title) {
+MacroConfig.prototype.getVariableWidget = function() {
 	if (!this.widget) {
 		var varWidget = this.wiki.getRelinkConfig().varWidget();
 		var parentWidget = new Widget({}, {parentWidget: varWidget});
-		parentWidget.setVariable("currentTiddler", title);
+		parentWidget.setVariable("currentTiddler", this.title);
 		var widget = new Widget({}, {parentWidget: parentWidget});
 		this.addWidget(widget);
 	}
@@ -92,8 +93,12 @@ MacroConfig.prototype.getVariableWidget = function(title) {
 };
 
 
-MacroConfig.prototype.import = function(filter, parent) {
-	var importWidget = this.createVariableWidget(filter, parent);
+MacroConfig.prototype.import = function(filter) {
+	var parentWidget;
+	if (this.parent) {
+		parentWidget = this.getVariableWidget();
+	}
+	var importWidget = this.createVariableWidget(filter, parentWidget);
 	this._compileList(importWidget.tiddlerList);
 	this.widgetList.push(importWidget);
 	// This only works if only one filter is imported

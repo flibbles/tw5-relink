@@ -31,7 +31,7 @@ MacrodefEntry.prototype.report = function() {
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var setParseTreeNode = this.parse();
-	var parentWidget = this.parser.macros.getVariableWidget(this.parser.title);
+	var parentWidget = this.parser.macros.getVariableWidget();
 	var setWidget = parentWidget.makeChildWidget(setParseTreeNode[0]);
 	setWidget.computeAttributes();
 	setWidget.execute();

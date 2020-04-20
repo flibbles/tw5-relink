@@ -44,10 +44,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 
 	// Before we go, we need to actually import the variables
-	// it's calling for.
-	var parentWidget = this.parser.macros.getVariableWidget(this.parser.title);
-	// We need to import any /relink pragma
-	this.parser.macros.import(filter, parentWidget);
+	// it's calling for, and any /relink pragma
+	this.parser.macros.import(filter);
 
 	if (options.placeholder) {
 		options.placeholder.addWidget(this.parser.macros.widget);
