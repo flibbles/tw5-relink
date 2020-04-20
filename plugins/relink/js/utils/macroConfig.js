@@ -92,9 +92,10 @@ MacroConfig.prototype.getVariableWidget = function(title) {
 };
 
 
-MacroConfig.prototype.importFilter = function(filter, parent) {
+MacroConfig.prototype.import = function(filter, parent) {
 	var importWidget = this.createVariableWidget(filter, parent);
-	this.import(importWidget);
+	this._compileList(importWidget.tiddlerList);
+	this.widgetList.push(importWidget);
 	// This only works if only one filter is imported
 	this.addWidget(importWidget);
 };
@@ -105,11 +106,6 @@ MacroConfig.prototype.varWidget = function() {
 		rtn = rtn.children[0];
 	}
 	return rtn;
-};
-
-MacroConfig.prototype.import = function(importvariablesWidget) {
-	this._compileList(importvariablesWidget.tiddlerList);
-	this.widgetList.push(importvariablesWidget);
 };
 
 MacroConfig.prototype._compileList = function(titleList) {

@@ -186,5 +186,5 @@ function processImportFilter(importAttribute, parser, options) {
 	}
 	var importFilter = computeAttribute(importAttribute, parser, options);
 	var parentWidget = parser.macros.getVariableWidget(parser.title);
-	parser.macros.importFilter(importFilter, parentWidget);
+	parser.macros.import(importFilter, parentWidget);
 };

@@ -80,7 +80,7 @@ exports.getRelinkableTitles = function() {
 exports.getRelinkConfig = function() {
 	if (this._relinkConfig === undefined) {
 		var config = new MacroSettings(this);
-		config.importFilter( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
+		config.import( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
 		this.addEventListener("change", function(changes) {
 			config.refresh(changes);
 		});
