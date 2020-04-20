@@ -77,7 +77,7 @@ WikiRelinker.prototype.addWidget = function(widget) {
 
 WikiRelinker.prototype.getVariableWidget = function() {
 	if (!this.widget) {
-		this.widget = this.wiki.relinkGlobalMacros();
+		this.widget = this.wiki.getRelinkConfig().varWidget();
 		var parentWidget = new Widget({}, {parentWidget: this.widget});
 		parentWidget.setVariable("currentTiddler", this.title);
 		var widget = new Widget({}, {parentWidget: parentWidget});

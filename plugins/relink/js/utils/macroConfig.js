@@ -28,12 +28,16 @@ MacroConfig.prototype.get = function(macroName, options) {
 	return settings.getMacros(options)[macroName];
 };
 
-MacroConfig.prototype.refresh = function() {
-	this.macros = Object.create(null);
-	// Recompile all our widgets in the same order
-	for (var i = 0; i < this.widgetList.length; i++) {
-		this._compileList(this.widgetList[i].tiddlerList );
+MacroConfig.prototype.refresh = function(changes) {
+	if (this.widget.refresh(changes)) {
+		this.macros = Object.create(null);
+		// Recompile all our widgets in the same order
+		for (var i = 0; i < this.widgetList.length; i++) {
+			this._compileList(this.widgetList[i].tiddlerList );
+		}
+		return true;
 	}
+	return false;
 };
 
 MacroConfig.prototype.addSetting = function(macroName, parameter, type) {
@@ -66,6 +70,21 @@ MacroConfig.prototype.createVariableWidget = function(filter, parent) {
 	widget.renderChildren();
 	var importWidget = widget.children[0];
 	return importWidget;
+};
+
+MacroConfig.prototype.importFilter= function(filter) {
+	var importWidget = this.createVariableWidget(filter);
+	this.import(importWidget);
+	// This only works if only one filter is imported
+	this.widget = importWidget;
+};
+
+MacroConfig.prototype.varWidget = function() {
+	var rtn = this.widget;
+	while (rtn.children.length > 0) {
+		rtn = rtn.children[0];
+	}
+	return rtn;
 };
 
 MacroConfig.prototype.import = function(importvariablesWidget) {

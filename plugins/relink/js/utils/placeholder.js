@@ -9,7 +9,7 @@ function Placeholder(options) {
 	this.placeholders = Object.create(null);
 	this.reverseMap = Object.create(null);
 	this.knownMacros = Object.create(null);
-	this.variableWidget = options.wiki.relinkGlobalMacros();
+	this.variableWidget = options.wiki.getRelinkConfig().varWidget();
 };
 
 module.exports = Placeholder;
