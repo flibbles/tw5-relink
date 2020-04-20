@@ -8,7 +8,6 @@ var type = 'text/vnd.tiddlywiki';
 
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
-var Widget = require("$:/core/modules/widgets/widget.js").widget;
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var WikitextEntry = EntryNode.newType("wikitext");
@@ -59,7 +58,6 @@ function WikiRelinker(text, title, toTitle, options) {
 	// We work through relinkRules so we can change it later.
 	// relinkRules is inlineRules so it gets touched up by amendRules().
 	this.relinkRules = this.inlineRules;
-	this.widget = undefined;
 	this.macros = this.wiki.getRelinkConfig().createChildLibrary();
 };
 
@@ -67,24 +65,6 @@ WikiRelinker.prototype = Object.create(WikiParser.prototype);
 WikiRelinker.prototype.parsePragmas = function() {return []; };
 WikiRelinker.prototype.parseInlineRun = function() {};
 WikiRelinker.prototype.parseBlocks = function() {};
-
-WikiRelinker.prototype.addWidget = function(widget) {
-	this.widget = widget;
-	while (this.widget.children.length > 0) {
-		this.widget = this.widget.children[0];
-	}
-};
-
-WikiRelinker.prototype.getVariableWidget = function() {
-	if (!this.widget) {
-		this.widget = this.wiki.getRelinkConfig().varWidget();
-		var parentWidget = new Widget({}, {parentWidget: this.widget});
-		parentWidget.setVariable("currentTiddler", this.title);
-		var widget = new Widget({}, {parentWidget: parentWidget});
-		this.addWidget(widget);
-	}
-	return this.widget;
-};
 
 exports.relink = function(wikitext, fromTitle, toTitle, options) {
 	// fromTitle doesn't even show up plaintext. No relinking to do.

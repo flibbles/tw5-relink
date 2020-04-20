@@ -309,7 +309,7 @@ function getParamNames(macroName, params, parser, options) {
 /** Returns undefined if the definition cannot be found.
  */
 function getDefinition (macroName, parser, options) {
-	var variableContainer = parser.getVariableWidget();
+	var variableContainer = parser.macros.getVariableWidget(parser.title);
 	var def = variableContainer.variables[macroName];
 	if (!def) {
 		// Check with the macro modules
