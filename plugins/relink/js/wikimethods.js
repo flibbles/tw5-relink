@@ -26,6 +26,7 @@ exports.getRelinkReport = function(fromTitle, toTitle, options) {
 function getFreshRelinkReport(wiki, fromTitle, toTitle, options) {
 	options = options || {};
 	options.wiki = options.wiki || wiki;
+	options.macros = options.macros || wiki.getRelinkConfig();
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var changeList = Object.create(null);

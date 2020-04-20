@@ -83,7 +83,7 @@ MacroConfig.prototype.addWidget = function(widget) {
 
 MacroConfig.prototype.getVariableWidget = function() {
 	if (!this.widget) {
-		var varWidget = this.wiki.getRelinkConfig().varWidget();
+		var varWidget = this.parent.varWidget();
 		var parentWidget = new Widget({}, {parentWidget: varWidget});
 		parentWidget.setVariable("currentTiddler", this.title);
 		var widget = new Widget({}, {parentWidget: parentWidget});

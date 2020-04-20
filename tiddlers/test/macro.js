@@ -243,6 +243,17 @@ it('local macros', function() {
 	test("\\define test(Dref) stuff\n\n<<test 'from here##index'>>");
 });
 
+it('local macros work in nested wikitext', function() {
+	// The `text` parameter uses a different wikiparser than the one
+	// parsing the tiddler. That parser might not have access to definitions
+	// in the tiddler, but it should.
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.macroConf("outer", "text", "wikitext"),
+		utils.macroConf("inner", "title", "title")]);
+	testText('\\define inner(title) content\n<$macrocall $name=outer text="""<<inner "from here">>""" />', {wiki: wiki});
+});
+
 it('slashes in macro name', function() {
 	// non/attr is a legal macro name, but not a legal
 	// unquoted attribute
