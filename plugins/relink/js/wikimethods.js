@@ -79,7 +79,7 @@ exports.getRelinkableTitles = function() {
 
 exports.getRelinkConfig = function() {
 	if (this._relinkConfig === undefined) {
-		this._relinkConfig = new MacroSettings();
+		this._relinkConfig = new MacroSettings(this);
 	}
 	return this._relinkConfig;
 };
@@ -88,11 +88,14 @@ exports.getRelinkConfig = function() {
 exports.relinkGlobalMacros = function() {
 	if (!this._relinkWidget) {
 		var importWidget = this.relinkGenerateVariableWidget( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
+		var self = this;
 		this.addEventListener("change", function(changes) {
-			importWidget.refresh(changes);
+			if (importWidget.refresh(changes)) {
+				self.getRelinkConfig().refresh();
+			}
 		});
 		this._relinkWidget = importWidget;
-		this.getRelinkConfig().import(importWidget, {wiki: this});
+		this.getRelinkConfig().import(importWidget);
 	}
 	var rtn = this._relinkWidget;
 	while (rtn.children.length > 0) {
