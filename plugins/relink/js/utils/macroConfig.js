@@ -38,11 +38,14 @@ MacroConfig.prototype.refresh = function() {
 
 MacroConfig.prototype.addSetting = function(macroName, parameter, type) {
 	var macro = this.macros[macroName];
+	type = type || "title";
 	if (macro === undefined) {
 		macro = this.macros[macroName] = Object.create(null);
 	}
 	var handler = settings.getRelinker(type);
-	macro[parameter] = handler;
+	if (handler) {
+		macro[parameter] = handler;
+	}
 };
 
 MacroConfig.prototype.createChildLibrary = function() {

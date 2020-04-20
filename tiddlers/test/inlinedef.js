@@ -35,6 +35,26 @@ it('linedef macros', function() {
 	testText("<<global field: 'from here'>>", {wiki: wiki});
 });
 
+it('parses strange syntax', function() {
+	var wiki = new $tw.Wiki();
+	testText("\\relink  test  field : title \n<<test field: 'from here'>>");
+	testText("\\relink test field : title \r\n<<test field: 'from here'>>");
+	testText("\\relink t$_-s f-_1D: title\n<<t$_-s f-_1D: 'from here'>>");
+});
+
+it('handles illegal type', function() {
+	var wiki = new $tw.Wiki();
+	testText("\\relink test field: illegal \n<<test field: 'from here'>>", {ignored: true});
+});
+
+it('handles default type of title', function() {
+	var wiki = new $tw.Wiki();
+	testText("\\relink test field\n<<test field: 'from here'>>");
+	testText("\\relink test   field   \n<<test field: 'from here'>>");
+	testText("\\relink test other field\n<<test field: 'from here'>>");
+	testText("\\relink test other:title field\n<<test field: 'from here'>>");
+});
+
 it('linedef macros update appropriately', function() {
 	var wiki = new $tw.Wiki();
 	// First patch in a method that performs update events synchronously

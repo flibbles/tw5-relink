@@ -1,8 +1,8 @@
 /*\
 module-type: wikirule
 
-This defines the \relink pragma used to locally declare relink rules for
-macros.
+This defines the \relink inline pragma used to locally declare
+relink rules for macros.
 
 It takes care of providing its own relink and report rules.
 
@@ -51,7 +51,7 @@ exports.interpretSettings = function(block) {
 	var paramString = this.match[2];
 	if (paramString !== "") {
 		var macro = this.match[1];
-		var reParam = /\s*([A-Za-z0-9\-_]+)\s*:\s*([^\s]+)/mg;
+		var reParam = /\s*([A-Za-z0-9\-_]+)(?:\s*:\s*([^\s]+))?/mg;
 		var paramMatch = reParam.exec(paramString);
 		while (paramMatch) {
 			var parameter = paramMatch[1];
