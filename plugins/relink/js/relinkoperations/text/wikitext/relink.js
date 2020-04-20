@@ -8,6 +8,9 @@ It takes care of providing its own relink and report rules.
 
 \*/
 
+var settings = require('$:/plugins/flibbles/relink/js/settings.js');
+var language = require('$:/plugins/flibbles/relink/js/language.js');
+
 exports.name = "relink";
 exports.types = {pragma: true};
 
@@ -16,25 +19,48 @@ exports.init = function(parser) {
 	this.matchRegExp = /^\\relink[^\S\n]+([^(\s]+)([^\r\n]*)(\r?\n)?/mg;
 };
 
+/**This makes the widget that the macro library will later parse to determine
+ * new macro relink state.
+ *
+ * It's a <$set> widget so it can appear BEFORE \define pragma and not
+ * prevent that pragma from being scooped up by importvariables.
+ * (importvariables stops scooping as soon as it sees something besides $set) */
 exports.parse = function() {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var macroName;
-	var settings = Object.create(null);
+	var macroParams = Object.create(null);
+	var error = undefined;
+	var rtn = [];
+	var self = this;
 	this.interpretSettings(function(macro, parameter, type) {
 		macroName = macro;
-		settings[parameter] = type;
+		if (type && !settings.getRelinker(type)) {
+			error = language.getString("Error/UnrecognizedType",
+				{variables: {type: type}, wiki: self.parser.wiki});
+		}
+		macroParams[parameter] = type;
 	});
+	// If no macroname. Return nothing, this rule will be ignored by parsers
 	if (macroName) {
 		var relink = Object.create(null);
-		relink[macroName] = settings;
-		// Return nothing, because this rule is ignored by the parser
-		return [{
+		relink[macroName] = macroParams;
+		rtn.push({
 			type: "set",
 			children: [],
-			relink: relink}];
-	} else {
-		return [];
+			relink: relink});
 	}
+	if (error) {
+		rtn.push({
+			type: "element", tag: "span", attributes: {
+				"class": {
+					type: "string",
+					value: "tc-error tc-relink-error"
+				}
+			}, children: [
+				{type: "text", text: error}
+			]});
+	}
+	return rtn;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {

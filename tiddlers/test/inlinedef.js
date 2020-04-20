@@ -42,9 +42,19 @@ it('parses strange syntax', function() {
 	testText("\\relink t$_-s f-_1D: title\n<<t$_-s f-_1D: 'from here'>>");
 });
 
+it('parses multiple parameters in one declaration', function() {
+	testText("\\relink test filt:filter ref:reference\n<<test ref: 'from here##i' filt: '[tag[from here]]'>>");
+});
+
 it('handles illegal type', function() {
 	var wiki = new $tw.Wiki();
-	testText("\\relink test field: illegal \n<<test field: 'from here'>>", {ignored: true});
+	wiki.addTiddler({title: "$:/plugins/flibbles/relink/language/Error/UnrecognizedType", text: "Type: <<type>>"});
+	var text = "\\relink test field: illegal \n<<test field: 'from here'>>";
+	// Ignores the illegal rule
+	testText(text, {wiki: wiki, ignored: true});
+	// Renders a warning
+	var plain =wiki.renderText("text/plain", "text/vnd.tiddlywiki",text);
+	expect(plain).toEqual("Type: illegal");
 });
 
 it('handles default type of title', function() {

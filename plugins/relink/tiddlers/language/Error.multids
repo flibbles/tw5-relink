@@ -6,3 +6,4 @@ InvalidMacroName: Illegal characters in macro name "<$text text=<<macroName>>/>"
 InvalidParameterName: Illegal characters in parameter name "<$text text=<<parameterName>>/>". Parameters can only contain letters, digits, and the characters underscore (`_`) and hyphen (`-`)
 RelinkFilterOperator: Filter Error: Unknown suffix for the 'relink' filter operator
 ReportFailedRelinks: Relink could not update '<<from>>' to '<<to>>' inside the following tiddlers:
+UnrecognizedType: Relink parse error: Unrecognized field type '<<type>>'
