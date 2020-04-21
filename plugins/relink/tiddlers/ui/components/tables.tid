@@ -27,8 +27,9 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 \end
 
 \define tables(category, list-row-macro, header-list)
-<$set name="category-prefix" value=<<prefix $category$>>>
-<$set name="column-count" filter="[enlist<__header-list__>count[]]">
+<$vars
+	category-prefix=<<prefix $category$>>
+	column-count={{{[enlist<__header-list__>count[]]}}}>
 
 <table><tbody>
 <tr><$list variable="header" filter="[enlist<__header-list__>]"><th><<header>></th></$list></tr>
@@ -44,5 +45,5 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 </$list>
 
 </tbody></table>
-</$set></$set>
+</$vars>
 \end

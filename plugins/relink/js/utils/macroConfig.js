@@ -62,7 +62,7 @@ MacroConfig.prototype.get = function(macroName, options) {
 	return theseSettings || parentSettings;
 };
 
-MacroConfig.prototype.addSetting = function(macroName, parameter, type) {
+MacroConfig.prototype.addSetting = function(macroName, parameter, type, sourceTitle) {
 	var macro = this.macros[macroName];
 	type = type || "title";
 	if (macro === undefined) {
@@ -70,7 +70,11 @@ MacroConfig.prototype.addSetting = function(macroName, parameter, type) {
 	}
 	var handler = settings.getRelinker(type);
 	if (handler) {
-		macro[parameter] = handler;
+		function Config(){};
+		Config.prototype = handler;
+		var config = new Config();
+		config.source = sourceTitle;
+		macro[parameter] = config;
 	}
 };
 
@@ -126,7 +130,7 @@ MacroConfig.prototype._compileList = function(titleList) {
 					for (var macroName in parseTreeNode.relink) {
 						var parameters = parseTreeNode.relink[macroName];
 						for (paramName in parameters) {
-							this.addSetting(macroName, paramName, parameters[paramName]);
+							this.addSetting(macroName, paramName, parameters[paramName], titleList[i]);
 						}
 					}
 				}

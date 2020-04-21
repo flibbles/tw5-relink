@@ -54,37 +54,25 @@ exports.getOperators = function(options) {
  * once per rename.
  */
 exports.factories = {
-	attributes: function(attributes, tiddler, key) {
-		var relinker = fieldTypes[tiddler.fields.text];
-		if (relinker) {
-			var elem = root(key);
-			var attr = key.substr(elem.length+1);
-			attributes[elem] = attributes[elem] || Object.create(null);
-			attributes[elem][attr] = relinker;
-		}
+	attributes: function(attributes, data, key) {
+		var elem = root(key);
+		var attr = key.substr(elem.length+1);
+		attributes[elem] = attributes[elem] || Object.create(null);
+		attributes[elem][attr] = data;
 	},
-	fields: function(fields, tiddler, name) {
-		var relinker = fieldTypes[tiddler.fields.text];
-		if (relinker) {
-			fields[name] = relinker;
-		}
+	fields: function(fields, data, name) {
+		fields[name] = data;
 	},
-	macros: function(macros, tiddler, key) {
-		var relinker = fieldTypes[tiddler.fields.text];
-		if (relinker) {
-			// We take the last index, not the first, because macro
-			// parameters can't have slashes, but macroNames can.
-			var name = dir(key);
-			var arg = key.substr(name.length+1);
-			macros[name] = macros[name] || Object.create(null);
-			macros[name][arg] = relinker;
-		}
+	macros: function(macros, data, key) {
+		// We take the last index, not the first, because macro
+		// parameters can't have slashes, but macroNames can.
+		var name = dir(key);
+		var arg = key.substr(name.length+1);
+		macros[name] = macros[name] || Object.create(null);
+		macros[name][arg] = data;
 	},
-	operators: function(operators, tiddler, name) {
-		var relinker = fieldTypes[tiddler.fields.text];
-		if (relinker) {
-			operators[name] = relinker;
-		}
+	operators: function(operators, data, name) {
+		operators[name] = data;
 	}
 };
 
@@ -118,7 +106,14 @@ function compileSettings(wiki) {
 			var factory = exports.factories[category];
 			if (factory) {
 				var name = remainder.substr(category.length+1);
-				factory(settings[category], tiddler, name);
+				var handler = fieldTypes[tiddler.fields.text];
+				if (handler) {
+					function Config() {};
+					Config.prototype = handler;
+					var data = new Config();
+					data.source = title;
+					factory(settings[category], data, name);
+				}
 			}
 		}
 	});
