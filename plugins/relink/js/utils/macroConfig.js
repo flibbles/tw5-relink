@@ -30,6 +30,18 @@ MacroConfig.prototype.get = function(macroName, options) {
 	return settings.getMacros(options)[macroName];
 };
 
+MacroConfig.prototype.import = function(filter) {
+	var parentWidget;
+	if (this.parent) {
+		parentWidget = this.getVariableWidget();
+	}
+	var importWidget = createImportWidget(filter, this.wiki, parentWidget);
+	this._compileList(importWidget.tiddlerList);
+	this.widgetList.push(importWidget);
+	// This only works if only one filter is imported
+	this.addWidget(importWidget);
+};
+
 MacroConfig.prototype.refresh = function(changes) {
 	if (this.widget.refresh(changes)) {
 		this.macros = Object.create(null);
@@ -58,8 +70,30 @@ MacroConfig.prototype.createChildLibrary = function(title) {
 	return new MacroConfig(this.wiki, this, title);
 };
 
-MacroConfig.prototype.createVariableWidget = function(filter, parent) {
-	var widget = this.wiki.makeWidget( { tree: [{
+MacroConfig.prototype.addWidget = function(widget) {
+	this.widget = widget;
+	while (this.widget.children.length > 0) {
+		this.widget = this.widget.children[0];
+	}
+};
+
+MacroConfig.prototype.getVariableWidget = function() {
+	if (!this.widget) {
+		var varWidget = this.parent && this.parent.widget;
+		var parentWidget = new Widget({}, {parentWidget: varWidget});
+		parentWidget.setVariable("currentTiddler", this.title);
+		var widget = new Widget({}, {parentWidget: parentWidget});
+		this.addWidget(widget);
+	}
+	return this.widget;
+};
+
+MacroConfig.prototype.getVariable = function(variableName) {
+	return this.getVariableWidget().variables[variableName];
+};
+
+function createImportWidget(filter, wiki, parent) {
+	var widget = wiki.makeWidget( { tree: [{
 		type: "importvariables",
 		attributes: {
 			"filter": {
@@ -72,45 +106,6 @@ MacroConfig.prototype.createVariableWidget = function(filter, parent) {
 	widget.renderChildren();
 	var importWidget = widget.children[0];
 	return importWidget;
-};
-
-MacroConfig.prototype.addWidget = function(widget) {
-	this.widget = widget;
-	while (this.widget.children.length > 0) {
-		this.widget = this.widget.children[0];
-	}
-};
-
-MacroConfig.prototype.getVariableWidget = function() {
-	if (!this.widget) {
-		var varWidget = this.parent.varWidget();
-		var parentWidget = new Widget({}, {parentWidget: varWidget});
-		parentWidget.setVariable("currentTiddler", this.title);
-		var widget = new Widget({}, {parentWidget: parentWidget});
-		this.addWidget(widget);
-	}
-	return this.widget;
-};
-
-
-MacroConfig.prototype.import = function(filter) {
-	var parentWidget;
-	if (this.parent) {
-		parentWidget = this.getVariableWidget();
-	}
-	var importWidget = this.createVariableWidget(filter, parentWidget);
-	this._compileList(importWidget.tiddlerList);
-	this.widgetList.push(importWidget);
-	// This only works if only one filter is imported
-	this.addWidget(importWidget);
-};
-
-MacroConfig.prototype.varWidget = function() {
-	var rtn = this.getVariableWidget();
-	while (rtn.children.length > 0) {
-		rtn = rtn.children[0];
-	}
-	return rtn;
 };
 
 MacroConfig.prototype._compileList = function(titleList) {
