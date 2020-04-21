@@ -80,7 +80,7 @@ it('handles default type of title', function() {
 	testText("\\relink test other:title field\n<<test field: 'from here'>>");
 });
 
-it('linedef can accumulate configurations', function() {
+it('can accumulate vertically', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.macroConf("test", "ref", "reference"),
@@ -88,6 +88,10 @@ it('linedef can accumulate configurations', function() {
 	]);
 	testText("\\relink test list:list\n<<test ref: 'from here!!F' filt: '[tag[from here]]' list:'[[from here]]'>>",
 	         {wiki: wiki});
+});
+
+it('can accumulate horizontally', function() {
+	testText("\\relink test list:list\n\\relink test field\n<<test list:'[[from here]]' field:'from here'>>");
 });
 
 it('linedef macros update appropriately', function() {
