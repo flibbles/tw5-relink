@@ -25,15 +25,17 @@ ReferenceEntry.prototype.report = function() {
 };
 
 exports.relink = function(value, fromTitle, toTitle, options) {
-	var reference = $tw.utils.parseTextReference(value);
 	var entry;
-	if (reference.title === fromTitle) {
-		entry = new ReferenceEntry(reference);
-		if (!exports.canBePretty(toTitle)) {
-			entry.impossible = true;
-		} else {
-			reference.title = toTitle;
-			entry.output = exports.toString(reference);
+	if (value) {
+		var reference = $tw.utils.parseTextReference(value);
+		if (reference.title === fromTitle) {
+			entry = new ReferenceEntry(reference);
+			if (!exports.canBePretty(toTitle)) {
+				entry.impossible = true;
+			} else {
+				reference.title = toTitle;
+				entry.output = exports.toString(reference);
+			}
 		}
 	}
 	return entry;

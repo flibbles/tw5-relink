@@ -1,2 +1,3 @@
+* Fixed serious bug where reference fields didn't work AT ALL! And if you even tried to use them, then Relink would ~RSoD constantly. I guess Relink isn't being used all that much, because SOMEBODY should have noticed this before version 1.9.
 * If prettylinks must downgrade, they take advantage of Tiddlywiki's 5.1.20's shorthand link syntax if it's available (i.e. `<$link to="tiddler"/>` eqv `<$link to="tiddler">tiddler</$link>`)
 * wikitext occurring inside attributes or parameters would not find macro definitions in the scope of the tiddler, but not the attribute/parameter. Fixed.

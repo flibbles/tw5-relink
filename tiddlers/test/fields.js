@@ -162,4 +162,15 @@ it('supports "field" field settings', function() {
 	testField("from here", {type: "field"});
 });
 
+/**It's important that fields can be undefined, since obviously most tiddlers
+ * won't have the field.
+ */
+it("doesn't crash with missing any type of field", function() {
+	testField(undefined, undefined, {type: "reference"});
+	testField(undefined, undefined, {type: "title"});
+	testField(undefined, undefined, {type: "list"});
+	testField(undefined, undefined, {type: "filter"});
+	testField(undefined, undefined, {type: "wikitext"});
+});
+
 });
