@@ -49,13 +49,10 @@ MacroConfig.prototype.getMacro = function(macroName) {
 		parentSettings = this.parent.getMacro(macroName);
 	}
 	if (theseSettings && parentSettings) {
-		// gotta merge them. This is expensive, but it'll happen
-		// rarely.
-		for (var setting in parentSettings) {
-			if (!theseSettings[setting]) {
-				theseSettings[setting] = parentSettings[setting];
-			}
-		}
+		// gotta merge them without changing either. This is expensive,
+		// but it'll happen rarely.
+		var rtnSettings = $tw.utils.extend(Object.create(null), theseSettings, parentSettings);
+		return rtnSettings;
 	}
 	return theseSettings || parentSettings;
 };

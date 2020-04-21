@@ -119,6 +119,24 @@ it('linedef macros update appropriately', function() {
 	});
 });
 
+it("linedef macros don't cling to outdated global defs", function() {
+	// This test confirms that inlinemacro defs aren't copying and
+	// holding onto global defs longer than they should.
+	// This could happen if the inline defs had any settings for a macro
+	// themselves.
+	utils.monkeyPatch($tw.utils, "nextTick", (fn) => fn(), function() {
+		var wiki = new $tw.Wiki();
+		wiki.eventsTriggered = false;
+		wiki.addTiddler(utils.macroConf("test", "field"));
+		wiki.eventsTriggered = false;
+		wiki.addTiddler({title: "A", text: "\\relink test other", tags: "$:/tags/Macro"});
+		testText("<<test field:'from here' other:'from here'>>", {wiki: wiki});
+		wiki.eventsTriggered = false;
+		wiki.addTiddler(utils.macroConf("test", "field", "reference"));
+		testText("<<test field:'from here!!stuff'>>", {wiki: wiki});
+	});
+});
+
 it("linedef macros don't parse too much", function() {
 	var wiki = new $tw.Wiki(), text;
 	// Fully formed, it renders as nothing, but doesn't prevent later
