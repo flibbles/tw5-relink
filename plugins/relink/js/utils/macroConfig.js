@@ -70,11 +70,8 @@ MacroConfig.prototype.addSetting = function(macroName, parameter, type, sourceTi
 	}
 	var handler = settings.getRelinker(type);
 	if (handler) {
-		function Config(){};
-		Config.prototype = handler;
-		var config = new Config();
-		config.source = sourceTitle;
-		macro[parameter] = config;
+		handler.source = sourceTitle;
+		macro[parameter] = handler;
 	}
 };
 

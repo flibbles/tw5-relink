@@ -8,11 +8,13 @@ This handles the fetching and distribution of relink settings.
 var fieldTypes = Object.create(null);
 
 $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
-	fieldTypes[exports.name] = exports;
+	function NewType() {};
+	NewType.prototype = exports;
+	fieldTypes[exports.name] = NewType;
 	// For legacy reasons, some of the field types can go by other names
 	if (exports.aliases) {
 		$tw.utils.each(exports.aliases, function(alias) {
-			fieldTypes[alias] = exports;
+			fieldTypes[alias] = NewType;
 		});
 	}
 });
@@ -21,7 +23,8 @@ $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
  * This is useful for wikitext rules which need to parse a filter or a list
  */
 exports.getRelinker = function(name) {
-	return fieldTypes[name];
+	var Handler = fieldTypes[name];
+	return Handler ? new Handler() : undefined;
 };
 
 exports.getAttributes = function(options) {
@@ -106,11 +109,9 @@ function compileSettings(wiki) {
 			var factory = exports.factories[category];
 			if (factory) {
 				var name = remainder.substr(category.length+1);
-				var handler = fieldTypes[tiddler.fields.text];
-				if (handler) {
-					function Config() {};
-					Config.prototype = handler;
-					var data = new Config();
+				var Handler = fieldTypes[tiddler.fields.text];
+				if (Handler) {
+					var data = new Handler();
 					data.source = title;
 					factory(settings[category], data, name);
 				}
