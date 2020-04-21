@@ -48,7 +48,7 @@ MacroConfig.prototype.get = function(macroName, options) {
 	if (this.parent) {
 		parentSettings = this.parent.get(macroName, options);
 	} else {
-		parentSettings = settings.getMacros(options)[macroName];
+		parentSettings = options.settings.getMacros()[macroName];
 	}
 	if (theseSettings && parentSettings) {
 		// gotta merge them. This is expensive, but it'll happen

@@ -6,6 +6,7 @@ Introduces some utility methods used by Relink.
 \*/
 
 var MacroSettings = require('$:/plugins/flibbles/relink/js/utils/macroConfig.js');
+var Settings = require("$:/plugins/flibbles/relink/js/settings.js");
 
 var relinkOperations = Object.create(null);
 $tw.modules.applyMethods('relinkoperator', relinkOperations);
@@ -27,6 +28,7 @@ function getFreshRelinkReport(wiki, fromTitle, toTitle, options) {
 	options = options || {};
 	options.wiki = options.wiki || wiki;
 	options.macros = options.macros || wiki.getRelinkConfig();
+	options.settings = new Settings(wiki);
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var changeList = Object.create(null);

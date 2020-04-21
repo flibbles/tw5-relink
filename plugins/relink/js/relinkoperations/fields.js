@@ -35,7 +35,7 @@ FieldEntry.prototype.report = function() {
 };
 
 exports['fields'] = function(tiddler, fromTitle, toTitle, changes, options) {
-	var fields = settings.getFields(options);
+	var fields = options.settings.getFields();
 	$tw.utils.each(fields, function(handler, field) {
 		var input = tiddler.fields[field];
 		var entry = handler.relink(input, fromTitle, toTitle, options);

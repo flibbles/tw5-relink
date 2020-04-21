@@ -19,28 +19,34 @@ $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
 	}
 });
 
+function Settings(wiki) {
+	this.settings = compileSettings(wiki);
+};
+
+module.exports = Settings;
+
 /**Returns a specific relinker.
  * This is useful for wikitext rules which need to parse a filter or a list
  */
-exports.getRelinker = function(name) {
+Settings.getRelinker = function(name) {
 	var Handler = fieldTypes[name];
 	return Handler ? new Handler() : undefined;
 };
 
-exports.getAttributes = function(options) {
-	return getSettings(options).attributes;
+Settings.prototype.getAttributes = function() {
+	return this.settings.attributes;
 };
 
-exports.getFields = function(options) {
-	return getSettings(options).fields;
+Settings.prototype.getFields = function() {
+	return this.settings.fields;
 };
 
-exports.getMacros = function(options) {
-	return getSettings(options).macros;
+Settings.prototype.getMacros = function() {
+	return this.settings.macros;
 };
 
-exports.getOperators = function(options) {
-	return getSettings(options).operators;
+Settings.prototype.getOperators = function() {
+	return this.settings.operators;
 };
 
 /**Factories define methods that create settings given config tiddlers.
@@ -77,23 +83,6 @@ exports.factories = {
 	operators: function(operators, data, name) {
 		operators[name] = data;
 	}
-};
-
-/**We're caching the generated settings inside of options. Not exactly how
- * options was meant to be used, but it's fiiiiine.
- * The wiki global cache isn't a great place, because it'll get cleared many
- * times during a bulk relinking operation, and we can't recalculate this every
- * time without exploding a rename operation's time.
- * options works great. It only lasts just as long as the rename.
- * No longer, no shorter.
- */
-function getSettings(options) {
-	var secretCache = "__relink_settings";
-	var cache = options[secretCache];
-	if (cache === undefined) {
-		cache = options[secretCache] = compileSettings(options.wiki);
-	}
-	return cache;
 };
 
 function compileSettings(wiki) {

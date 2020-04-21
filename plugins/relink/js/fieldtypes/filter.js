@@ -52,7 +52,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 	}
 	var filterEntry = new FilterEntry();
 	var relinker = new Rebuilder(filter);
-	var whitelist = settings.getOperators(options);
+	var whitelist = options.settings.getOperators();
 	var p = 0, // Current position in the filter string
 		match, noPrecedingWordBarrier,
 		wordBarrierRequired=false;
