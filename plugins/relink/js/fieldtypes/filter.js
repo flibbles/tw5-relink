@@ -132,7 +132,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 						continue;
 					}
 
-					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]";
+					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle,undefined,options)+">]";
 				}
 				if (newVal[0] != '[') {
 					// not bracket enclosed
@@ -275,7 +275,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 						entry.impossible = true;
 						break;
 					}
-					var ph = options.placeholder.getPlaceholderFor(entry.output, handler.name);
+					var ph = options.placeholder.getPlaceholderFor(entry.output, handler.name, options);
 					wrapped = "<"+ph+">";
 				} else {
 					wrapped = "["+entry.output+"]";

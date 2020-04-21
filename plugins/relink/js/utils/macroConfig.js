@@ -106,7 +106,7 @@ MacroConfig.prototype.import = function(filter) {
 };
 
 MacroConfig.prototype.varWidget = function() {
-	var rtn = this.widget;
+	var rtn = this.getVariableWidget();
 	while (rtn.children.length > 0) {
 		rtn = rtn.children[0];
 	}

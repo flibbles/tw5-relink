@@ -5,23 +5,15 @@ the necessary supporting pragma when requested.
 
 \*/
 
-function Placeholder(options) {
+function Placeholder() {
 	this.placeholders = Object.create(null);
 	this.reverseMap = Object.create(null);
 	this.knownMacros = Object.create(null);
-	this.variableWidget = options.wiki.getRelinkConfig().varWidget();
 };
 
 module.exports = Placeholder;
 
-Placeholder.prototype.addWidget = function(widget) {
-	this.variableWidget = widget;
-	while (this.variableWidget.children.length > 0) {
-		this.variableWidget = this.variableWidget.children[0];
-	}
-};
-
-Placeholder.prototype.getPlaceholderFor = function(value, category) {
+Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
 	var placeholder = this.reverseMap[value];
 	if (placeholder) {
 		return placeholder;
@@ -36,18 +28,18 @@ Placeholder.prototype.getPlaceholderFor = function(value, category) {
 	do {
 		number += 1;
 		placeholder = prefix + number;
-	} while (this.macroExists(placeholder));
+	} while (this.macroExists(placeholder, options));
 	this.placeholders[placeholder] = value;
 	this.reverseMap[value] = placeholder;
 	this.reserve(placeholder);
 	return placeholder;
 };
 
-Placeholder.prototype.macroExists = function(macroName) {
+Placeholder.prototype.macroExists = function(macroName, options) {
 	if (this.knownMacros[macroName]) {
 		return true;
 	}
-	if (this.variableWidget && this.variableWidget.variables[macroName]) {
+	if (options.macros && options.macros.varWidget().variables[macroName]) {
 		return true;
 	}
 	return false;

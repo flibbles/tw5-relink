@@ -50,7 +50,7 @@ exports.makeLink = function(tiddler, caption, options) {
 				if (!options.placeholder) {
 					return undefined;
 				}
-				quoted = "<<" + options.placeholder.getPlaceholderFor(tiddler) + ">>";
+				quoted = "<<" + options.placeholder.getPlaceholderFor(tiddler,undefined,options) + ">>";
 			}
 			output = "<$link to="+quoted+"/>";
 		} else {
@@ -59,7 +59,7 @@ exports.makeLink = function(tiddler, caption, options) {
 			// from later relinks.
 			// It doesn't matter whether the tiddler is quotable.
 			if (options.placeholder) {
-				var ph = options.placeholder.getPlaceholderFor(tiddler);
+				var ph = options.placeholder.getPlaceholderFor(tiddler, undefined, options);
 				output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 			}
 		}
@@ -69,7 +69,7 @@ exports.makeLink = function(tiddler, caption, options) {
 			output = "<$link to="+quoted+">"+safeCaption+"</$link>";
 		}
 	} else if (options.placeholder) {
-		var ph = options.placeholder.getPlaceholderFor(tiddler);
+		var ph = options.placeholder.getPlaceholderFor(tiddler, undefined, options);
 		// We don't test if caption is undefined here, because it
 		// never will be. options.placeholder exists.
 		var safeCaption = sanitizeCaption(caption, options);
@@ -107,7 +107,7 @@ function sanitizeCaption(caption, options) {
 		if (wrapped) {
 			return "<$text text="+wrapped+"/>";
 		} else if (options.placeholder) {
-			var ph = options.placeholder.getPlaceholderFor(caption, "caption");
+			var ph = options.placeholder.getPlaceholderFor(caption, "caption", options);
 			return "<$text text=<<"+ph+">>/>";
 		} else {
 			return undefined;

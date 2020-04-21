@@ -79,7 +79,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 						// but we can't...
 						entry.impossible = true;
 					} else {
-						var value = options.placeholder.getPlaceholderFor(entry.output,handler.name)
+						var value = options.placeholder.getPlaceholderFor(entry.output,handler.name,options)
 						quotedValue = "<<"+value+">>";
 					}
 				}
@@ -165,7 +165,7 @@ function computeAttribute(attribute, parser, options) {
 		var parentWidget = parser.macros.getVariableWidget();
 		value = options.wiki.filterTiddlers(attribute.filter,parentWidget)[0] || "";
 	} else if(attribute.type === "indirect") {
-		var parentWidget = parser.macros.getVariableWidget();
+		var parentWidget = options.macros.getVariableWidget();
 		value = options.wiki.getTextReference(attribute.textReference,"",parentWidget.variables.currentTiddler.value);
 	} else if(attribute.type === "macro") {
 		var parentWidget = parser.macros.getVariableWidget();

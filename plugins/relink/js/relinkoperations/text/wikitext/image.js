@@ -88,7 +88,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				if (makeWidget) {
 					var quotedValue = utils.wrapAttributeValue(toTitle);
 					if (quotedValue === undefined) {
-						var key = options.placeholder.getPlaceholderFor(toTitle);
+						var key = options.placeholder.getPlaceholderFor(toTitle, undefined, options);
 						builder.add("source=<<"+key+">>", ptr, ptr+fromTitle.length);
 					} else {
 						builder.add("source="+quotedValue, ptr, ptr+fromTitle.length);

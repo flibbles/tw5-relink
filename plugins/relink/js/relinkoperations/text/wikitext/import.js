@@ -47,9 +47,5 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	// it's calling for, and any /relink pragma
 	this.parser.macros.import(filter);
 
-	if (options.placeholder) {
-		options.placeholder.addWidget(this.parser.macros.widget);
-	}
-
 	return entry;
 };

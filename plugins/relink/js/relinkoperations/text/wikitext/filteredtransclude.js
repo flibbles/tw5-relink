@@ -134,7 +134,7 @@ function widget(filter, tooltip, template, style, classes, options) {
 				return undefined;
 			}
 			var category = treatAsTitle ? undefined : name;
-			wrappedValue = "<<"+options.placeholder.getPlaceholderFor(value,category)+">>";
+			wrappedValue = "<<"+options.placeholder.getPlaceholderFor(value,category,options)+">>";
 		}
 		return " "+name+"="+wrappedValue;
 	};

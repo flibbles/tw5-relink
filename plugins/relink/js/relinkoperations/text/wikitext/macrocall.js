@@ -147,7 +147,7 @@ function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWid
 				entry.impossible = true;
 				continue;
 			}
-			var ph = options.placeholder.getPlaceholderFor(entry.output,handler.name);
+			var ph = options.placeholder.getPlaceholderFor(entry.output,handler.name, options);
 			newParam.newValue = "<<"+ph+">>";
 			newParam.type = "macro";
 		} else {

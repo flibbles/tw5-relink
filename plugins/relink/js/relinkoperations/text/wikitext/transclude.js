@@ -114,7 +114,7 @@ function wrap(tiddler, options) {
 	var result = utils.wrapAttributeValue(tiddler);
 	if (result === undefined) {
 		if (options.placeholder) {
-			result = "<<" + options.placeholder.getPlaceholderFor(tiddler) + ">>";
+			result = "<<" + options.placeholder.getPlaceholderFor(tiddler, undefined, options) + ">>";
 		}
 	}
 	return result;
@@ -152,7 +152,7 @@ function wrapAttribute(name, value, options) {
 			if (!options.placeholder) {
 				return undefined;
 			}
-			wrappedValue = "<<"+options.placeholder.getPlaceholderFor(value, name)+">>";
+			wrappedValue = "<<"+options.placeholder.getPlaceholderFor(value, name, options)+">>";
 		}
 		return " "+name+"="+wrappedValue;
 	}
