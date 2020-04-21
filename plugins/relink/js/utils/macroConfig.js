@@ -42,13 +42,11 @@ MacroConfig.prototype.refresh = function(changes) {
 	return false;
 };
 
-MacroConfig.prototype.get = function(macroName, options) {
+MacroConfig.prototype.getMacro = function(macroName) {
 	var theseSettings = this.macros[macroName];
 	var parentSettings;
 	if (this.parent) {
-		parentSettings = this.parent.get(macroName, options);
-	} else {
-		parentSettings = options.settings.getMacros()[macroName];
+		parentSettings = this.parent.getMacro(macroName);
 	}
 	if (theseSettings && parentSettings) {
 		// gotta merge them. This is expensive, but it'll happen

@@ -43,7 +43,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	// Move past the macro call
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var start = this.matchRegExp.lastIndex - this.match[0].length;
-	var managedMacro = this.parser.macros.get(macroName, options);
+	var managedMacro = this.parser.macros.getMacro(macroName);
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
 		return undefined;
@@ -92,7 +92,7 @@ exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, opti
  * to be converted.
  */
 function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWidget, options) {
-	var managedMacro = parser.macros.get(macro.name, options);
+	var managedMacro = parser.macros.getMacro(macro.name);
 	var modified = false;
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.

@@ -6,6 +6,7 @@ This handles the fetching and distribution of relink settings.
 \*/
 
 var fieldTypes = Object.create(null);
+var prefix = "$:/config/flibbles/relink/";
 
 $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
 	function NewType() {};
@@ -21,6 +22,7 @@ $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
 
 function Settings(wiki) {
 	this.settings = compileSettings(wiki);
+	this.wiki = wiki;
 };
 
 module.exports = Settings;
@@ -41,12 +43,22 @@ Settings.prototype.getFields = function() {
 	return this.settings.fields;
 };
 
-Settings.prototype.getMacros = function() {
-	return this.settings.macros;
+Settings.prototype.getMacro = function(macroName) {
+	return this.settings.macros[macroName];
 };
 
 Settings.prototype.getOperators = function() {
 	return this.settings.operators;
+};
+
+Settings.prototype.refresh = function(changes) {
+	for (var title in changes) {
+		if (title.substr(0, prefix.length) === prefix) {
+			this.settings = compileSettings(this.wiki);
+			return true;
+		}
+	}
+	return false;
 };
 
 /**Factories define methods that create settings given config tiddlers.
@@ -86,7 +98,6 @@ exports.factories = {
 };
 
 function compileSettings(wiki) {
-	var prefix = "$:/config/flibbles/relink/";
 	var settings = Object.create(null);
 	for (var name in exports.factories) {
 		settings[name] = Object.create(null);

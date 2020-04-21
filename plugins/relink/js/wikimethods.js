@@ -28,7 +28,7 @@ function getFreshRelinkReport(wiki, fromTitle, toTitle, options) {
 	options = options || {};
 	options.wiki = options.wiki || wiki;
 	options.macros = options.macros || wiki.getRelinkConfig();
-	options.settings = new Settings(wiki);
+	options.settings = options.macros.parent;
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var changeList = Object.create(null);
@@ -82,10 +82,12 @@ exports.getRelinkableTitles = function() {
 
 exports.getRelinkConfig = function() {
 	if (this._relinkConfig === undefined) {
-		var config = new MacroSettings(this);
+		var settings = new Settings(this);
+		var config = new MacroSettings(this, settings);
 		config.import( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
 		this.addEventListener("change", function(changes) {
 			config.refresh(changes);
+			settings.refresh(changes);
 		});
 		this._relinkConfig = config;
 	}

@@ -156,24 +156,33 @@ it('undefined macros', function() {
 	testText("<<undef something param:'from here'>> [[from here]]",
 	         "<<undef something param:'from here'>> [[A] '\"]]",
 	         {wiki: wiki, to: "A] '\"", fails: 1});
+});
+
+it("undefined macros, multiple active parameters", function() {
+	var to = `to''[]there"`;
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.macroConf("undef", "param", "title"),
+		utils.macroConf("undef", "list", "list")]);
 
 	// Relink continues if one param couldn't resolve. Others might.
-	wiki.addTiddler(utils.macroConf("undef", "list", "list"));
 	testText("<<undef 'from here' param:'from here'>>",
-	         "<<undef 'from here' param:'to there'>>", {wiki: wiki, fails: 1});
+	         "<<undef 'from here' param:'to there'>>",
+	         {wiki: wiki, fails: 1});
+
 	// Two failures, one can't be resolved. The other needs to downgrade
 	// into a widget, but it can't because an unnamed parameter can't be
 	// resolved.
 	testText("<<undef 'from here' param:'from here'>>",
 	         "<<undef 'from here' param:'from here'>>",
 	         {wiki: wiki, fails: 2, to: to});
+
 	// Super tricky. Both parameters can relink, but 'param' requires a
 	// downgrade. But there's an unresolved anonymous param, so no
 	// downgrade possible. Therefore, fail that, but process the other.
 	testText("<<undef list:'[[from]]' param:'from' anon>> [[from]]",
 	         `<<undef list:"""[[A] '\"]]""" param:'from' anon>> [[A] '\"]]`,
 	         {wiki: wiki, fails: 1, from: "from", to: "A] '\""});
-
 });
 
 it('undefined macros, no anonymous params', function() {
