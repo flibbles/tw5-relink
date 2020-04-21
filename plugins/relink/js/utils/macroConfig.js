@@ -18,18 +18,6 @@ function MacroConfig(wiki, parent, title) {
 
 module.exports = MacroConfig;
 
-MacroConfig.prototype.get = function(macroName, options) {
-	var macro = this.macros[macroName];
-	if (macro) {
-		// This isn't quite right.
-		return macro;
-	}
-	if (this.parent) {
-		return this.parent.get(macroName, options);
-	}
-	return settings.getMacros(options)[macroName];
-};
-
 MacroConfig.prototype.import = function(filter) {
 	var parentWidget;
 	if (this.parent) {
@@ -52,6 +40,26 @@ MacroConfig.prototype.refresh = function(changes) {
 		return true;
 	}
 	return false;
+};
+
+MacroConfig.prototype.get = function(macroName, options) {
+	var theseSettings = this.macros[macroName];
+	var parentSettings;
+	if (this.parent) {
+		parentSettings = this.parent.get(macroName, options);
+	} else {
+		parentSettings = settings.getMacros(options)[macroName];
+	}
+	if (theseSettings && parentSettings) {
+		// gotta merge them. This is expensive, but it'll happen
+		// rarely.
+		for (var setting in parentSettings) {
+			if (!theseSettings[setting]) {
+				theseSettings[setting] = parentSettings[setting];
+			}
+		}
+	}
+	return theseSettings || parentSettings;
 };
 
 MacroConfig.prototype.addSetting = function(macroName, parameter, type) {
