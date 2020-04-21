@@ -36,11 +36,21 @@ Placeholder.prototype.getPlaceholderFor = function(value, category) {
 	do {
 		number += 1;
 		placeholder = prefix + number;
-	} while (this.knownMacros[placeholder] || this.variableWidget.variables[placeholder]);
+	} while (this.macroExists(placeholder));
 	this.placeholders[placeholder] = value;
 	this.reverseMap[value] = placeholder;
 	this.reserve(placeholder);
 	return placeholder;
+};
+
+Placeholder.prototype.macroExists = function(macroName) {
+	if (this.knownMacros[macroName]) {
+		return true;
+	}
+	if (this.variableWidget && this.variableWidget.variables[macroName]) {
+		return true;
+	}
+	return false;
 };
 
 Placeholder.prototype.reserve = function(macro) {
