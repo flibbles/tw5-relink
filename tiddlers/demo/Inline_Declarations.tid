@@ -1,0 +1,46 @@
+title: Inline Declarations
+
+\rules except wikilink
+
+//Relink// comes with a `\relink` pragma which allows you to declare your parameters right alongside your macro definitions.
+
+This method is good for own homebrew macros. It keeps your definition and declarations together in the same place. If you're defining macros for a plugin, or you're creating a javascript macro, you should use [[the whitelist tables instead|Whitelisting]].
+
+!! Example
+
+```
+\relink fellowship name:title members:filter
+\define fellowship(name, members)
+!!! <$link to=<<__name__>> />
+<$list filter=<<__members__>> />
+\end
+```
+
+The `\relink` pragma here specifies a macro, then lists the parameters and their [[associated types|Types]]. ''name'' is a title, and ''members'' is a filter. //Relink// will parse them both appropriately now.
+
+So take `<<fellowship "Ring Deliverers" "[tag[LotR Character]]">>`. Now, if the tiddler "Ring Deliverers" is renamed, //Relink// knows to update the ''name'' parameters. If the "LotR Character" is changed, then //Relink// will correctly change it inside `[tag[LotR Character]]`.
+
+!! Usage
+
+The relink pragma specifies a macro, and then lists any parameters that are applicable to renaming.
+
+```
+\relink macroName param1:type param2:type ...
+```
+
+The available types are
+<$macrocall
+	$name=say-list
+	filter=[tag[Types]]
+	template="""<$macrocall $name=link-to-tab tiddler=Types tab=<<currentTiddler>> caption=<<currentTiddler>> />""" />.
+
+If a type is not specified, //Relink// defaults to ''title'', so `\relink myMacro myParameter` is equivalent to `\relink myMacro myParameter: title`.
+
+Inline declarations don't have to be written alongside the macro definitions, or even in the same tiddler (but they should be).
+
+!! Scope
+
+Globally accessable macro definitions (like through <<tag $:/tags/Macro>>) will be displayed in the <<link-to-config-tab Macros 'configuration whitelist'>> for your benefit.
+
+If your inline declaration has a limited scope (as in its only used in the tiddler its defined in, or maybe you only ever import it through `\import` pragma), //it will still work as expected//, although it won't be displayed in the whitelist.
+

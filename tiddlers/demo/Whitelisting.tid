@@ -1,0 +1,46 @@
+title: Whitelisting
+
+You can use the <<link-to-config-tab Macros "//Relink// configuration table">> to whitelist <<say-list [tag[Types]lowercase[]]>>. Just go to the correct table and input what you need.
+
+A macro may have multiple parameter entries, one for each relinkable parameter. Same with attributes. See each of <<say-list [tag[Construct]] "<$link/>">> for more details.
+
+!! Integrating your plugin with relink
+
+You can configure the <<say-list "[tag[Types]lowercase[]]">> of your plugin to automatically be in the whitelist.
+
+To do this, just add tiddlers to your plugin following the naming convention:
+
+* ''Fields'': `$:/config/flibbles/relink/fields/<<fieldName>>`
+* ''Macros'': `$:/config/flibbles/relink/macros/<<macroName>>/<<parameterName>>`
+* ''Filter Operators'': `$:/config/flibbles/relink/operators/<<operatorName>>`
+* ''widget/element attributes'': `$:/config/flibbles/relink/attributes/<<elementName>>/<<attributeName>>`
+
+The body of these configuration tiddlers should be the corresponding [[type|Types]], like `title` or `filter`.
+
+A macro like `\define fellowship(name, members)` from the [[macro example|Macros]] should have corresponding config tiddlers like:
+
+```
+title: $:/config/flibbles/relink/macros/fellowship/name
+
+title
+```
+
+and
+
+```
+title: $:/config/flibbles/relink/macros/fellowship/members
+
+filter
+```
+
+!! Why use whitelisting for macros when inline declarations exists?
+
+[[Inline Declarations]] are a more convenient method of declaring macro parameters for relinking. It's faster to set up, and it keeps the macro definition together with the declaration, but there are times when you should use the whitelist.
+
+If you're building a macro for a plugin, you should use the whitelist for a few reasons.
+
+* The user can override or disable your relink configurations in the whitelist without having to override your shadow tiddlers containing the macros.
+* If the user doesn't have Relink installed, `\relink` doesn't parse. It just displays as is. That's ugly, and if it comes before your `\define` pragma, ''it will actually prevent them from being properly imported''. Meanwhile having tiddlers like `$:/config/flibbles/relink/...` in your plugin won't break anything.
+* If the user doesn't have Relink installed, they may have no idea what this `\relink` syntax is, but if they look in your plugin's contents and see `$:/config/flibbles/relink/macros/macroName/paramName`, they'll have an easier time figuring out that it's part of another plugin named Relink (by Flibbles).
+
+Also, if you're creating a javascript macro, you obviously can't put `\relink` pragma in that file. You //can// instead put the declarations into any ol' <<tag $:/tags/Macro>> tiddler, but you shouldn't. The whitelist is more a appropriate and centralized place.

@@ -2,36 +2,22 @@ caption: Macros
 tags: Documentation Construct
 title: Macros
 
-''Relink'' will relink macro parameters, but only if they've been explicitly whitelisted. All appropriate core macro parameters are already whitelisted by default, but you may wish to add your own.
+''Relink'' will relink macro parameters, but only if they've been explicitly whitelisted. All core macro parameters are already configured by default [[with their correct types|Types]], but what if you create your own macros?
 
-For each parameter, you must specify its [[type|Types]].
-
-!!! Details
-
-If you add an entry to the whitelist, like `myMacro`/`myParameter`, that assumes that you have a macro somewhere in your project defined like `\define myMacro(..., myParameter, ...)`, or you have a macro module defining it.
-
-You can either have this macro defined globally through <<tag $:/tags/Macro>>, or have it defined locally inside a specific tidder, or imported through `\import` or the like. All are supported, so long as the macro is defined in any context where it's used.
-
-But actually, defining the macro isn't strictly necessary. //Relink// only needs the macro definition so it can resolve anonymous macros. For example, if you called our example above as,
+Lets say you design your own macro to print out a fellowship and its members, like:
 
 ```
-<<myMacro myParameter:"tiddlerTitle" "some text">>
+\define fellowship(name, members)
+!!! <$link to=<<__name__>> />
+<$list filter=<<__members__>> />
+\end
 ```
-And you rename //tiddlerTitle//, Relink doesn't need the definition to figure out how to relink myParameter, even with other parameters there.
-However, if you call it like,
 
-```
-<<myMacro "tiddlerTitle" "some text">>
-```
-Then //Relink// needs to be able to find the definition to figure out which parameter is what. If your definition is:
+If you call that macro, like `<<fellowship "Ring Deliverers" "[tag[LotR Character]]">>`, //Relink// won't touch those parameters by default. You have to declare their type first.
 
-```
-\define myMacro(text, myParameter) ...
-```
-Then Relink //shouldn't// relink the example, because the second anonymous parameter, //otherValue// corresponds to the parameter `myParameter`. The first parameter, //text// isn't whitelisted. So it won't be touched. Make sense?
+There are two ways to do this.
 
-''Note'': While you can define your macros locally, the whitelist is global. So  if you have tricky situations, such as multiple variations of the same macro defined for different contexts, or you get super fancy with your `<$importvariables>` widgets, //Relink// will //try its best// to find the proper definition.
-
-At worst, it'll report that it couldn't relink a particular tiddler if it finds an abiguous macrocall.
+* ''[[Inline Declarations]]:'' This uses the `\relink` pragma. It's good for homebrew macros, or macros which have a limited scope (those not made global with <<tag $:/tags/Macro>>).
+* ''[[Whitelisting]]:'' If you add an entry to the whitelist, like `fellowship`/`name` set to 'title'. And `fellowship`/`members` set to filter. This is good for javascript macros, or macros defined by a plugin you're writing.
 
 <<link-to-tab Demo Demo/Macros Demo>>

@@ -1,0 +1,8 @@
+tags: $:/tags/Macro
+title: Macros/print-before-this
+
+\define print-before-this()
+<$codeblock code={{{[<currentTiddler>get[text]splitbefore[<<print-before-this]removesuffix[<<print-before-this]]}}} />
+\end
+
+This macro just displays text that comes before its invocation. I use it to display otherwise-hidden pragma.

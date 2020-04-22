@@ -1,6 +1,6 @@
 tags: $:/tags/Macro
 title: Macros/link-to-tab
-qualifiers: Demo 1577183281 $:/plugins/flibbles/relink/configuration 678614419
+qualifiers: Demo 1577183281 Types 2094947537
 
 \define link-to-tab(tiddler, tab, caption)
 <$button class="tc-btn-invisible tc-tiddlylink">

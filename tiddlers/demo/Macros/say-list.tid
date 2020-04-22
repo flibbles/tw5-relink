@@ -1,0 +1,9 @@
+tags: $:/tags/Macro
+title: Macros/say-list
+
+\define say-list(filter, template:"""<$text text=<<currentTiddler>> />""")
+<$list filter="[subfilter<__filter__>butlast[]]">$template$, </$list><$list filter="[subfilter<__filter__>last[]]">and $template$</$list>
+\end
+<<print-before-this>>
+
+This prints a filter's items in a conversational way. For instance: <<say-list "Frodo BilboBaggins Gollum">>. 
