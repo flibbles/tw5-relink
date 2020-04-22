@@ -7,4 +7,4 @@ title: Macros/choice
 
 The choice macro takes a reference for its second parameter called ''item''.
 
-This global macro relies on an inline definition using the `\relink` pragma to declare its ''item'' parameter as something that should be relinked. See [[Inline Declarations]] for more information.
+This macro declares its parameters through [[pragma|Inline Declarations]]. Since this tiddler is global (because of <<tag $:/tags/Macro>>), its parameters will get a mention in the <<link-to-config-tab Macros "whitelist configuration page">>

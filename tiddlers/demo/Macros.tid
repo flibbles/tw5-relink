@@ -2,7 +2,9 @@ caption: Macros
 tags: Documentation Construct
 title: Macros
 
-''Relink'' will relink macro parameters, but only if they've been explicitly whitelisted. All core macro parameters are already configured by default [[with their correct types|Types]], but what if you create your own macros?
+//Relink// will relink macro parameters. It doesn't matter if you call them the `<<pretty>>` way or the `<$macrocall>` way. Nor does it matter if your macros are global through <<tag $:/tags/Macro>>, imported through `\import`, or defined in a macro module. //Relink// handles it all.
+
+...but //Relink// only updates parameters that have been explicitly whitelisted. All core macro parameters are already configured by default [[with their correct types|Types]], but what if you create your own macros?
 
 Lets say you design your own macro to print out a fellowship and its members, like:
 

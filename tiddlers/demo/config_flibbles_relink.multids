@@ -7,6 +7,5 @@ fields/example-title: title
 fields/example-wikitext: wikitext
 macros/link-to-tab/tab: title
 macros/link-to-tab/tiddler: title
-macros/choice/item: reference
-macros/makeLink/text: wikitext
-macros/makeLink/title: title
+macros/say-list/filter: filter
+macros/say-list/template: wikitext

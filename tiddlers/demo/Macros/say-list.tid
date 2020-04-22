@@ -7,3 +7,5 @@ title: Macros/say-list
 <<print-before-this>>
 
 This prints a filter's items in a conversational way. For instance: <<say-list "Frodo BilboBaggins Gollum">>. 
+
+This macro is globally available because of the tag <<tag $:/tags/Macro>>. It relies on [[Whitelisting]] to declare its parameters. You can see the whitelist configuration <<link-to-config-tab Macros here>>.

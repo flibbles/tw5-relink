@@ -1,14 +1,15 @@
-description: <p>Relink can rename the parameters in macros. This is done through a whitelist in Relink configuration. All core macros are already added, but you can add your own as well.</p> <p>It doesn't matter if you call your macros through the `<<pretty>>` way or the `<$macrocall>` way, whether your parameters are named or anonymous, or whether you define your macros through <<tag $:/tags/Macro>>, `\define` pragma, or macro modules. Relink does it all //(so long as you whitelist it)//.</p> <p>The macro `choice` is globally defined <$link to="Macros/choice">here</$link>.<br/>The //Relink// whitelist configuration for `choice` and `makeLink` are <<link-to-config-tab Macros "here">>.</p>
+description: <p>Relink can rename the parameters in macros. Each parameter must be declared first. All core macros are already configured, but you can add your own as well. [[See here for more details.|Macros]]</p> <p>`<<choice>>` is defined [[here|Macros/choice]].<br/>`<<say-list>>` is defined [[here|Macros/say-list]].<br/>See each for examples on different ways to declare parameters.</p>
 
 \define makeLink(text, title)
 <$link to=<<__title__>>>$text$</$link>
 \end
+\relink makeLink text:wikitext title
 
 <<makeLink "Link to {{Frodo!!race}}" Frodo>>
 
-<<choice Weapon Frodo!!weapon>>
+<<say-list "Frodo BilboBaggins Gollum">>
 
 <$macrocall $name="choice"
             type="Name"
-            item="Frodo!!title"/>
+            item="Frodo!!weapon"/>
 
