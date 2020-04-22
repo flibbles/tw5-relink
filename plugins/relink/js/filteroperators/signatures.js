@@ -9,19 +9,8 @@ relink configuration.
 \*/
 
 exports.signatures = function(source,operator,options) {
-	var category = operator.suffix;
 	var plugin = operator.operand || null;
-	var config = options.wiki.getRelinkConfig();
-	var set = {};
-	if (category === "macros") {
-		set = config.getMacros();
-	} else if (category === "attributes") {
-		set = config.getAttributes();
-	} else if (category === "operators") {
-		set = config.getOperators();
-	} else if (category === "fields") {
-		set = config.getFields();
-	}
+	var set = getSet(options);
 	if (plugin === "$:/core") {
 		// Core doesn't actually have any settings. We mean Relink
 		plugin = "$:/plugins/flibbles/relink";
@@ -34,4 +23,45 @@ exports.signatures = function(source,operator,options) {
 		}
 	}
 	return signatures;
+};
+
+exports.type = function(source,operator,options) {
+	var results = [];
+	var set = getSet(options);
+	source(function(tiddler, signature) {
+		if (set[signature]) {
+			results.push(set[signature].name);
+		}
+	});
+	return results;
+};
+
+exports.source = function(source,operator,options) {
+	var results = [];
+	var category = operator.suffix;
+	var set = getSet(options);
+	source(function(tiddler, signature) {
+		if (set[signature]) {
+			results.push(set[signature].source);
+		}
+	});
+	return results;
+};
+
+function getSet(options) {
+	return options.wiki.getGlobalCache("relink-signatures", function() {
+		var config = options.wiki.getRelinkConfig();
+		var set = Object.create(null);
+		var categories = {
+			attributes: config.getAttributes(),
+			fields: config.getFields(),
+			macros: config.getMacros(),
+			operators: config.getOperators()};
+		$tw.utils.each(categories, function(list, category) {
+			$tw.utils.each(list, function(item, key) {
+				set[category + "/" + key] = item;
+			});
+		});
+		return set;
+	});
 };
