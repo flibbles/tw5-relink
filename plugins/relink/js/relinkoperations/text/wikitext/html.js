@@ -146,9 +146,11 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 function getAttributeHandler(widget, attributeName, options) {
 	if (widget.tag === "$macrocall") {
 		var nameAttr = widget.attributes["$name"];
-		var macro = options.settings.getMacro(nameAttr.value);
-		if (macro) {
-			return macro[attributeName];
+		if (nameAttr) {
+			var macro = options.settings.getMacro(nameAttr.value);
+			if (macro) {
+				return macro[attributeName];
+			}
 		}
 	} else {
 		var element = options.settings.getAttribute(widget.tag);

@@ -276,6 +276,9 @@ it('slashes in macro name', function() {
 it('$macrocall', function() {
 	testText("<$macrocall $name=test A=stuff Btitle='from here' Clist='[[from here]]' Dref='from here##index' />");
 	testText("\n\n<$macrocall $name=test\n\nBtitle='from here'/>\n\n");
+
+	// not having $name shouldn't cause a crash
+	testText("<$macrocall Btitle='from here' />", {ignored: true});
 });
 
 it('attribute invocations', function() {
