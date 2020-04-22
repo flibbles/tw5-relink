@@ -46,6 +46,9 @@ exports.parse = function() {
 		relink[macroName] = macroParams;
 		rtn.push({
 			type: "set",
+			attributes: {
+				name: {type: "string", value: ""}
+			},
 			children: [],
 			relink: relink});
 	}

@@ -72,6 +72,16 @@ it('handles illegal type', function() {
 	expect(plain).toEqual("Type: illegal");
 });
 
+// Somehow, the relink pragma was borfing up currentTiddler at some point
+it("doesn't break currentTiddler", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: "Outer", text: "{{MyTiddler}}"},
+		{title: "MyTiddler", text: "\\relink anything param\n<<currentTiddler>>"}]);
+	var text = wiki.renderTiddler("text/plain", "Outer");
+	expect(text).toEqual("MyTiddler");
+});
+
 it('handles default type of title', function() {
 	var wiki = new $tw.Wiki();
 	testText("\\relink test field\n<<test field: 'from here'>>");
