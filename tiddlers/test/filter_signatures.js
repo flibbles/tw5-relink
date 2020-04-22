@@ -50,15 +50,24 @@ it("does nothing with bad suffix", function() {
 it("filters by plugin if supplied", function() {
 	var wiki = new $tw.Wiki();
 	var ref = utils.attrConf("test", "plugin", "filter");
-	wiki.addTiddler(utils.attrConf("test", "attr", "reference"));
+	var content = { tiddlers: {
+		[utils.attrConf("test", "plugin").title]: {"text": "filter"},
+		[utils.attrConf("test", "override").title]: {"text": "filter"}
+	}};
+	wiki.addTiddlers([
+		utils.attrConf("test", "user"),
+		utils.attrConf("test", "override")]);
 	wiki.addTiddler({
 		title: "testPlugin",
 		type: "application/json",
 		"plugin-type": "plugin",
-		text: '{"tiddler":{"'+ref.title+'": {"text": "filter"}}}'});
+		text: JSON.stringify(content)});
 	wiki.registerPluginTiddlers("plugin");
-	test(wiki, "attributes", ["test/attr"]);
-	//test(wiki, "attributes", []);
+	wiki.readPluginInfo();
+	wiki.unpackPluginTiddlers();
+	// Overrides continue to show up as their plugin versions
+	test(wiki, "attributes", ["test/user"]);
+	test(wiki, "attributes", ["test/plugin", "test/override"], "testPlugin");
 });
 
 });

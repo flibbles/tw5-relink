@@ -141,11 +141,17 @@ exports.placeholder = function(number, value, newline) {
 
 exports.attrConf = function(element, attribute, type) {
 	var prefix = "$:/config/flibbles/relink/attributes/";
+	if (type === undefined) {
+		type = "title";
+	}
 	return {title: prefix + element + "/" + attribute, text: type};
 };
 
 exports.fieldConf = function(field, type) {
 	var prefix =  "$:/config/flibbles/relink/fields/";
+	if (type === undefined) {
+		type = "title";
+	}
 	return {title: prefix + field, text: type};
 };
 

@@ -10,19 +10,28 @@ relink configuration.
 
 exports.signatures = function(source,operator,options) {
 	var category = operator.suffix;
-	var plugin = operator.operand;
+	var plugin = operator.operand || null;
 	var config = options.wiki.getRelinkConfig();
+	var set = {};
 	if (category === "macros") {
-		return Object.keys(config.getMacros());
+		set = config.getMacros();
+	} else if (category === "attributes") {
+		set = config.getAttributes();
+	} else if (category === "operators") {
+		set = config.getOperators();
+	} else if (category === "fields") {
+		set = config.getFields();
 	}
-	if (category === "attributes") {
-		return Object.keys(config.getAttributes());
+	if (plugin === "$:/core") {
+		// Core doesn't actually have any settings. We mean Relink
+		plugin = "$:/plugins/flibbles/relink";
 	}
-	if (category === "operators") {
-		return Object.keys(config.getOperators());
+	var signatures = [];
+	for (var signature in set) {
+		var source = set[signature].source;
+		if (options.wiki.getShadowSource(source) === plugin) {
+			signatures.push(signature);
+		}
 	}
-	if (category === "fields") {
-		return Object.keys(config.getFields());
-	}
-	return [];
+	return signatures;
 };
