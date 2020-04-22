@@ -33,6 +33,7 @@ it('linedef macros', function() {
 		text: "\\relink global field:title",
 		tags: "$:/tags/Macro"});
 	testText("<<global field: 'from here'>>", {wiki: wiki});
+	testText("<$macrocall $name=global field='from here' />", {wiki: wiki});
 });
 
 it('parses strange syntax', function() {

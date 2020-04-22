@@ -147,7 +147,7 @@ function getAttributeHandler(widget, attributeName, options) {
 	if (widget.tag === "$macrocall") {
 		var nameAttr = widget.attributes["$name"];
 		if (nameAttr) {
-			var macro = options.settings.getMacro(nameAttr.value);
+			var macro = options.macros.getMacro(nameAttr.value);
 			if (macro) {
 				return macro[attributeName];
 			}
