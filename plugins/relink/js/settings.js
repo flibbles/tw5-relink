@@ -35,20 +35,29 @@ Settings.getRelinker = function(name) {
 	return Handler ? new Handler() : undefined;
 };
 
-Settings.prototype.getAttributes = function() {
-	return this.settings.attributes;
+Settings.prototype.getAttribute = function(elementName) {
+	return this.settings.attributes[elementName];
 };
+
+Settings.prototype.getAttributes = function() {
+	return flatten(this.settings.attributes);
+};
+
 
 Settings.prototype.getFields = function() {
 	return this.settings.fields;
+};
+
+Settings.prototype.getOperators = function() {
+	return this.settings.operators;
 };
 
 Settings.prototype.getMacro = function(macroName) {
 	return this.settings.macros[macroName];
 };
 
-Settings.prototype.getOperators = function() {
-	return this.settings.operators;
+Settings.prototype.getMacros = function() {
+	return flatten(this.settings.macros);
 };
 
 Settings.prototype.refresh = function(changes) {
@@ -138,3 +147,14 @@ function dir(string) {
 		return string.substr(0, index);
 	}
 }
+
+function flatten(set) {
+	var signatures = Object.create(null);
+	for (var outerName in set) {
+		var setItem = set[outerName];
+		for (var innerName in setItem) {
+			signatures[outerName + "/" + innerName] = setItem[innerName];
+		}
+	}
+	return signatures;
+};

@@ -39,7 +39,7 @@ HtmlEntry.prototype.forEachChildReport = function(report, attribute, type) {
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var managedElement = options.settings.getAttributes()[this.nextTag.tag],
+	var managedElement = options.settings.getAttribute(this.nextTag.tag),
 		builder = new Rebuilder(text, this.nextTag.start);
 	var importFilterAttr;
 	var widgetEntry = new HtmlEntry();
@@ -151,7 +151,7 @@ function getAttributeHandler(widget, attributeName, options) {
 			return macro[attributeName];
 		}
 	} else {
-		var element = options.settings.getAttributes()[widget.tag];
+		var element = options.settings.getAttribute(widget.tag);
 		if (element) {
 			return element[attributeName];
 		}

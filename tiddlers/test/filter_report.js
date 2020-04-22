@@ -1,6 +1,6 @@
 /*\
 
-Tests the occurrences filter.
+Tests the report filter.
 
 \*/
 
@@ -17,7 +17,7 @@ function test(fields, expectedArray, extraTiddlers) {
 	expect(output).toEqual(expectedArray);
 };
 
-describe('filter: occurrences', function() {
+describe('filter: report', function() {
 
 it("works on empty reports", function() {
 	test({text: "This text has no links"}, []);

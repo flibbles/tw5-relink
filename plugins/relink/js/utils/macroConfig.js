@@ -42,6 +42,36 @@ MacroConfig.prototype.refresh = function(changes) {
 	return false;
 };
 
+// This class does no special handling of fields, operators, or attributes.
+// we pass it along to the parent.
+MacroConfig.prototype.getFields = function() {
+	return this.parent.getFields();
+};
+
+MacroConfig.prototype.getOperators = function() {
+	return this.parent.getOperators();
+};
+
+MacroConfig.prototype.getAttributes = function() {
+	return this.parent.getAttributes();
+};
+
+MacroConfig.prototype.getAttribute = function(elementName) {
+	return this.parent.getAttribute(elementName);
+};
+
+MacroConfig.prototype.getMacros = function() {
+	var signatures = this.parent.getMacros();
+	for (var macroName in this.macros) {
+		var macro = this.macros[macroName];
+		for (var param in macro) {
+			signatures[macroName + "/" + param] = macro[param];
+		}
+	}
+	return signatures;
+};
+
+// But macro we handle differently.
 MacroConfig.prototype.getMacro = function(macroName) {
 	var theseSettings = this.macros[macroName];
 	var parentSettings;
