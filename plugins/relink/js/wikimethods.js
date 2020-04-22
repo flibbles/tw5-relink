@@ -85,9 +85,13 @@ exports.getRelinkConfig = function() {
 		var settings = new Settings(this);
 		var config = new MacroSettings(this, settings);
 		config.import( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
-		this.addEventListener("change", function(changes) {
+		// All this below is just wiki.addEventListener, only it
+		// puts the event in front, because we need to refresh our
+		// relink settings before updating tiddlers.
+		this.eventListeners = this.eventListeners || {};
+		this.eventListeners.change = this.eventListeners.change || [];
+		this.eventListeners.change.unshift(function(changes) {
 			config.refresh(changes);
-			settings.refresh(changes);
 		});
 		this._relinkConfig = config;
 	}

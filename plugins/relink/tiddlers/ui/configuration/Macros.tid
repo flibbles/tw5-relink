@@ -8,11 +8,11 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
 \define macro-name-tiddler() $:/state/flibbles/relink/macro-name
 \define parameter-name-tiddler() $:/state/flibbles/relink/parameter-name
 
-\define row(currentSetting)
+\define row()
 <$set name="parameter"
-      filter="[all[current]removeprefix<prefix-macro>relink:splitafter[/]]">
+      filter="[<key>relink:splitafter[/]]">
 <$set name="macro"
-      filter="[all[current]removeprefix<prefix-macro>removesuffix<parameter>removesuffix[/]]">
+      filter="[<key>removesuffix<parameter>removesuffix[/]]">
 <td><$text text=<<macro>> /></td>
 <td><$text text=<<parameter>> /></td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>

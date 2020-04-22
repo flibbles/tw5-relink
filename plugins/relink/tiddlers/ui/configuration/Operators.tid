@@ -3,12 +3,11 @@ tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink/ui/configuration/Operators
 
 \import $:/plugins/flibbles/relink/ui/components/tables
-\define prefix-ops() $:/config/flibbles/relink/operators/
 \define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
 \define operator-name-tiddler() $:/state/flibbles/relink/operator-name
 
 \define row()
-<td><$list variable="listItem" filter="[<currentTiddler>removeprefix<prefix-ops>]"><<listItem>></$list></td>
+<td><$text text=<<key>> /></td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 \end

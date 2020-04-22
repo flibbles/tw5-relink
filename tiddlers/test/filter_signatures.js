@@ -6,6 +6,8 @@ Tests the signatures filter.
 
 var utils = require("test/utils");
 
+//TODO: Drafts are ignored
+
 function test(wiki, expected, plugin) {
 	plugin = plugin || "";
 	var output = wiki.filterTiddlers("[relink:signatures["+plugin+"]]");

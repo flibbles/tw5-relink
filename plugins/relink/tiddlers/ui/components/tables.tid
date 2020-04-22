@@ -1,8 +1,8 @@
 title: $:/plugins/flibbles/relink/ui/components/tables
 
-\define prefix(category) $:/config/flibbles/relink/$category$/
-\define .make-table(title, subfilter, default-table-state:yes)
+\define .make-table(title, plugin, default-table-state:yes)
 
+<$list variable="render" filter="[relink:signatures<__plugin__>prefix<__category__>first[]]">
 <$set name="table-state" value=<<qualify """$:/state/flibbles/relink/tables/$title$""">>>
 <tr><th colspan=<<column-count>> style="text-align:left;">
 <$reveal type="nomatch" state=<<table-state>> text="yes" default="""$default-table-state$""">
@@ -16,32 +16,36 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 </$button>
 </$reveal> ''$title$''
 </th></tr>
-<$list filter="[$subfilter$prefix<category-prefix>!has[draft.of]has[text]sort[]]">
-<$set name="currentSetting" filter="[all[current]removeprefix<category-prefix>]">
+<$list
+	variable="signature"
+	filter="[relink:signatures<__plugin__>prefix<__category__>sort[]]">
+<$vars key={{{ [<signature>removeprefix<__category__>removeprefix[/]] }}} >
+<$tiddler tiddler={{{[<signature>relink:source[]]}}} >
 <$reveal tag="tr" type="match" state=<<table-state>> text="yes" default="""$default-table-state$""">
-<$macrocall $name=<<__list-row-macro__>> currentSetting=<<currentSetting>> />
+<$macrocall $name=<<__list-row-macro__>> signature=<<signature>> />
 </$reveal>
-</$set>
+</$tiddler>
+</$vars>
 </$list>
 </$set>
+</$list>
 \end
 
 \define tables(category, list-row-macro, header-list)
 <$vars
-	category-prefix=<<prefix $category$>>
 	column-count={{{[enlist<__header-list__>count[]]}}}>
 
 <table><tbody>
 <tr><$list variable="header" filter="[enlist<__header-list__>]"><th><<header>></th></$list></tr>
 
-<$list variable="render" filter="[prefix<category-prefix>!has[draft.of]has[text]!is[shadow]first[]]">
-<<.make-table Custom "all[]!is[shadow]" yes>>
-</$list>
+<<.make-table Custom "" yes>>
 
-<<.make-table Core "[$:/plugins/flibbles/relink]plugintiddlers[]">>
+<<.make-table Core "$:/plugins/flibbles/relink">>
 
-<$list filter="[all[shadows]prefix<category-prefix>has[text]shadowsource[]!title[$:/plugins/flibbles/relink]]">
-<$macrocall $name=".make-table" title={{!!description}} subfilter="all[current]plugintiddlers[]" />
+<$list
+	variable="plugin"
+	filter="[plugin-type[plugin]![$:/core]![$:/plugins/flibbles/relink]]">
+<$macrocall $name=".make-table" title={{!!description}} plugin=<<plugin>> />
 </$list>
 
 </tbody></table>

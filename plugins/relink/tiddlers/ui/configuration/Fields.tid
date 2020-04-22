@@ -3,12 +3,11 @@ tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink/ui/configuration/Fields
 
 \import $:/plugins/flibbles/relink/ui/components/tables
-\define prefix-fields() $:/config/flibbles/relink/fields/
 \define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
 \define field-name-tiddler() $:/state/flibbles/relink/field-name
 
-\define row(currentSetting)
-<td><$text text={{{[all[current]removeprefix<prefix-fields>]}}} /></td>
+\define row()
+<td><$text text=<<key>> /></td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 \end

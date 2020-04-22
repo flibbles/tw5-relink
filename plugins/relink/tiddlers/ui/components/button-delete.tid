@@ -1,7 +1,9 @@
 title: $:/plugins/flibbles/relink/ui/components/button-delete
 
 \define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
+\define prefix() $:/config/flibbles/relink/
 
+<$list filter={{{ [all[current]prefix<prefix>] }}} >
 <$button class="tc-btn-invisible"><$list filter="[all[current]is[tiddler]]">
 <$action-deletetiddler $tiddler=<<currentTiddler>> />
 </$list><$list filter="[all[current]is[shadow]]">
@@ -11,3 +13,6 @@ title: $:/plugins/flibbles/relink/ui/components/button-delete
 <$list filter="[<tv-config-toolbar-text>prefix[yes]]">
 <span class="tc-btn-text"><$text text={{$(lingo-base)$Delete/Caption}}/></span>
 </$list></$button>
+</$list><$list filter={{{ [all[current]!prefix<prefix>] }}}>
+<$link>{{$:/core/images/link}}</$link>
+</$list>

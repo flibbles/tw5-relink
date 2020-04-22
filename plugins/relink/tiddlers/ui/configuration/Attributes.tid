@@ -10,9 +10,9 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 
 \define row()
 <$set name="element"
-      filter="[all[current]removeprefix<prefix-attr>splitbefore[/]removesuffix[/]]">
+      filter="[<key>splitbefore[/]removesuffix[/]]">
 <$set name="attribute"
-      filter="[all[current]removeprefix<prefix-attr>removeprefix<element>removeprefix[/]]">
+      filter="[<key>removeprefix<element>removeprefix[/]]">
 <td><$text text=<<element>> /></td>
 <td><$text text=<<attribute>> /></td>
 <td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
