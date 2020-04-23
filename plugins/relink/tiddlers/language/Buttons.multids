@@ -1,6 +1,7 @@
 title: $:/plugins/flibbles/relink/language/Buttons/
 
-Delete/Caption: delete
+Delete/Hint: delete
+LinkToInline/Hint: go to defining tiddler
 NewAttribute/Hint: Specify a new widget/element attribute to be updated whenever a tiddler is renamed
 NewAttribute/Caption: add
 NewField/Hint: Specify a new field to be updated whenever a tiddler is renamed
