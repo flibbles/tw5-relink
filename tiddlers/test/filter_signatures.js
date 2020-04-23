@@ -6,8 +6,6 @@ Tests the signatures filter.
 
 var utils = require("test/utils");
 
-//TODO: Drafts are ignored
-
 function test(wiki, expected, plugin) {
 	plugin = plugin || "";
 	var output = wiki.filterTiddlers("[relink:signatures["+plugin+"]]");
@@ -118,6 +116,20 @@ it("will properly categorize plugin inline declarations", function() {
 	test(wiki, ["macros/mac/param"], "myPlugin");
 	source(wiki, "macros/mac/param", "myPage");
 	type(wiki, "macros/mac/param", "title");
+});
+
+it("ignores drafts", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{	title: "test",
+			tags: "$:/tags/Macro",
+			"list-before": "",
+			text: "\\relink macro param:reference"},
+		utils.draft({title: "test", tags: "$:/tags/Macro",
+			text: "\\relink macro param:wikitext\n\\relink macro dontshow"})]);
+	test(wiki, ["macros/macro/param"]);
+	source(wiki, "macros/macro/param", "test");
+	type(wiki, "macros/macro/param", "reference");
 });
 
 });

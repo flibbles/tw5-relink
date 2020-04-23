@@ -176,3 +176,11 @@ exports.operatorConf = function(operator, type) {
 exports.toUpdateConf = function(filter) {
 	return {title: "$:/config/flibbles/relink/to-update", text: filter};
 };
+
+exports.draft = function(fields) {
+    const newFields = $tw.utils.extend(Object.create(null), fields);
+    newFields.title = "Draft of '" + fields.title + "'";
+    newFields["draft.of"] = fields.title;
+    newFields["draft.title"] = fields.title;
+    return newFields;
+};
