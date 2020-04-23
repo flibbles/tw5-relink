@@ -27,6 +27,14 @@
 	vertical-align: top;
 }
 
+.tc-relink-header-plugin {
+	text-align: left;
+}
+
+.tc-relink-header-plugin button {
+	width: 100%
+}
+
 .tc-relink-column-type {
 	width: 8em;
 }
