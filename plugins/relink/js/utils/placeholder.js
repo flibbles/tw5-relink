@@ -28,8 +28,8 @@ Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
 	do {
 		number += 1;
 		placeholder = prefix + number;
-	} while (config.macroExists(placeholder));
-	config.reserveMacro(placeholder);
+	} while (config.getMacroDefinition(placeholder));
+	config.addMacroDefinition(placeholder, value);
 	this.placeholders[placeholder] = value;
 	this.reverseMap[value] = placeholder;
 	return placeholder;

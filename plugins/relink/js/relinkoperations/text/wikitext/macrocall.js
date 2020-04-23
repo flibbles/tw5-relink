@@ -253,7 +253,7 @@ function getParamIndexWithinMacrocall(macroName, param, params, options) {
 // Looks up the definition of a macro, and figures out what the expected index
 // is for the given parameter.
 function indexOfParameterDef(macroName, paramName, options) {
-	var def = getDefinition(macroName, options);
+	var def = options.settings.getMacroDefinition(macroName);
 	if (def === undefined) {
 		throw new CannotFindMacroDef();
 	}
@@ -281,7 +281,7 @@ function getParamNames(macroName, params, options) {
 		}
 	}
 	if (anonsExist) {
-		var def = getDefinition(macroName, options);
+		var def = options.settings.getMacroDefinition(macroName);
 		if (def === undefined) {
 			// If there are anonymous parameters, and we can't
 			// find the definition, then we can't hope to create
@@ -304,22 +304,6 @@ function getParamNames(macroName, params, options) {
 		}
 	}
 	return rtn;
-};
-
-/** Returns undefined if the definition cannot be found.
- */
-function getDefinition (macroName, options) {
-	var variableContainer = options.settings.getVariableWidget();
-	var def = variableContainer.variables[macroName];
-	if (!def) {
-		// Check with the macro modules
-		if ($tw.utils.hop($tw.macros, macroName)) {
-			def = $tw.macros[macroName];
-		} else {
-			return undefined;
-		}
-	}
-	return def;
 };
 
 function parseParams(paramString, pos) {

@@ -14,7 +14,7 @@ function MacroConfig(wiki, parent, title) {
 	this.title = title;
 	this.wiki = wiki;
 	this.widgetList = [];
-	this.reservedVariables = Object.create(null);
+	this.localMacroDefs = Object.create(null);
 };
 
 module.exports = MacroConfig;
@@ -124,15 +124,17 @@ MacroConfig.prototype.getVariableWidget = function() {
 	return this.widget;
 };
 
-/**This macro is unrelated to what we do. We only need to remember its name
- * so we don't collide with it accidentally if we make our own macros.
+/**This only handles simple macros, since we only really need it to remember
+ * placeholders for now.
  */
-MacroConfig.prototype.reserveMacro = function(variableName) {
-	this.reservedVariables[variableName] = true;
+MacroConfig.prototype.addMacroDefinition = function(variableName, value) {
+	this.localMacroDefs[variableName] = {
+		value: value,
+		params: []};
 };
 
-MacroConfig.prototype.macroExists = function(variableName) {
-	return this.reservedVariables[variableName] || this.getVariableWidget().variables[variableName];
+MacroConfig.prototype.getMacroDefinition = function(variableName) {
+	return this.localMacroDefs[variableName] || this.getVariableWidget().variables[variableName] || $tw.macros[variableName];
 };
 
 function createImportWidget(filter, wiki, parent) {

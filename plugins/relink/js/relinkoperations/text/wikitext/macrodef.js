@@ -39,10 +39,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var m = this.match;
-	// This macro is not available should we need to make one.
-	if (options.settings) {
-		options.settings.reserveMacro(m[1]);
-	}
 	// !m[3] means it's not a multiline macrodef
 	var placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(m[1]);
 	if (placeholder && m[2] === '' && !m[3]) {
@@ -55,17 +51,17 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			if (!handler) {
 				// Skip it, and the body too
 				this.parser.pos += match[0].length;
-				return undefined;
-			}
-			// This is a filter
-			var entry = handler.relink(match[1], fromTitle, toTitle, options);
-			if (entry !== undefined) {
-				var macroEntry = new MacrodefEntry(m[1], entry);
-				this.parser.pos += match[0].length;
-				if (entry.output) {
-					macroEntry.output = this.makePlaceholder(m[1], entry.output+match[2]);
+			} else {
+				// This is a filter
+				var entry = handler.relink(match[1], fromTitle, toTitle, options);
+				if (entry !== undefined) {
+					var macroEntry = new MacrodefEntry(m[1], entry);
+					this.parser.pos += match[0].length;
+					if (entry.output) {
+						macroEntry.output = this.makePlaceholder(m[1], entry.output+match[2]);
+					}
+					return macroEntry;
 				}
-				return macroEntry;
 			}
 		}
 	}
