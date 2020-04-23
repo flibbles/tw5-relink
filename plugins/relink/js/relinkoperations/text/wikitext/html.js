@@ -147,7 +147,7 @@ function getAttributeHandler(widget, attributeName, options) {
 	if (widget.tag === "$macrocall") {
 		var nameAttr = widget.attributes["$name"];
 		if (nameAttr) {
-			var macro = options.macros.getMacro(nameAttr.value);
+			var macro = options.settings.getMacro(nameAttr.value);
 			if (macro) {
 				return macro[attributeName];
 			}
@@ -164,13 +164,13 @@ function getAttributeHandler(widget, attributeName, options) {
 function computeAttribute(attribute, parser, options) {
 	var value;
 	if(attribute.type === "filtered") {
-		var parentWidget = parser.macros.getVariableWidget();
+		var parentWidget = options.settings.getVariableWidget();
 		value = options.wiki.filterTiddlers(attribute.filter,parentWidget)[0] || "";
 	} else if(attribute.type === "indirect") {
-		var parentWidget = options.macros.getVariableWidget();
+		var parentWidget = options.settings.getVariableWidget();
 		value = options.wiki.getTextReference(attribute.textReference,"",parentWidget.variables.currentTiddler.value);
 	} else if(attribute.type === "macro") {
-		var parentWidget = parser.macros.getVariableWidget();
+		var parentWidget = options.settings.getVariableWidget();
 		value = parentWidget.getVariable(attribute.value.name,{params: attribute.value.params});
 	} else { // String attribute
 		value = attribute.value;
@@ -187,5 +187,5 @@ function processImportFilter(importAttribute, parser, options) {
 		importAttribute = $tw.utils.parseAttribute("p="+importAttribute, 0)
 	}
 	var importFilter = computeAttribute(importAttribute, parser, options);
-	parser.macros.import(importFilter);
+	options.settings.import(importFilter);
 };

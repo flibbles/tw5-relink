@@ -71,7 +71,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var self = this;
 	this.interpretSettings(function(macro, parameter, type) {
-		self.parser.macros.addSetting(macro, parameter, type);
+		options.settings.addSetting(macro, parameter, type);
 	});
 	// Return nothing, because this rule is ignored by the parser
 	return undefined;

@@ -58,7 +58,6 @@ function WikiRelinker(text, title, toTitle, options) {
 	// We work through relinkRules so we can change it later.
 	// relinkRules is inlineRules so it gets touched up by amendRules().
 	this.relinkRules = this.inlineRules;
-	this.macros = options.macros.createChildLibrary(title);
 };
 
 WikiRelinker.prototype = Object.create(WikiParser.prototype);
@@ -76,7 +75,7 @@ exports.relink = function(wikitext, fromTitle, toTitle, options) {
 		matchingRule,
 		entry = new WikitextEntry(),
 		newOptions = $tw.utils.extend({}, options);
-	newOptions.macros = parser.macros;
+	newOptions.settings = options.settings.createChildLibrary(options.currentTiddler);
 	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
 		if (matchingRule.rule.relink) {
 			var newEntry = matchingRule.rule.relink(wikitext, fromTitle, toTitle, newOptions);

@@ -39,7 +39,7 @@ Placeholder.prototype.macroExists = function(macroName, options) {
 	if (this.knownMacros[macroName]) {
 		return true;
 	}
-	if (options.macros && options.macros.getVariable(macroName)) {
+	if (options.settings && options.settings.getVariable(macroName)) {
 		return true;
 	}
 	return false;

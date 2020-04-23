@@ -43,7 +43,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	// Move past the macro call
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var start = this.matchRegExp.lastIndex - this.match[0].length;
-	var managedMacro = this.parser.macros.getMacro(macroName);
+	var managedMacro = options.settings.getMacro(macroName);
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
 		return undefined;
@@ -92,7 +92,7 @@ exports.relinkAttribute = function(macro, text, parser, fromTitle, toTitle, opti
  * to be converted.
  */
 function relinkMacroInvocation(macro, text, parser, fromTitle, toTitle, mayBeWidget, options) {
-	var managedMacro = parser.macros.getMacro(macro.name);
+	var managedMacro = options.settings.getMacro(macro.name);
 	var modified = false;
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
@@ -309,7 +309,7 @@ function getParamNames(macroName, params, parser, options) {
 /** Returns undefined if the definition cannot be found.
  */
 function getDefinition (macroName, parser, options) {
-	var variableContainer = parser.macros.getVariableWidget();
+	var variableContainer = options.settings.getVariableWidget();
 	var def = variableContainer.variables[macroName];
 	if (!def) {
 		// Check with the macro modules

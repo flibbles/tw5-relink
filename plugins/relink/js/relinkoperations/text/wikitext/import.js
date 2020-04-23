@@ -45,7 +45,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 
 	// Before we go, we need to actually import the variables
 	// it's calling for, and any /relink pragma
-	this.parser.macros.import(filter);
+	options.settings.import(filter);
 
 	return entry;
 };
