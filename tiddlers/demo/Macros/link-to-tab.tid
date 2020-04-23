@@ -2,6 +2,7 @@ tags: $:/tags/Macro
 title: Macros/link-to-tab
 qualifiers: Demo 1577183281 Types 2094947537
 
+\relink link-to-tab tiddler tab caption:wikitext
 \define link-to-tab(tiddler, tab, caption)
 <$button class="tc-btn-invisible tc-tiddlylink">
 <$action-setfield $tiddler={{{ [list[Macros/link-to-tab!!qualifiers]after<__tiddler__>addprefix[$:/state/tab-]] }}} text=<<__tab__>>/>
@@ -10,6 +11,7 @@ $caption$
 </$button>
 \end
 
+\relink link-to-config-tab caption:wikitext
 \define link-to-config-tab(configTab, caption)
 <$button class="tc-btn-invisible tc-tiddlylink">
 <$action-setfield
@@ -25,8 +27,12 @@ $caption$
 </$button>
 \end
 
-`link-to-tab` creates a button which opens a specific tiddler and a tab within that tiddler. It's used on several documentation pages to link to examples or the //Relink// configuration menu.
+''Hey!'' Edit this tiddler to see a real-use example of the `\relink` declaration pragma.
 
-`link-to-config-tab` is used exclusively to go to Relink configuration tabs.
+`link-to-tab` creates a button which opens a specific tiddler and a tab within that tiddler. It's used on several documentation pages to link to examples within a tab menu.
 
+`link-to-config-tab` is used exclusively to go to //Relink// configuration tabs.
+
+<!--
 Unfortunately, due to the way the `qualify` mechanic works in Tiddlywiki, this macro must maintain a hardcoded list of qualifier hashes, and if you rename the target tiddler, the qualifier doesn't update automatically.
+-->

@@ -33,6 +33,12 @@ title: $:/config/flibbles/relink/macros/fellowship/members
 filter
 ```
 
+!! Integrating //other// people's plugins with relink
+
+If you install a 3rd party plugin which define macros, filter operators, fields, or widgets, but it doesn't integrate with //Relink//, you can do it yourself byinputting the corresponding entries into the whitelist.
+
+The advantage to this is it won't override any of a plugin's shadow tiddlers.
+
 !! Why use whitelisting for macros when inline declarations exists?
 
 [[Inline Declarations]] are a more convenient method of declaring macro parameters for relinking. It's faster to set up, and it keeps the macro definition together with the declaration, but there are times when you should use the whitelist.
