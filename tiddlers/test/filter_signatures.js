@@ -110,4 +110,14 @@ it("source is correct after overrides", function() {
 	type(wiki, "macros/test/param", "reference");
 });
 
+it("will properly categorize plugin inline declarations", function() {
+	var wiki = new $tw.Wiki();
+	addPlugin(wiki, "myPlugin", [
+		{title: "myPage", tags: "$:/tags/Macro", text: "\\relink mac param"}]);
+	test(wiki, []);
+	test(wiki, ["macros/mac/param"], "myPlugin");
+	source(wiki, "macros/mac/param", "myPage");
+	type(wiki, "macros/mac/param", "title");
+});
+
 });
