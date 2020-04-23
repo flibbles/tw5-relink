@@ -24,6 +24,22 @@ function type(wiki, signature, expected) {
 	expect(rtn[0]).toEqual(expected);
 };
 
+function addPlugin(wiki, pluginName, tiddlers) {
+	var tiddlerHash = Object.create(null);
+	$tw.utils.each(tiddlers, function(hash) {
+		tiddlerHash[hash.title] = hash;
+	});
+	var content = { tiddlers: tiddlerHash }
+	wiki.addTiddler({
+		title: pluginName,
+		type: "application/json",
+		"plugin-type": "plugin",
+		text: JSON.stringify(content)});
+	wiki.registerPluginTiddlers("plugin");
+	wiki.readPluginInfo();
+	wiki.unpackPluginTiddlers();
+};
+
 describe('filter: signatures', function() {
 
 it("works for attributes", function() {
@@ -65,21 +81,12 @@ it("works for macros", function() {
 
 it("filters by plugin if supplied", function() {
 	var wiki = new $tw.Wiki();
-	var content = { tiddlers: {
-		[utils.macroConf("test", "plugin").title]: {"text": "filter"},
-		[utils.macroConf("test", "override").title]: {"text": "filter"}
-	}};
+	addPlugin(wiki, "testPlugin", [
+		utils.macroConf("test", "plugin", "filter"),
+		utils.macroConf("test", "override", "filter")]);
 	wiki.addTiddlers([
 		utils.macroConf("test", "user"),
 		utils.macroConf("test", "override")]);
-	wiki.addTiddler({
-		title: "testPlugin",
-		type: "application/json",
-		"plugin-type": "plugin",
-		text: JSON.stringify(content)});
-	wiki.registerPluginTiddlers("plugin");
-	wiki.readPluginInfo();
-	wiki.unpackPluginTiddlers();
 	// Overrides continue to show up as their plugin versions
 	test(wiki, ["macros/test/user"]);
 	test(wiki, ["macros/test/plugin", "macros/test/override"],"testPlugin");
@@ -89,6 +96,18 @@ it("source and type for missing keys", function() {
 	var wiki = new $tw.Wiki();
 	source(wiki, "anything", undefined);
 	type(wiki, "anything", undefined);
+});
+
+it("source is correct after overrides", function() {
+	var wiki = new $tw.Wiki();
+	addPlugin(wiki, "testPlugin",  [
+		utils.macroConf("test", "param", "wikitext")]);
+	wiki.addTiddler(
+		{title: "A", tags: "$:/tags/Macro", text: "\\relink test param:reference"});
+	test(wiki, ["macros/test/param"]);
+	test(wiki, [], "testPlugin");
+	source(wiki, "macros/test/param", "A");
+	type(wiki, "macros/test/param", "reference");
 });
 
 });
