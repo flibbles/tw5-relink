@@ -8,13 +8,13 @@ the necessary supporting pragma when requested.
 function Placeholder() {
 	this.placeholders = Object.create(null);
 	this.reverseMap = Object.create(null);
-	this.knownMacros = Object.create(null);
 };
 
 module.exports = Placeholder;
 
 Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
 	var placeholder = this.reverseMap[value];
+	var config = options.settings || options.wiki.getRelinkConfig();
 	if (placeholder) {
 		return placeholder;
 	}
@@ -28,25 +28,11 @@ Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
 	do {
 		number += 1;
 		placeholder = prefix + number;
-	} while (this.macroExists(placeholder, options));
+	} while (config.macroExists(placeholder));
+	config.reserveMacro(placeholder);
 	this.placeholders[placeholder] = value;
 	this.reverseMap[value] = placeholder;
-	this.reserve(placeholder);
 	return placeholder;
-};
-
-Placeholder.prototype.macroExists = function(macroName, options) {
-	if (this.knownMacros[macroName]) {
-		return true;
-	}
-	if (options.settings && options.settings.getVariable(macroName)) {
-		return true;
-	}
-	return false;
-};
-
-Placeholder.prototype.reserve = function(macro) {
-	this.knownMacros[macro] = true;
 };
 
 Placeholder.prototype.getPreamble = function() {
