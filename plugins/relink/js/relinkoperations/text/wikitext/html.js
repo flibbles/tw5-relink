@@ -106,7 +106,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
-			entry = macrocall.relinkAttribute(macro, text, this.parser, fromTitle, toTitle, options);
+			entry = macrocall.relinkAttribute(macro, text, fromTitle, toTitle, options);
 			if (entry === undefined) {
 				continue;
 			}
@@ -130,7 +130,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		builder.add(quotedValue, valueStart, attr.end);
 	}
 	if (importFilterAttr) {
-		processImportFilter(importFilterAttr, this.parser, options);
+		processImportFilter(importFilterAttr, options);
 	}
 	this.parser.pos = this.nextTag.end;
 	if (widgetEntry.hasChildren()) {
@@ -161,7 +161,7 @@ function getAttributeHandler(widget, attributeName, options) {
 	return undefined;
 };
 
-function computeAttribute(attribute, parser, options) {
+function computeAttribute(attribute, options) {
 	var value;
 	if(attribute.type === "filtered") {
 		var parentWidget = options.settings.getVariableWidget();
@@ -180,12 +180,12 @@ function computeAttribute(attribute, parser, options) {
 
 // This processes a <$importvariables> filter attribute and adds any new
 // variables to our parser.
-function processImportFilter(importAttribute, parser, options) {
+function processImportFilter(importAttribute, options) {
 	if (typeof importAttribute === "string") {
 		// It was changed. Reparse it. It'll be a quoted
 		// attribute value. Add a dummy attribute name.
 		importAttribute = $tw.utils.parseAttribute("p="+importAttribute, 0)
 	}
-	var importFilter = computeAttribute(importAttribute, parser, options);
+	var importFilter = computeAttribute(importAttribute, options);
 	options.settings.import(importFilter);
 };

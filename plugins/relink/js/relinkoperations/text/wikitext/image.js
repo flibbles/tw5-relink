@@ -113,7 +113,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 			imageEntry.tooltip = this.nextImage.attributes.tooltip;
 		} else {
-			ptr = relinkAttribute(attr, this.parser, builder, fromTitle, toTitle, imageEntry, options);
+			ptr = relinkAttribute(attr, builder, fromTitle, toTitle, imageEntry, options);
 		}
 	}
 	this.parser.pos = ptr;
@@ -124,7 +124,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	return undefined;
 };
 
-function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, options) {
+function relinkAttribute(attribute, builder, fromTitle, toTitle, entry, options) {
 	var text = builder.text;
 	var ptr = text.indexOf(attribute.name, attribute.start);
 	var end;
@@ -161,7 +161,7 @@ function relinkAttribute(attribute, parser, builder, fromTitle, toTitle, entry, 
 		var end = attribute.value.end;
 		var macro = attribute.value;
 		oldValue = attribute.value;
-		var macroEntry = macrocall.relinkAttribute(macro, text, parser, fromTitle, toTitle, options);
+		var macroEntry = macrocall.relinkAttribute(macro, text, fromTitle, toTitle, options);
 		if (macroEntry !== undefined) {
 			entry.addChild(macroEntry, attribute.name, "macro");
 			if (macroEntry.output) {
