@@ -8,8 +8,6 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 
 \define row()
 <td><$text text=<<key>> /></td>
-<td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
-<td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 \end
 \define body()
 
@@ -44,7 +42,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 <$macrocall
 	$name=tables
 	category="fields"
-	header-list="[[Field Name]] [[Field Type]] Delete"
+	header-list="[[Field Name]] [[Field Type]]"
 	list-row-macro="row" />
 \end
 

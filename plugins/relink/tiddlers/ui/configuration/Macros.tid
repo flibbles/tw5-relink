@@ -15,8 +15,6 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
       filter="[<key>removesuffix<parameter>removesuffix[/]]">
 <td><$text text=<<macro>> /></td>
 <td><$text text=<<parameter>> /></td>
-<td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
-<td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 </$set></$set>
 \end
 \define body()
@@ -66,7 +64,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
 <$macrocall
 	$name=tables
 	category="macros"
-	header-list="Macro Parameter Type Delete"
+	header-list="Macro Parameter Type"
 	list-row-macro="row" />
 \end
 

@@ -15,8 +15,6 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
       filter="[<key>removeprefix<element>removeprefix[/]]">
 <td><$text text=<<element>> /></td>
 <td><$text text=<<attribute>> /></td>
-<td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
-<td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 </$set></$set>
 \end
 \define body()
@@ -65,7 +63,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 <$macrocall
 	$name=tables
 	category="attributes"
-	header-list="[[Widget/HTML Element]] Attribute Type Delete"
+	header-list="[[Widget/HTML Element]] Attribute Type"
 	list-row-macro="row" />
 \end
 

@@ -23,6 +23,8 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 <$tiddler tiddler={{{[<signature>relink:source[]]}}} >
 <$reveal tag="tr" type="match" state=<<table-state>> text="yes" default="""$default-table-state$""">
 <$macrocall $name=<<__list-row-macro__>> signature=<<signature>> />
+<td class="tc-relink-column-type">{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
+<td class="tc-relink-column-delete">{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 </$reveal>
 </$tiddler>
 </$vars>
@@ -33,10 +35,14 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 
 \define tables(category, list-row-macro, header-list)
 <$vars
-	column-count={{{[enlist<__header-list__>count[]]}}}>
+	column-count={{{[enlist<__header-list__>] [[DeleteColumn]] +[count[]]}}}>
 
 <table><tbody>
-<tr><$list variable="header" filter="[enlist<__header-list__>]"><th><<header>></th></$list></tr>
+<tr>
+<$list variable="header" filter="[enlist<__header-list__>butlast[]]"><th><<header>></th></$list>
+<!-- We have the last column extend into the delete/link column, which is unlabeled. -->
+<th colspan=2><$text text={{{ [enlist<__header-list__>last[]] }}} /></th>
+</tr>
 
 <<.make-table Custom "" yes>>
 

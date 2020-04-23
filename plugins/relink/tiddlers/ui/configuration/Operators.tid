@@ -8,8 +8,6 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 
 \define row()
 <td><$text text=<<key>> /></td>
-<td>{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}</td>
-<td>{{||$:/plugins/flibbles/relink/ui/components/button-delete}}</td>
 \end
 \define body()
 
@@ -43,7 +41,7 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 <$macrocall
 	$name=tables
 	category="operators"
-	header-list="[[Filter Operator]] [[Operand Type]] Delete"
+	header-list="[[Filter Operator]] [[Operand Type]]"
 	list-row-macro="row" />
 \end
 
