@@ -50,6 +50,7 @@ exports.parse = function() {
 				name: {type: "string", value: ""}
 			},
 			children: [],
+			isMacroDefinition: true,
 			relink: relink});
 	}
 	if (error) {
