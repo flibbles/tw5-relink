@@ -122,6 +122,10 @@ function compileSettings(wiki) {
 				if (Handler) {
 					var data = new Handler();
 					data.source = title;
+					// Secret feature. You can access a config tiddler's
+					// fields from inside the fieldtype handler. Cool
+					// tricks can be done with this.
+					data.fields = tiddler.fields;
 					factory(settings[category], data, name);
 				}
 			}
