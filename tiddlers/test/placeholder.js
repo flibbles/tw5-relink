@@ -77,6 +77,20 @@ it('does not crash when given invalid category', function() {
 	         macro("wrong-1", "[[from here]]")+"[[to there]]");
 });
 
+it("failed relinking properly moves pointer head", function() {
+	// The placeholder list will fail to relink. But it could theoretically
+	// relink if [[from here]] is enterpreted as text. That's why the parse
+	// head must move past it.
+	testText(macro("list-1", "content [[from here]]")+"Body", {to: "A ]] B", fails: 1, ignored: true});
+});
+
+it("unfound relinking properly moves pointer head", function() {
+	// This will fail to find a reference to relink, so the placeholder value
+	// should be skipped. But if the head isn't moved past it, [[from here]]
+	// will parse as a pretty link.
+	testText(macro("reference-1", "[[from here]]")+"Body", {ignored: true});
+});
+
 it('Windows newlines', function() {
 	// Works with Windows newlines
 	testText(macro(1,"from here","\r\n")+"Body content");

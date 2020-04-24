@@ -5,3 +5,4 @@
 * wikitext occurring inside attributes or parameters would not find macro definitions in the scope of the tiddler, but not the attribute/parameter. Fixed.
 * Fixed bug where `<$macrocall>` without a $name attribute would cause RSoD.
 * Fixed issue where placeholders in empty tiddlers wouldn't be relinked.
+* Fixed rare issue where placeholders might relink their value into garbage.

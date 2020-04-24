@@ -43,16 +43,12 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		valueRegExp.lastIndex = this.parser.pos;
 		var match = valueRegExp.exec(text);
 		if (match) {
+			this.parser.pos += match[0].length;
 			var handler = settings.getRelinker(placeholder[1] || 'title');
-			if (!handler) {
-				// Skip it, and the body too
-				this.parser.pos += match[0].length;
-			} else {
-				// This is a filter
+			if (handler) {
 				var entry = handler.relink(match[1], fromTitle, toTitle, options);
 				if (entry !== undefined) {
 					var macroEntry = new MacrodefEntry(m[1], entry);
-					this.parser.pos += match[0].length;
 					if (entry.output) {
 						macroEntry.output = this.makePlaceholder(m[1], entry.output+match[2]);
 					}
