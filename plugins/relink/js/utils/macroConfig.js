@@ -98,6 +98,10 @@ MacroConfig.prototype.addSetting = function(macroName, parameter, type, sourceTi
 	var handler = settings.getRelinker(type);
 	if (handler) {
 		handler.source = sourceTitle;
+		// We attach the fields of the defining tiddler for the benefit
+		// of any 3rd party field types that want access to them.
+		var tiddler = this.wiki.getTiddler(sourceTitle);
+		handler.fields = tiddler.fields;
 		macro[parameter] = handler;
 	}
 };
