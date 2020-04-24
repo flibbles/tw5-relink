@@ -91,6 +91,16 @@ it('handles default type of title', function() {
 	testText("\\relink test other:title field\n<<test field: 'from here'>>");
 });
 
+it('handles default type of something else', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "$:/config/flibbles/relink/settings/default-type",
+		text: "reference"});
+	testText("\\relink t f\n<<t f: 'from here!!F'>>", {wiki: wiki});
+	wiki.addTiddler({title: "$:/config/flibbles/relink/settings/default-type",
+		text: "wikitext"});
+	testText("\\relink t f\n<<t f: '[[link|from here]]'>>", {wiki: wiki});
+});
+
 it('can accumulate vertically', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([

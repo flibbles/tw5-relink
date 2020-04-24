@@ -10,6 +10,8 @@ Relink manages relevant pragma statements.
 : it will update the definition if that weird tiddler is ever renamed again.
 ;`\import`
 : Relink processes its filter using standard filter relink rules
+;`\relink`
+: This is pragma //Relink// itself defines, and it's used for [[Inline Declarations]].
 ;`\rules`
 : Relink does nothing to the rules pragma, but it does respect it. For instance, if html is disabled, then relink will not process any elements or widgets in the rest of the tiddler, since they're technically plaintext.
 ;`\whitespace`

@@ -91,7 +91,7 @@ MacroConfig.prototype.getMacro = function(macroName) {
 
 MacroConfig.prototype.addSetting = function(macroName, parameter, type, sourceTitle) {
 	var macro = this.macros[macroName];
-	type = type || "title";
+	type = type || settings.getDefaultRelinker(this.wiki);
 	if (macro === undefined) {
 		macro = this.macros[macroName] = Object.create(null);
 	}

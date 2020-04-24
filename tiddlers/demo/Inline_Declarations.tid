@@ -1,4 +1,4 @@
-caption: "\relink" pragma
+caption: \//relink// pragma
 tags: Feature
 title: Inline Declarations
 
@@ -36,7 +36,7 @@ The available types are
 	filter=[tag[Types]]
 	template="""<$macrocall $name=link-to-tab tiddler=Types tab=<<currentTiddler>> caption=<<currentTiddler>> />""" />.
 
-If a type is not specified, //Relink// defaults to ''title'', so `\relink myMacro myParameter` is equivalent to `\relink myMacro myParameter: title`.
+If a type is not specified, //Relink// defaults to ''title'', so `\relink myMacro myParameter` is equivalent to `\relink myMacro myParameter: title`. <<link-to-tab Hackability "Default Type" "However, the default type can be changed.">>
 
 Declarations can come before or after the macros they're declaring. Actually, they don't have to be written alongside the macro definitions at all, or even in the same tiddler (but they should be).
 

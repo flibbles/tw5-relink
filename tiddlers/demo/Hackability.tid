@@ -3,13 +3,10 @@ title: Hackability
 
 You can tinker with //Relink// in several ways if you wish. It's designed to be highly modifiable.
 
-!! Alter updated tiddlers
+<$list filter="[tag[Hacks]]">
 
-By default, //Relink// updates all non-shadow tiddlers, this includes system tiddlers. However, this behavior can be modified. If the system tiddler `$:/config/flibbles/relink/to-update` is present, //Relink// will use the filter in its text to determine which tiddlers to update on a rename.
+!! {{!!title}}
 
-For instance:
+<$transclude />
 
-* `[all[]!is[system]]` makes Relink only update non-system tiddlers.
-* `[all[shadows+tiddlers]]` makes it update everything. It'll override shadows when necessary.
-
-This configuration is not currently exposed in a //Relink//'s general settings page because it would be the only setting there. Also, I expect most users will never need to modify this. Let me know if you think otherwise.
+</$list>

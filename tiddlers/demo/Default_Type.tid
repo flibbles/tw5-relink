@@ -1,0 +1,6 @@
+tags: Hacks
+title: Default Type
+
+By default, //Relink// uses <<link-to-tab Types Title 'the "Title" type'>> whenever a default type is necessary. Most importantly, it is the type assumed whenever a <$link to="Inline Declarations">\//relink// pragma</$link> is used without declaring the parameter type (e.g. `\relink myMacro myParameter`). It may be useful to you to change the default type to ''wikitext'', for instance, if most of your macros have wikitext parameters.
+
+To change the default, override the shadow tiddler: `$:/config/flibbles/relink/settings/default-type` from title to whatever you want.

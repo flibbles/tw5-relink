@@ -1,1 +1,2 @@
+* Forgot to hook up `$:/config/flibbles/relink/settings/default-type` to be used by inline declarations. It uses it now.
 * Corrected issue where 3rd party plugin names wouldn't render correctly in the whitelist. They'd all say "Relink - flexibility when..." etc.
