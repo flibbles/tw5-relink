@@ -4,3 +4,4 @@
 * If prettylinks must downgrade, they take advantage of Tiddlywiki's 5.1.20's shorthand link syntax if it's available (i.e. `<$link to="tiddler"/>` eqv `<$link to="tiddler">tiddler</$link>`)
 * wikitext occurring inside attributes or parameters would not find macro definitions in the scope of the tiddler, but not the attribute/parameter. Fixed.
 * Fixed bug where `<$macrocall>` without a $name attribute would cause RSoD.
+* Fixed issue where placeholders in empty tiddlers wouldn't be relinked.

@@ -39,7 +39,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(m[1]);
 	if (placeholder && m[2] === '' && !m[3]) {
 		this.parser.pos = $tw.utils.skipWhiteSpace(text, this.parser.pos);
-		var valueRegExp = /([^\n\r]+)(\r?\n)/mg;
+		var valueRegExp = /([^\n\r]+)($|\r?\n)/mg;
 		valueRegExp.lastIndex = this.parser.pos;
 		var match = valueRegExp.exec(text);
 		if (match) {

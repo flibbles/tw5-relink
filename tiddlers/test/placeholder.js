@@ -82,6 +82,11 @@ it('Windows newlines', function() {
 	testText(macro(1,"from here","\r\n")+"Body content");
 });
 
+it("relinks placeholder to empty tiddler body", function() {
+	var placeholder = macro(1, "from here").trimEnd();
+	testText(placeholder);
+});
+
 it('Detects globally defined placeholder macros', function() {
 	var to = "' ]]\"";
 	var wiki = new $tw.Wiki();
