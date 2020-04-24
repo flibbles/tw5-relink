@@ -134,9 +134,13 @@ exports.monkeyPatch = function(container, method, alternative, block) {
  * There are times when Relink can't relink in place, so it has to resort
  * to using macros. This is the macro pattern.
  */
-exports.placeholder = function(number, value, newline) {
+exports.placeholder = function(number, value, multiline, newline) {
 	newline = newline || '\n'
-	return `\\define relink-${number}() ${value}${newline}`;
+	if (multiline) {
+		return `\\define relink-${number}()${newline}${value}${newline}\\end${newline}`;
+	} else {
+		return `\\define relink-${number}() ${value}${newline}`;
+	}
 };
 
 exports.attrConf = function(element, attribute, type) {

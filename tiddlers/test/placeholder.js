@@ -93,7 +93,11 @@ it("unfound relinking properly moves pointer head", function() {
 
 it('Windows newlines', function() {
 	// Works with Windows newlines
-	testText(macro(1,"from here","\r\n")+"Body content");
+	testText(macro(1,"from here",false,"\r\n")+"Body content");
+});
+
+it("won't choke on block placeholders, if they somehow occur", function() {
+	testText(macro("filter-1", "[tag[from here]]", true)+"<<relink-filter-1>>");
 });
 
 it("relinks placeholder to empty tiddler body", function() {
