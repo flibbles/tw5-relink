@@ -50,25 +50,9 @@ it("properly updates to-update cached list on any change", function() {
 
 var shadowTiddler = "$:/plugins/flibbles/test/tiddler";
 function wikiWithPlugin() {
-	var wiki = new $tw.Wiki();
-	wiki.addTiddler({
-		title: "$:/plugins/flibbles/test",
-		description: "Plugins for shadow tiddler tests",
-		"plugin-type": "plugin",
-		type: "application/json",
-		version: "0.0.0",
-		text: `{
-			"tiddlers": {
-				"${shadowTiddler}": {
-					"text": "Shadow [[from here]]"
-				}
-			}
-		}`
-	});
-	wiki.readPluginInfo();
-	wiki.registerPluginTiddlers("plugin");
-	wiki.unpackPluginTiddlers();
-	return wiki;
+	return utils.addPlugin("$:/plugins/flibbles/test", [
+		{title: shadowTiddler, text: "Shadow [[from here]]"}
+	]);
 };
 
 it("doesn't touch shadow tiddlers by default", function() {

@@ -129,6 +129,25 @@ exports.monkeyPatch = function(container, method, alternative, block) {
 	}
 };
 
+exports.addPlugin = function(pluginName, tiddlers, options) {
+	options = options || {};
+	var wiki = options.wiki || new $tw.Wiki();
+	var tiddlerHash = Object.create(null);
+	$tw.utils.each(tiddlers, function(hash) {
+		tiddlerHash[hash.title] = hash;
+	});
+	var content = { tiddlers: tiddlerHash }
+	wiki.addTiddler({
+		title: pluginName,
+		type: "application/json",
+		"plugin-type": "plugin",
+		text: JSON.stringify(content)});
+	wiki.registerPluginTiddlers("plugin");
+	wiki.readPluginInfo();
+	wiki.unpackPluginTiddlers();
+	return wiki;
+};
+
 /**Returns the placeholder pragma
  *
  * There are times when Relink can't relink in place, so it has to resort

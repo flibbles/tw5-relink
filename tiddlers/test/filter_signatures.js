@@ -22,22 +22,6 @@ function type(wiki, signature, expected) {
 	expect(rtn[0]).toEqual(expected);
 };
 
-function addPlugin(wiki, pluginName, tiddlers) {
-	var tiddlerHash = Object.create(null);
-	$tw.utils.each(tiddlers, function(hash) {
-		tiddlerHash[hash.title] = hash;
-	});
-	var content = { tiddlers: tiddlerHash }
-	wiki.addTiddler({
-		title: pluginName,
-		type: "application/json",
-		"plugin-type": "plugin",
-		text: JSON.stringify(content)});
-	wiki.registerPluginTiddlers("plugin");
-	wiki.readPluginInfo();
-	wiki.unpackPluginTiddlers();
-};
-
 describe('filter: signatures', function() {
 
 it("works for attributes", function() {
@@ -78,8 +62,7 @@ it("works for macros", function() {
 });
 
 it("filters by plugin if supplied", function() {
-	var wiki = new $tw.Wiki();
-	addPlugin(wiki, "testPlugin", [
+	var wiki = utils.addPlugin("testPlugin", [
 		utils.macroConf("test", "plugin", "filter"),
 		utils.macroConf("test", "override", "filter")]);
 	wiki.addTiddlers([
@@ -97,8 +80,7 @@ it("source and type for missing keys", function() {
 });
 
 it("source is correct after overrides", function() {
-	var wiki = new $tw.Wiki();
-	addPlugin(wiki, "testPlugin",  [
+	var wiki = utils.addPlugin("testPlugin",  [
 		utils.macroConf("test", "param", "wikitext")]);
 	wiki.addTiddler(
 		{title: "A", tags: "$:/tags/Macro", text: "\\relink test param:reference"});
@@ -109,8 +91,7 @@ it("source is correct after overrides", function() {
 });
 
 it("will properly categorize plugin inline declarations", function() {
-	var wiki = new $tw.Wiki();
-	addPlugin(wiki, "myPlugin", [
+	var wiki = utils.addPlugin("myPlugin", [
 		{title: "myPage", tags: "$:/tags/Macro", text: "\\relink mac param"}]);
 	test(wiki, []);
 	test(wiki, ["macros/mac/param"], "myPlugin");
