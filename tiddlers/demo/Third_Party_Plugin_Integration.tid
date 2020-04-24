@@ -40,9 +40,7 @@ $:/config/flibbles/relink/operator/$operator-name$
 
 The text of these configuration tiddlers is one word, specifying the [[type|Types]] of the parameter/attribute/field/operator. The following values are allowed:
 
-<ul><$list filter="[tag[Types]]">
-<li><$link><$text text={{{[all[current]lowercase[]]}}} /></$link></li>
-</$list></ul>
+<<ul Types>>
 
 !! Example
 

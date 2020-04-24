@@ -1,10 +1,24 @@
-title: Templates/ul
+tags: $:/tags/Macro
+title: Macros/ul
 
-<!-- Useful for making lists of a tag. -->
+\define ul(tag)
 <ul><$list variable="listItem"
-           filter="[tag<currentTiddler>!has[draft.of]]">
+           filter="[tag<__tag__>!has[draft.of]]">
  <li><$link to=<<listItem>> >
   <$transclude tiddler=<<listItem>> field="caption">
    <$text text=<<listItem>> />
   </$transclude></$link></li>
 </$list></ul>
+\end
+
+''Hey!'' This macro has a ''tag'' parameter which is configured in <<link-to-config-tab Macros "//Relink// whitelist">>.
+
+`ul` creates an unorganized list of all tiddlers of the given tag. It's like:
+
+```
+* TiddlerA
+* TiddlerB
+* TiddlerC
+```
+
+...only programmatic. It prefers using ''!!caption'', but falls back on ''!!title''.

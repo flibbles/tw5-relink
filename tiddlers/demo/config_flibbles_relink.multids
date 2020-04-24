@@ -7,3 +7,4 @@ fields/example-title: title
 fields/example-wikitext: wikitext
 macros/say-list/filter: filter
 macros/say-list/template: wikitext
+macros/ul/tag: title

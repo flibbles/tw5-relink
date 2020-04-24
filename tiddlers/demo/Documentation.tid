@@ -10,16 +10,16 @@ title: Documentation
 
 The following are configurable through the <<link-to-config-tab caption:"//Relink// configuration panel">>. See the available [[types|Types]] for more details.
 
-{{Construct||Templates/ul}}
+<<ul Construct>>
 
 !! WikiText
 
 There are also numerous WikiText syntax patterns for which Relink has predefined behavor. Currently, none of these are configurable.
 
-{{WikiText||Templates/ul}}
+<<ul WikiText>>
 
 !! Other Features
 
 Besides relinking tiddlers, //Relink// includes other features.
 
-{{Feature||Templates/ul}}
+<<ul Feature>>
