@@ -1,0 +1,10 @@
+description: Whitelisted tiddler fields are updated just as well. Without this plugin, Tiddlywiki could manage `list` and `tags` on its own. ''Relink'' opens the door for other tiddlers, including ones that specify something other than a string list, like a filter, a single tiddler title, or even wikitext.
+example-filter: [all[]] -Frodo
+example-list: Relink Frodo BilboBaggins
+example-title: Frodo
+example-wikitext: This [[link to Frodo|Frodo]] will relink.
+list: [[Some Tiddler]] Frodo [[Another Tiddler]]
+relink.showcase: list tags example-filter example-list example-title example-wikitext
+tags: Demo Frodo
+
+This is the <<link-to-tab Demo Demo/Fields "Fields Demo">>. It tags [[Frodo]] in order to demonstrate how //Relink// can update the ''tags'' field, among others.

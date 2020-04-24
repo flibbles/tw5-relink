@@ -4,7 +4,7 @@ title: Templates/Demo
 
 !! <$link>{{!!caption}}</$link>
 
-<$list filter="[all[current]relink.showcase[text]]">
+<$list filter="[all[current]contains:relink.showcase[text]] ~[all[current]!has:field[relink.showcase]]">
 
 @@.relink-demo-source
 <div class="relink-text"><pre><$view field=<<field>> /></pre></div>
@@ -15,10 +15,10 @@ title: Templates/Demo
 <$transclude />
 
 </div>
-</$list><$list filter="[all[current]!relink.showcase[text]]">
+</$list><$list variable=render filter="[list[!!relink.showcase]!match[text]first[]]">
 
 <table class="relink-demo-fields">
-<$list variable="field" filter="[enlist{!!relink.showcase}]">
+<$list variable="field" filter="[list[!!relink.showcase]]">
 <tr><td>''<<field>>''</td><td class="relink-text"><pre><$view field=<<field>> /></pre></td></tr>
 </$list>
 </table>

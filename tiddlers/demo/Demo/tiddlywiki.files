@@ -8,8 +8,6 @@
 				"caption": {
 					"source": "basename"
 				},
-				"tags": "Demo",
-				"relink.showcase": "text",
 				"title": {
 					"source": "basename",
 					"prefix": "Demo/"

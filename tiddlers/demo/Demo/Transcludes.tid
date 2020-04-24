@@ -1,4 +1,5 @@
 description: Relink handles both the tiddler and the template tiddler. If the new titles, become too complex, it may convert the transclude into its widget equivalent.
+tags: Demo
 
 [[With template|Templates/Hello]]:
 {{Frodo||Templates/Hello}}
