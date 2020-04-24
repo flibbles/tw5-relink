@@ -120,9 +120,11 @@ it("will properly categorize plugin inline declarations", function() {
 
 it("resolves legacy types", function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.fieldConf("test", "yes"));
+	// Gotta test this with the mock fieldtype, cause resolving to title
+	// means nothing. It's the super default
+	wiki.addTiddler(utils.fieldConf("test", "old-dummy-type"));
 	test(wiki, ["fields/test"]);
-	type(wiki, "fields/test", "title");
+	type(wiki, "fields/test", "dummy-type");
 });
 
 it("ignores drafts", function() {

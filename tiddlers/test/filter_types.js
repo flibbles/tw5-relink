@@ -67,8 +67,8 @@ it('if default is configured incorrectly, defaults to title', function() {
 
 it('if default is legacy type, properly resolves', function() {
 	var wiki = new $tw.Wiki();
-	types = test(wiki, "nonexistent");
-	expect(types[0]).toBe("title");
+	types = test(wiki, "old-dummy-type");
+	expect(types[0]).toBe("dummy-type");
 	assertOrder(types);
 });
 
