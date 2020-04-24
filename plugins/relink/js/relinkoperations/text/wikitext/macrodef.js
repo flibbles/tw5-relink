@@ -30,19 +30,20 @@ MacrodefEntry.prototype.report = function() {
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var setParseTreeNode = this.parse();
-	var macroEntry;
+	var setParseTreeNode = this.parse(),
+		macroEntry,
+		m = this.match,
+		placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(m[1]),
+		whitespace;
 	options.settings.addMacroDefinition(setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
-	var m = this.match;
-	// !m[3] means it's not a multiline macrodef
-	var placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(m[1]);
-	var whitespace = "";
 	if (placeholder && m[2] === '') {
 		var valueRegExp;
+		// m[3] means it's a multiline macrodef
 		if (m[3]) {
 			valueRegExp = /\r?\n\\end[^\S\n\r]*(?:\r?\n|$)/mg;
+			whitespace = m[3];
 		} else {
 			var newPos = $tw.utils.skipWhiteSpace(text, this.parser.pos);
 			valueRegExp = /(?:\r?\n|$)/mg;
@@ -59,7 +60,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				if (entry !== undefined) {
 					macroEntry = new MacrodefEntry(m[1], entry);
 					if (entry.output) {
-						macroEntry.output = this.makePlaceholder(m[1], whitespace+entry.output+match[0], m[3]);
+						macroEntry.output = this.makePlaceholder(m[1], whitespace+entry.output+match[0]);
 					}
 				}
 			}
@@ -69,10 +70,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	return macroEntry;
 };
 
-exports.makePlaceholder = function(name, content, multiline) {
-	if (multiline) {
-		return "\\define " + name + "()\n" + content;
-	} else {
-		return "\\define " + name + "()" + content;
-	}
+exports.makePlaceholder = function(name, content) {
+	return "\\define " + name + "()" + content;
 };

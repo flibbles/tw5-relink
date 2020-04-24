@@ -106,8 +106,20 @@ it('Windows newlines', function() {
 	testText(macro(1,"from here",false,"\r\n")+"Body content");
 });
 
-it("won't choke on block placeholders, if they somehow occur", function() {
-	testText(macro("filter-1", "[tag[from here]]", true)+"<<relink-filter-1>>");
+it("block placeholders", function() {
+	testText(macro("filter-1", "[tag[from here]]", true)+"body");
+	testText(macro("filter-1", "[tag[from here]]", true, "\r\n")+"body");
+	testText(macro("filter-1", "[tag[from here]]", true).trimEnd());
+});
+
+it("block placeholders and whitespace", function() {
+	testText(macro(1, "from here", true));
+	testText(macro(1, " from here", true), {ignored: true});
+	testText(macro(1, "from here ", true), {ignored: true});
+	testText(macro(1, "\nfrom here\n", true), {ignored: true});
+	testText(macro(1, "from here\n", true), {ignored: true});
+	testText("\\define relink-1()  \nfrom here\n\\end  \ncontent");
+	testText("\\define relink-1()  \r\nfrom here\r\n\\end  \r\ncontent");
 });
 
 it("relinks placeholder to empty tiddler body", function() {

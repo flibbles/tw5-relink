@@ -6,3 +6,4 @@
 * Fixed bug where `<$macrocall>` without a $name attribute would cause RSoD.
 * Fixed issue where placeholders in empty tiddlers wouldn't be relinked.
 * Fixed rare issue where placeholders might relink their value into garbage.
+* If a user changed a multiline placeholder to be multiline, it became inert and error-prone. Not anymore.
