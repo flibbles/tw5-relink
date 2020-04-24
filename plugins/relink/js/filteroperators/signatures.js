@@ -8,6 +8,8 @@ relink configuration.
 
 \*/
 
+var settings = require('$:/plugins/flibbles/relink/js/settings.js');
+
 exports.signatures = function(source,operator,options) {
 	var plugin = operator.operand || null;
 	var set = getSet(options);
@@ -34,6 +36,15 @@ exports.type = function(source,operator,options) {
 		}
 	});
 	return results;
+};
+
+exports.types = function(source,operator,options) {
+	var def = settings.getDefaultRelinker(options.wiki);
+	var types = Object.keys(settings.getRelinkers());
+	types.sort();
+	// move default to front
+	types.sort(function(x,y) { return x === def ? -1 : y === def ? 1 : 0; });
+	return types;
 };
 
 exports.source = function(source,operator,options) {

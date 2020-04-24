@@ -11,6 +11,7 @@ var prefix = "$:/config/flibbles/relink/";
 $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
 	function NewType() {};
 	NewType.prototype = exports;
+	NewType.typeName = exports.name;
 	fieldTypes[exports.name] = NewType;
 	// For legacy reasons, some of the field types can go by other names
 	if (exports.aliases) {
@@ -33,6 +34,24 @@ module.exports = Settings;
 Settings.getRelinker = function(name) {
 	var Handler = fieldTypes[name];
 	return Handler ? new Handler() : undefined;
+};
+
+Settings.getRelinkers = function() {
+	// We don't return fieldTypes, because we don't want it modified,
+	// and we need to filter out legacy names.
+	var rtn = Object.create(null);
+	for (var type in fieldTypes) {
+		var typeObject = fieldTypes[type];
+		rtn[typeObject.typeName] = typeObject;
+	}
+	return rtn;
+};
+
+Settings.getDefaultRelinker = function(wiki) {
+	var tiddler = wiki.getTiddler("$:/config/flibbles/relink/settings/default-type");
+	var defaultType = tiddler && tiddler.fields.text;
+	// make sure the default actually exists, otherwise default
+	return fieldTypes[defaultType] ? defaultType : "title";
 };
 
 Settings.prototype.getAttribute = function(elementName) {

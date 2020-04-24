@@ -28,12 +28,20 @@ function test(type, paramObject, options) {
 
 describe("mangler", function() {
 
-it('adds fields', function() {
+it('supports default custom type', function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: defaultTiddler, text: "custom"});
+	wiki.addTiddler({title: defaultTiddler, text: "dummy-type"});
 	var output = test("relink-add-field", {field: "test"}, {wiki: wiki});
 	var results = output.wiki.getTiddler(prefix + "fields/test");
-	expect(results.fields.text).toEqual("custom");
+	expect(results.fields.text).toEqual("dummy-type");
+});
+
+it('adds fields', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: defaultTiddler, text: "wikitext"});
+	var output = test("relink-add-field", {field: "test"}, {wiki: wiki});
+	var results = output.wiki.getTiddler(prefix + "fields/test");
+	expect(results.fields.text).toEqual("wikitext");
 });
 
 it('rejects illegal fields', function() {
@@ -61,10 +69,10 @@ it('ignores some fields', function() {
 
 it('adds operators', function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: defaultTiddler, text: "custom"});
+	wiki.addTiddler({title: defaultTiddler, text: "list"});
 	var output = test("relink-add-operator", {operator: "test"}, {wiki: wiki});
 	var results = output.wiki.getTiddler(prefix + "operators/test");
-	expect(results.fields.text).toEqual("custom");
+	expect(results.fields.text).toEqual("list");
 });
 
 it('adds odd operators', function() {
@@ -83,12 +91,12 @@ it('adds odd operators', function() {
 
 it('adds macro parameters', function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: defaultTiddler, text: "custom"});
+	wiki.addTiddler({title: defaultTiddler, text: "filter"});
 	var output = test("relink-add-parameter",
 		{macro: "test", parameter: "field"},
 		{wiki: wiki});
 	var results = output.wiki.getTiddler(prefix + "macros/test/field");
-	expect(results.fields.text).toEqual("custom");
+	expect(results.fields.text).toEqual("filter");
 });
 
 // This is the only validation we do on parameters, because it's the only one
@@ -133,12 +141,12 @@ it('adds odd parameters', function() {
 
 it('adds element attributes', function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: defaultTiddler, text: "custom"});
+	wiki.addTiddler({title: defaultTiddler, text: "reference"});
 	var output = test("relink-add-attribute",
 		{element: "test", attribute: "field"},
 		{wiki: wiki});
 	var results = output.wiki.getTiddler(prefix + "attributes/test/field");
-	expect(results.fields.text).toEqual("custom");
+	expect(results.fields.text).toEqual("reference");
 });
 
 it('rejects bad elements and attributes', function() {

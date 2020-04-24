@@ -18,33 +18,41 @@ function uiWiki() {
 	return wiki;
 };
 
-function occurrences(string, segment) {
+function assertOccurrences(string, segment, expectedCount) {
 	var index = 0,
 		count = 0;
 	while ((index = string.indexOf(segment, index)) >= 0) {
 		index++;
 		count++;
 	}
-	return count;
+	expect(count).toBe(expectedCount, "'"+segment+"' occurred the incorrect number of times");
 };
 
 describe('ui', function() {
 
 it('displays whitelisted macro settings', function() {
-	var wiki = uiWiki();new $tw.Wiki();
+	var wiki = uiWiki();
 	wiki.addTiddler(utils.macroConf("GLOBALMACRO", "GLOBALPARAM"));
 	var text = wiki.renderTiddler("text/plain", "$:/plugins/flibbles/relink/ui/configuration/Macros");
-	expect(occurrences(text, "GLOBALMACRO")).toBe(1);
-	expect(occurrences(text, "GLOBALPARAM")).toBe(1);
+	assertOccurrences(text, "GLOBALMACRO", 1);
+	assertOccurrences(text, "GLOBALPARAM", 1);
 });
 
 it('displays inline macro settings', function() {
-	var wiki = uiWiki();new $tw.Wiki();
+	var wiki = uiWiki();
 	wiki.addTiddler({title: "macro tiddler", text: "\\relink INLINEMACRO INLINEPARAM:wikitext", tags: "$:/tags/Macro"});
 	var text = wiki.renderTiddler("text/plain", "$:/plugins/flibbles/relink/ui/configuration/Macros");
-	expect(occurrences(text, "INLINEMACRO")).toBe(1);
-	expect(occurrences(text, "INLINEPARAM")).toBe(1);
-	expect(occurrences(text, "wikitext")).toBe(1);
+	assertOccurrences(text, "INLINEMACRO", 1);
+	assertOccurrences(text, "INLINEPARAM", 1);
+	assertOccurrences(text, "wikitext", 1);
+});
+
+it('displays <$option> list with all types', function() {
+	var wiki = uiWiki();
+	wiki.addTiddler(utils.fieldConf("TESTFIELD"));
+	var text = wiki.renderTiddler("text/plain", "$:/plugins/flibbles/relink/ui/configuration/Fields");
+	assertOccurrences(text, "wikitext", 1);
+	assertOccurrences(text, "dummy-type", 1);
 });
 
 });

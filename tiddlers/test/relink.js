@@ -171,7 +171,7 @@ it('did import pluginrule, even though it never uses it', function() {
 	// Just make sure there's more than a few so we know we're actually
 	// using the right module-type.
 	expect(rwtr.length).toBeGreaterThan(5);
-	expect(rwtr).toContain("test/setup/pluginrule.js");
+	expect(rwtr).toContain("test/modules/pluginrule.js");
 });
 
 });

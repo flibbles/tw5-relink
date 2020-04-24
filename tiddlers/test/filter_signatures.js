@@ -118,6 +118,13 @@ it("will properly categorize plugin inline declarations", function() {
 	type(wiki, "macros/mac/param", "title");
 });
 
+it("resolves legacy types", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.fieldConf("test", "yes"));
+	test(wiki, ["fields/test"]);
+	type(wiki, "fields/test", "title");
+});
+
 it("ignores drafts", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([

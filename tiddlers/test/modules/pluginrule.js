@@ -1,6 +1,4 @@
 /*\
-title: test/setup/pluginrule.js
-type: application/javascript
 module-type: relinkwikitextrule
 
 This ensures that wikitextrules can exist which correspond to wikirules

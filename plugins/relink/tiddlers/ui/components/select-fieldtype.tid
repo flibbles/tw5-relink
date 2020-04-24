@@ -4,9 +4,8 @@ title: $:/plugins/flibbles/relink/ui/components/select-fieldtype
 
 <$vars type={{{ [<signature>relink:type[]] }}} >
 <$list filter="[all[current]prefix<prefix>]" >
-<$select tiddler=<<currentTiddler>> default={{$:/config/flibbles/relinke/settings/default-type}} >
-<$list variable="option"
-       filter="[[relinkfieldtype]modules[]removeprefix[$:/plugins/flibbles/relink/js/fieldtypes/]removesuffix[.js]move:-100{$:/config/flibbles/relink/settings/default-type}]">
+<$select tiddler=<<currentTiddler>> >
+<$list variable="option" filter="[relink:types[]]">
 <option><$text text=<<option>> /></option>
 </$list>
 </$select>

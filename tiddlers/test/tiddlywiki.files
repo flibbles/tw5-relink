@@ -14,9 +14,16 @@
 			}
 		},
 		{
-			"path": "./setup",
+			"path": "./modules",
 			"filesRegExp": "^.*$",
-			"isTiddlerFile": true
+			"isTiddlerFile": true,
+			"fields": {
+				"title": {
+					"source": "filename",
+					"prefix": "test/modules/"
+				},
+				"type": "application/javascript"
+			}
 		}
 	]
 }
