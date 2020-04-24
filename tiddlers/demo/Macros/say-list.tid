@@ -1,11 +1,12 @@
 tags: $:/tags/Macro
 title: Macros/say-list
 
+\relink say-list filter:filter template:wikitext
 \define say-list(filter, template:"""<$text text=<<currentTiddler>> />""")
 <$list filter="[subfilter<__filter__>butlast[]]">$template$, </$list><$list filter="[subfilter<__filter__>last[]]">and $template$</$list>
 \end
 <<print-before-this>>
 
-This prints a filter's items in a conversational way. For instance: <<say-list "Frodo BilboBaggins Gollum">>. 
+`say-list` prints a filter's items in a conversational way. For instance: <<say-list "Frodo BilboBaggins Gollum">>.
 
-This macro is globally available because of the tag <<tag $:/tags/Macro>>. It relies on [[Whitelisting]] to declare its parameters. You can see the whitelist configuration <<link-to-config-tab Macros here>>.
+This macro declares its parameters through [[pragma|Inline Declarations]]. Since this tiddler is global (because of <<tag $:/tags/Macro>>), its parameters will get a mention in the <<link-to-config-tab Macros "whitelist configuration page">>

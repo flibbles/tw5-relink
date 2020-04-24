@@ -1,13 +1,13 @@
-description: <p>Relink can rename the parameters in macros. Each parameter must be declared first. All core macros are already configured, but you can add your own as well. [[See here for more details.|Macros]]</p> <p>`<<choice>>` is defined [[here|Macros/choice]].<br/>`<<say-list>>` is defined [[here|Macros/say-list]].<br/>See each for examples on different ways to declare parameters.</p>
+description: <p>Relink can rename the parameters in macros. Each parameter must be declared first. All core macros are already configured, but you can add your own as well. [[See here for more details.|Macros]]</p> <p>`<<say-list>>` is defined [[here|Macros/say-list]].<br/>`<<ul>>` is defined [[here|Macros/ul]].<br/>See each for examples on different ways to declare parameters.</p>
 tags: Demo
 
-\define foes(hobbit) <$view tiddler=<<__hobbit__>> field="foes" />
 \relink foes hobbit
+\define foes(hobbit) <$view tiddler=<<__hobbit__>> field="foes" />
 
-<<foes Frodo>>
+''Foes:'' <<foes Frodo>>
 
-<<say-list "Shire [[Dead Marshes]] Mordor">>
+---
+''Friends:'' <<say-list "Frodo [[his friends]] [[everyone else]]">>
 
-<!-- Lists all tiddlers tagged by Frodo -->
-<$macrocall $name="ul" tag="Frodo" />
-
+---
+''Tagging'': <$macrocall $name="ul" tag="Frodo" />

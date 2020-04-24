@@ -5,6 +5,4 @@ fields/example-filter: filter
 fields/example-list: list
 fields/example-title: title
 fields/example-wikitext: wikitext
-macros/say-list/filter: filter
-macros/say-list/template: wikitext
 macros/ul/tag: title

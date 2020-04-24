@@ -29,7 +29,7 @@ title: Templates/Demo
 <$transclude field="description" />
 @@
 
-<$list filter="[all[current]search[relink-1()]]">
+<$list filter="[all[current]search::literal[define relink-]]">
 
 ''relink-1:'' Sometimes, Relink is unable to make title replacements in place (e.g. replacing a prettylink with a title that has brackets in it). In these cases, Relink may define placeholder macros at the top of your tiddler which it uses to complete the relink operation.
 </$list>

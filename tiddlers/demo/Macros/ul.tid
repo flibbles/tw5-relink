@@ -10,15 +10,8 @@ title: Macros/ul
   </$transclude></$link></li>
 </$list></ul>
 \end
+<<print-before-this>>
 
-''Hey!'' This macro has a ''tag'' parameter which is configured in <<link-to-config-tab Macros "//Relink// whitelist">>.
+`ul` creates an unorganized list of all tiddlers of the given tag, like `<ul>` would. It prefers using ''!!caption'', but falls back on ''!!title''.
 
-`ul` creates an unorganized list of all tiddlers of the given tag. It's like:
-
-```
-* TiddlerA
-* TiddlerB
-* TiddlerC
-```
-
-...only programmatic. It prefers using ''!!caption'', but falls back on ''!!title''.
+This macro is globally available because of the tag <<tag $:/tags/Macro>>. It relies on [[Whitelisting]] to declare its parameters. You can see the whitelist configuration <<link-to-config-tab Macros here>>.
