@@ -49,9 +49,10 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 <<.make-table Core "$:/plugins/flibbles/relink">>
 
 <$list
-	variable="plugin"
 	filter="[plugin-type[plugin]![$:/core]![$:/plugins/flibbles/relink]]">
-<$macrocall $name=".make-table" title={{!!description}} plugin=<<plugin>> />
+<$set name="subtitle" value={{!!description}} emptyValue={{!!title}} >
+<$macrocall $name=".make-table" title=<<subtitle>> plugin=<<currentTiddler>> />
+</$set>
 </$list>
 
 </tbody></table>

@@ -55,4 +55,14 @@ it('displays <$option> list with all types', function() {
 	assertOccurrences(text, "dummy-type", 1);
 });
 
+it('displays plugin subtitle when plugin configuration present', function() {
+	var wiki = uiWiki();
+	utils.addPlugin("SuperPlugin", [
+		utils.fieldConf("anything"),
+		utils.fieldConf("second field")], {description: "SuperPlugin Here", wiki: wiki});
+	var text = wiki.renderTiddler("text/plain", "$:/plugins/flibbles/relink/ui/configuration/Fields");
+	assertOccurrences(text, "SuperPlugin Here", 1);
+	assertOccurrences(text, "second field", 1);
+});
+
 });
