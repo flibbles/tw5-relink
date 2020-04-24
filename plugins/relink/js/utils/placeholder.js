@@ -29,7 +29,7 @@ Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
 		number += 1;
 		placeholder = prefix + number;
 	} while (config.getMacroDefinition(placeholder));
-	config.addMacroDefinition(placeholder, value);
+	config.reserveMacroName(placeholder);
 	this.placeholders[placeholder] = value;
 	this.reverseMap[value] = placeholder;
 	return placeholder;

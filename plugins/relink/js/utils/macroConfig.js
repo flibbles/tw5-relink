@@ -14,7 +14,7 @@ function MacroConfig(wiki, parent, title) {
 	this.title = title;
 	this.wiki = wiki;
 	this.widgetList = [];
-	this.localMacroDefs = Object.create(null);
+	this.reservedmacroNames = Object.create(null);
 };
 
 module.exports = MacroConfig;
@@ -124,17 +124,25 @@ MacroConfig.prototype.getVariableWidget = function() {
 	return this.widget;
 };
 
-/**This only handles simple macros, since we only really need it to remember
- * placeholders for now.
+/**This takes macros, specifically relink placeholders, and remembers them
+ * It creates a dummy object for them, since we'll never need the definition
  */
-MacroConfig.prototype.addMacroDefinition = function(variableName, value) {
-	this.localMacroDefs[variableName] = {
-		value: value,
+MacroConfig.prototype.reserveMacroName = function(variableName) {
+	this.reservedmacroNames[variableName] = {
+		value: "",
 		params: []};
 };
 
+MacroConfig.prototype.addMacroDefinition = function(setParseTreeNode) {
+	var bottomWidget = this.getVariableWidget();
+	var setWidget = bottomWidget.makeChildWidget(setParseTreeNode);
+	setWidget.computeAttributes();
+	setWidget.execute();
+	this.addWidget(setWidget);
+};
+
 MacroConfig.prototype.getMacroDefinition = function(variableName) {
-	return this.localMacroDefs[variableName] || this.getVariableWidget().variables[variableName] || $tw.macros[variableName];
+	return this.getVariableWidget().variables[variableName] || $tw.macros[variableName] || this.reservedmacroNames[variableName];
 };
 
 function createImportWidget(filter, wiki, parent) {

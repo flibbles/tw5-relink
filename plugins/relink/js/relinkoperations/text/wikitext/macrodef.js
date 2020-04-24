@@ -31,11 +31,7 @@ MacrodefEntry.prototype.report = function() {
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var setParseTreeNode = this.parse();
-	var parentWidget = options.settings.getVariableWidget();
-	var setWidget = parentWidget.makeChildWidget(setParseTreeNode[0]);
-	setWidget.computeAttributes();
-	setWidget.execute();
-	options.settings.addWidget(setWidget);
+	options.settings.addMacroDefinition(setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var m = this.match;
