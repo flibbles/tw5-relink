@@ -38,13 +38,16 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match;
 	// !m[3] means it's not a multiline macrodef
 	var placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(m[1]);
+	var whitespace = "";
 	if (placeholder && m[2] === '') {
 		var valueRegExp;
 		if (m[3]) {
 			valueRegExp = /\r?\n\\end[^\S\n\r]*(?:\r?\n|$)/mg;
 		} else {
+			var newPos = $tw.utils.skipWhiteSpace(text, this.parser.pos);
 			valueRegExp = /(?:\r?\n|$)/mg;
-			this.parser.pos = $tw.utils.skipWhiteSpace(text, this.parser.pos);
+			whitespace = text.substring(this.parser.pos, newPos);
+			this.parser.pos = newPos;
 		}
 		valueRegExp.lastIndex = this.parser.pos;
 		var match = valueRegExp.exec(text);
@@ -56,7 +59,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				if (entry !== undefined) {
 					macroEntry = new MacrodefEntry(m[1], entry);
 					if (entry.output) {
-						macroEntry.output = this.makePlaceholder(m[1], entry.output+match[0], m[3]);
+						macroEntry.output = this.makePlaceholder(m[1], whitespace+entry.output+match[0], m[3]);
 					}
 				}
 			}
@@ -70,6 +73,6 @@ exports.makePlaceholder = function(name, content, multiline) {
 	if (multiline) {
 		return "\\define " + name + "()\n" + content;
 	} else {
-		return "\\define " + name + "() " + content;
+		return "\\define " + name + "()" + content;
 	}
 };

@@ -71,6 +71,16 @@ it('plaintext', function() {
 	testText(m+"[[from]]", m+"[[to there]]", {from: "from"});
 });
 
+it('preserves & ignores correct whitespace', function() {
+	testText(macro(1, "   from here"));
+	testText(macro(1, "\tfrom here"));
+	// no space
+	testText("\\define relink-1()from here\n");
+	// space at the end goes into the variable actually
+	testText(macro(1, "from here "), {ignored: true});
+	testText(macro(1, "from here\t"), {ignored: true});
+});
+
 it('does not crash when given invalid category', function() {
 	// Instead, it's just treated as wikitext
 	testText(macro("wrong-1", "[[from here]]")+"[[from here]]",
