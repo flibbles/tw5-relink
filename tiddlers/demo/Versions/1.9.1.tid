@@ -1,5 +1,7 @@
+created: 20200425031407077
 \rules except wikilink
 
+* Corrected the problem were custom-built relinkfieldtypes wouldn't actually be available in the whitelist dropdown menus. I'll actually be adding documentation for this soon. The API has nearly finalized.
 * Forgot to hook up `$:/config/flibbles/relink/settings/default-type` to be used by inline declarations. It uses it now.
 * Corrected issue where 3rd party plugin names wouldn't render correctly in the whitelist. They'd all say "Relink - flexibility when..." etc.
 * Fixed issue where empty macro params could cause RSoD. (i.e `<<myMacro "">>`)
