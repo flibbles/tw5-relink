@@ -1,4 +1,5 @@
 created: 20200425031407077
+
 \rules except wikilink
 
 * Corrected the problem were custom-built relinkfieldtypes wouldn't actually be available in the whitelist dropdown menus. I'll actually be adding documentation for this soon. The API has nearly finalized.

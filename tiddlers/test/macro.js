@@ -156,6 +156,10 @@ it('undefined macros', function() {
 	testText("<<undef something param:'from here'>> [[from here]]",
 	         "<<undef something param:'from here'>> [[A] '\"]]",
 	         {wiki: wiki, to: "A] '\"", fails: 1});
+	// Relink should realize that there's nothing to do on this one and
+	// not emit an error. param is already spoken for, so that undefined
+	// param is irrelevant.
+	testText("<<undef 'from here' param: unrelated>> from here", {wiki: wiki, fails: 0, ignored: true})
 });
 
 it("undefined macros, multiple active parameters", function() {

@@ -60,9 +60,11 @@ Settings.getDefaultType = function(wiki) {
 };
 
 Settings.prototype.survey = function(text, fromTitle, options) {
-	for (var i = 0; i < surveyors.length; i++) {
-		if (surveyors[i].survey(text, fromTitle, options)) {
-			return true;
+	if (text) {
+		for (var i = 0; i < surveyors.length; i++) {
+			if (surveyors[i].survey(text, fromTitle, options)) {
+				return true;
+			}
 		}
 	}
 	return false;

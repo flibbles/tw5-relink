@@ -42,6 +42,9 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		macroText = this.match[0];
 	// Move past the macro call
 	this.parser.pos = this.matchRegExp.lastIndex;
+	if (!options.settings.survey(macroText, fromTitle, options)) {
+		return undefined;
+	}
 	var start = this.matchRegExp.lastIndex - this.match[0].length;
 	var managedMacro = options.settings.getMacro(macroName);
 	if (!managedMacro) {
@@ -99,7 +102,7 @@ function relinkMacroInvocation(macro, text, fromTitle, toTitle, mayBeWidget, opt
 		return undefined;
 	}
 	if (macro.params.every(function(p) {
-		return !p.value || !options.settings.survey(p.value, fromTitle, options);
+		return !options.settings.survey(p.value, fromTitle, options);
 	})) {
 		// We cut early if the fromTitle doesn't even appear
 		// anywhere in the title. This is to avoid any headache
