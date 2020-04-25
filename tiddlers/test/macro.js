@@ -273,6 +273,14 @@ it('slashes in macro name', function() {
 	testText('X<<non/attr param:"from here">>Y', utils.placeholder(1,to)+"X<$macrocall $name='non/attr' param=<<relink-1>>/>Y", {to: to, wiki: wiki});
 });
 
+it('empty or undefined macro params', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("macro", "param"));
+
+	testText("\\define macro(other, param) C\n<<macro '' 'from here'>>",
+	         {wiki: wiki});
+});
+
 it('$macrocall', function() {
 	testText("<$macrocall $name=test A=stuff Btitle='from here' Clist='[[from here]]' Dref='from here##index' />");
 	testText("\n\n<$macrocall $name=test\n\nBtitle='from here'/>\n\n");
