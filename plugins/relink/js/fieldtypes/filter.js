@@ -47,7 +47,7 @@ OperatorEntry.prototype.report = function() {
 /**Returns undefined if no change was made.
  */
 exports.relink = function(filter, fromTitle, toTitle, options) {
-	if (!filter || filter.indexOf(fromTitle) < 0) {
+	if (!filter || !options.settings.survey(filter, fromTitle, options)) {
 		return undefined;
 	}
 	var filterEntry = new FilterEntry();

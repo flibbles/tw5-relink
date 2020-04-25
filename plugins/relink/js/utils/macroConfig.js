@@ -58,6 +58,10 @@ MacroConfig.prototype.getAttributes = function() {
 	return this.parent.getAttributes();
 };
 
+MacroConfig.prototype.survey = function(text, fromTitle, options) {
+	return this.parent.survey(text, fromTitle, options);
+};
+
 MacroConfig.prototype.getAttribute = function(elementName) {
 	return this.parent.getAttribute(elementName);
 };

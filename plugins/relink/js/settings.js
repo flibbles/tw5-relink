@@ -6,6 +6,7 @@ This handles the fetching and distribution of relink settings.
 \*/
 
 var fieldTypes = Object.create(null);
+var surveyors = [];
 var prefix = "$:/config/flibbles/relink/";
 
 $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
@@ -19,6 +20,10 @@ $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
 			fieldTypes[alias] = NewType;
 		});
 	}
+});
+
+$tw.modules.forEachModuleOfType("relinksurveyor", function(title, exports) {
+	surveyors.push(exports);
 });
 
 function Settings(wiki) {
@@ -52,6 +57,15 @@ Settings.getDefaultType = function(wiki) {
 	var defaultType = tiddler && tiddler.fields.text;
 	// make sure the default actually exists, otherwise default
 	return fieldTypes[defaultType] ? defaultType : "title";
+};
+
+Settings.prototype.survey = function(text, fromTitle, options) {
+	for (var i = 0; i < surveyors.length; i++) {
+		if (surveyors[i].survey(text, fromTitle, options)) {
+			return true;
+		}
+	}
+	return false;
 };
 
 Settings.prototype.getAttribute = function(elementName) {

@@ -48,3 +48,22 @@ it("has access to fields of locally defined macro", function() {
 });
 
 });
+
+describe("custom: surveyors", function() {
+
+it('uses custom surveyors', function() {
+	var wiki = new $tw.Wiki(),
+		r;
+	wiki.addTiddlers([
+		utils.macroConf("macro", "dummy", "dummy-type"),
+		utils.attrConf("$elem", "dummy", "dummy-type"),
+		utils.operatorConf("dummy", "dummy-type")]);
+	r = utils.relink({text: "<$elem dummy='FROM HERE' />"}, {wiki: wiki});
+	expect(r.tiddler.fields.text).toEqual("<$elem dummy='to there' />");
+	r = utils.relink({text: "<<macro dummy: 'FROM HERE' >>"}, {wiki: wiki});
+	expect(r.tiddler.fields.text).toEqual("<<macro dummy: 'to there' >>");
+	r = utils.relink({text: "{{{ [dummy[FROM HERE]] }}}"}, {wiki: wiki});
+	expect(r.tiddler.fields.text).toEqual("{{{ [dummy[to there]] }}}");
+});
+
+});

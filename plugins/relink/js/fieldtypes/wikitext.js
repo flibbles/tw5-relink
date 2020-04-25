@@ -67,8 +67,8 @@ WikiRelinker.prototype.parseBlocks = function() {};
 
 exports.relink = function(wikitext, fromTitle, toTitle, options) {
 	// fromTitle doesn't even show up plaintext. No relinking to do.
-	if (!wikitext || wikitext.indexOf(fromTitle) < 0) {
-		return;
+	if (!wikitext || !options.settings.survey(wikitext, fromTitle, options)) {
+		return undefined;
 	}
 	var builder = new Rebuilder(wikitext),
 		parser = new WikiRelinker(wikitext, options.currentTiddler, toTitle, options),

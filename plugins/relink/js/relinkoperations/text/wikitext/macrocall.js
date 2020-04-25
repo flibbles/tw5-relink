@@ -99,7 +99,7 @@ function relinkMacroInvocation(macro, text, fromTitle, toTitle, mayBeWidget, opt
 		return undefined;
 	}
 	if (macro.params.every(function(p) {
-		return !p.value || p.value.indexOf(fromTitle) < 0;
+		return !p.value || !options.settings.survey(p.value, fromTitle, options);
 	})) {
 		// We cut early if the fromTitle doesn't even appear
 		// anywhere in the title. This is to avoid any headache
