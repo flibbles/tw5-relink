@@ -12,7 +12,7 @@ and tries to swap it out if it is.
 var type = 'text/vnd.tiddlywiki';
 var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
-var wikitextHandler = settings.getRelinker('wikitext');
+var wikitextHandler = settings.getType('wikitext');
 
 exports[type] = function(tiddler, fromTitle, toTitle, options) {
 	var placeholder = new Placeholder();

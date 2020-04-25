@@ -34,7 +34,7 @@ exports.parse = function() {
 	var self = this;
 	this.interpretSettings(function(macro, parameter, type) {
 		macroName = macro;
-		if (type && !settings.getRelinker(type)) {
+		if (type && !settings.getType(type)) {
 			error = language.getString("Error/UnrecognizedType",
 				{variables: {type: type}, wiki: self.parser.wiki});
 		}

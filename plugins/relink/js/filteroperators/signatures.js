@@ -39,8 +39,8 @@ exports.type = function(source,operator,options) {
 };
 
 exports.types = function(source,operator,options) {
-	var def = settings.getDefaultRelinker(options.wiki);
-	var types = Object.keys(settings.getRelinkers());
+	var def = settings.getDefaultType(options.wiki);
+	var types = Object.keys(settings.getTypes());
 	types.sort();
 	// move default to front
 	types.sort(function(x,y) { return x === def ? -1 : y === def ? 1 : 0; });

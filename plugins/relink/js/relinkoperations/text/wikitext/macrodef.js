@@ -53,7 +53,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		valueRegExp.lastIndex = this.parser.pos;
 		var match = valueRegExp.exec(text);
 		if (match) {
-			var handler = settings.getRelinker(placeholder[1] || 'title');
+			var handler = settings.getType(placeholder[1] || 'title');
 			if (handler) {
 				var value = text.substring(this.parser.pos, match.index);
 				var entry = handler.relink(value, fromTitle, toTitle, options);

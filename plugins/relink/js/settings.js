@@ -31,12 +31,12 @@ module.exports = Settings;
 /**Returns a specific relinker.
  * This is useful for wikitext rules which need to parse a filter or a list
  */
-Settings.getRelinker = function(name) {
+Settings.getType = function(name) {
 	var Handler = fieldTypes[name];
 	return Handler ? new Handler() : undefined;
 };
 
-Settings.getRelinkers = function() {
+Settings.getTypes = function() {
 	// We don't return fieldTypes, because we don't want it modified,
 	// and we need to filter out legacy names.
 	var rtn = Object.create(null);
@@ -47,7 +47,7 @@ Settings.getRelinkers = function() {
 	return rtn;
 };
 
-Settings.getDefaultRelinker = function(wiki) {
+Settings.getDefaultType = function(wiki) {
 	var tiddler = wiki.getTiddler("$:/config/flibbles/relink/settings/default-type");
 	var defaultType = tiddler && tiddler.fields.text;
 	// make sure the default actually exists, otherwise default

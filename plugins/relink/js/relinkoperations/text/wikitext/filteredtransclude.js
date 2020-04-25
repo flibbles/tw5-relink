@@ -15,7 +15,7 @@ This renames both the list and the template field.
 
 exports.name = ['filteredtranscludeinline', 'filteredtranscludeblock'];
 
-var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
+var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getType('filter');
 var utils = require("./utils.js");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 

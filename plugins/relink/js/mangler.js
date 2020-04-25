@@ -118,6 +118,6 @@ function add(wiki, category/*, path parts*/) {
 		}
 		path = path + "/" + part;
 	}
-	var def = settings.getDefaultRelinker(wiki);
+	var def = settings.getDefaultType(wiki);
 	wiki.addTiddler({title: path, text: def});
 };

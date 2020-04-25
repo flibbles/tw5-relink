@@ -11,7 +11,7 @@ Handles replacement in wiki text inline rules, like,
 
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
-var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getRelinker('filter');
+var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getType('filter');
 var macrocall = require("./macrocall.js");
 var utils = require("./utils.js");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');

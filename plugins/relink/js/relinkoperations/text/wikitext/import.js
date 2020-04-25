@@ -7,7 +7,7 @@ Handles import pragmas
 \*/
 
 var settings = require("$:/plugins/flibbles/relink/js/settings.js");
-var filterRelinker = settings.getRelinker('filter');
+var filterRelinker = settings.getType('filter');
 
 exports.name = "import";
 
