@@ -7,6 +7,8 @@ title: Macros/say-list
 \end
 <<print-before-this>>
 
-`say-list` prints a filter's items in a conversational way. For instance: <<say-list "Frodo BilboBaggins Gollum">>.
+`say-list` prints a filter's items in a conversational way. For instance:
+
+: `<<say-list "this that [[another thing]]">>` -> ''<<say-list "this that [[another thing]]">>''
 
 This macro declares its parameters through [[pragma|Inline Declarations]]. Since this tiddler is global (because of <<tag $:/tags/Macro>>), its parameters will get a mention in the <<link-to-config-tab Macros "whitelist configuration page">>
