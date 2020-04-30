@@ -1,6 +1,10 @@
 title: $:/
 
+config/PageControlButtons/Visibility/$:/core/ui/Buttons/home: show
 config/RelinkOnRename: yes
+config/TiddlerInfo/Default: $:/plugins/flibbles/relink/ui/TiddlerInfo/References
+config/ViewToolbarButtons/Visibility/$:/core/ui/Buttons/info: show
+
 DefaultTiddlers: Relink Demo Frodo
 SiteTitle: Relink
 SiteSubtitle: flexibility when relinking renamed tiddlers
