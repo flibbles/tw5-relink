@@ -25,11 +25,11 @@ Visit the [demo site](https://flibbles.github.io/tw5-relink/). It will have a li
 The contents of the `plugins` directory must be copied into the `plugins`
 directory in your tiddlywiki installation. This is likely in:
 
-`/usr/local/lib/node_modules/tiddlywiki/flibbles`
+`/usr/local/lib/node_modules/tiddlywiki/plugins/flibbles`
 
 You will likely need to make the `flibbles` directory. If you've installed it correctly, the path to the `plugin.info` file should look something like:
 
-`/usr/local/lib/node_modules/tiddlywiki/flibbles/relink/plugin.info`
+`/usr/local/lib/node_modules/tiddlywiki/plugins/flibbles/relink/plugin.info`
 
 Afterward, add the plugin inside your projects' `tiddlywiki.info` file.
 The plugins section will look something like:
