@@ -335,6 +335,8 @@ Error message and password prompt
 
 <li>Versions/1.9.1</li>
 
+<li>Versions/1.9.2</li>
+
 <li>Whitelisting</li>
 
 <li>Wikitext</li>
@@ -6516,7 +6518,7 @@ Error message and password prompt
         },
         &quot;$:/core/modules/widgets/importvariables.js&quot;: {
             &quot;title&quot;: &quot;$:/core/modules/widgets/importvariables.js&quot;,
-            &quot;text&quot;: &quot;/*\\\ntitle: $:/core/modules/widgets/importvariables.js\ntype: application/javascript\nmodule-type: widget\n\nImport variable definitions from other tiddlers\n\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: false */\n\&quot;use strict\&quot;;\n\nvar Widget = require(\&quot;$:/core/modules/widgets/widget.js\&quot;).widget;\n\nvar ImportVariablesWidget = function(parseTreeNode,options) {\n\tthis.initialise(parseTreeNode,options);\n};\n\n/*\nInherit from the base widget class\n*/\nImportVariablesWidget.prototype = new Widget();\n\n/*\nRender this widget into the DOM\n*/\nImportVariablesWidget.prototype.render = function(parent,nextSibling) {\n\tthis.parentDomNode = parent;\n\tthis.computeAttributes();\n\tthis.execute();\n\tthis.renderChildren(parent,nextSibling);\n};\n\n/*\nCompute the internal state of the widget\n*/\nImportVariablesWidget.prototype.execute = function(tiddlerList) {\n\tvar widgetPointer = this;\n\t// Got to flush all the accumulated variables\n\tthis.variables = new this.variablesConstructor();\n\t// Get our parameters\n\tthis.filter = this.getAttribute(\&quot;filter\&quot;);\n\t// Compute the filter\n\tthis.tiddlerList = tiddlerList || this.wiki.filterTiddlers(this.filter,this);\n\t// Accumulate the &lt;$set&gt; widgets from each tiddler\n\t$tw.utils.each(this.tiddlerList,function(title) {\n\t\tvar parser = widgetPointer.wiki.parseTiddler(title);\n\t\tif(parser) {\n\t\t\tvar parseTreeNode = parser.tree[0];\n\t\t\twhile(parseTreeNode &amp;&amp; parseTreeNode.type === \&quot;set\&quot;) {\n\t\t\t\tvar node = {\n\t\t\t\t\ttype: \&quot;set\&quot;,\n\t\t\t\t\tattributes: parseTreeNode.attributes,\n\t\t\t\t\tparams: parseTreeNode.params,\n\t\t\t\t\tisMacroDefinition: parseTreeNode.isMacroDefinition\n\t\t\t\t};\n\t\t\t\tif (parseTreeNode.isMacroDefinition) {\n\t\t\t\t\t// Macro definitions can be folded into\n\t\t\t\t\t// current widget instead of adding\n\t\t\t\t\t// another link to the chain.\n\t\t\t\t\tvar widget = widgetPointer.makeChildWidget(node);\n\t\t\t\t\twidget.computeAttributes();\n\t\t\t\t\twidget.execute();\n\t\t\t\t\t// We SHALLOW copy over all variables\n\t\t\t\t\t// in widget. We can't use\n\t\t\t\t\t// $tw.utils.assign, because that copies\n\t\t\t\t\t// up the prototype chain, which we\n\t\t\t\t\t// don't want.\n\t\t\t\t\t$tw.utils.each(Object.keys(widget.variables), function(key) {\n\t\t\t\t\t\twidgetPointer.variables[key] = widget.variables[key];\n\t\t\t\t\t});\n\t\t\t\t} else {\n\t\t\t\t\twidgetPointer.children = [widgetPointer.makeChildWidget(node)];\n\t\t\t\t\t// No more regenerating children for\n\t\t\t\t\t// this widget. If it needs to refresh,\n\t\t\t\t\t// it'll do so along with the the whole\n\t\t\t\t\t// importvariable tree.\n\t\t\t\t\tif (widgetPointer != this) {\n\t\t\t\t\t\twidgetPointer.makeChildWidgets = function(){};\n\t\t\t\t\t}\n\t\t\t\t\twidgetPointer = widgetPointer.children[0];\n\t\t\t\t}\n\t\t\t\tparseTreeNode = parseTreeNode.children &amp;&amp; parseTreeNode.children[0];\n\t\t\t}\n\t\t} \n\t});\n\n\tif (widgetPointer != this) {\n\t\twidgetPointer.parseTreeNode.children = this.parseTreeNode.children;\n\t} else {\n\t\twidgetPointer.makeChildWidgets();\n\t}\n};\n\n/*\nSelectively refreshes the widget if needed. Returns true if the widget or any of its children needed re-rendering\n*/\nImportVariablesWidget.prototype.refresh = function(changedTiddlers) {\n\t// Recompute our attributes and the filter list\n\tvar changedAttributes = this.computeAttributes(),\n\t\ttiddlerList = this.wiki.filterTiddlers(this.getAttribute(\&quot;filter\&quot;),this);\n\t// Refresh if the filter has changed, or the list of tiddlers has changed, or any of the tiddlers in the list has changed\n\tfunction haveListedTiddlersChanged() {\n\t\tvar changed = false;\n\t\ttiddlerList.forEach(function(title) {\n\t\t\tif(changedTiddlers[title]) {\n\t\t\t\tchanged = true;\n\t\t\t}\n\t\t});\n\t\treturn changed;\n\t}\n\tif(changedAttributes.filter || !$tw.utils.isArrayEqual(this.tiddlerList,tiddlerList) || haveListedTiddlersChanged()) {\n\t\t// Compute the filter\n\t\tthis.removeChildDomNodes();\n\t\tthis.execute(tiddlerList);\n\t\tthis.renderChildren(this.parentDomNode,this.findNextSiblingDomNode());\n\t\treturn true;\n\t} else {\n\t\treturn this.refreshChildren(changedTiddlers);\t\t\n\t}\n};\n\nexports.importvariables = ImportVariablesWidget;\n\n})();\n&quot;,
+            &quot;text&quot;: &quot;/*\\\ntitle: $:/core/modules/widgets/importvariables.js\ntype: application/javascript\nmodule-type: widget\n\nImport variable definitions from other tiddlers\n\n\\*/\n(function(){\n\n/*jslint node: true, browser: true */\n/*global $tw: false */\n\&quot;use strict\&quot;;\n\nvar Widget = require(\&quot;$:/core/modules/widgets/widget.js\&quot;).widget;\n\nvar ImportVariablesWidget = function(parseTreeNode,options) {\n\tthis.initialise(parseTreeNode,options);\n};\n\n/*\nInherit from the base widget class\n*/\nImportVariablesWidget.prototype = new Widget();\n\n/*\nRender this widget into the DOM\n*/\nImportVariablesWidget.prototype.render = function(parent,nextSibling) {\n\tthis.parentDomNode = parent;\n\tthis.computeAttributes();\n\tthis.execute();\n\tthis.renderChildren(parent,nextSibling);\n};\n\n/*\nCompute the internal state of the widget\n*/\nImportVariablesWidget.prototype.execute = function(tiddlerList) {\n\tvar widgetPointer = this;\n\t// Get our parameters\n\tthis.filter = this.getAttribute(\&quot;filter\&quot;);\n\t// Compute the filter\n\tthis.tiddlerList = tiddlerList || this.wiki.filterTiddlers(this.filter,this);\n\t// Accumulate the &lt;$set&gt; widgets from each tiddler\n\t$tw.utils.each(this.tiddlerList,function(title) {\n\t\tvar parser = widgetPointer.wiki.parseTiddler(title);\n\t\tif(parser) {\n\t\t\tvar parseTreeNode = parser.tree[0];\n\t\t\twhile(parseTreeNode &amp;&amp; parseTreeNode.type === \&quot;set\&quot;) {\n\t\t\t\tvar node = {\n\t\t\t\t\ttype: \&quot;set\&quot;,\n\t\t\t\t\tattributes: parseTreeNode.attributes,\n\t\t\t\t\tparams: parseTreeNode.params,\n\t\t\t\t\tisMacroDefinition: parseTreeNode.isMacroDefinition\n\t\t\t\t};\n\t\t\t\tif (parseTreeNode.isMacroDefinition) {\n\t\t\t\t\t// Macro definitions can be folded into\n\t\t\t\t\t// current widget instead of adding\n\t\t\t\t\t// another link to the chain.\n\t\t\t\t\tvar widget = widgetPointer.makeChildWidget(node);\n\t\t\t\t\twidget.computeAttributes();\n\t\t\t\t\twidget.execute();\n\t\t\t\t\t// We SHALLOW copy over all variables\n\t\t\t\t\t// in widget. We can't use\n\t\t\t\t\t// $tw.utils.assign, because that copies\n\t\t\t\t\t// up the prototype chain, which we\n\t\t\t\t\t// don't want.\n\t\t\t\t\t$tw.utils.each(Object.keys(widget.variables), function(key) {\n\t\t\t\t\t\twidgetPointer.variables[key] = widget.variables[key];\n\t\t\t\t\t});\n\t\t\t\t} else {\n\t\t\t\t\twidgetPointer.makeChildWidgets([node]);\n\t\t\t\t\twidgetPointer = widgetPointer.children[0];\n\t\t\t\t}\n\t\t\t\tparseTreeNode = parseTreeNode.children &amp;&amp; parseTreeNode.children[0];\n\t\t\t}\n\t\t} \n\t});\n\n\tif (widgetPointer != this) {\n\t\twidgetPointer.parseTreeNode.children = this.parseTreeNode.children;\n\t} else {\n\t\twidgetPointer.makeChildWidgets();\n\t}\n};\n\n/*\nSelectively refreshes the widget if needed. Returns true if the widget or any of its children needed re-rendering\n*/\nImportVariablesWidget.prototype.refresh = function(changedTiddlers) {\n\t// Recompute our attributes and the filter list\n\tvar changedAttributes = this.computeAttributes(),\n\t\ttiddlerList = this.wiki.filterTiddlers(this.getAttribute(\&quot;filter\&quot;),this);\n\t// Refresh if the filter has changed, or the list of tiddlers has changed, or any of the tiddlers in the list has changed\n\tfunction haveListedTiddlersChanged() {\n\t\tvar changed = false;\n\t\ttiddlerList.forEach(function(title) {\n\t\t\tif(changedTiddlers[title]) {\n\t\t\t\tchanged = true;\n\t\t\t}\n\t\t});\n\t\treturn changed;\n\t}\n\tif(changedAttributes.filter || !$tw.utils.isArrayEqual(this.tiddlerList,tiddlerList) || haveListedTiddlersChanged()) {\n\t\t// Compute the filter\n\t\tthis.removeChildDomNodes();\n\t\tthis.execute(tiddlerList);\n\t\tthis.renderChildren(this.parentDomNode,this.findNextSiblingDomNode());\n\t\treturn true;\n\t} else {\n\t\treturn this.refreshChildren(changedTiddlers);\t\t\n\t}\n};\n\nexports.importvariables = ImportVariablesWidget;\n\n})();\n&quot;,
             &quot;type&quot;: &quot;application/javascript&quot;,
             &quot;module-type&quot;: &quot;widget&quot;
         },
@@ -6930,7 +6932,7 @@ Error message and password prompt
         },
         &quot;$:/core/templates/single.tiddler.window&quot;: {
             &quot;title&quot;: &quot;$:/core/templates/single.tiddler.window&quot;,
-            &quot;text&quot;: &quot;\\whitespace trim\n\\define containerClasses()\ntc-page-container tc-page-view-$(storyviewTitle)$ tc-language-$(languageTitle)$\n\\end\n\\import [[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]\n\n&lt;$set name=\&quot;tv-config-toolbar-icons\&quot; value={{$:/config/Toolbar/Icons}}&gt;\n\n&lt;$set name=\&quot;tv-config-toolbar-text\&quot; value={{$:/config/Toolbar/Text}}&gt;\n\n&lt;$set name=\&quot;tv-config-toolbar-class\&quot; value={{$:/config/Toolbar/ButtonClass}}&gt;\n\n&lt;$set name=\&quot;tv-show-missing-links\&quot; value={{$:/config/MissingLinks}}&gt;\n\n&lt;$set name=\&quot;storyviewTitle\&quot; value={{$:/view}}&gt;\n\n&lt;$set name=\&quot;languageTitle\&quot; value={{{ [{$:/language}get[name]] }}}&gt;\n\n&lt;div class=&lt;&lt;containerClasses&gt;&gt;&gt;\n\n&lt;$navigator story=\&quot;$:/StoryList\&quot; history=\&quot;$:/HistoryList\&quot;&gt;\n\n&lt;$transclude mode=\&quot;block\&quot;/&gt;\n\n&lt;/$navigator&gt;\n\n&lt;/div&gt;\n\n&lt;/$set&gt;\n\n&lt;/$set&gt;\n\n&lt;/$set&gt;\n\n&lt;/$set&gt;\n\n&lt;/$set&gt;\n\n&lt;/$set&gt;\n&quot;
+            &quot;text&quot;: &quot;\\whitespace trim\n\\define containerClasses()\ntc-page-container tc-page-view-$(storyviewTitle)$ tc-language-$(languageTitle)$\n\\end\n\\import [[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]\n\n&lt;$vars\n\ttv-config-toolbar-icons={{$:/config/Toolbar/Icons}}\n\ttv-config-toolbar-text={{$:/config/Toolbar/Text}}\n\ttv-config-toolbar-class={{$:/config/Toolbar/ButtonClass}}\n\ttv-show-missing-links={{$:/config/MissingLinks}}\n\tstoryviewTitle={{$:/view}}\n\tlanguageTitle={{{ [{$:/language}get[name]] }}}&gt;\n\n&lt;div class=&lt;&lt;containerClasses&gt;&gt;&gt;\n\n&lt;$navigator story=\&quot;$:/StoryList\&quot; history=\&quot;$:/HistoryList\&quot;&gt;\n\n&lt;$transclude mode=\&quot;block\&quot;/&gt;\n\n&lt;/$navigator&gt;\n\n&lt;/div&gt;\n\n&lt;/$vars&gt;\n&quot;
         },
         &quot;$:/core/templates/split-recipe&quot;: {
             &quot;title&quot;: &quot;$:/core/templates/split-recipe&quot;,
@@ -8400,7 +8402,7 @@ Error message and password prompt
         },
         &quot;$:/core/ui/PageTemplate&quot;: {
             &quot;title&quot;: &quot;$:/core/ui/PageTemplate&quot;,
-            &quot;text&quot;: &quot;\\whitespace trim\n\\define containerClasses()\ntc-page-container tc-page-view-$(storyviewTitle)$ tc-language-$(languageTitle)$\n\\end\n\\import [[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]\n\n&lt;$set name=\&quot;tv-config-toolbar-icons\&quot; value={{$:/config/Toolbar/Icons}}&gt;\n\n&lt;$set name=\&quot;tv-config-toolbar-text\&quot; value={{$:/config/Toolbar/Text}}&gt;\n\n&lt;$set name=\&quot;tv-config-toolbar-class\&quot; value={{$:/config/Toolbar/ButtonClass}}&gt;\n\n&lt;$set name=\&quot;tv-show-missing-links\&quot; value={{$:/config/MissingLinks}}&gt;\n\n&lt;$set name=\&quot;storyviewTitle\&quot; value={{$:/view}}&gt;\n\n&lt;$set name=\&quot;languageTitle\&quot; value={{{ [{$:/language}get[name]] }}}&gt;\n\n&lt;div class=&lt;&lt;containerClasses&gt;&gt;&gt;\n\n&lt;$navigator story=\&quot;$:/StoryList\&quot; history=\&quot;$:/HistoryList\&quot; openLinkFromInsideRiver={{$:/config/Navigation/openLinkFromInsideRiver}} openLinkFromOutsideRiver={{$:/config/Navigation/openLinkFromOutsideRiver}} relinkOnRename={{$:/config/RelinkOnRename}}&gt;\n\n&lt;$dropzone enable={{$:/config/PageDropzone/Enable}}&gt;\n\n&lt;$list filter=\&quot;[all[shadows+tiddlers]tag[$:/tags/PageTemplate]!has[draft.of]]\&quot; variable=\&quot;listItem\&quot;&gt;\n\n&lt;$transclude tiddler=&lt;&lt;listItem&gt;&gt;/&gt;\n\n&lt;/$list&gt;\n\n&lt;/$dropzone&gt;\n\n&lt;/$navigator&gt;\n\n&lt;/div&gt;\n\n&lt;/$set&gt;\n\n&lt;/$set&gt;\n\n&lt;/$set&gt;\n\n&lt;/$set&gt;\n\n&lt;/$set&gt;\n\n&lt;/$set&gt;\n&quot;
+            &quot;text&quot;: &quot;\\whitespace trim\n\\define containerClasses()\ntc-page-container tc-page-view-$(storyviewTitle)$ tc-language-$(languageTitle)$\n\\end\n\\import [[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]\n\n&lt;$vars\n\ttv-config-toolbar-icons={{$:/config/Toolbar/Icons}}\n\ttv-config-toolbar-text={{$:/config/Toolbar/Text}}\n\ttv-config-toolbar-class={{$:/config/Toolbar/ButtonClass}}\n\ttv-show-missing-links={{$:/config/MissingLinks}}\n\tstoryviewTitle={{$:/view}}\n\tlanguageTitle={{{ [{$:/language}get[name]] }}}&gt;\n\n&lt;div class=&lt;&lt;containerClasses&gt;&gt;&gt;\n\n&lt;$navigator story=\&quot;$:/StoryList\&quot; history=\&quot;$:/HistoryList\&quot; openLinkFromInsideRiver={{$:/config/Navigation/openLinkFromInsideRiver}} openLinkFromOutsideRiver={{$:/config/Navigation/openLinkFromOutsideRiver}} relinkOnRename={{$:/config/RelinkOnRename}}&gt;\n\n&lt;$dropzone enable={{$:/config/PageDropzone/Enable}}&gt;\n\n&lt;$list filter=\&quot;[all[shadows+tiddlers]tag[$:/tags/PageTemplate]!has[draft.of]]\&quot; variable=\&quot;listItem\&quot;&gt;\n\n&lt;$transclude tiddler=&lt;&lt;listItem&gt;&gt;/&gt;\n\n&lt;/$list&gt;\n\n&lt;/$dropzone&gt;\n\n&lt;/$navigator&gt;\n\n&lt;/div&gt;\n\n&lt;/$vars&gt;\n&quot;
         },
         &quot;$:/PaletteManager&quot;: {
             &quot;title&quot;: &quot;$:/PaletteManager&quot;,
@@ -9747,7 +9749,7 @@ Error message and password prompt
 }
 </pre>
 </div>
-<div author="Flibbles" core-version="&gt;=5.1.14" created="20200425031407077" dependents="" description="Relink - flexibility when relinking renamed tiddlers" list="readme configuration" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink" type="application/json" version="1.9.1">
+<div author="Flibbles" core-version="&gt;=5.1.14" created="20200508135603495" dependents="" description="Relink - flexibility when relinking renamed tiddlers" list="readme configuration" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink" type="application/json" version="1.9.2">
 <pre>{
     &quot;tiddlers&quot;: {
         &quot;$:/plugins/flibbles/relink/js/bulkops.js&quot;: {
@@ -10328,18 +10330,6 @@ Error message and password prompt
             &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/list-tagged-draggable/itemTemplate&quot;,
             &quot;text&quot;: &quot;title&quot;
         },
-        &quot;$:/config/flibbles/relink/macros/toc/tag&quot;: {
-            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc/tag&quot;,
-            &quot;text&quot;: &quot;title&quot;
-        },
-        &quot;$:/config/flibbles/relink/macros/toc/selectedTiddler&quot;: {
-            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc/selectedTiddler&quot;,
-            &quot;text&quot;: &quot;title&quot;
-        },
-        &quot;$:/config/flibbles/relink/macros/toc/template&quot;: {
-            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc/template&quot;,
-            &quot;text&quot;: &quot;title&quot;
-        },
         &quot;$:/config/flibbles/relink/macros/tabs/buttonTemplate&quot;: {
             &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/tabs/buttonTemplate&quot;,
             &quot;text&quot;: &quot;title&quot;
@@ -10367,6 +10357,78 @@ Error message and password prompt
         &quot;$:/config/flibbles/relink/macros/timeline/subfilter&quot;: {
             &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/timeline/subfilter&quot;,
             &quot;text&quot;: &quot;filter&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc/tag&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc/tag&quot;,
+            &quot;text&quot;: &quot;title&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc/itemClassFilter&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc/itemClassFilter&quot;,
+            &quot;text&quot;: &quot;filter&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-expandable/tag&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-expandable/tag&quot;,
+            &quot;text&quot;: &quot;title&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-expandable/itemClassFilter&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-expandable/itemClassFilter&quot;,
+            &quot;text&quot;: &quot;filter&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-expandable/exclude&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-expandable/exclude&quot;,
+            &quot;text&quot;: &quot;list&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-selective-expandable/tag&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-selective-expandable/tag&quot;,
+            &quot;text&quot;: &quot;title&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-selective-expandable/itemClassFilter&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-selective-expandable/itemClassFilter&quot;,
+            &quot;text&quot;: &quot;filter&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-selective-expandable/exclude&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-selective-expandable/exclude&quot;,
+            &quot;text&quot;: &quot;list&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-tabbed-external-nav/tag&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-tabbed-external-nav/tag&quot;,
+            &quot;text&quot;: &quot;title&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-tabbed-external-nav/selectedTiddler&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-tabbed-external-nav/selectedTiddler&quot;,
+            &quot;text&quot;: &quot;title&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-tabbed-external-nav/unselectedText&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-tabbed-external-nav/unselectedText&quot;,
+            &quot;text&quot;: &quot;wikitext&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-tabbed-external-nav/missingText&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-tabbed-external-nav/missingText&quot;,
+            &quot;text&quot;: &quot;wikitext&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-tabbed-external-nav/template&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-tabbed-external-nav/template&quot;,
+            &quot;text&quot;: &quot;title&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-tabbed-internal-nav/tag&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-tabbed-internal-nav/tag&quot;,
+            &quot;text&quot;: &quot;title&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-tabbed-internal-nav/selectedTiddler&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-tabbed-internal-nav/selectedTiddler&quot;,
+            &quot;text&quot;: &quot;title&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-tabbed-internal-nav/unselectedText&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-tabbed-internal-nav/unselectedText&quot;,
+            &quot;text&quot;: &quot;wikitext&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-tabbed-internal-nav/missingText&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-tabbed-internal-nav/missingText&quot;,
+            &quot;text&quot;: &quot;wikitext&quot;
+        },
+        &quot;$:/config/flibbles/relink/macros/toc-tabbed-internal-nav/template&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink/macros/toc-tabbed-internal-nav/template&quot;,
+            &quot;text&quot;: &quot;title&quot;
         },
         &quot;$:/config/flibbles/relink/operators/list&quot;: {
             &quot;title&quot;: &quot;$:/config/flibbles/relink/operators/list&quot;,
@@ -10434,7 +10496,7 @@ Error message and password prompt
         },
         &quot;$:/plugins/flibbles/relink/ui/components/tables&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/ui/components/tables&quot;,
-            &quot;text&quot;: &quot;\\define .make-table(title, plugin, default-table-state:yes)\n\n&lt;$list variable=\&quot;render\&quot; filter=\&quot;[relink:signatures&lt;__plugin__&gt;prefix&lt;__category__&gt;first[]]\&quot;&gt;\n&lt;$set name=\&quot;table-state\&quot; value=&lt;&lt;qualify \&quot;\&quot;\&quot;$:/state/flibbles/relink/tables/$title$\&quot;\&quot;\&quot;&gt;&gt;&gt;\n&lt;tr&gt;&lt;th class=\&quot;tc-relink-header-plugin\&quot; colspan=&lt;&lt;column-count&gt;&gt; &gt;\n&lt;$reveal type=\&quot;nomatch\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$button class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot; set=&lt;&lt;table-state&gt;&gt; setTo=\&quot;yes\&quot;&gt;\n{{$:/core/images/right-arrow}} ''$title$''\n&lt;/$button&gt;\n&lt;/$reveal&gt;\n&lt;$reveal type=\&quot;match\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$button class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot; set=&lt;&lt;table-state&gt;&gt; setTo=\&quot;no\&quot;&gt;\n{{$:/core/images/down-arrow}} ''$title$''\n&lt;/$button&gt;\n&lt;/$reveal&gt;\n&lt;/th&gt;&lt;/tr&gt;\n&lt;$list\n\tvariable=\&quot;signature\&quot;\n\tfilter=\&quot;[relink:signatures&lt;__plugin__&gt;prefix&lt;__category__&gt;sort[]]\&quot;&gt;\n&lt;$vars key={{{ [&lt;signature&gt;removeprefix&lt;__category__&gt;removeprefix[/]] }}} &gt;\n&lt;$tiddler tiddler={{{[&lt;signature&gt;relink:source[]]}}} &gt;\n&lt;$reveal tag=\&quot;tr\&quot; type=\&quot;match\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$macrocall $name=&lt;&lt;__list-row-macro__&gt;&gt; signature=&lt;&lt;signature&gt;&gt; /&gt;\n&lt;td class=\&quot;tc-relink-column-type\&quot;&gt;{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}&lt;/td&gt;\n&lt;td class=\&quot;tc-relink-column-delete\&quot;&gt;{{||$:/plugins/flibbles/relink/ui/components/button-delete}}&lt;/td&gt;\n&lt;/$reveal&gt;\n&lt;/$tiddler&gt;\n&lt;/$vars&gt;\n&lt;/$list&gt;\n&lt;/$set&gt;\n&lt;/$list&gt;\n\\end\n\n\\define tables(category, list-row-macro, header-list)\n&lt;$vars\n\tcolumn-count={{{[enlist&lt;__header-list__&gt;] [[DeleteColumn]] +[count[]]}}}&gt;\n\n&lt;table class=\&quot;tc-relink-whitelist\&quot;&gt;&lt;tbody&gt;\n&lt;tr&gt;\n&lt;$list variable=\&quot;header\&quot; filter=\&quot;[enlist&lt;__header-list__&gt;butlast[]]\&quot;&gt;&lt;th&gt;&lt;&lt;header&gt;&gt;&lt;/th&gt;&lt;/$list&gt;\n&lt;!-- We have the last column extend into the delete/link column, which is unlabeled. --&gt;\n&lt;th colspan=2&gt;&lt;$text text={{{ [enlist&lt;__header-list__&gt;last[]] }}} /&gt;&lt;/th&gt;\n&lt;/tr&gt;\n\n&lt;&lt;.make-table Custom \&quot;\&quot; yes&gt;&gt;\n\n&lt;&lt;.make-table Core \&quot;$:/plugins/flibbles/relink\&quot;&gt;&gt;\n\n&lt;$list\n\tfilter=\&quot;[plugin-type[plugin]![$:/core]![$:/plugins/flibbles/relink]]\&quot;&gt;\n&lt;$set name=\&quot;subtitle\&quot; value={{!!description}} emptyValue={{!!title}} &gt;\n&lt;$macrocall $name=\&quot;.make-table\&quot; title=&lt;&lt;subtitle&gt;&gt; plugin=&lt;&lt;currentTiddler&gt;&gt; /&gt;\n&lt;/$set&gt;\n&lt;/$list&gt;\n\n&lt;/tbody&gt;&lt;/table&gt;\n&lt;/$vars&gt;\n\\end\n&quot;
+            &quot;text&quot;: &quot;\\define .make-table(title, plugin, default-table-state:yes)\n\n&lt;$list variable=\&quot;render\&quot; filter=\&quot;[relink:signatures&lt;__plugin__&gt;prefix&lt;__category__&gt;first[]]\&quot;&gt;\n&lt;$set name=\&quot;table-state\&quot; value=&lt;&lt;qualify \&quot;\&quot;\&quot;$:/state/flibbles/relink/tables/$title$\&quot;\&quot;\&quot;&gt;&gt;&gt;\n&lt;tr&gt;&lt;th class=\&quot;tc-relink-header-plugin\&quot; colspan=&lt;&lt;column-count&gt;&gt; &gt;\n&lt;$reveal type=\&quot;nomatch\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$button class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot; set=&lt;&lt;table-state&gt;&gt; setTo=\&quot;yes\&quot;&gt;\n{{$:/core/images/right-arrow}} ''$title$''\n&lt;/$button&gt;\n&lt;/$reveal&gt;\n&lt;$reveal type=\&quot;match\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$button class=\&quot;tc-btn-invisible tc-btn-dropdown\&quot; set=&lt;&lt;table-state&gt;&gt; setTo=\&quot;no\&quot;&gt;\n{{$:/core/images/down-arrow}} ''$title$''\n&lt;/$button&gt;\n&lt;/$reveal&gt;\n&lt;/th&gt;&lt;/tr&gt;\n&lt;$list\n\tvariable=\&quot;signature\&quot;\n\tfilter=\&quot;[relink:signatures&lt;__plugin__&gt;prefix&lt;__category__&gt;sort[]]\&quot;&gt;\n&lt;$vars key={{{ [&lt;signature&gt;removeprefix&lt;__category__&gt;removeprefix[/]] }}} &gt;\n&lt;$tiddler tiddler={{{[&lt;signature&gt;relink:source[]]}}} &gt;\n&lt;$reveal tag=\&quot;tr\&quot; type=\&quot;match\&quot; state=&lt;&lt;table-state&gt;&gt; text=\&quot;yes\&quot; default=\&quot;\&quot;\&quot;$default-table-state$\&quot;\&quot;\&quot;&gt;\n&lt;$macrocall $name=&lt;&lt;__list-row-macro__&gt;&gt; signature=&lt;&lt;signature&gt;&gt; /&gt;\n&lt;td class=\&quot;tc-relink-column-type\&quot;&gt;{{||$:/plugins/flibbles/relink/ui/components/select-fieldtype}}&lt;/td&gt;\n&lt;td class=\&quot;tc-relink-column-delete\&quot;&gt;{{||$:/plugins/flibbles/relink/ui/components/button-delete}}&lt;/td&gt;\n&lt;/$reveal&gt;\n&lt;/$tiddler&gt;\n&lt;/$vars&gt;\n&lt;/$list&gt;\n&lt;/$set&gt;\n&lt;/$list&gt;\n\\end\n\n\\define tables(category, list-row-macro, header-list)\n&lt;$vars\n\tcolumn-count={{{[enlist&lt;__header-list__&gt;] [[DeleteColumn]] +[count[]]}}}&gt;\n\n&lt;table class=\&quot;tc-relink-whitelist\&quot;&gt;&lt;tbody&gt;\n&lt;tr&gt;\n&lt;$list variable=\&quot;header\&quot; filter=\&quot;[enlist&lt;__header-list__&gt;butlast[]]\&quot;&gt;&lt;th&gt;&lt;&lt;header&gt;&gt;&lt;/th&gt;&lt;/$list&gt;\n&lt;!-- We have the last column extend into the delete/link column, which is unlabeled. --&gt;\n&lt;th colspan=2&gt;&lt;$text text={{{ [enlist&lt;__header-list__&gt;last[]] }}} /&gt;&lt;/th&gt;\n&lt;/tr&gt;\n\n&lt;&lt;.make-table Custom \&quot;\&quot; yes&gt;&gt;\n\n&lt;$list\n\tfilter=\&quot;[plugin-type[plugin]![$:/core]![$:/plugins/flibbles/relink]]\&quot;&gt;\n&lt;$set name=\&quot;subtitle\&quot; value={{!!description}} emptyValue={{!!title}} &gt;\n&lt;$macrocall $name=\&quot;.make-table\&quot; title=&lt;&lt;subtitle&gt;&gt; plugin=&lt;&lt;currentTiddler&gt;&gt; /&gt;\n&lt;/$set&gt;\n&lt;/$list&gt;\n\n&lt;&lt;.make-table Core \&quot;$:/plugins/flibbles/relink\&quot;&gt;&gt;\n\n&lt;/tbody&gt;&lt;/table&gt;\n&lt;/$vars&gt;\n\\end\n&quot;
         },
         &quot;$:/plugins/flibbles/relink/ui/configuration/Attributes&quot;: {
             &quot;title&quot;: &quot;$:/plugins/flibbles/relink/ui/configuration/Attributes&quot;,
@@ -11665,6 +11727,13 @@ This release introduces the `\relink` pragma for inline declaration of macro par
 * Forgot to hook up `$:/config/flibbles/relink/settings/default-type` to be used by inline declarations. It uses it now.
 * Corrected issue where 3rd party plugin names wouldn't render correctly in the whitelist. They'd all say &quot;Relink - flexibility when...&quot; etc.
 * Fixed issue where empty macro params could cause RSoD. (i.e `&lt;&lt;myMacro &quot;&quot;&gt;&gt;`)
+</pre>
+</div>
+<div created="20200508135603495" title="Versions/1.9.2">
+<pre>* Fixed issue where demo site lagged and reset view after every rename. It was being a bad demo.
+* Typo fix to install instructions
+* Moved plugin relink configurations before core relink configurations. It's more likely the user will care about them before core, and it's more important that it's visible.
+* table-of-contents macros were not fully configured by default. Fixed. (#16)
 </pre>
 </div>
 <div title="Whitelisting">

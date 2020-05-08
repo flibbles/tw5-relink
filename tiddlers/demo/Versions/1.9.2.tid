@@ -1,0 +1,6 @@
+created: 20200508135603495
+
+* Fixed issue where demo site lagged and reset view after every rename. It was being a bad demo.
+* Typo fix to install instructions
+* Moved plugin relink configurations before core relink configurations. It's more likely the user will care about them before core, and it's more important that it's visible.
+* table-of-contents macros were not fully configured by default. Fixed. (#16)
