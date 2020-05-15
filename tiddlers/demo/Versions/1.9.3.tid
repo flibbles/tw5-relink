@@ -1,0 +1,3 @@
+created: 20200515155144823
+
+* The ''caption'' field is wikitext, even if it usually isn't used for anything fancy. Added to the core list of fields.
