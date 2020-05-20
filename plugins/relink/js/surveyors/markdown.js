@@ -5,6 +5,8 @@ only installs if it looks like a markdown parser is plugged in.
 
 \*/
 
+var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
+
 var _enabled;
 function markdownEnabled(options) {
 	if (_enabled === undefined) {
@@ -15,9 +17,5 @@ function markdownEnabled(options) {
 };
 
 exports.survey = function(text, fromTitle, options) {
-	return markdownEnabled() && text.indexOf(escapeString(fromTitle)) >= 0;
-};
-
-function escapeString(title) {
-	return title.replace(' ', '%20');
+	return markdownEnabled() && text.indexOf(utils.encodeLink(fromTitle)) >= 0;
 };

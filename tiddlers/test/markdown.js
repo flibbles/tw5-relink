@@ -28,9 +28,22 @@ it('markdown links', function() {
 
 it('markdown links with spaces', function() {
 	test("click [here](#from%20here).", "click [here](#to%20there).");
+	test("[here](#has%20two%20spaces).", "[here](#to%20there).", {from: "has two spaces"});
 	test("click [here](#from).", "click [here](#to%20there).", {from: "from"});
 	test("click [here](#from%20here).", "click [here](#to).", {to: "to"});
 	test("click [here](#from here).", {ignored: true});
+	test("[here](#from%2520here).", "[here](#to%2520there).", {from: "from%20here", to: "to%20there"});
+});
+
+it('markdown links with parenthesis', function() {
+	test("[caption](#with(paren))", {from: "with(paren)", to: "there"});
+	test("[caption](#from)", {from: "from", to: "with(paren)"});
+	test("[caption](#from(((here))))", {from: "from(((here)))", to: "(((to)))ther"});
+});
+
+it('markdown links with mismatched parenthesis', function() {
+	test("[caption](#with(paren)", {from: "with(paren", ignored: true});
+	test("[caption](#from)", "[caption](#with%28paren)", {from: "from", to: "with(paren"});
 });
 
 });
