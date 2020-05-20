@@ -1,7 +1,8 @@
 {
 	"description": "Testing documentation, and demo framework for tw5-relink",
 	"plugins": [
-		"tiddlywiki/jasmine"
+		"tiddlywiki/jasmine",
+		"tiddlywiki/markdown"
 	],
 	"themes": [
 		"tiddlywiki/vanilla",

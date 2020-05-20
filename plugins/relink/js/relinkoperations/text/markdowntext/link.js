@@ -24,7 +24,7 @@ exports.init = function(parser) {
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry, m = this.match;
 	this.parser.pos = this.matchRegExp.lastIndex;
-	if (m[2] === fromTitle) {
+	if (m[2] === this.escape(fromTitle)) {
 		var entry = new MarkdownLinkEntry();
 		entry.caption = m[1];
 		entry.output = this.makeLink(toTitle, m[1], options);
@@ -36,6 +36,9 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 };
 
 exports.makeLink = function(title, caption, options) {
-	return "[" + caption + "](#" + title + ")";
+	return "[" + caption + "](#" + this.escape(title) + ")";
 };
 
+exports.escape = function(title) {
+	return title.replace(' ', '%20');
+};
