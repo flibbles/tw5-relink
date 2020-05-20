@@ -76,6 +76,18 @@
 			}
 		},
 		{
+			"path": "./relinkoperations/text/markdowntext",
+			"filesRegExp": "^.*\\.js$",
+			"isTiddlerFile": true,
+			"fields": {
+				"title": {
+					"source": "filename",
+					"prefix": "$:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext/"
+				},
+				"type": "application/javascript"
+			}
+		},
+		{
 			"path": "./surveyors",
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,
