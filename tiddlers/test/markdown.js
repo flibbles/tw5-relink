@@ -74,6 +74,7 @@ it("whitespaces and multiline", function() {
 
 	// None parsing
 	test("[c](#content\n<$link to='from here'/>\n)");
+	test("[c](#{{from}}()\n\n)", {from: "from"});
 });
 
 });

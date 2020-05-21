@@ -30,10 +30,10 @@ exports.findNextMatch = function(startPos) {
 		var linkStart = this.match.index + this.match[0].length;
 		this.close = this.indexOfClose(this.parser.source, linkStart);
 		if (this.close >= 0) {
-			this.closeRegExp = /([\S]+)([^\S\n]*(?:\n[^\S\n]*)?)\)/mg;
-			this.closeRegExp.lastIndex = linkStart;
-			this.endMatch = this.closeRegExp.exec(this.parser.source);
-			if (this.endMatch && this.endMatch.index == linkStart) {
+			var internalStr = this.parser.source.substring(linkStart, this.close);
+			this.closeRegExp = /^([\S]+)([^\S\n]*(?:\n[^\S\n]*)?)$/;
+			this.endMatch = this.closeRegExp.exec(internalStr);
+			if (this.endMatch) {
 				return this.match.index;
 			}
 		}
