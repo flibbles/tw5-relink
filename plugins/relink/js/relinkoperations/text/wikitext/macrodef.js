@@ -33,7 +33,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var setParseTreeNode = this.parse(),
 		macroEntry,
 		m = this.match,
-		placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(m[1]),
 		whitespace;
 	options.settings.addMacroDefinition(setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
@@ -41,7 +40,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	// m[3] means it's a multiline macrodef
 	if (m[3]) {
 		valueRegExp = /\r?\n\\end[^\S\n\r]*(?:\r?\n|$)/mg;
-		whitespace = m[3];
+		whitespace = '';
 	} else {
 		var newPos = $tw.utils.skipWhiteSpace(text, this.parser.pos);
 		valueRegExp = /(?:\r?\n|$)/mg;
@@ -52,33 +51,21 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	valueRegExp.lastIndex = this.parser.pos;
 	var match = valueRegExp.exec(text);
 	if (match) {
-		var value = text.substring(this.parser.pos, match.index);
-		if (placeholder && m[2] === '') {
-			var handler = settings.getType(placeholder[1] || 'title');
-			if (handler) {
-				var entry = handler.relink(value, fromTitle, toTitle, options);
-				if (entry !== undefined) {
-					macroEntry = new MacrodefEntry(m[1], entry);
-					if (entry.output) {
-						macroEntry.output = this.makePlaceholder(m[1], whitespace+entry.output+match[0]);
-					}
-				}
-			}
-		} else {
-			var wikitextHandler = settings.getType("wikitext");
-			var entry = wikitextHandler.relink(value, fromTitle, toTitle, options);
-			if (entry !== undefined) {
-				macroEntry = new MacrodefEntry(m[1], entry);
-				if (entry.output) {
-					macroEntry.output = m[0] + whitespace + entry.output + match[0];
-				}
+		var value = text.substring(this.parser.pos, match.index),
+			placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(m[1]),
+		// normal macro or special placeholder?
+			type = (placeholder && m[2] === '')? placeholder[1] || 'title' : 'wikitext',
+			handler = settings.getType(type);
+		if (handler) {
+			var entry = handler.relink(value, fromTitle, toTitle, options);
+		}
+		if (entry !== undefined) {
+			macroEntry = new MacrodefEntry(m[1], entry);
+			if (entry.output) {
+				macroEntry.output = m[0] + whitespace + entry.output + match[0];
 			}
 		}
 		this.parser.pos = match.index + match[0].length;
 	}
 	return macroEntry;
-};
-
-exports.makePlaceholder = function(name, content) {
-	return "\\define " + name + "()" + content;
 };

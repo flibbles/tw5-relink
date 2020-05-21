@@ -76,6 +76,9 @@ it('preserves & ignores correct whitespace', function() {
 	testText(macro(1, "\tfrom here"));
 	// no space
 	testText("\\define relink-1()from here\n");
+	// spaces along definition
+	testText("\\define    relink-1() from here");
+	testText("\\define relink-1(    ) from here");
 	// space at the end goes into the variable actually
 	testText(macro(1, "from here "), {ignored: true});
 	testText(macro(1, "from here\t"), {ignored: true});
@@ -154,7 +157,9 @@ it('handles non-placeholder macrodefs', function() {
 	testText("\\define\t\tmacro()    \t  [[from here]]\n");
 	testText("\\define macro() [[from here]]\n\\define other() {{from here}}");
 	testText("\\define macro() [[from]]\n\\define relink-list-1() from\n", {from: "from", to: "to"});
-	testText("\\define macro() [[from]]\n\n\n\\define relink-list-1() from\n", {from: "from", to: "to"});
+	testText("\\define macro() [[from]]\n\n\n\\define relink-list-1() from", {from: "from", to: "to"});
+	// Macrodefs isolate their body and process it alone.
+	testText("\\define macro() {{{\nfrom}}}", {from: "from", ignored: true});
 });
 
 });
