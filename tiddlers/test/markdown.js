@@ -23,6 +23,7 @@ it('can still treat markdown like wikitext', function() {
 
 it('markdown links', function() {
 	test("click [here](#from) for link", {from: "from", to: "to"});
+	test("click [here](#from)\n\nfor link", {from: "from", to: "to"});
 	test("click [here](#from) or [there](#from) for link", {from: "from", to: "to"});
 	// Sets parser pos correctly
 	test("[here](#from)[[from]]", {from: "from", to: "to"});
@@ -30,6 +31,9 @@ it('markdown links', function() {
 	test("[here](#from[[from here]]");
 	// later parens don't cause problems
 	test("[here](#from) content)", {from: "from", to: "to"});
+	// The space inside it flags it as not a markdown link
+	test("[here](#<$link to='from here'/>)");
+
 });
 
 it('markdown links with spaces', function() {
@@ -59,6 +63,17 @@ it('markdown links with mismatched parenthesis', function() {
 	test("[c](#)paren)", {from: ")paren", ignored: true});
 	test("[c](#)paren)", {from: "paren", ignored: true});
 	test("[c](#from)", "[c](#a%29b(c)d%28e)", {from: "from", to: "a)b(c)d(e"});
+});
+
+it("whitespaces and multiline", function() {
+	// Whitespace
+	test("[here](   #from)", {from: "from", to: "to"});
+	test("[here]( \t\n\t  #from)", {from: "from", to: "to"});
+	test("[here](#from   )", {from: "from", to: "to"});
+	test("[here](#from \t\n\t  )", {from: "from", to: "to"});
+
+	// None parsing
+	test("[c](#content\n<$link to='from here'/>\n)");
 });
 
 });
