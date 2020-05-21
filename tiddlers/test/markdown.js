@@ -105,6 +105,7 @@ it("tricky captions", function() {
 it("changing captions", function() {
 	test("[caption[inner](#from)](#from)", {from: "from", to: "to"});
 	test("[<$link to='from' />](#from)", {from: "from", to: "to"});
+	test("[{{from}}](#other)", {from: "from", to: "to[there]"});
 	test("[[]{{from}}](#from)", {from: "from", to: "to"});
 });
 

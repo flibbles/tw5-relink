@@ -67,7 +67,7 @@ exports.findNextMatch = function(startPos) {
 		if (internalStr === undefined) {
 			continue;
 		}
-		this.closeRegExp = /^([^\S\n]*(?:\n[^\S\n]*)?#)([\S]+)([^\S\n]*(?:\n[^\S\n]*)?)$/;
+		this.closeRegExp = /^(\s*#)([\S]+)(\s*)$/;
 		this.endMatch = this.closeRegExp.exec(internalStr);
 	} while (!this.endMatch);
 	return this.start;
