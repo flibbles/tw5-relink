@@ -83,6 +83,16 @@ it("doesn't break currentTiddler", function() {
 	expect(text).toEqual("MyTiddler");
 });
 
+it("doesn't pick up inlinedefs not at head of tiddler", function() {
+	var defs = "\\relink test ref:reference\nText\n\\relink test field:title\n";
+	var input = "<<test ref:'from here!!T' field:'from here'>>";
+	var output= "<<test ref:'to there!!T' field:'from here'>>";
+	testText(defs + input, defs + output);
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "macros", tags: "$:/tags/Macro", text: defs});
+	testText(input, output, {wiki: wiki});
+});
+
 it('handles default type of title', function() {
 	var wiki = new $tw.Wiki();
 	testText("\\relink test field\n<<test field: 'from here'>>");

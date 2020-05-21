@@ -130,6 +130,11 @@ it("relinks placeholder to empty tiddler body", function() {
 	testText(placeholder);
 });
 
+it("placeholders not at front of file are ignored", function() {
+	testText("text\n" + macro(1, "from here") + "text", {ignored: true});
+	testText("text\n" + macro(1, "from here", true) + "text", {ignored: true});
+});
+
 it('Detects globally defined placeholder macros', function() {
 	var to = "' ]]\"";
 	var wiki = new $tw.Wiki();

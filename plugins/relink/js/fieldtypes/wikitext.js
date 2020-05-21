@@ -39,7 +39,6 @@ function collectRules() {
 }
 
 function WikiRelinker(text, title, fromTitle, toTitle, options) {
-	WikiParser.call(this, "text/vnd.tiddlywiki", text, options);
 	this.entry = new WikitextEntry();
 	this.builder = new Rebuilder(text);
 	this.options = options;
@@ -58,7 +57,8 @@ function WikiRelinker(text, title, fromTitle, toTitle, options) {
 	this.title = title;
 	this.fromTitle = fromTitle;
 	this.toTitle = toTitle;
-	this.inlineRules = this.inlineRules.concat(this.pragmaRules, this.blockRules);
+	WikiParser.call(this, "text/vnd.tiddlywiki", text, options);
+	this.inlineRules = this.inlineRules.concat(this.blockRules);
 	if (options.extraRules) {
 		// Extra rules contains the possible markdown rule
 		this.extraRules = this.instantiateRules(options.extraRules,"extra",0);
@@ -70,7 +70,21 @@ function WikiRelinker(text, title, fromTitle, toTitle, options) {
 };
 
 WikiRelinker.prototype = Object.create(WikiParser.prototype);
-WikiRelinker.prototype.parsePragmas = function() {return []; };
+
+WikiRelinker.prototype.parsePragmas = function() {
+	while (true) {
+		this.skipWhitespace();
+		if (this.pos >= this.sourceLength) {
+			break;
+		}
+		var nextMatch = this.findNextMatch(this.pragmaRules, this.pos);
+		if (!nextMatch || nextMatch.matchIndex !== this.pos) {
+			break;
+		}
+		this.relinkRule(nextMatch);
+	}
+	return [];
+};
 WikiRelinker.prototype.parseInlineRun = function() {};
 WikiRelinker.prototype.parseBlocks = function() {};
 
