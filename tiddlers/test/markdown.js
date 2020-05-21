@@ -24,6 +24,12 @@ it('can still treat markdown like wikitext', function() {
 it('markdown links', function() {
 	test("click [here](#from) for link", {from: "from", to: "to"});
 	test("click [here](#from) or [there](#from) for link", {from: "from", to: "to"});
+	// Sets parser pos correctly
+	test("[here](#from)[[from]]", {from: "from", to: "to"});
+	// Bad pattern doesn't mess up pos
+	test("[here](#from[[from here]]");
+	// later parens don't cause problems
+	test("[here](#from) content)", {from: "from", to: "to"});
 });
 
 it('markdown links with spaces', function() {
@@ -37,13 +43,22 @@ it('markdown links with spaces', function() {
 
 it('markdown links with parenthesis', function() {
 	test("[caption](#with(paren))", {from: "with(paren)", to: "there"});
+	// don't miss parens if they're the first character of a link
+	test("[caption](#(paren))", {from: "(paren)", to: "there"});
+
+	test("[caption](#(from)(here))", {from: "(from)(here)", to: "(to)(there)"});
 	test("[caption](#from)", {from: "from", to: "with(paren)"});
 	test("[caption](#from(((here))))", {from: "from(((here)))", to: "(((to)))ther"});
 });
 
 it('markdown links with mismatched parenthesis', function() {
-	test("[caption](#with(paren)", {from: "with(paren", ignored: true});
-	test("[caption](#from)", "[caption](#with%28paren)", {from: "from", to: "with(paren"});
+	test("[c](#with(paren)", {from: "with(paren", ignored: true});
+	test("[c](#with%28p)", "[c](#there)", {from: "with(p", to: "there"});
+	test("[c](#from)", "[c](#with%28paren)", {from: "from", to: "with(paren"});
+	// parens at beginning could be missed if indexing is done wrong.
+	test("[c](#)paren)", {from: ")paren", ignored: true});
+	test("[c](#)paren)", {from: "paren", ignored: true});
+	test("[c](#from)", "[c](#a%29b(c)d%28e)", {from: "from", to: "a)b(c)d(e"});
 });
 
 });

@@ -20,7 +20,8 @@ exports.encodeLink = function(title) {
 		return p;
 	});
 	while (balance--) {
-		encoded = encoded.replace('(', '%28');
+		var i = encoded.lastIndexOf('(');
+		encoded = encoded.substr(0, i) + '%28' + encoded.substr(i+1);
 	}
 	return encoded;
 };

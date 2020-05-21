@@ -55,8 +55,8 @@ exports.makeLink = function(title, caption, options) {
 };
 
 exports.indexOfClose = function(text, pos) {
-	var close = pos,
-		open = pos;
+	var close = pos-1,
+		open = pos-1;
 	do {
 		close = text.indexOf(')', close+1);
 		if (close < 0) {
