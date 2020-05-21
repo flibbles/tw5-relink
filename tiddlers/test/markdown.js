@@ -78,4 +78,18 @@ it("whitespaces and multiline", function() {
 	test("[c](#{{from}}()\n\n)", {from: "from"});
 });
 
+it("tricky captions", function() {
+	// empty (this does default on tiddlywiki/markdown,
+	// and is hidden on anstosa/tw5-markdown
+	test("[](#from)", {from: "from", to: "to"});
+	test("[\n](#from)", {from: "from", to: "to"});
+	// brackets
+	test("[mis]matched](#from)", {from: "from", ignored: true});
+	test("[not[mis]matched](#from)", {from: "from", to: "to"});
+
+	// whitespace
+	test("[a\nb\nc\nd](#from)", {from: "from", to: "to"});
+	test("[a\nb[\nc]\nd](#from)", {from: "from", to: "to"});
+});
+
 });
