@@ -55,14 +55,14 @@ function WikiRelinker(text, title, toTitle, options) {
 	this.title = title;
 	this.toTitle = toTitle;
 	this.inlineRules = this.inlineRules.concat(this.pragmaRules, this.blockRules);
-	// We work through relinkRules so we can change it later.
-	// relinkRules is inlineRules so it gets touched up by amendRules().
-	this.relinkRules = this.inlineRules;
 	if (options.extraRules) {
 		// Extra rules contains the possible markdown rule
 		this.extraRules = this.instantiateRules(options.extraRules,"extra",0);
-		this.relinkRules = this.relinkRules.concat(this.extraRules);
+		this.inlineRules = this.inlineRules.concat(this.extraRules);
 	}
+	// We work through relinkRules so we can change it later.
+	// relinkRules is inlineRules so it gets touched up by amendRules().
+	this.relinkRules = this.inlineRules;
 };
 
 WikiRelinker.prototype = Object.create(WikiParser.prototype);

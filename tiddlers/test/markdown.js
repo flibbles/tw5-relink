@@ -6,20 +6,25 @@ Tests relinking in markdown tiddlers. (text/markdown)
 
 var utils = require("test/utils");
 
+var pragmaTitle = "$:/config/markdown/renderWikiTextPragma";
+var defaultPragma = $tw.wiki.getTiddlerText(pragmaTitle);
+
 function test(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var type = options.type || "text/x-markdown";
 	var failCount = options.fails || 0;
+	var wiki = options.wiki;
+	var pragma = defaultPragma;
+	if ($tw.utils.hop(options, "pragma")) {
+		pragma = options.pragma;
+	}
+	wiki.addTiddler({title: pragmaTitle,text: pragma});
 	var results = utils.relink({text: text, type: type}, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
 	expect(results.fails.length).toEqual(failCount, "Incorrect number of failures");
 };
 
 describe("markdown text", function() {
-
-it('can still treat markdown like wikitext', function() {
-	test("[[from here]]", "[[to there]]");
-});
 
 it('markdown links', function() {
 	test("click [here](#from) for link", {from: "from", to: "to"});
@@ -28,9 +33,9 @@ it('markdown links', function() {
 	// Don't overlook that open paren
 	test("click [here] #from) for link", {from: "from", ignored: true});
 	// Sets parser pos correctly
-	test("[here](#from)[[from]]", {from: "from", to: "to"});
+	test("[here](#from)<$text text={{from}} />", {from: "from", to: "to"});
 	// Bad pattern doesn't mess up pos
-	test("[here](#from[[from here]]");
+	test("[here](#from<$link to='from here'/>");
 	// later parens don't cause problems
 	test("[here](#from) content)", {from: "from", to: "to"});
 	// The space inside it flags it as not a markdown link
@@ -99,7 +104,7 @@ it("tricky captions", function() {
 	// fakeout on when link starts
 	test("[a[](# dud)](#from)", {from: "from", to: "to"});
 	test("[[[[[[[ [a](#from)", {from: "from", to: "to"});
-	test("[[from]] [a](#from)", {from: "from", to: "to"});
+	test("[brackets] [a](#from)", {from: "from", to: "to"});
 });
 
 it("changing captions", function() {
@@ -118,6 +123,11 @@ it("impossible caption changes", function() {
 	// Fails because caption would be illegal
 	test("[{{from}}](#from)", "[{{from}}](#brack%5Bet)", {from: "from", to: "brack[et", fails: 1});
 	test("[{{from}}](#from)", "[{{from}}](#brack%5Det)", {from: "from", to: "brack]et", fails: 1});
+});
+
+it("wikitext in markdown", function() {
+	test("[[from here]]", {pragma: undefined});
+	test("[[from here]]", {ignored: true});
 });
 
 });
