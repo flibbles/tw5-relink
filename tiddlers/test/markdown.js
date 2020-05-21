@@ -105,11 +105,16 @@ it("tricky captions", function() {
 it("changing captions", function() {
 	test("[caption[inner](#from)](#from)", {from: "from", to: "to"});
 	test("[<$link to='from' />](#from)", {from: "from", to: "to"});
+	test("[[]{{from}}](#from)", {from: "from", to: "to"});
 });
 
 it("impossible caption changes", function() {
-	var to = "}} '\"";
+	var to = "t}}x";
+	// Fails because inner wikitext can't change on its own
 	test("[<$link to={{from}}/>](#from)", "[<$link to={{from}}/>](#"+encodeURIComponent(to)+")", {from: "from", to: to, fails: 1});
+	test("[<$link to='from' tag={{from}} />](#else)", "[<$link to='"+to+"' tag={{from}} />](#else)", {from: "from", to: to, fails: 1});
+
+	// Fails because caption would be illegal
 	test("[{{from}}](#from)", "[{{from}}](#brack%5Bet)", {from: "from", to: "brack[et", fails: 1});
 	test("[{{from}}](#from)", "[{{from}}](#brack%5Det)", {from: "from", to: "brack]et", fails: 1});
 });
