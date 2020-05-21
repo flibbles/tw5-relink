@@ -29,20 +29,15 @@ exports.findNextMatch = function(startPos) {
 	if (!this.match) {
 		return undefined;
 	}
-	var capEnd = this.indexOfClose(this.parser.source, this.match.index, '[', ']');
-	if (capEnd < 0) {
+	this.caption = this.getEnclosed(this.parser.source, this.match.index, '[', ']');
+	if (this.caption === undefined) {
 		return undefined;
 	}
-	this.caption = this.parser.source.substring(this.match.index+1, capEnd);
-	if (this.caption.match(/\n\s*\n/)) {
+	var linkStart = this.match.index + this.caption.length+2;
+	var internalStr = this.getEnclosed(this.parser.source, linkStart, '(', ')');
+	if (internalStr === undefined) {
 		return undefined;
 	}
-	var linkStart = capEnd + 1;
-	this.close = this.indexOfClose(this.parser.source, linkStart, '(', ')');
-	if (this.close < 0) {
-		return undefined;
-	}
-	var internalStr = this.parser.source.substring(linkStart+1, this.close);
 	this.closeRegExp = /^([^\S\n]*(?:\n[^\S\n]*)?#)([\S]+)([^\S\n]*(?:\n[^\S\n]*)?)$/;
 	this.endMatch = this.closeRegExp.exec(internalStr);
 	if (this.endMatch) {
@@ -56,7 +51,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		em = this.endMatch,
 		fromEncoded = utils.encodeLink(fromTitle);
 	var title = em[2];
-	this.parser.pos = this.close+1;
+	this.parser.pos = this.match.index + this.caption.length + em[0].length + 4;
 	if (title === fromEncoded) {
 		var entry = new MarkdownLinkEntry();
 		entry.caption = this.caption;
@@ -64,6 +59,19 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		entry.output = "["+this.caption+"]("+em[1]+utils.encodeLink(toTitle)+em[3]+")";
 	}
 	return entry;
+};
+
+exports.getEnclosed = function(text, pos, openChar, closeChar) {
+	var capEnd = this.indexOfClose(text, pos, openChar, closeChar);
+	if (capEnd < 0) {
+		return undefined;
+	}
+	var enclosed = text.substring(pos+1, capEnd);
+	if (enclosed.match(/\n\s*\n/)) {
+		// Paragraph breaks are not allowed
+		return undefined;
+	}
+	return enclosed;
 };
 
 exports.indexOfClose = function(text, pos, openChar, closeChar) {
