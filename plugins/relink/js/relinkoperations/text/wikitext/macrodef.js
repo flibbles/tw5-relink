@@ -38,24 +38,24 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	options.settings.addMacroDefinition(setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
-	if (placeholder && m[2] === '') {
-		var valueRegExp;
-		// m[3] means it's a multiline macrodef
-		if (m[3]) {
-			valueRegExp = /\r?\n\\end[^\S\n\r]*(?:\r?\n|$)/mg;
-			whitespace = m[3];
-		} else {
-			var newPos = $tw.utils.skipWhiteSpace(text, this.parser.pos);
-			valueRegExp = /(?:\r?\n|$)/mg;
-			whitespace = text.substring(this.parser.pos, newPos);
-			this.parser.pos = newPos;
-		}
-		valueRegExp.lastIndex = this.parser.pos;
-		var match = valueRegExp.exec(text);
-		if (match) {
+	// m[3] means it's a multiline macrodef
+	if (m[3]) {
+		valueRegExp = /\r?\n\\end[^\S\n\r]*(?:\r?\n|$)/mg;
+		whitespace = m[3];
+	} else {
+		var newPos = $tw.utils.skipWhiteSpace(text, this.parser.pos);
+		valueRegExp = /(?:\r?\n|$)/mg;
+		whitespace = text.substring(this.parser.pos, newPos);
+		this.parser.pos = newPos;
+	}
+	var valueRegExp;
+	valueRegExp.lastIndex = this.parser.pos;
+	var match = valueRegExp.exec(text);
+	if (match) {
+		var value = text.substring(this.parser.pos, match.index);
+		if (placeholder && m[2] === '') {
 			var handler = settings.getType(placeholder[1] || 'title');
 			if (handler) {
-				var value = text.substring(this.parser.pos, match.index);
 				var entry = handler.relink(value, fromTitle, toTitle, options);
 				if (entry !== undefined) {
 					macroEntry = new MacrodefEntry(m[1], entry);
@@ -64,8 +64,17 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 					}
 				}
 			}
-			this.parser.pos = match.index + match[0].length;
+		} else {
+			var wikitextHandler = settings.getType("wikitext");
+			var entry = wikitextHandler.relink(value, fromTitle, toTitle, options);
+			if (entry !== undefined) {
+				macroEntry = new MacrodefEntry(m[1], entry);
+				if (entry.output) {
+					macroEntry.output = m[0] + whitespace + entry.output + match[0];
+				}
+			}
 		}
+		this.parser.pos = match.index + match[0].length;
 	}
 	return macroEntry;
 };
