@@ -71,6 +71,7 @@ it("whitespaces and multiline", function() {
 	test("[here]( \t\n\t  #from)", {from: "from", to: "to"});
 	test("[here](#from   )", {from: "from", to: "to"});
 	test("[here](#from \t\n\t  )", {from: "from", to: "to"});
+	test("[here](\r\n#from\r\n)", {from: "from", to: "to"});
 
 	// None parsing
 	test("[c](#content\n<$link to='from here'/>\n)");

@@ -20,7 +20,7 @@ exports.types = {inline: true};
 
 exports.init = function(parser) {
 	this.parser = parser;
-	this.matchRegExp = /\[([^\]]+)\]\(([^\S\n]*(?:\n[^\S\n]*)?)#/mg;
+	this.matchRegExp = /\[([^\]]+)\]\(/mg;
 };
 
 exports.findNextMatch = function(startPos) {
@@ -31,7 +31,7 @@ exports.findNextMatch = function(startPos) {
 		this.close = this.indexOfClose(this.parser.source, linkStart);
 		if (this.close >= 0) {
 			var internalStr = this.parser.source.substring(linkStart, this.close);
-			this.closeRegExp = /^([\S]+)([^\S\n]*(?:\n[^\S\n]*)?)$/;
+			this.closeRegExp = /^([^\S\n]*(?:\n[^\S\n]*)?#)([\S]+)([^\S\n]*(?:\n[^\S\n]*)?)$/;
 			this.endMatch = this.closeRegExp.exec(internalStr);
 			if (this.endMatch) {
 				return this.match.index;
@@ -42,15 +42,17 @@ exports.findNextMatch = function(startPos) {
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var entry, m = this.match,
+	var entry,
+		m = this.match,
+		em = this.endMatch,
 		fromEncoded = utils.encodeLink(fromTitle);
-	var title = this.endMatch[1];
+	var title = em[2];
 	this.parser.pos = this.close+1;
 	if (title === fromEncoded) {
 		var entry = new MarkdownLinkEntry();
 		entry.caption = m[1];
 		// This way preserves whitespace
-		entry.output = "["+m[1]+"]("+m[2]+"#"+utils.encodeLink(toTitle)+this.endMatch[2]+")";
+		entry.output = "["+m[1]+"]("+em[1]+utils.encodeLink(toTitle)+em[3]+")";
 	}
 	return entry;
 };
