@@ -83,12 +83,15 @@ it("tricky captions", function() {
 	// and is hidden on anstosa/tw5-markdown
 	test("[](#from)", {from: "from", to: "to"});
 	test("[\n](#from)", {from: "from", to: "to"});
+	test("[\n\n](#from)", {from: "from", ignored: true});
 	// brackets
 	test("[mis]matched](#from)", {from: "from", ignored: true});
 	test("[not[mis]matched](#from)", {from: "from", to: "to"});
 
 	// whitespace
 	test("[a\nb\nc\nd](#from)", {from: "from", to: "to"});
+	test("[a\nb\n\nd](#from)", {from: "from", ignored: true});
+	test("[ab\n    \ncd](#from)", {from: "from", ignored: true});
 	test("[a\nb[\nc]\nd](#from)", {from: "from", to: "to"});
 });
 

@@ -33,16 +33,20 @@ exports.findNextMatch = function(startPos) {
 	if (capEnd < 0) {
 		return undefined;
 	}
+	this.caption = this.parser.source.substring(this.match.index+1, capEnd);
+	if (this.caption.match(/\n\s*\n/)) {
+		return undefined;
+	}
 	var linkStart = capEnd + 1;
 	this.close = this.indexOfClose(this.parser.source, linkStart, '(', ')');
-	if (this.close >= 0) {
-		var internalStr = this.parser.source.substring(linkStart+1, this.close);
-		this.closeRegExp = /^([^\S\n]*(?:\n[^\S\n]*)?#)([\S]+)([^\S\n]*(?:\n[^\S\n]*)?)$/;
-		this.endMatch = this.closeRegExp.exec(internalStr);
-		if (this.endMatch) {
-			this.caption = this.parser.source.substring(this.match.index+1, linkStart-1);
-			return this.match.index;
-		}
+	if (this.close < 0) {
+		return undefined;
+	}
+	var internalStr = this.parser.source.substring(linkStart+1, this.close);
+	this.closeRegExp = /^([^\S\n]*(?:\n[^\S\n]*)?#)([\S]+)([^\S\n]*(?:\n[^\S\n]*)?)$/;
+	this.endMatch = this.closeRegExp.exec(internalStr);
+	if (this.endMatch) {
+		return this.match.index;
 	}
 	return undefined;
 };
