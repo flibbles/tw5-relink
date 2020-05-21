@@ -8,11 +8,22 @@ Handles markdown links
 \*/
 
 var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
+var settings = require("$:/plugins/flibbles/relink/js/settings");
+var wikitext = settings.getType('wikitext');
 
 function MarkdownLinkEntry() {};
 MarkdownLinkEntry.prototype.name = "markdownlink";
 MarkdownLinkEntry.prototype.report = function() {
-	return ["[" + this.caption + "](#)"];
+	var output = [];
+	if (this.captionEntry) {
+		$tw.utils.each(this.captionEntry.report(), function(report) {
+			output.push("[" + (report || '') + "](#" + this.link + ")");
+		});
+	};
+	if (this.newLink) {
+		output.push("[" + this.caption + "](#)");
+	}
+	return output;
 };
 
 exports.name = "markdownlink";
@@ -35,6 +46,9 @@ exports.findNextMatch = function(startPos) {
 			continue;
 		}
 		var linkStart = this.start + this.caption.length+2;
+		if (this.parser.source[linkStart] !== '(') {
+			continue;
+		}
 		var internalStr = this.getEnclosed(this.parser.source, linkStart, '(', ')');
 		if (internalStr === undefined) {
 			continue;
@@ -46,18 +60,32 @@ exports.findNextMatch = function(startPos) {
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var entry,
+	var entry = new MarkdownLinkEntry(),
 		em = this.endMatch,
-		fromEncoded = utils.encodeLink(fromTitle);
-	var title = em[2];
+		modified = false,
+		fromEncoded = utils.encodeLink(fromTitle),
+		caption = this.caption,
+		link = em[2];
 	this.parser.pos = this.start + this.caption.length + em[0].length + 4;
-	if (title === fromEncoded) {
-		var entry = new MarkdownLinkEntry();
-		entry.caption = this.caption;
-		// This way preserves whitespace
-		entry.output = "["+this.caption+"]("+em[1]+utils.encodeLink(toTitle)+em[3]+")";
+	var newCaption = wikitext.relink(caption, fromTitle, toTitle, options);
+	if (newCaption) {
+		modified = true;
+		entry.captionEntry = newCaption;
+		caption = newCaption.output;
 	}
-	return entry;
+	if (link === fromEncoded) {
+		modified = true;
+		entry.linkChanged = true;
+		// This way preserves whitespace
+		link = toTitle;
+	}
+	if (modified) {
+		entry.link = link;
+		entry.caption = caption;
+		entry.output = "["+caption+"]("+em[1]+utils.encodeLink(link)+em[3]+")";
+		return entry;
+	}
+	return undefined;
 };
 
 exports.getEnclosed = function(text, pos, openChar, closeChar) {

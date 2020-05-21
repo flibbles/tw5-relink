@@ -25,6 +25,8 @@ it('markdown links', function() {
 	test("click [here](#from) for link", {from: "from", to: "to"});
 	test("click [here](#from)\n\nfor link", {from: "from", to: "to"});
 	test("click [here](#from) or [there](#from) for link", {from: "from", to: "to"});
+	// Don't overlook that open paren
+	test("click [here] #from) for link", {from: "from", ignored: true});
 	// Sets parser pos correctly
 	test("[here](#from)[[from]]", {from: "from", to: "to"});
 	// Bad pattern doesn't mess up pos
@@ -98,6 +100,9 @@ it("tricky captions", function() {
 	test("[a[](# dud)](#from)", {from: "from", to: "to"});
 	test("[[[[[[[ [a](#from)", {from: "from", to: "to"});
 	test("[[from]] [a](#from)", {from: "from", to: "to"});
+
+	test("[caption[inner](#from)](#from)", {from: "from", to: "to"});
+	test("[<$link to='from' />](#from)", {from: "from", to: "to"});
 });
 
 });
