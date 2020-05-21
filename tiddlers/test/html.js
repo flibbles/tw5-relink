@@ -219,4 +219,12 @@ it('filter attributes', function() {
 	testText(`<$list nothing="A [[from here]] B" />`, {wiki: wiki, ignored: true});
 });
 
+it('mixed failure with string and reference attributes', function() {
+	// Regression test on bug which resulted from the output value of the
+	// first attribute bleeding into the second if the second fails.
+	testText("<$link to='from here' tooltip={{from here}} />",
+	         "<$link to='to}}there' tooltip={{from here}} />",
+	         {to: "to}}there", fails: 1});
+});
+
 });

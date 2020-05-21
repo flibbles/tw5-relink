@@ -57,7 +57,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
 			importFilterAttr = attr;
 		}
-		var oldLength, quotedValue, entry;
+		var oldLength, quotedValue = undefined, entry;
 		if (attr.type === "string") {
 			var handler = getAttributeHandler(this.nextTag, attributeName, options);
 			if (!handler) {
