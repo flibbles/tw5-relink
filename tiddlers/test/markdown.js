@@ -100,9 +100,18 @@ it("tricky captions", function() {
 	test("[a[](# dud)](#from)", {from: "from", to: "to"});
 	test("[[[[[[[ [a](#from)", {from: "from", to: "to"});
 	test("[[from]] [a](#from)", {from: "from", to: "to"});
+});
 
+it("changing captions", function() {
 	test("[caption[inner](#from)](#from)", {from: "from", to: "to"});
 	test("[<$link to='from' />](#from)", {from: "from", to: "to"});
+});
+
+it("impossible caption changes", function() {
+	var to = "}} '\"";
+	test("[<$link to={{from}}/>](#from)", "[<$link to={{from}}/>](#"+encodeURIComponent(to)+")", {from: "from", to: to, fails: 1});
+	test("[{{from}}](#from)", "[{{from}}](#brack%5Bet)", {from: "from", to: "brack[et", fails: 1});
+	test("[{{from}}](#from)", "[{{from}}](#brack%5Det)", {from: "from", to: "brack]et", fails: 1});
 });
 
 });

@@ -31,6 +31,12 @@ MarkdownLinkEntry.prototype.report = function() {
 	return output;
 };
 
+MarkdownLinkEntry.prototype.eachChild = function(method) {
+	if (this.captionEntry) {
+		method(this.captionEntry);
+	}
+};
+
 exports.name = "markdownlink";
 exports.types = {inline: true};
 
@@ -79,7 +85,13 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	if (newCaption) {
 		modified = true;
 		entry.captionEntry = newCaption;
-		caption = newCaption.output;
+		if (newCaption.output) {
+			if (this.canBeCaption(newCaption.output)) {
+				caption = newCaption.output;
+			} else {
+				newCaption.impossible = true;
+			}
+		}
 	}
 	if (link === fromEncoded) {
 		modified = true;
@@ -94,6 +106,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		return entry;
 	}
 	return undefined;
+};
+
+exports.canBeCaption = function(caption) {
+	return this.indexOfClose(caption+']', -1, '[', ']') === caption.length;
 };
 
 exports.getEnclosed = function(text, pos, openChar, closeChar) {
