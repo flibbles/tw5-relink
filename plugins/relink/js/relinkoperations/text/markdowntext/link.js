@@ -20,30 +20,29 @@ exports.types = {inline: true};
 
 exports.init = function(parser) {
 	this.parser = parser;
-	this.matchRegExp = /\[[\s\S]*\]\(/mg;
 };
 
 exports.findNextMatch = function(startPos) {
-	this.matchRegExp.lastIndex = startPos;
-	this.match = this.matchRegExp.exec(this.parser.source);
-	if (!this.match) {
-		return undefined;
-	}
-	this.caption = this.getEnclosed(this.parser.source, this.match.index, '[', ']');
-	if (this.caption === undefined) {
-		return undefined;
-	}
-	var linkStart = this.match.index + this.caption.length+2;
-	var internalStr = this.getEnclosed(this.parser.source, linkStart, '(', ')');
-	if (internalStr === undefined) {
-		return undefined;
-	}
-	this.closeRegExp = /^([^\S\n]*(?:\n[^\S\n]*)?#)([\S]+)([^\S\n]*(?:\n[^\S\n]*)?)$/;
-	this.endMatch = this.closeRegExp.exec(internalStr);
-	if (this.endMatch) {
-		return this.match.index;
-	}
-	return undefined;
+	this.start = startPos-1;
+	this.endMatch = undefined;
+	do {
+		this.start = this.parser.source.indexOf('[', this.start+1);
+		if (this.start < 0) {
+			return undefined;
+		}
+		this.caption = this.getEnclosed(this.parser.source, this.start, '[', ']');
+		if (this.caption === undefined) {
+			continue;
+		}
+		var linkStart = this.start + this.caption.length+2;
+		var internalStr = this.getEnclosed(this.parser.source, linkStart, '(', ')');
+		if (internalStr === undefined) {
+			continue;
+		}
+		this.closeRegExp = /^([^\S\n]*(?:\n[^\S\n]*)?#)([\S]+)([^\S\n]*(?:\n[^\S\n]*)?)$/;
+		this.endMatch = this.closeRegExp.exec(internalStr);
+	} while (!this.endMatch);
+	return this.start;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -51,7 +50,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		em = this.endMatch,
 		fromEncoded = utils.encodeLink(fromTitle);
 	var title = em[2];
-	this.parser.pos = this.match.index + this.caption.length + em[0].length + 4;
+	this.parser.pos = this.start + this.caption.length + em[0].length + 4;
 	if (title === fromEncoded) {
 		var entry = new MarkdownLinkEntry();
 		entry.caption = this.caption;

@@ -93,6 +93,11 @@ it("tricky captions", function() {
 	test("[a\nb\n\nd](#from)", {from: "from", ignored: true});
 	test("[ab\n    \ncd](#from)", {from: "from", ignored: true});
 	test("[a\nb[\nc]\nd](#from)", {from: "from", to: "to"});
+
+	// fakeout on when link starts
+	test("[a[](# dud)](#from)", {from: "from", to: "to"});
+	test("[[[[[[[ [a](#from)", {from: "from", to: "to"});
+	test("[[from]] [a](#from)", {from: "from", to: "to"});
 });
 
 });
