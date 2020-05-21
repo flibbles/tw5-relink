@@ -16,18 +16,26 @@ MarkdownLinkEntry.prototype.name = "markdownlink";
 MarkdownLinkEntry.prototype.report = function() {
 	var output = [];
 	if (this.captionEntry) {
+		var link = this.link;
 		$tw.utils.each(this.captionEntry.report(), function(report) {
-			output.push("[" + (report || '') + "](#" + this.link + ")");
+			output.push("[" + (report || '') + "](#" + link + ")");
 		});
 	};
-	if (this.newLink) {
-		output.push("[" + this.caption + "](#)");
+	if (this.linkChanged) {
+		var safeCaption = this.caption.replace(/\s+/mg, ' ');
+		if (safeCaption.length > exports.reportCaptionLength) {
+			safeCaption = safeCaption.substr(0, exports.reportCaptionLength) + "...";
+		}
+		output.push("[" + safeCaption + "](#)");
 	}
 	return output;
 };
 
 exports.name = "markdownlink";
 exports.types = {inline: true};
+
+// This is the maximum length a reported caption may be
+exports.reportCaptionLength = 15;
 
 exports.init = function(parser) {
 	this.parser = parser;
@@ -76,12 +84,12 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	if (link === fromEncoded) {
 		modified = true;
 		entry.linkChanged = true;
-		// This way preserves whitespace
 		link = toTitle;
 	}
 	if (modified) {
 		entry.link = link;
 		entry.caption = caption;
+		// This way preserves whitespace
 		entry.output = "["+caption+"]("+em[1]+utils.encodeLink(link)+em[3]+")";
 		return entry;
 	}

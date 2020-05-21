@@ -240,4 +240,20 @@ it("filters", function() {
 	testFilter("from [tag[from]oper{from}]", ["", "[tag[]]", "[oper{}]"]);
 });
 
+it("markdown links", function() {
+	function testMD(text, expected, extraTiddlers) {
+		test({type: "text/x-markdown", text: text}, expected, extraTiddlers);
+	};
+	testMD("[cap](#from)", ["[cap](#)"]);
+	testMD("[{{from}} <$link to='from' />](#else)", ["[{{}}](#else)", "[<$link to />](#else)"]);
+	testMD("[{{from}}](#from)", ["[{{}}](#from)", "[{{from}}](#)"]);
+	// Too long or multiline captions are fixed up (15 char max)
+	testMD("[Long\nmulti\nline\ncaption](#from)", ["[Long multi line...](#)"]);
+	testMD("[Long\r\nmulti\r\nline\r\ncaption](#from)", ["[Long multi line...](#)"]);
+	// Tabs are bad too. They mess up console logging.
+	testMD("[Bad\t\ttabs](#from)", ["[Bad tabs](#)"]);
+	// Whitespace in general is wasteful
+	testMD("[Bad    spaces](#from)", ["[Bad spaces](#)"]);
+});
+
 });
