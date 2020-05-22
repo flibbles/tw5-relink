@@ -1,0 +1,14 @@
+description: <p>//Relink// has an optional supplemental plugin which allows it to fully support markdown. It works seemlessly with any of the major markdown plugins.</p>
+list-after: 
+tags: Demo
+type: text/x-markdown
+
+[Link to Frodo](#Frodo)
+
+![Image of Frodo(#Frodo)
+
+<!-- Some markdown plugins allow wiki
+     syntax in your markdown tiddlers.
+     Relink supports that. -->
+
+<$link to="Frodo" />

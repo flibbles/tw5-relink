@@ -32,7 +32,24 @@ it('markdown links', function() {
 	test("[here](#from) content)", {from: "from", to: "to"});
 	// The space inside it flags it as not a markdown link
 	test("[here](#<$link to='from here'/>)");
+});
 
+it('links with tricky characters', function() {
+	// Must be escaped: %()
+	// Safe to escape: ^[]
+
+	var theBeast = "!@#$%^&*() {}|:\"<>?-=[]\\;',./`~¡™£¢∞§¶•ªº–≠“‘«…æ≤≥÷œ∑®´´†\¨ˆøπ˙∆˚¬åß∂ƒ©Ω≈ç√∫˜µ";
+	var wiki = new $tw.Wiki();
+	var results = utils.relink({text: "[Caption](#from)", type: "text/x-markdown"}, {from: "from", to: theBeast, target: "test", wiki: wiki});
+	// I don't care what the raw text looks like. I want to know that the link points to the right place.
+	var parser = wiki.parseTiddler("test");
+	var node = parser.tree[0];
+	while (node.type !== 'link') {
+		node = node.children[0];
+	}
+	expect(node.attributes.to.value).toEqual(theBeast);
+	// Now, can I rename away from that monster link?
+	test(results.tiddler.fields.text, "[Caption](#to)", {wiki: wiki, from: theBeast, to: "to"});
 });
 
 it('markdown links with spaces', function() {
