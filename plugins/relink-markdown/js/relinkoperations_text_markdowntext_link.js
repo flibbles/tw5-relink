@@ -1,5 +1,7 @@
 /*\
 module-type: wikirule
+title: $:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext/link.js
+type: application/javascript
 
 Handles markdown links
 

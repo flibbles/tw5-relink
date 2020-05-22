@@ -1,4 +1,7 @@
 /*\
+module-type: relinksurveyor
+title: $:/plugins/flibbles/relink/js/surveyors/markdown.js
+type: application/javascript
 
 This looks for fromTitle where it's escaped for markdown. But this one
 only installs if it looks like a markdown parser is plugged in.

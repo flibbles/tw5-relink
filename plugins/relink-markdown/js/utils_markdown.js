@@ -1,5 +1,7 @@
 /*\
 module-type: library
+title: $:/plugins/flibbles/relink/js/utils/markdown.js
+type: application/javascript
 
 Methods used in markdown parsing.
 
