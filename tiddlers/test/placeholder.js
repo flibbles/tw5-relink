@@ -152,19 +152,4 @@ it('Detects imported placeholder macros', function() {
 	         {wiki: wiki, to: to});
 });
 
-it('handles non-placeholder macrodefs', function() {
-	testText("\\define macro() [[from here]]");
-	testText("\\define macro() [[from here]]\n");
-	testText("\\define macro() [[from here]]\nText");
-	testText("\\define macro() [[from here]]\r\nText");
-	testText("\\define macro() [[from here]]\r\nText");
-	testText("\\define macro()    \t  [[from here]]\n");
-	testText("\\define\t\tmacro()    \t  [[from here]]\n");
-	testText("\\define macro() [[from here]]\n\\define other() {{from here}}");
-	testText("\\define macro() [[from]]\n\\define relink-list-1() from\n", {from: "from", to: "to"});
-	testText("\\define macro() [[from]]\n\n\n\\define relink-list-1() from", {from: "from", to: "to"});
-	// Macrodefs isolate their body and process it alone.
-	testText("\\define macro() {{{\nfrom}}}", {from: "from", ignored: true});
-});
-
 });
