@@ -41,7 +41,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 
 exports.makeLink = function(tiddler, caption, options) {
 	var output, quoted;
-	if (this.canBePretty(tiddler)) {
+	if (this.canBePretty(tiddler, !!caption)) {
 		output = prettyLink(tiddler, caption);
 	} else if (caption === undefined) {
 		if (exports.shorthandSupported(options)) {
@@ -80,8 +80,8 @@ exports.makeLink = function(tiddler, caption, options) {
 
 /**Return true if value can be used inside a prettylink.
  */
-exports.canBePretty = function(value) {
-	return value.indexOf("]]") < 0 && value[value.length-1] !== ']';
+exports.canBePretty = function(value, customCaption) {
+	return value.indexOf("]]") < 0 && value[value.length-1] !== ']' && (customCaption || value.indexOf('|') < 0);
 };
 
 /**In version 5.1.20, Tiddlywiki made it so <$link to"something" /> would

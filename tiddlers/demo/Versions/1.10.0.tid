@@ -1,1 +1,2 @@
 * Fixed bug where Relink would mangle widget attributes in //very// rare cases.
+* Fixed bug where renaming prettyLinks to something with a '|' char might mess up.

@@ -20,6 +20,7 @@ it('prettylinks', function() {
 	var r = testText("Link to [[from here]].");
 	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in prettylink of tiddler 'test'"]);
 	testText("Link to [[description|from here]].");
+	testText("Link to [[description|from here]].", {to: "to|there"});
 	testText("Link to [[weird]desc|from here]].");
 	testText("Link to [[it is from here|from here]].", "Link to [[it is from here|to there]].");
 	testText("Link [[new\nline|from here]].", "Link [[new\nline|from here]].");
@@ -44,6 +45,8 @@ it('unpretty with caption', function() {
 it('unpretty and without caption', function() {
 	testText("Link to [[from here]].", "Link to <$link to=A]]B/>.",
 	         {to: "A]]B"});
+	testText("Link to [[from here]].", "Link to <$link to=A|B/>.",
+	         {to: "A|B"});
 	var unquotable =  "very' bad]]title\"";
 	// without a caption, we have to go straight to placeholders weird,
 	// or we might desync the link with its caption with later name changes.
