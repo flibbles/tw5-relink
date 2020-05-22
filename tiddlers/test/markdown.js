@@ -126,7 +126,13 @@ it("impossible caption changes", function() {
 });
 
 it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
-	test("[Caption](#from) [[from]]", "[Caption](#from) [[to there]]", {from: "from", type: "text/vnd.tiddlywiki"});
+	var text = "[Caption](#from) [[from]]";
+	test(text, "[Caption](#from) [[to there]]", {from: "from", type: "text/vnd.tiddlywiki"});
+	var output, wiki = new $tw.Wiki();
+	output = wiki.renderText("text/plain", "text/vnd.tiddlywiki", text);
+	expect(output).toEqual("[Caption](#from) from");
+	output = wiki.renderText("text/plain", "text/x-markdown", text);
+	expect(output).toEqual("Caption [[from]]");
 });
 
 it("wikitext in markdown", function() {
