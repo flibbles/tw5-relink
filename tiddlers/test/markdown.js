@@ -135,14 +135,39 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 	expect(output).toEqual("Caption [[from]]");
 });
 
-it("wikitext in markdown", function() {
+it("wikitextPragma in tiddlywiki/markdown", function() {
 	var link = "[[from here]] [Caption](#from%20here)";
-	test(link, "[[from here]] [Caption](#to%20there)");
-	test(link, "[[to there]] [Caption](#to%20there)", {pragma: undefined});
-	test(link, "[[to there]] [Caption](#to%20there)", {pragma: "\\rules except html"});
+	var both =  "[[to there]] [Caption](#to%20there)";
+	var mdonly =  "[[from here]] [Caption](#to%20there)";
+	// links are disabled by default in tiddlywiki/markdown
+	test(link, mdonly);
+	// Without pragma, or with simple pragma
+	test(link, both, {pragma: undefined});
+	test(link, both, {pragma: "\\rules except html"});
+	// that "only"s should be ignored
+	test(link, both, {pragma: "\\rules except html only"});
+	test(link, both, {pragma: "\\rules onlycrap html"});
+	test(link, both, {pragma: "\\rules\nonly html"});
+	test(link, both, {pragma: "stuff \\rules only html"});
+	// This one work actually, because tiddlywiki/markdown
+	// strips whitespace before using it.
+	test(link, mdonly, {pragma: " \\rules only html"});
 
 	// wikitext in caption inherits rules
 	test("[[[from here]]](#from%20here)", "[[[to there]]](#to%20there)", {pragma: undefined});
+	// if it's an "only" rule, we must be able to tell. So we must support
+	// weird syntax of "only" rules.
+	test(link, both, {pragma: "\\rules only prettylink"});
+	test(link, both, {pragma: "\\rules\t\t\tonly prettylink"});
+	test(link, both, {pragma: "\\rules only prettylink\n\n"});
+	test(link, mdonly, {pragma: "\\rules only"}); // shuts everything off
+
+	// If some other pragma is included. We can't choke on that.
+	test(link, both, {pragma: "\\rules only prettylink macrodef\n\\define macro() stuff"});
+	test(link, both, {pragma: "\\rules only prettylink macrodef\r\n\\define macro() stuff"});
+	test(link, both, {pragma: "\\define macro() \\rules only\n\\rules only prettylink"});
+	test(link, both, {pragma: "\\define macro() \\rules only\n  \\rules only prettylink"});
+	test(link, both, {pragma: "\\rules only prettylink rules\n\\rules only prettylink"});
 });
 
 });

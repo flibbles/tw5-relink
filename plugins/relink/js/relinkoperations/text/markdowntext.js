@@ -39,20 +39,29 @@ exports["text/x-markdown"] = function(tiddler, fromTitle, toTitle, options) {
 };
 
 function getWikiTextPragma(options) {
+	var wikitextTitle = "$:/config/markdown/renderWikiText";
 	var pragmaTitle = "$:/config/markdown/renderWikiTextPragma";
-	return options.wiki.getCacheForTiddler(pragmaTitle, "relink-pragma", function() {
-		var pragma = options.wiki.getTiddlerText(pragmaTitle);
-		if (pragma) {
-			pragma = pragma.trim();
-			if (pragma.match(/only/)) {
-				return pragma + " markdownlink\n";
-			} else {
-				return pragma + "\n";
-			}
+	var pragma = options.wiki.getCacheForTiddler(wikitextTitle, "relink-pragma", function() {
+		var value = options.wiki.getTiddlerText(wikitextTitle);
+		if (value === undefined || value.toLowerCase() === "true") {
+			return true;
 		} else {
-			// An empty rules pragma, instead of '', just to keep the cache
-			// from constantly regenerating this value
-			return '';
+			return "\\rules only markdownlink\n";
 		}
 	});
+	if (pragma === true) {
+		return options.wiki.getCacheForTiddler(pragmaTitle, "relink-pragma", function() {
+			var pragma = options.wiki.getTiddlerText(pragmaTitle);
+			if (pragma) {
+				pragma = pragma.trim();
+				pragma = pragma.replace(/^(\\rules[^\S\n]+only[^\r\n]*)/gm, "$1 markdownlink");
+				return pragma + "\n";
+			} else {
+				// An empty rules pragma, instead of '', just to keep the cache
+				// from constantly regenerating this value
+				return '';
+			}
+		});
+	}
+	return pragma;
 };
