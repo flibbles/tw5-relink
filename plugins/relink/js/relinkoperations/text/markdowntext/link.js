@@ -48,7 +48,8 @@ exports.init = function(parser) {
 };
 
 exports.findNextMatch = function(startPos) {
-	if (!this.parser.fromTitle) { // This is an ordinary parser. Skip this.
+	if (!this.parser.fromTitle || this.parser.type !== "text/x-markdown") {
+		// This is an ordinary parser. Skip this.
 		return undefined;
 	}
 	this.start = startPos-1;

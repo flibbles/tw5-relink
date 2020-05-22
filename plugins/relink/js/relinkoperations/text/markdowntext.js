@@ -23,6 +23,7 @@ exports["text/x-markdown"] = function(tiddler, fromTitle, toTitle, options) {
 	var extraOptions = $tw.utils.extend(
 		{
 			currentTiddler: tiddler.fields.title,
+			type: "text/x-markdown",
 			placeholder: placeholder
 		}, options);
 	var pragma = getWikiTextPragma(options);

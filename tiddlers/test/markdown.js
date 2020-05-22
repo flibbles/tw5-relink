@@ -125,6 +125,10 @@ it("impossible caption changes", function() {
 	test("[{{from}}](#from)", "[{{from}}](#brack%5Det)", {from: "from", to: "brack]et", fails: 1});
 });
 
+it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
+	test("[Caption](#from) [[from]]", "[Caption](#from) [[to there]]", {from: "from", type: "text/vnd.tiddlywiki"});
+});
+
 it("wikitext in markdown", function() {
 	test("[[from here]]", {pragma: undefined});
 	test("[[from here]]", {ignored: true});

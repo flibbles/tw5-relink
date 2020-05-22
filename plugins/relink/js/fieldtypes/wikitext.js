@@ -38,7 +38,7 @@ function collectRules() {
 	return rules;
 }
 
-function WikiRelinker(text, title, fromTitle, toTitle, options) {
+function WikiRelinker(type, text, fromTitle, toTitle, options) {
 	this.entry = new WikitextEntry();
 	this.builder = new Rebuilder(text);
 	this.options = options;
@@ -54,10 +54,9 @@ function WikiRelinker(text, title, fromTitle, toTitle, options) {
 		});
 		WikiRelinker.prototype.relinkMethodsInjected = true;
 	}
-	this.title = title;
 	this.fromTitle = fromTitle;
 	this.toTitle = toTitle;
-	WikiParser.call(this, "text/vnd.tiddlywiki", text, options);
+	WikiParser.call(this, type, text, options);
 };
 
 WikiRelinker.prototype = Object.create(WikiParser.prototype);
@@ -162,7 +161,7 @@ exports.relink = function(wikitext, fromTitle, toTitle, options) {
 	var matchingRule,
 		newOptions = $tw.utils.extend({}, options);
 	newOptions.settings = options.settings.createChildLibrary(options.currentTiddler);
-	var parser = new WikiRelinker(wikitext, options.currentTiddler, fromTitle, toTitle, newOptions);
+	var parser = new WikiRelinker(options.type, wikitext, fromTitle, toTitle, newOptions);
 	if (parser.entry.children.length > 0) {
 		parser.entry.output = parser.builder.results();
 		return parser.entry;
