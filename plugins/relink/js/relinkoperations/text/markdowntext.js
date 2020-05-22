@@ -39,10 +39,20 @@ exports["text/x-markdown"] = function(tiddler, fromTitle, toTitle, options) {
 };
 
 function getWikiTextPragma(options) {
-	var pragma = options.wiki.getTiddlerText("$:/config/markdown/renderWikiTextPragma");
-	if (pragma) {
-		return pragma.trim() + " markdownlink\n";
-	} else {
-		return '';
-	}
+	var pragmaTitle = "$:/config/markdown/renderWikiTextPragma";
+	return options.wiki.getCacheForTiddler(pragmaTitle, "relink-pragma", function() {
+		var pragma = options.wiki.getTiddlerText(pragmaTitle);
+		if (pragma) {
+			pragma = pragma.trim();
+			if (pragma.match(/only/)) {
+				return pragma + " markdownlink\n";
+			} else {
+				return pragma + "\n";
+			}
+		} else {
+			// An empty rules pragma, instead of '', just to keep the cache
+			// from constantly regenerating this value
+			return '';
+		}
+	});
 };

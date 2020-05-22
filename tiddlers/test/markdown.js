@@ -136,8 +136,13 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 });
 
 it("wikitext in markdown", function() {
-	test("[[from here]]", {pragma: undefined});
-	test("[[from here]]", {ignored: true});
+	var link = "[[from here]] [Caption](#from%20here)";
+	test(link, "[[from here]] [Caption](#to%20there)");
+	test(link, "[[to there]] [Caption](#to%20there)", {pragma: undefined});
+	test(link, "[[to there]] [Caption](#to%20there)", {pragma: "\\rules except html"});
+
+	// wikitext in caption inherits rules
+	test("[[[from here]]](#from%20here)", "[[[to there]]](#to%20there)", {pragma: undefined});
 });
 
 });
