@@ -58,15 +58,6 @@ function WikiRelinker(text, title, fromTitle, toTitle, options) {
 	this.fromTitle = fromTitle;
 	this.toTitle = toTitle;
 	WikiParser.call(this, "text/vnd.tiddlywiki", text, options);
-	this.inlineRules = this.inlineRules.concat(this.blockRules);
-	if (options.extraRules) {
-		// Extra rules contains the possible markdown rule
-		this.extraRules = this.instantiateRules(options.extraRules,"extra",0);
-		this.inlineRules = this.inlineRules.concat(this.extraRules);
-	}
-	// We work through relinkRules so we can change it later.
-	// relinkRules is inlineRules so it gets touched up by amendRules().
-	this.relinkRules = this.inlineRules;
 };
 
 WikiRelinker.prototype = Object.create(WikiParser.prototype);
@@ -85,8 +76,61 @@ WikiRelinker.prototype.parsePragmas = function() {
 	}
 	return [];
 };
-WikiRelinker.prototype.parseInlineRun = function() {};
-WikiRelinker.prototype.parseBlocks = function() {};
+
+WikiRelinker.prototype.parseInlineRunUnterminated = function(options) {
+	var nextMatch = this.findNextMatch(this.inlineRules, this.pos);
+	while (this.pos < this.sourceLength && nextMatch) {
+		if (nextMatch.matchIndex > this.pos) {
+			this.pos = nextMatch.matchIndex;
+		}
+		this.relinkRule(nextMatch);
+		nextMatch = this.findNextMatch(this.inlineRules, this.pos);
+	}
+	this.pos = this.sourceLength;
+};
+
+WikiRelinker.prototype.parseInlineRunTerminated = function(terminatorRegExp,options) {
+	options = options || {};
+	terminatorRegExp.lastIndex = this.pos;
+	var terminatorMatch = terminatorRegExp.exec(this.source);
+	var inlineRuleMatch = this.findNextMatch(this.inlineRules,this.pos);
+	while(this.pos < this.sourceLength && (terminatorMatch || inlineRuleMatch)) {
+		if (terminatorMatch) {
+			if (!inlineRuleMatch || inlineRuleMatch.matchIndex >= terminatorMatch.index) {
+				this.pos = terminatorMatch.index;
+				if (options.eatTerminator) {
+					this.pos += terminatorMatch[0].length;
+				}
+				return [];
+			}
+		}
+		if (inlineRuleMatch) {
+			if (inlineRuleMatch.matchIndex > this.pos) {
+				this.pos = inlineRuleMatch.matchIndex;
+			}
+			this.relinkRule(inlineRuleMatch);
+			inlineRuleMatch = this.findNextMatch(this.inlineRules, this.pos);
+			terminatorRegExp.lastIndex = this.pos;
+			terminatorMatch = terminatorRegExp.exec(this.source);
+		}
+	}
+	this.pos = this.sourceLength;
+	return [];
+
+};
+
+WikiRelinker.prototype.parseBlock = function(terminatorRegExp) {
+	var terminatorRegExp = /(\r?\n\r?\n)/mg;
+	this.skipWhitespace();
+	if (this.pos >= this.sourceLength) {
+		return [];
+	}
+	var nextMatch = this.findNextMatch(this.blockRules, this.pos);
+	if(nextMatch && nextMatch.matchIndex === this.pos) {
+		this.relinkRule(nextMatch);
+	}
+	return this.parseInlineRun(terminatorRegExp);
+};
 
 WikiRelinker.prototype.relinkRule = function(ruleInfo) {
 	if (ruleInfo.rule.relink) {
@@ -119,9 +163,6 @@ exports.relink = function(wikitext, fromTitle, toTitle, options) {
 		newOptions = $tw.utils.extend({}, options);
 	newOptions.settings = options.settings.createChildLibrary(options.currentTiddler);
 	var parser = new WikiRelinker(wikitext, options.currentTiddler, fromTitle, toTitle, newOptions);
-	while (matchingRule = parser.findNextMatch(parser.relinkRules, parser.pos)) {
-		parser.relinkRule(matchingRule);
-	}
 	if (parser.entry.children.length > 0) {
 		parser.entry.output = parser.builder.results();
 		return parser.entry;

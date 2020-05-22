@@ -22,7 +22,6 @@ exports["text/x-markdown"] = function(tiddler, fromTitle, toTitle, options) {
 	}
 	var extraOptions = $tw.utils.extend(
 		{
-			extraRules: markdownRuleClasses,
 			currentTiddler: tiddler.fields.title,
 			placeholder: placeholder
 		}, options);

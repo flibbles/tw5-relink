@@ -69,14 +69,7 @@ it('comments', function() {
 
 	var inline = "Inline <!-- [[from here]] --> inline";
 	var block = "<!--\n\n[[from here]]\n\n-->";
-	// TODO: This commented-out test should work. Unfortunately, it
-	// requires the WikiRelinker to process rule categories
-	// (inline, block, pragma) separately, and at appropriate times.
-	// This would basically require rewriting the WikiParser. The
-	// alternative is to get Jeremy to make a few small changes to the
-	// WikiParser which would allow its behavior to be more easily
-	// modified through inheritance.
-	//testText("\\rules except commentinline\n"+inline);
+	testText("\\rules except commentinline\n"+inline);
 	testText("\\rules except commentblock\n"+inline, {ignored: true});
 	testText("\\rules except commentinline\n"+block, {ignored: true});
 	testText("\\rules except commentblock\n"+block, {ignored: true});

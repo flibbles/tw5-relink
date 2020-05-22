@@ -1,5 +1,5 @@
 /*\
-module-type: relinkmarkdowntextrule
+module-type: wikirule
 
 Handles markdown links
 
@@ -48,6 +48,9 @@ exports.init = function(parser) {
 };
 
 exports.findNextMatch = function(startPos) {
+	if (!this.parser.fromTitle) { // This is an ordinary parser. Skip this.
+		return undefined;
+	}
 	this.start = startPos-1;
 	this.endMatch = undefined;
 	do {
