@@ -6,19 +6,11 @@ Tests relinking in markdown tiddlers. (text/markdown)
 
 var utils = require("test/utils");
 
-var pragmaTitle = "$:/config/markdown/renderWikiTextPragma";
-var defaultPragma = $tw.wiki.getTiddlerText(pragmaTitle);
-
 function test(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var type = options.type || "text/x-markdown";
 	var failCount = options.fails || 0;
 	var wiki = options.wiki;
-	var pragma = defaultPragma;
-	if ($tw.utils.hop(options, "pragma")) {
-		pragma = options.pragma;
-	}
-	wiki.addTiddler({title: pragmaTitle,text: pragma});
 	var results = utils.relink({text: text, type: type}, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
 	expect(results.fails.length).toEqual(failCount, "Incorrect number of failures");
@@ -135,39 +127,70 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 	expect(output).toEqual("Caption [[from]]");
 });
 
+describe("tiddlywiki/markdown plugin", function() {
+
+var mdParser = require("$:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext.js")["text/x-markdown"];
+var pragmaTitle = "$:/config/markdown/renderWikiTextPragma";
+var switchTitle = "$:/config/markdown/renderWikiText";
+var defaultPragma = $tw.wiki.getTiddlerText(pragmaTitle);
+
+function testPragma(text, expected, pragma, switchValue) {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: pragmaTitle, text: pragma});
+	if (switchValue !== undefined) {
+		wiki.addTiddler({title: switchTitle, text: switchValue});
+	}
+	mdParser.setWikitextState(wiki);
+	test(text, expected, {wiki: wiki});
+};
+
+var link = "[[from here]] [Caption](#from%20here)";
+var both =  "[[to there]] [Caption](#to%20there)";
+var mdonly =  "[[from here]] [Caption](#to%20there)";
+
 it("wikitextPragma in tiddlywiki/markdown", function() {
-	var link = "[[from here]] [Caption](#from%20here)";
-	var both =  "[[to there]] [Caption](#to%20there)";
-	var mdonly =  "[[from here]] [Caption](#to%20there)";
 	// links are disabled by default in tiddlywiki/markdown
-	test(link, mdonly);
+	testPragma(link, mdonly, defaultPragma);
 	// Without pragma, or with simple pragma
-	test(link, both, {pragma: undefined});
-	test(link, both, {pragma: "\\rules except html"});
-	// that "only"s should be ignored
-	test(link, both, {pragma: "\\rules except html only"});
-	test(link, both, {pragma: "\\rules onlycrap html"});
-	test(link, both, {pragma: "\\rules\nonly html"});
-	test(link, both, {pragma: "stuff \\rules only html"});
+	testPragma(link, both, undefined);
+	testPragma(link, both, "\\rules except html");
+	// that "only"s should be ignore
+	testPragma(link, both, "\\rules except html only");
+	testPragma(link, both, "\\rules onlycrap html");
+	testPragma(link, both, "\\rules\nonly html");
+	testPragma(link, both, "stuff \\rules only html");
 	// This one work actually, because tiddlywiki/markdown
 	// strips whitespace before using it.
-	test(link, mdonly, {pragma: " \\rules only html"});
+	testPragma(link, mdonly, " \\rules only html");
 
 	// wikitext in caption inherits rules
-	test("[[[from here]]](#from%20here)", "[[[to there]]](#to%20there)", {pragma: undefined});
+	testPragma("[[[from here]]](#from%20here)", "[[[to there]]](#to%20there)", undefined);
 	// if it's an "only" rule, we must be able to tell. So we must support
 	// weird syntax of "only" rules.
-	test(link, both, {pragma: "\\rules only prettylink"});
-	test(link, both, {pragma: "\\rules\t\t\tonly prettylink"});
-	test(link, both, {pragma: "\\rules only prettylink\n\n"});
-	test(link, mdonly, {pragma: "\\rules only"}); // shuts everything off
+	testPragma(link, both, "\\rules only prettylink");
+	testPragma(link, both, "\\rules\t\t\tonly prettylink");
+	testPragma(link, both, "\\rules only prettylink\n\n");
+	testPragma(link, mdonly, "\\rules only"); // shuts everything off
 
 	// If some other pragma is included. We can't choke on that.
-	test(link, both, {pragma: "\\rules only prettylink macrodef\n\\define macro() stuff"});
-	test(link, both, {pragma: "\\rules only prettylink macrodef\r\n\\define macro() stuff"});
-	test(link, both, {pragma: "\\define macro() \\rules only\n\\rules only prettylink"});
-	test(link, both, {pragma: "\\define macro() \\rules only\n  \\rules only prettylink"});
-	test(link, both, {pragma: "\\rules only prettylink rules\n\\rules only prettylink"});
+	testPragma(link, both, "\\rules only prettylink macrodef\n\\define macro() stuff");
+	testPragma(link, both, "\\rules only prettylink macrodef\r\n\\define macro() stuff");
+	testPragma(link, both, "\\define macro() \\rules only\n\\rules only prettylink");
+	testPragma(link, both, "\\define macro() \\rules only\n  \\rules only prettylink");
+	testPragma(link, both, "\\rules only prettylink rules\n\\rules only prettylink");
+
+	// Test the switch
+});
+
+it("wikitext switch in tiddlywiki/markdown", function() {
+	testPragma(link, both, undefined);
+	testPragma(link, both, undefined, "true");
+	testPragma(link, both, undefined, "TRUE");
+	testPragma(link, mdonly, undefined, "");
+	testPragma(link, mdonly, undefined, "false");
+	testPragma(link, mdonly, undefined, "false");
+});
+
 });
 
 });

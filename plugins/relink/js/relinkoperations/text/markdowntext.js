@@ -15,7 +15,7 @@ var wikitextHandler = settings.getType('wikitext');
 
 var markdownRuleClasses;
 
-exports["text/x-markdown"] = function(tiddler, fromTitle, toTitle, options) {
+function parse(tiddler, fromTitle, toTitle, options) {
 	var placeholder = new Placeholder();
 	if (!markdownRuleClasses) {
 		markdownRuleClasses = $tw.modules.createClassesFromModules("relinkmarkdowntextrule", "inline", $tw.WikiRuleBase);
@@ -26,7 +26,7 @@ exports["text/x-markdown"] = function(tiddler, fromTitle, toTitle, options) {
 			type: "text/x-markdown",
 			placeholder: placeholder
 		}, options);
-	var pragma = getWikiTextPragma(options);
+	var pragma = options.wiki._relinkMarkdownPragma || '';
 	var text = pragma + tiddler.fields.text;
 	var entry = wikitextHandler.relink(text, fromTitle, toTitle, extraOptions);
 	if (entry && entry.output) {
@@ -38,30 +38,36 @@ exports["text/x-markdown"] = function(tiddler, fromTitle, toTitle, options) {
 	return entry;
 };
 
-function getWikiTextPragma(options) {
-	var wikitextTitle = "$:/config/markdown/renderWikiText";
-	var pragmaTitle = "$:/config/markdown/renderWikiTextPragma";
-	var pragma = options.wiki.getCacheForTiddler(wikitextTitle, "relink-pragma", function() {
-		var value = options.wiki.getTiddlerText(wikitextTitle);
-		if (value === undefined || value.toLowerCase() === "true") {
-			return true;
-		} else {
-			return "\\rules only markdownlink\n";
-		}
-	});
-	if (pragma === true) {
-		return options.wiki.getCacheForTiddler(pragmaTitle, "relink-pragma", function() {
-			var pragma = options.wiki.getTiddlerText(pragmaTitle);
-			if (pragma) {
-				pragma = pragma.trim();
-				pragma = pragma.replace(/^(\\rules[^\S\n]+only[^\r\n]*)/gm, "$1 markdownlink");
-				return pragma + "\n";
-			} else {
-				// An empty rules pragma, instead of '', just to keep the cache
-				// from constantly regenerating this value
-				return '';
-			}
-		});
+parse.setWikitextState = function(wiki) {
+	var pragma,
+		wikitextTitle = "$:/config/markdown/renderWikiText";
+	var value = wiki.getTiddlerText(wikitextTitle);
+	if (value === undefined || value.toLowerCase() === "true") {
+		pragma = getPragmaFromTiddler(wiki);
+	} else {
+		pragma = "\\rules only markdownlink\n";
 	}
-	return pragma;
+	// I think this is better than making a global variable, which makes
+	// testing precarious.
+	// Still hate that tiddlywiki/markdown is making me do this.
+	wiki._relinkMarkdownPragma = pragma;
 };
+
+function getPragmaFromTiddler(wiki) {
+	var pragmaTitle = "$:/config/markdown/renderWikiTextPragma";
+	var pragma = wiki.getTiddlerText(pragmaTitle);
+	if (pragma) {
+		pragma = pragma.trim();
+		pragma = pragma.replace(/^(\\rules[^\S\n]+only[^\r\n]*)/gm, "$1 markdownlink");
+		return pragma + "\n";
+	} else {
+		return '';
+	}
+};
+
+// This weird setup is so we can test this method, but also have it only
+// calculate once when Tiddlywiki loads, which is the same time the
+// tiddlywiki/markdown plugin calculates.
+parse.setWikitextState($tw.wiki);
+
+exports["text/x-markdown"] = parse;
