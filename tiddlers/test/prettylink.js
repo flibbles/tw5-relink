@@ -101,17 +101,25 @@ it('has dangerous and unquotable caption content', function() {
 it('unquotable and unpretty', function() {
 	// We also have to go to to placeholders if title doesn't work for
 	// prettylinks or widgets.
+	var text = "Link to [[caption|from here]].";
 	var to = 'Has apost\' [[bracks]] and "quotes"';
-	var r =testText("Link to [[caption|from here]].",
+	var r =testText(text,
 	                utils.placeholder(1, to) +
 	                "Link to <$link to=<<relink-1>>>caption</$link>.",
 	                {to: to});
 	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in prettylink of tiddler 'test'"]);
+
+	// If rules disable macrodef, then don't placeholder
+	r = testText("\\rules except macrodef\n" + text, {ignored: true, to: to});
+	expect(r.fails.length).toEqual(1);
+	r = testText("\\rules only prettylink html\n" + text, {ignored: true, to: to});
+	expect(r.fails.length).toEqual(1);
 });
 
 it('respects rules', function() {
 	testText("\\rules except prettylink\nLink to [[from here]].",
 	         {ignored: true});
+	testText("\\rules only prettylink\nLink to [[from here]].");
 });
 
 });
