@@ -58,6 +58,12 @@ exports.findNextMatch = function(startPos) {
 	return this.endMatch ? this.endMatch.index : undefined;
 };
 
+/**A zero side-effect method which returns a regexp which pretended to match
+ * the whole link, caption and all. I do this instead of just using a
+ * regexp to begin with, because markdown links require context-free grammar
+ * matching.
+ * Currently, it doesn't properly set match[0]. No need as of yet.
+ */
 exports.matchLink = function(text, pos) {
 	pos = pos-1;
 	var match = undefined;
@@ -107,16 +113,21 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 		}
 	}
-	if (decodeURIComponent(link) === fromTitle) {
-		modified = true;
-		entry.linkChanged = true;
-		link = toTitle;
+	try {
+		if (decodeURIComponent(link) === fromTitle) {
+			modified = true;
+			entry.linkChanged = true;
+			link = utils.encodeLink(toTitle);
+		}
+	} catch (e) {
+		// It must be a malformed link. Not our problem.
+		// Keep going in case the caption needs relinking.
 	}
 	if (modified) {
 		entry.link = link;
 		entry.caption = caption;
 		// This way preserves whitespace
-		entry.output = "["+caption+"]("+em[2]+utils.encodeLink(link)+em[4]+")";
+		entry.output = "["+caption+"]("+em[2]+link+em[4]+")";
 		return entry;
 	}
 	return undefined;

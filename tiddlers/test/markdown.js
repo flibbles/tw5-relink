@@ -90,6 +90,15 @@ it('identifying markdown links with mixed escaping', function() {
 	finds("a&b;c=d", "a&b;c=d");
 	finds("a&b;c=d", "a%26b;c%3Dd");
 	finds("path/to/file.com", "path/to%2Ffile.com");
+	finds("from", "fr%6Fm");
+	finds("from", "fr%6fm");
+	finds("100%", "100%25");
+	finds("%25", "%2525");
+});
+
+it('gracefully handles malformed links', function() {
+	test("[caption](#from%)", {from: "from%", ignored: true});
+	test("[<$link to='from here'/>](#bad%)");
 });
 
 it("whitespaces and multiline", function() {
@@ -132,6 +141,8 @@ it("changing captions", function() {
 	test("[<$link to='from' />](#from)", {from: "from", to: "to"});
 	test("[{{from}}](#other)", {from: "from", to: "to[there]"});
 	test("[[]{{from}}](#from)", {from: "from", to: "to"});
+	// encoded link is left alone when caption changes
+	test("[{{from}}](#a%26b%3Bc%3Dd)", {from: "from", to: "to"});
 });
 
 it("impossible caption changes", function() {
