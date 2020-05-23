@@ -169,6 +169,9 @@ WikiRelinker.prototype.amendRules = function(type, names) {
 	if (only !== (names.indexOf("html") >= 0)) {
 		this.options.noWidgets = true;
 	}
+	if (only !== (names.indexOf("prettylink") >= 0)) {
+		this.options.noPrettylinks = true;
+	}
 };
 
 exports.relink = function(wikitext, fromTitle, toTitle, options) {

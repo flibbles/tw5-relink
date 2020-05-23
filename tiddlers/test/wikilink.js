@@ -47,4 +47,42 @@ it('tricky cases', function() {
 	expect(r.log).toEqual(["Renaming 'WikiLink' to '"+tricky+"' in CamelCase link of tiddler 'test'"]);
 });
 
+it('respects \\rules', function() {
+	function test(rules, options) {
+		options.from = "WikiLink";
+		var r = testText(rules + "\nWikiLink", options);
+		expect(r.fails.length).toEqual(options.fails || 0);
+	};
+	test("\\rules except wikilink", {ignored: true});
+	test("\\rules only wikilink", {to: "ToThere"});
+	test("\\rules only html prettylink", {to: "ToThere", ignored: true});
+
+	test("\\rules except html", {to: "to there]]", ignored: true, fails: 1});
+	// disabled html doesn't prevent prettylinks
+	testText("\\rules only wikilink prettylink\nWikiLink",
+	         "\\rules only wikilink prettylink\n[[to there]]",{to: "to there"});
+	testText("\\rules except html\nWikiLink",
+	         "\\rules except html\n[[to there]]",{to: "to there"});
+
+	// skip prettylinks and go to html
+	testText("\\rules except prettylink\nWikiLink",
+	         "\\rules except prettylink\n<$link to='to there'/>",
+	         {from: "WikiLink"});
+	testText("\\rules only html wikilink\nWikiLink",
+	         "\\rules only html wikilink\n<$link to='to there'/>",
+	         {from: "WikiLink"});
+
+	// link can be pretty, but pretty isn't allowed
+	var prettyOnly =  "to 'there\"";
+	test("\\rules except prettylink macrodef", {to: prettyOnly, ignored: true, fails: 1});
+	testText("\\rules except prettylink\nWikiLink",
+	         utils.placeholder(1, prettyOnly)+"\\rules except prettylink\n<$link to=<<relink-1>>/>",
+	         {to: prettyOnly});
+
+	// placeholdering
+	var tricky = "bad' title]]\"";
+	test("\\rules except macrodef", {to: tricky, ignored: true, fails: 1});
+	test("\\rules only wikilink prettylink", {to: tricky, ignored: true, fails: 1});
+});
+
 });
