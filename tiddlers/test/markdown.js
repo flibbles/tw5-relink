@@ -81,6 +81,17 @@ it('markdown links with mismatched parenthesis', function() {
 	test("[c](#from)", "[c](#a%29b(c)d%28e)", {from: "from", to: "a)b(c)d(e"});
 });
 
+it('identifying markdown links with mixed escaping', function() {
+	function finds(title, escaped) {
+		test("[c](#"+escaped+")", "[c](#there)", {from: title, to: "there"});
+	};
+	// unnecessarily escaped parenthesis
+	finds("(from)here", "%28from%29here");
+	finds("a&b;c=d", "a&b;c=d");
+	finds("a&b;c=d", "a%26b;c%3Dd");
+	finds("path/to/file.com", "path/to%2Ffile.com");
+});
+
 it("whitespaces and multiline", function() {
 	// Whitespace
 	test("[here](   #from)", {from: "from", to: "to"});

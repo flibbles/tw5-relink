@@ -92,7 +92,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry = new MarkdownLinkEntry(),
 		em = this.endMatch,
 		modified = false,
-		fromEncoded = utils.encodeLink(fromTitle),
 		caption = em[1],
 		link = em[3];
 	this.parser.pos = em.index + caption.length + em[0].length + 4;
@@ -108,7 +107,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 		}
 	}
-	if (link === fromEncoded) {
+	if (decodeURIComponent(link) === fromTitle) {
 		modified = true;
 		entry.linkChanged = true;
 		link = toTitle;
