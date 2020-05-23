@@ -111,6 +111,29 @@ it('unpretty (degrades to widget)', function() {
 	test("{{from here}}\r\nTxt", "<$tiddler tiddler='"+to+"'>{{}}</$tiddler>\r\nTxt");
 });
 
+it('respects \\rules', function() {
+	testText("\\rules only transcludeinline\n{{from here}}");
+	testText("\\rules only transcludeblock\n{{from here}}");
+	testText("\\rules only html\n{{from here}}", {ignored: true});
+
+	function fails(to, text, expected) {
+		expected = expected || text;
+		var r = testText(text, expected, {to: to, ignored: true});
+		expect(r.fails.length).toEqual(1);
+	};
+	fails("curly {}", "\\rules except html\n{{from here}}");
+	fails("curly {}", "\\rules except html\n{{||from here}}");
+	fails("curly {}", "\\rules except html\n{{from here||template}}");
+	// Tries to placeholder
+	var to = "{}' \"";
+	fails(to, "\\rules except html\n{{from here}} [[from here]]",
+	          "\\rules except html\n{{from here}} [["+to+"]]");
+	fails(to, "\\rules except html\n{{||from here}} [[from here]]",
+	          "\\rules except html\n{{||from here}} [["+to+"]]");
+	fails(to, "\\rules except macrodef\n{{from here}}");
+	fails(to, "\\rules except macrodef\n{{||from here}}");
+});
+
 it('unpretty, but the title is unquotable', function() {
 	var to = "curly {}";
 	var other = "a'\"";

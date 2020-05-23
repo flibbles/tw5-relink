@@ -83,24 +83,28 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 exports.makeTransclude = function(reference, template, options) {
 	var rtn;
 	if (!canBePrettyTemplate(template)) {
-		var resultTemplate = wrap(template, options);
-		if (resultTemplate !== undefined) {
-			if (reference.title) {
-				var resultTitle = wrap(reference.title, options);
-				var attrs = transcludeAttributes(reference.field, reference.index, options);
-				if (resultTitle !== undefined && attrs !== undefined) {
-					rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
+		if (!options.noWidgets) {
+			var resultTemplate = wrap(template, options);
+			if (resultTemplate !== undefined) {
+				if (reference.title) {
+					var resultTitle = wrap(reference.title, options);
+					var attrs = transcludeAttributes(reference.field, reference.index, options);
+					if (resultTitle !== undefined && attrs !== undefined) {
+						rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
+					}
+				} else {
+					rtn = "<$transclude tiddler="+resultTemplate+"/>";
 				}
-			} else {
-				rtn = "<$transclude tiddler="+resultTemplate+"/>";
 			}
 		}
 	} else if (!canBePrettyTitle(reference.title)) {
-		// This block and the next account for the 1%...
-		var resultTitle = wrap(reference.title, options);
-		if (resultTitle !== undefined) {
-			var reducedRef = {field: reference.field, index: reference.index};
-			rtn = "<$tiddler tiddler="+resultTitle+">"+prettyTransclude(reducedRef, template)+"</$tiddler>";
+		if (!options.noWidgets) {
+			// This block and the next account for the 1%...
+			var resultTitle = wrap(reference.title, options);
+			if (resultTitle !== undefined) {
+				var reducedRef = {field: reference.field, index: reference.index};
+				rtn = "<$tiddler tiddler="+resultTitle+">"+prettyTransclude(reducedRef, template)+"</$tiddler>";
+			}
 		}
 	} else {
 		// This block takes care of 99% of all cases
