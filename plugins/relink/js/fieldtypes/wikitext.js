@@ -153,6 +153,16 @@ WikiRelinker.prototype.relinkRule = function(ruleInfo) {
 	}
 };
 
+WikiRelinker.prototype.amendRules = function(type, names) {
+	WikiParser.prototype.amendRules.call(this, type, names);
+	var macrodefListed = names.indexOf("macrodef") >= 0;
+	if ((type === "only" && !macrodefListed)
+	 || (type === "except" && macrodefListed)) {
+		// Aww... no more placeholdering allowed.
+		this.options.placeholder = undefined;
+	}
+};
+
 exports.relink = function(wikitext, fromTitle, toTitle, options) {
 	// fromTitle doesn't even show up plaintext. No relinking to do.
 	if (!options.settings.survey(wikitext, fromTitle, options)) {

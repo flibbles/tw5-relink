@@ -165,7 +165,7 @@ var link = "[[from here]] [Caption](#from%20here)";
 var both =  "[[to there]] [Caption](#to%20there)";
 var mdonly =  "[[from here]] [Caption](#to%20there)";
 
-it("wikitextPragma in tiddlywiki/markdown", function() {
+it("wikitextPragma", function() {
 	// links are disabled by default in tiddlywiki/markdown
 	testPragma(link, mdonly, defaultPragma);
 	// Without pragma, or with simple pragma
@@ -179,33 +179,48 @@ it("wikitextPragma in tiddlywiki/markdown", function() {
 	// This one work actually, because tiddlywiki/markdown
 	// strips whitespace before using it.
 	testPragma(link, mdonly, " \\rules only html");
+});
 
+it("wikitextPragma wikilinks inside markdown links", function() {
 	// wikitext in caption inherits rules
 	testPragma("[[[from here]]](#from%20here)", "[[[to there]]](#to%20there)", undefined);
+});
+
+it("wikitextPragma with broken 'only's", function() {
 	// if it's an "only" rule, we must be able to tell. So we must support
 	// weird syntax of "only" rules.
 	testPragma(link, both, "\\rules only prettylink");
 	testPragma(link, both, "\\rules\t\t\tonly prettylink");
 	testPragma(link, both, "\\rules only prettylink\n\n");
 	testPragma(link, mdonly, "\\rules only"); // shuts everything off
+});
 
+it("wikitextPragma with multiple pragma", function() {
 	// If some other pragma is included. We can't choke on that.
 	testPragma(link, both, "\\rules only prettylink macrodef\n\\define macro() stuff");
 	testPragma(link, both, "\\rules only prettylink macrodef\r\n\\define macro() stuff");
 	testPragma(link, both, "\\define macro() \\rules only\n\\rules only prettylink");
 	testPragma(link, both, "\\define macro() \\rules only\n  \\rules only prettylink");
 	testPragma(link, both, "\\rules only prettylink rules\n\\rules only prettylink");
-
-	// Test the switch
 });
 
-it("wikitext switch in tiddlywiki/markdown", function() {
+it("wikitext switch", function() {
 	testPragma(link, both, undefined);
 	testPragma(link, both, undefined, "true");
 	testPragma(link, both, undefined, "TRUE");
 	testPragma(link, mdonly, undefined, "");
 	testPragma(link, mdonly, undefined, "false");
 	testPragma(link, mdonly, undefined, "false");
+});
+
+it("won't make placeholders with default markdown settings", function() {
+	// because default markdown settings prohibit macrodefs at all.
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: pragmaTitle, text: defaultPragma});
+	mdParser.setWikitextState(wiki);
+	test("<$link to='from here' />[C](#from%20here)",
+	     "<$link to='from here' />[C](#to%20'there%22)",
+	     {to: "to 'there\"", wiki: wiki, fails: 1});
 });
 
 });
