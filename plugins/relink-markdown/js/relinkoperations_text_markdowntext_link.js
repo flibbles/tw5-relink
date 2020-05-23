@@ -54,29 +54,38 @@ exports.findNextMatch = function(startPos) {
 		// This is an ordinary parser. Skip this.
 		return undefined;
 	}
-	this.start = startPos-1;
-	this.endMatch = undefined;
+	this.endMatch = this.matchLink(this.parser.source, startPos);
+	return this.endMatch ? this.endMatch.index : undefined;
+};
+
+exports.matchLink = function(text, pos) {
+	pos = pos-1;
+	var match = undefined;
 	do {
-		this.start = this.parser.source.indexOf('[', this.start+1);
-		if (this.start < 0) {
+		pos = text.indexOf('[', pos+1);
+		if (pos < 0) {
 			return undefined;
 		}
-		this.caption = this.getEnclosed(this.parser.source, this.start, '[', ']');
-		if (this.caption === undefined) {
+		var caption = this.getEnclosed(text, pos, '[', ']');
+		if (caption === undefined) {
 			continue;
 		}
-		var linkStart = this.start + this.caption.length+2;
-		if (this.parser.source[linkStart] !== '(') {
+		var linkStart = pos + caption.length+2;
+		if (text[linkStart] !== '(') {
 			continue;
 		}
-		var internalStr = this.getEnclosed(this.parser.source, linkStart, '(', ')');
+		var internalStr = this.getEnclosed(text, linkStart, '(', ')');
 		if (internalStr === undefined) {
 			continue;
 		}
-		this.closeRegExp = /^(\s*#)([\S]+)(\s*)$/;
-		this.endMatch = this.closeRegExp.exec(internalStr);
-	} while (!this.endMatch);
-	return this.start;
+		var closeRegExp = /^()(\s*#)([\S]+)(\s*)$/;
+		match = closeRegExp.exec(internalStr);
+		if (match) {
+			match[1] = caption;
+			match.index = pos;
+		}
+	} while (!match);
+	return match;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -84,9 +93,9 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		em = this.endMatch,
 		modified = false,
 		fromEncoded = utils.encodeLink(fromTitle),
-		caption = this.caption,
-		link = em[2];
-	this.parser.pos = this.start + this.caption.length + em[0].length + 4;
+		caption = em[1],
+		link = em[3];
+	this.parser.pos = em.index + caption.length + em[0].length + 4;
 	var newCaption = wikitext.relink(caption, fromTitle, toTitle, options);
 	if (newCaption) {
 		modified = true;
@@ -108,7 +117,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		entry.link = link;
 		entry.caption = caption;
 		// This way preserves whitespace
-		entry.output = "["+caption+"]("+em[1]+utils.encodeLink(link)+em[3]+")";
+		entry.output = "["+caption+"]("+em[2]+utils.encodeLink(link)+em[4]+")";
 		return entry;
 	}
 	return undefined;
