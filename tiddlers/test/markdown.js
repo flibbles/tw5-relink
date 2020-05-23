@@ -24,6 +24,8 @@ it('markdown links', function() {
 	test("click [here](# from) for link", {from: "from", ignored: true});
 	test("click [here](#from)\n\nfor link", {from: "from", to: "to"});
 	test("click [here](#from) or [there](#from) for link", {from: "from", to: "to"});
+	// can be only text in string
+	test("[here](#from)", {from: "from", to: "to"});
 	// Don't overlook that open paren
 	test("click [here] #from) for link", {from: "from", ignored: true});
 	// Sets parser pos correctly
@@ -45,6 +47,9 @@ it('markdown images', function() {
 	test("Image: ![caption](  from.png  )", {from: "from.png", to: "to.png"});
 	test("Image: ![caption](\nfrom.png\n)", {from: "from.png", to: "to.png"});
 	test("Image: ![caption](\nfrom.png\n)", {from: "from.png", to: "to.png"});
+	// can be first and last thing in body
+	test("![caption](from.png)", {from: "from.png", to: "to.png"});
+	test("![c](from.png)![c](from.png)", {from: "from.png", to: "to.png"});
 });
 
 it('links with tricky characters', function() {
