@@ -120,6 +120,21 @@ it('respects rules', function() {
 	testText("\\rules except prettylink\nLink to [[from here]].",
 	         {ignored: true});
 	testText("\\rules only prettylink\nLink to [[from here]].");
+
+	testText("\\rules only prettylink html\n[[from here]]",
+	         "\\rules only prettylink html\n<$link to='to]] there'/>",
+	         {to: "to]] there"});
+	testText("\\rules except macrodef\n[[from here]]",
+	         "\\rules except macrodef\n<$link to='to]] there'/>",
+	         {to: "to]] there"});
+
+	var r;
+	r = testText("\\rules only prettylink\n[[from here]]",
+	             {to: "to]] there", ignored: true});
+	expect(r.fails.length).toEqual(1);
+	r = testText("\\rules except html\n[[from here]]",
+	             {to: "to]] there", ignored: true});
+	expect(r.fails.length).toEqual(1);
 });
 
 });

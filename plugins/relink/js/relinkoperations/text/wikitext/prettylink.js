@@ -43,6 +43,9 @@ exports.makeLink = function(tiddler, caption, options) {
 	var output, quoted;
 	if (this.canBePretty(tiddler, !!caption)) {
 		output = prettyLink(tiddler, caption);
+	} else if (options.noWidgets) {
+		// We aren't allowed to make widgets. Gotta fail.
+		output = undefined;
 	} else if (caption === undefined) {
 		if (exports.shorthandSupported(options)) {
 			quoted = utils.wrapAttributeValue(tiddler);

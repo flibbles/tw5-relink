@@ -154,12 +154,20 @@ WikiRelinker.prototype.relinkRule = function(ruleInfo) {
 };
 
 WikiRelinker.prototype.amendRules = function(type, names) {
+	var only;
 	WikiParser.prototype.amendRules.call(this, type, names);
-	var macrodefListed = names.indexOf("macrodef") >= 0;
-	if ((type === "only" && !macrodefListed)
-	 || (type === "except" && macrodefListed)) {
-		// Aww... no more placeholdering allowed.
-		this.options.placeholder = undefined;
+	if (type === "only") {
+		only = true;
+	} else if (type === "except") {
+		only = false;
+	} else {
+		return;
+	}
+	if (only !== (names.indexOf("macrodef") >= 0)) {
+		this.options.placeholder = undefined
+	}
+	if (only !== (names.indexOf("html") >= 0)) {
+		this.options.noWidgets = true;
 	}
 };
 
