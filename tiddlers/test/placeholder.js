@@ -135,6 +135,11 @@ it("placeholders not at front of file are ignored", function() {
 	testText("text\n" + macro(1, "from here", true) + "text", {ignored: true});
 });
 
+it("respects \\rules", function() {
+	testText("\\rules only macrodef\n" + macro("list-1", "from"));
+	testText("\\rules except macrodef\n" + macro("list-1", "from"), {ignored: true});
+});
+
 it('Detects globally defined placeholder macros', function() {
 	var to = "' ]]\"";
 	var wiki = new $tw.Wiki();

@@ -56,6 +56,15 @@ it("doesn't process macros after pragma", function() {
 	testText("Text\n\\define macro() {{{\nfrom}}}", {from: "from", to: "to"});
 });
 
+it('respects \\rules', function() {
+	// That filteredtransclude won't parse if the macro parsed first.
+	testText("\\rules except html\n\\define macro() {{{\nfrom}}}", {ignored: true});
+	testText("\\rules only macrodef\n\\define macro() {{{\nfrom}}}", {ignored: true});
+	// Test that macrodef won't parse when told not to
+	testText("\\rules except macrodef\n\\define macro() {{{\nfrom}}}");
+	testText("\\rules only html\n\\define macro() {{{\nfrom}}}");
+});
+
 it("multiline and whitespace", function() {
 	testText("\\define macro()\n[[from here]]\n\\end");
 	testText("\\define macro()   \n[[from here]]\n\\end\nText");
