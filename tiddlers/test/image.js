@@ -25,6 +25,22 @@ it("image", function() {
 	         {from: "'"});
 });
 
+it("image respects \\rules", function() {
+	testText("\\rules only image\n[img[from here]]");
+	testText("\\rules except html macrodef\n[img[from here]]");
+
+	testText("\\rules except image\n[img[from here]]", {ignored: true});
+	testText("\\rules only html macrodef\n[img[from here]]", {ignored: true});
+
+	function testFails(text, to) {
+		var r = testText(text, {ignored: true, to: to});
+		expect(r.fails.length).toEqual(1);
+	};
+	testFails("\\rules except html\n[img[from here]]", "to]there");
+	testFails("\\rules only image macrodef\n[img[from here]]", "to]there");
+	testFails("\\rules except macrodef\n[img[from here]]", '"F]] \'"');
+});
+
 it("indirect attributes", function() {
 	testText("[img width={{from here}} [s]]");
 	testText("[img width  =  {{from here}} [s]]");

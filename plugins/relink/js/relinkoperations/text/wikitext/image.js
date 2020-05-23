@@ -50,7 +50,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var imageEntry = new ImageEntry();
 	imageEntry.attributes = Object.create(null);
 	if (this.nextImage.attributes.source.value === fromTitle && !canBePretty(toTitle, this.nextImage.attributes.tooltip)) {
-		if (utils.wrapAttributeValue(toTitle) || options.placeholder) {
+		if (!options.noWidgets && (utils.wrapAttributeValue(toTitle) || options.placeholder)) {
 			makeWidget = true;
 			builder.add("<$image", ptr, ptr+4);
 		} else {
