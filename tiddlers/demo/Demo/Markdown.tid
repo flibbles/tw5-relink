@@ -3,12 +3,13 @@ list-after:
 tags: Demo
 type: text/x-markdown
 
-[Link to Frodo](#Frodo)
+### Markdown syntax that relinks
 
-![Image of Frodo(#Frodo)
+Images: ![Image of Frodo](Frodo.svg)
+Links: [Link to Frodo](#Frodo)
 
-<!-- Some markdown plugins allow wiki
-     syntax in your markdown tiddlers.
-     Relink supports that. -->
+### Wikitext
 
-<$link to="Frodo" />
+If your markdown plugin supports ~WikiText, so does Relink.
+
+<$link to="Frodo">Like this link</$link>
