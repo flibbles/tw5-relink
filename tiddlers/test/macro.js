@@ -137,6 +137,20 @@ it('unquotable wikitext', function() {
 	         {to: to});
 });
 
+it('respects \\rules', function() {
+	testText("\\rules only macrocallinline\n<<test Btitle:'from here'>>");
+	testText("\\rules only macrocallblock\n<<test Btitle:'from here'>>");
+	testText("\\rules only html macrodef\n<<test Btitle:'from here'>>", {ignored: true});
+	testText("\\rules except macrocallinline macrocallblock\n<<test Btitle:'from here'>>", {ignored: true});
+
+	// downgrading to widget
+	var to = `to''[]there"`;
+	testText("\\rules except html\n<<test Btitle:'from here'>>",
+	         {to: to, ignored: true, fails: 1});
+	testText("\\rules except macrodef\n<<test Btitle:'from here'>>",
+	         {to: to, ignored: true, fails: 1});
+});
+
 it('undefined macros', function() {
 	// Relink will try it's best to tolerate macro settings that have
 	// no coreesponding macro definition, but it'll fail if there's a

@@ -60,7 +60,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		end: this.matchRegExp.lastIndex,
 		params: params
 	};
-	var mayBeWidget = true;
+	var mayBeWidget = !options.noWidgets;
 	var names = getParamNames(macroInfo.name, macroInfo.params, options);
 	if (names === undefined) {
 		// Needed the definition, and couldn't find it. So if a single
