@@ -91,9 +91,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 exports.makeFilteredtransclude = function(filter, tooltip, template, style, classes, options) {
 	if (canBePretty(filter) && canBePrettyTemplate(template)) {
 		return prettyList(filter, tooltip, template, style, classes);
-	} else {
+	} else if (!options.noWidgets) {
 		return widget(filter, tooltip, template, style, classes, options);
 	}
+	return undefined;
 };
 
 function prettyList(filter, tooltip, template, style, classes) {

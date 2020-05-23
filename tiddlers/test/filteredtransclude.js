@@ -37,6 +37,12 @@ it('pretty', function() {
 	testText("{{{[[from here]]}}}", {to: "to } there"});
 });
 
+it('respects rules', function() {
+	testText("\\rules only filteredtranscludeinline\n{{{[[from here]]}}}");
+	testText("\\rules only filteredtranscludeblock\n{{{[[from here]]}}}");
+	testText("\\rules except macrodef html\n{{{[[from here]]}}}");
+});
+
 it('from titles with curlies', function() {
 	testText("{{{has{curls}}}}", {from: "has{curls}", to: "there"});
 	testText("{{{has{curls}}}}}}", {from: "has{curls}}}", to: "there"});
@@ -82,6 +88,24 @@ it('unpretty (degrades to widget)', function() {
 	// preserves block newline whitespace
 	test("A|B", "{{{[[from here]]}}}\nTxt", "<$list filter=A|B/>\nTxt");
 	test("A|B", "{{{[[from here]]}}}\r\nTxt", "<$list filter=A|B/>\r\nTxt");
+
+	// respects \rules
+	function testRules(rules) {
+		test("bar|here", rules+"{{{[[from here]]}}}", rules+"<$list filter=bar|here/>");
+	};
+	testRules("\\rules except macrodef\n");
+	testRules("\\rules only html filteredtranscludeinline filteredtranscludeblock\n");
+	testRules("\\rules only html filteredtranscludeinline\n");
+	testRules("\\rules only html filteredtranscludeblock\n");
+});
+
+it('unpretty (\\rules prohibit widgets)', function() {
+	function test(rules) {
+		var r = testText(rules + "{{{[[from here]]}}}", {ignored: true, to: "b|h"});
+		expect(r.fails.length).toEqual(1);
+	};
+	test("\\rules except html\n");
+	test("\\rules only macrodef filteredtranscludeblock\n");
 });
 
 it('unpretty and unquotable', function() {
