@@ -20,6 +20,8 @@ describe("markdown text", function() {
 
 it('markdown links', function() {
 	test("click [here](#from) for link", {from: "from", to: "to"});
+	test("click [here](from) for link", {from: "from", ignored: true});
+	test("click [here](# from) for link", {from: "from", ignored: true});
 	test("click [here](#from)\n\nfor link", {from: "from", to: "to"});
 	test("click [here](#from) or [there](#from) for link", {from: "from", to: "to"});
 	// Don't overlook that open paren
@@ -32,6 +34,17 @@ it('markdown links', function() {
 	test("[here](#from) content)", {from: "from", to: "to"});
 	// The space inside it flags it as not a markdown link
 	test("[here](#<$link to='from here'/>)");
+});
+
+it('markdown images', function() {
+	test("Image: ![caption](from.png)", {from: "from.png", to: "to.png"});
+	test("Image: ![caption](#from.png)", {from: "from.png", ignored: true});
+	test("Image: ![caption](from.png 'tooltip')", {from: "from.png", to: "to.png"});
+	test("![c](from%20here 'tooltip')", "![c](to%20there 'tooltip')");
+	// whitespace
+	test("Image: ![caption](  from.png  )", {from: "from.png", to: "to.png"});
+	test("Image: ![caption](\nfrom.png\n)", {from: "from.png", to: "to.png"});
+	test("Image: ![caption](\nfrom.png\n)", {from: "from.png", to: "to.png"});
 });
 
 it('links with tricky characters', function() {
@@ -52,11 +65,38 @@ it('links with tricky characters', function() {
 	test(results.tiddler.fields.text, "[Caption](#to)", {wiki: wiki, from: theBeast, to: "to"});
 });
 
+it('links with #', function() {
+	test("[c](#%23pound)", "[c](#to%20there)", {from: "#pound"});
+	test("[c](#pound)", {from: "#pound", ignored: true});
+	// CONFLICT: This is a conflict with ansel's plugin. It needs {#%23pound),
+	// but tiddlywiki/markdown doesn't handle that.
+	test("[c](#from)", "[c](##pound)", {from: "from", to: "#pound"});
+});
+
 it('markdown with tooltips', function() {
 	test("click [here](#from 'this tooltip')", {from: "from", to: "to"});
+	test("click [here](#from 'this \\'tooltip\\'')", {from: "from", to: "to"});
+	test("click [here](#from 't(((ooltip')", {from: "from", to: "to"});
+	test("click [here](#from 't)))ooltip')", {from: "from", to: "to"});
+	test("click [here](#from 'tooltip\\\\\\\\')", {from: "from", to: "to"});
+	test("click [here](#from 'tooltip\\\\\\')", {from: "from", ignored: true});
+	test("click [here](#from '')", {from: "from", to: "to"});
+
 	test('click [here](#from "this tooltip")', {from: "from", to: "to"});
-	test('click [here](\n#from   \n"this\ntooltip"\n)', {from: "from", to: "to"});
+	test('click [here](#from "this \\"tooltip\\"")', {from: "from", to: "to"});
+	test('click [here](#from "tooltip\\\\\\\\")', {from: "from", to: "to"});
+	test('click [here](#from "tooltip\\\\\\")', {from: "from", ignored: true});
+	test('click [here](#from "t(((ooltip")', {from: "from", to: "to"});
+	test('click [here](#from "t)))ooltip")', {from: "from", to: "to"});
+	test('click [here](#from "")', {from: "from", to: "to"});
+
 	test('click [here](#from (this tooltip))', {from: "from", to: "to"});
+	test('click [here](#from ("quotes\'))', {from: "from", to: "to"});
+	test('click [here](#from (this((((tooltip))', {from: "from", to: "to"});
+	test('click [here](#from (this )tooltip))', {from: "from", ignored: true});
+	test('click [here](#from ())', {from: "from", to: "to"});
+
+	test('click [here](\n#from   \n"this\ntooltip"\n)', {from: "from", to: "to"});
 });
 
 it('markdown links with spaces', function() {
@@ -125,7 +165,7 @@ it("whitespaces and multiline", function() {
 });
 
 it("tricky captions", function() {
-	// empty (this does default on tiddlywiki/markdown,
+	// CONFLICT: empty (this does default on tiddlywiki/markdown,
 	// and is hidden on anstosa/tw5-markdown
 	test("[](#from)", {from: "from", to: "to"});
 	test("[\n](#from)", {from: "from", to: "to"});
@@ -153,6 +193,11 @@ it("changing captions", function() {
 	test("[[]{{from}}](#from)", {from: "from", to: "to"});
 	// encoded link is left alone when caption changes
 	test("[{{from}}](#a%26b%3Bc%3Dd)", {from: "from", to: "to"});
+	// Even if we don't handle this link, we need to handle the caption
+	test("[{{from here}}](nontiddlerlink)");
+	// But never with images for some reason
+	test("![{{from here}}](nontiddlerlink)", {ignored: true});
+	test("![{{from here}}](#otherlink)", {ignored: true});
 });
 
 it("impossible caption changes", function() {

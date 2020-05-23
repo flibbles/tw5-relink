@@ -63,6 +63,11 @@ exports.findNextMatch = function(startPos) {
  * regexp to begin with, because markdown links require context-free grammar
  * matching.
  * Currently, it doesn't properly set match[0]. No need as of yet.
+ * 1. "!"
+ * 2. caption
+ * 3. "\s*#?"
+ * 4. "link"
+ * 5. "\s*'tooltip'"
  */
 exports.matchLink = function(text, pos) {
 	pos = pos-1;
@@ -80,7 +85,8 @@ exports.matchLink = function(text, pos) {
 		if (text.charAt(linkStart) !== '(') {
 			continue;
 		}
-		var regExp = /\(()(\s*#)((?:[^\s\(\)]|\([^\s\(\)]*\))+)((?:\s+(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|\([^)]*\)))?\s*)\)/g;
+		// match[1] and match[2] are the "!" and "caption", filled in later.
+		var regExp = /\(()()(\s*#?)((?:[^\s\(\)]|\([^\s\(\)]*\))+)((?:\s+(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|\([^)]*\)))?\s*)\)/g;
 		regExp.lastIndex = linkStart;
 		match = regExp.exec(text);
 		if (match && match.index === linkStart && !this.hasParagraphBreaks(match[0])) {
@@ -89,8 +95,13 @@ exports.matchLink = function(text, pos) {
 				// Paragraph breaks are not allowed
 				return undefined;
 			}
-			match[1] = caption;
-			match.index = pos;
+			match[2] = caption;
+			if (text.charAt(pos-1) === "!") {
+				match.index = pos-1;
+				match[1] = "!";
+			} else {
+				match.index = pos;
+			}
 		} else {
 			match = undefined;
 		}
@@ -107,36 +118,43 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry = new MarkdownLinkEntry(),
 		em = this.endMatch,
 		modified = false,
-		caption = em[1],
-		link = em[3];
-	this.parser.pos = em.index + caption.length + em[0].length + 2;
-	var newCaption = wikitext.relink(caption, fromTitle, toTitle, options);
-	if (newCaption) {
-		modified = true;
-		entry.captionEntry = newCaption;
-		if (newCaption.output) {
-			if (this.canBeCaption(newCaption.output)) {
-				caption = newCaption.output;
-			} else {
-				newCaption.impossible = true;
+		caption = em[2],
+		image = (em[1] === '!'),
+		link = em[4];
+	this.parser.pos = em.index + em[1].length + caption.length + em[0].length + 2;
+	if (!image) {
+		var newCaption = wikitext.relink(caption, fromTitle, toTitle, options);
+		if (newCaption) {
+			modified = true;
+			entry.captionEntry = newCaption;
+			if (newCaption.output) {
+				if (this.canBeCaption(newCaption.output)) {
+					caption = newCaption.output;
+				} else {
+					newCaption.impossible = true;
+				}
 			}
 		}
 	}
-	try {
-		if (decodeURIComponent(link) === fromTitle) {
-			modified = true;
-			entry.linkChanged = true;
-			link = utils.encodeLink(toTitle);
+	// I don't know why internal images links don't use the '#', but links
+	// do, but that's just how it is.
+	if (image !== (em[3].lastIndexOf('#') >=0)) {
+		try {
+			if (decodeURIComponent(link) === fromTitle) {
+				modified = true;
+				entry.linkChanged = true;
+				link = utils.encodeLink(toTitle);
+			}
+		} catch (e) {
+			// It must be a malformed link. Not our problem.
+			// Keep going in case the caption needs relinking.
 		}
-	} catch (e) {
-		// It must be a malformed link. Not our problem.
-		// Keep going in case the caption needs relinking.
 	}
 	if (modified) {
 		entry.link = link;
 		entry.caption = caption;
 		// This way preserves whitespace
-		entry.output = "["+caption+"]("+em[2]+link+em[4]+")";
+		entry.output = em[1]+"["+caption+"]("+em[3]+link+em[5]+")";
 		return entry;
 	}
 	return undefined;
