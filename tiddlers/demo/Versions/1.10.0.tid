@@ -1,2 +1,3 @@
 * Fixed bug where Relink would mangle widget attributes in //very// rare cases.
 * Fixed bug where renaming prettyLinks to something with a '|' char might mess up.
+* Relink now respects `\rules` settings when it comes to deciding whether to convert wikitext into widgets or other patterns.
