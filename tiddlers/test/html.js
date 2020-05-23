@@ -45,6 +45,16 @@ it('field attributes', function() {
 	testText(`<$link to=<<from>> />`, {from: "from", ignored: true});
 });
 
+it('respects \\rules', function() {
+	// allowed
+	testText("\\rules except macrodef\n<$link to='from here'/>");
+	testText("\\rules only html\n<$link to='from here'/>");
+	// forbidden
+	testText("\\rules except html\n<$link to='from here'/>", {ignored: true});
+	testText("\\rules only macrodef\n<$link to='from here'/>", {ignored: true});
+});
+
+
 it('properly ignored when not to be relinked', function() {
 	testText(`<$link to="from here XXX" />`, {ignored: true});
 	testText(`<$link to={{index!!from here}} />`, {ignored: true});
@@ -162,6 +172,12 @@ it('uses macros for literally unquotable titles', function() {
 	// If the first placeholder is taken, take the next
 	testText(macro(1,to)+link(1)+"<$link to='from here'/>",
 	         macro(2,to2)+macro(1,to)+link(1)+link(2), {to: to2});
+});
+
+it("doesn't use macros if forbidden by \\rules", function() {
+	var r = testText('\\rules except macrodef\n<$link to="from here"/>',
+	                 {ignored: true, to: "x' y\""});
+	expect(r.fails.length).toEqual(1);
 });
 
 it('uses macros for unquotable wikitext', function() {
