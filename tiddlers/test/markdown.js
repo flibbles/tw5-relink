@@ -52,6 +52,13 @@ it('links with tricky characters', function() {
 	test(results.tiddler.fields.text, "[Caption](#to)", {wiki: wiki, from: theBeast, to: "to"});
 });
 
+it('markdown with tooltips', function() {
+	test("click [here](#from 'this tooltip')", {from: "from", to: "to"});
+	test('click [here](#from "this tooltip")', {from: "from", to: "to"});
+	test('click [here](\n#from   \n"this\ntooltip"\n)', {from: "from", to: "to"});
+	test('click [here](#from (this tooltip))', {from: "from", to: "to"});
+});
+
 it('markdown links with spaces', function() {
 	test("click [here](#from%20here).", "click [here](#to%20there).");
 	test("[here](#has%20two%20spaces).", "[here](#to%20there).", {from: "has two spaces"});
@@ -68,7 +75,10 @@ it('markdown links with parenthesis', function() {
 
 	test("[caption](#(from)(here))", {from: "(from)(here)", to: "(to)(there)"});
 	test("[caption](#from)", {from: "from", to: "with(paren)"});
-	test("[caption](#from(((here))))", {from: "from(((here)))", to: "(((to)))ther"});
+	test("[c](#from)", "[c](#to(%28there)%29)",{from:"from", to:"to((there))"});
+	test("[c](#from)", "[c](#to(%28th)(ere)%29)",{from:"from", to:"to((th)(ere))"});
+	// Ansel's supports this, but tw/markdown doesn't
+	//test("[caption](#from(((here))))", {from: "from(((here)))", to: "(((to)))ther"});
 });
 
 it('markdown links with mismatched parenthesis', function() {

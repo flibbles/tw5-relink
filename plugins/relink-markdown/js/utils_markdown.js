@@ -28,7 +28,11 @@ exports.encodeLink = function(title) {
 		balance = 0;
 	encoded = encoded.replace(/[\(\)]/g, function(p) {
 		if (p === '(') {
-			balance++;
+			if (balance >=1) {
+				return '%28';
+			} else {
+				balance++;
+			}
 		} else {
 			if (balance <= 0) {
 				return '%29';

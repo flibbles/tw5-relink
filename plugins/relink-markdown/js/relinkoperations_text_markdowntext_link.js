@@ -77,21 +77,30 @@ exports.matchLink = function(text, pos) {
 			continue;
 		}
 		var linkStart = pos + caption.length+2;
-		if (text[linkStart] !== '(') {
+		if (text.charAt(linkStart) !== '(') {
 			continue;
 		}
-		var internalStr = this.getEnclosed(text, linkStart, '(', ')');
-		if (internalStr === undefined) {
-			continue;
-		}
-		var closeRegExp = /^()(\s*#)([\S]+)(\s*)$/;
-		match = closeRegExp.exec(internalStr);
-		if (match) {
+		var regExp = /\(()(\s*#)((?:[^\s\(\)]|\([^\s\(\)]*\))+)((?:\s+(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|\([^)]*\)))?\s*)\)/g;
+		regExp.lastIndex = linkStart;
+		match = regExp.exec(text);
+		if (match && match.index === linkStart && !this.hasParagraphBreaks(match[0])) {
+
+			if (match[0].match(/\n\s*\n/)) {
+				// Paragraph breaks are not allowed
+				return undefined;
+			}
 			match[1] = caption;
 			match.index = pos;
+		} else {
+			match = undefined;
 		}
 	} while (!match);
 	return match;
+};
+
+exports.hasParagraphBreaks = function(text) {
+	// Paragraph breaks are not allowed
+	return !!text.match(/\n\s*\n/);
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -100,7 +109,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		modified = false,
 		caption = em[1],
 		link = em[3];
-	this.parser.pos = em.index + caption.length + em[0].length + 4;
+	this.parser.pos = em.index + caption.length + em[0].length + 2;
 	var newCaption = wikitext.relink(caption, fromTitle, toTitle, options);
 	if (newCaption) {
 		modified = true;
