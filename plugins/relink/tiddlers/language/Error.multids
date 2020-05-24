@@ -1,9 +1,0 @@
-title: $:/plugins/flibbles/relink/language/Error/
-
-InvalidAttributeName: Illegal characters in attribute name "<$text text=<<attributeName>>/>". Attributes cannot contain slashes ('/'), closing angle or square brackets ('>' or ']'), quotes or apostrophes ('"' or "'"), equals ('='), or whitespace
-InvalidElementName: Illegal characters in element/widget name "<$text text=<<elementName>>/>". Element tags can only contain letters and the characters hyphen (`-`) and dollar sign (`$`)
-InvalidMacroName: Illegal characters in macro name "<$text text=<<macroName>>/>". Macros cannot contain whitespace
-InvalidParameterName: Illegal characters in parameter name "<$text text=<<parameterName>>/>". Parameters can only contain letters, digits, and the characters underscore (`_`) and hyphen (`-`)
-RelinkFilterOperator: Filter Error: Unknown suffix for the 'relink' filter operator
-ReportFailedRelinks: Relink could not update '<<from>>' to '<<to>>' inside the following tiddlers:
-UnrecognizedType: Relink parse error: Unrecognized field type '<<type>>'
