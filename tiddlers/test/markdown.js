@@ -236,6 +236,15 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 	             "T\n \n    C", "T<$link to='from'>C</$link>");
 });
 
+it("footnotes", function() {
+	test("[1]:#from", {from: "from", to: "to"});
+	test("[1]: #from", {from: "from", to: "to"});
+	test("[1]: #from\n\n", {from: "from", to: "to"});
+	test("[1]:\t\t#from\t\t\n", {from: "from", to: "to"});
+	test("[1]:#from\r\n", {from: "from", to: "to"});
+	test("[1]: #from%20here", "[1]: #to%20there");
+});
+
 it("respects indented code", function() {
 	test("   [c](#from)", {from: "from", to: "to"});
 	test("Text\n    [c](#from)", {from: "from", to: "to"});

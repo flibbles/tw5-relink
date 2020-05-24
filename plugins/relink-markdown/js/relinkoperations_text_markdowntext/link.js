@@ -13,9 +13,9 @@ var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
 var settings = require("$:/plugins/flibbles/relink/js/settings");
 var wikitext = settings.getType('wikitext');
 
-function MarkdownLinkEntry() {};
-MarkdownLinkEntry.prototype.name = "markdownlink";
-MarkdownLinkEntry.prototype.report = function() {
+function LinkEntry() {};
+LinkEntry.prototype.name = "markdownlink";
+LinkEntry.prototype.report = function() {
 	var output = [];
 	var hash = '#';
 	if (this.prefix) {
@@ -34,13 +34,13 @@ MarkdownLinkEntry.prototype.report = function() {
 	return output;
 };
 
-MarkdownLinkEntry.prototype.eachChild = function(method) {
+LinkEntry.prototype.eachChild = function(method) {
 	if (this.captionEntry) {
 		method(this.captionEntry);
 	}
 };
 
-MarkdownLinkEntry.prototype.abridge = function(string) {
+LinkEntry.prototype.abridge = function(string) {
 	var safe = string.replace(/\s+/mg, ' ');
 	if (safe.length > exports.reportCaptionLength) {
 		safe = safe.substr(0, exports.reportCaptionLength) + "...";
@@ -65,6 +65,10 @@ exports.findNextMatch = function(startPos) {
 	}
 	this.endMatch = this.matchLink(this.parser.source, startPos);
 	return this.endMatch ? this.endMatch.index : undefined;
+};
+
+exports.survey = function(text) {
+	return this.matchLink(text, 0);
 };
 
 /**A zero side-effect method which returns a regexp which pretended to match
@@ -124,7 +128,7 @@ exports.hasParagraphBreaks = function(text) {
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var entry = new MarkdownLinkEntry(),
+	var entry = new LinkEntry(),
 		em = this.endMatch,
 		modified = false,
 		caption = em[2],

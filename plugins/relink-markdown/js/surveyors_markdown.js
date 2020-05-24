@@ -8,26 +8,29 @@ only installs if it looks like a markdown parser is plugged in.
 
 \*/
 
-var _rule;
-function getLinkRule() {
-	if (_rule === undefined) {
-		_rule = null;
+var _rules;
+function getRules() {
+	if (_rules === undefined) {
+		_rules = [];
+		var names = ["markdownlink", "markdownfootnote"];
 		// We also need our own rule to be activated and present
 		$tw.utils.each($tw.modules.types.wikirule, function(module) {
 			var exp = module.exports
-			if (exp.name === "markdownlink") {
-				_rule = exp;
+			if (names.indexOf(exp.name) >= 0) {
+				_rules.push(exp);
 			}
 		});
 	}
-	return _rule;
+	return _rules;
 };
 
 exports.survey = function(text, fromTitle, options) {
 	if (options.type === "text/x-markdown") {
-		var module = getLinkRule();
-		if (module) {
-			return module.matchLink(text, 0);
+		var modules = getRules();
+		for (var i = 0; i < modules.length; i++) {
+			if (modules[i].survey(text)) {
+				return true;
+			}
 		}
 	}
 	return false;
