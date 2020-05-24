@@ -226,6 +226,23 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 	expect(output).toEqual("Caption [[from]]");
 });
 
+it("respects indented code", function() {
+	test("   [c](#from)", {from: "from", to: "to"});
+	test("Text\n    [c](#from)", {from: "from", to: "to"});
+	test("Text\n    [c](#from)", {from: "from", to: "to"});
+	test("   Text\n    [c](#from)", {from: "from", to: "to"});
+
+	test("\t[c](#from)", {from: "from", ignored: true});
+	test("    [c](#from)", {from: "from", ignored: true});
+	test("    [c](#from)\n", {from: "from", ignored: true});
+	test("\n    [c](#from)\n", {from: "from", ignored: true});
+	test("\tText\n\t[c](#from)", {from: "from", ignored: true});
+	test("\r\n    [c](#from)\r\n", {from: "from", ignored: true});
+	test("    Text\n    [c](#from)", {from: "from", ignored: true});
+	test("Text\n\n    [c](#from)", {from: "from", ignored: true});
+	test("Text\n    \n    [c](#from)", {from: "from", ignored: true});
+});
+
 describe("tiddlywiki/markdown plugin", function() {
 
 var mdParser = require("$:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext.js")["text/x-markdown"];
