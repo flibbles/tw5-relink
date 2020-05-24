@@ -247,6 +247,7 @@ it("markdown links", function() {
 	testMD("[cap](#from)", ["[cap](#)"]);
 	testMD("[{{from}} <$link to='from' />](#else)", ["[{{}}](#else)", "[<$link to />](#else)"]);
 	testMD("[{{from}}](#from)", ["[{{}}](#from)", "[{{from}}](#)"]);
+	testMD("[{{from}}](#from 'tooltip')", ["[{{}}](#from)", "[{{from}}](#)"]);
 	// Too long or multiline captions are fixed up (15 char max)
 	testMD("[Long\nmulti\nline\ncaption](#from)", ["[Long multi line...](#)"]);
 	testMD("[Long\r\nmulti\r\nline\r\ncaption](#from)", ["[Long multi line...](#)"]);
@@ -254,6 +255,11 @@ it("markdown links", function() {
 	testMD("[Bad\t\ttabs](#from)", ["[Bad tabs](#)"]);
 	// Whitespace in general is wasteful
 	testMD("[Bad    spaces](#from)", ["[Bad spaces](#)"]);
+	// Tooltip
+	testMD("[cap](#from (tooltip))", ["[cap](#)"]);
+	// Images
+	testMD("![cap](from)", ["![cap]()"]);
+	testMD("![cap](from 'bob\\'s tooltip')", ["![cap]()"]);
 });
 
 });

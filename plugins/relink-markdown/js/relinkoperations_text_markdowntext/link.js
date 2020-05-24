@@ -17,18 +17,19 @@ function MarkdownLinkEntry() {};
 MarkdownLinkEntry.prototype.name = "markdownlink";
 MarkdownLinkEntry.prototype.report = function() {
 	var output = [];
+	var hash = '#';
+	if (this.prefix) {
+		hash = '';
+	}
 	if (this.captionEntry) {
-		var link = this.link;
+		var self = this;
 		$tw.utils.each(this.captionEntry.report(), function(report) {
-			output.push("[" + (report || '') + "](#" + link + ")");
+			output.push(self.prefix+"[" + (report || '') + "](" + hash + self.link + ")");
 		});
 	};
 	if (this.linkChanged) {
-		var safeCaption = this.caption.replace(/\s+/mg, ' ');
-		if (safeCaption.length > exports.reportCaptionLength) {
-			safeCaption = safeCaption.substr(0, exports.reportCaptionLength) + "...";
-		}
-		output.push("[" + safeCaption + "](#)");
+		var safeCaption = this.abridge(this.caption);
+		output.push(this.prefix+"[" + safeCaption + "](" + hash + ")");
 	}
 	return output;
 };
@@ -37,6 +38,14 @@ MarkdownLinkEntry.prototype.eachChild = function(method) {
 	if (this.captionEntry) {
 		method(this.captionEntry);
 	}
+};
+
+MarkdownLinkEntry.prototype.abridge = function(string) {
+	var safe = string.replace(/\s+/mg, ' ');
+	if (safe.length > exports.reportCaptionLength) {
+		safe = safe.substr(0, exports.reportCaptionLength) + "...";
+	}
+	return safe;
 };
 
 exports.name = "markdownlink";
@@ -153,6 +162,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	if (modified) {
 		entry.link = link;
 		entry.caption = caption;
+		entry.prefix = em[1];
 		// This way preserves whitespace
 		entry.output = em[1]+"["+caption+"]("+em[3]+link+em[5]+")";
 		return entry;
