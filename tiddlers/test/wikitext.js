@@ -80,11 +80,14 @@ it('code blocks', function() {
 	function test(code, ignored) {
 		var preamble = "This is a lot of text that comes before the code block to make sure it properly sets the parser.pos past all this."
 		var expected = ignored ? "[[VarName]]" : "[[to there]]";
-		testText(preamble+code+expected, preamble+code+expected);
+		testText(preamble+code+"[[VarName]]", preamble+code+expected, {from: "VarName"});
 	}
-	test("\n```\nThis VarName shouldn't update.\n```\n");
-	test("\n```javascript\nThis VarName shouldn't update.\n```\n");
+	test("\n```\nThis VarName shouldn't update.\n```\n", true);
+	test("\n\n```\nThis VarName shouldn't update.\n```\n");
+	test("\n```javascript\nThis VarName shouldn't update.\n```\n", true);
+	test("\n\n```javascript\nThis VarName shouldn't update.\n```\n");
 	test(" ``This VarName shouldn't update.``");
+	test(" ```This VarName shouldn't update.```", true);
 	test("``This VarName shouldn't update.``");
 	test(" `This VarName shouldn't update.`");
 	test("`This VarName shouldn't update.`");

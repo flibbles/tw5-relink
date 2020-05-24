@@ -41,7 +41,7 @@ function parse(tiddler, fromTitle, toTitle, options) {
 	return entry;
 };
 
-var markdownRules = "markdownlink markdowncodeblock markdowncodeinline";
+var markdownRules = "markdownlink markdowncodeblock markdowncodeinline codeinline codeblock";
 
 parse.setWikitextState = function(wiki) {
 	var pragma,

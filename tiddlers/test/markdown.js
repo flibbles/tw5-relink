@@ -327,6 +327,15 @@ it("wikitextPragma and code blocks", function() {
 	testPragma("T\n \n    [c](#from%20here)", "T\n \n    [c](#from%20here)", defaultPragma);
 });
 
+it("wikitextPragma and backticks", function() {
+	testPragma("`[c](#from%20here)`", "`[c](#from%20here)`", defaultPragma);
+	testPragma("``[c](#from%20here)``", "``[c](#from%20here)``", defaultPragma);
+	testPragma("```[c](#from%20here)```", "```[c](#from%20here)```", defaultPragma);
+	testPragma("```\n[c](#from%20here)\n```", "```\n[c](#from%20here)\n```", defaultPragma);
+	testPragma("```javascript\n[c](#from%20here)\n```",
+	           "```javascript\n[c](#from%20here)\n```", defaultPragma);
+});
+
 it("wikitext switch", function() {
 	testPragma(link, both, undefined);
 	testPragma(link, both, undefined, "true");
