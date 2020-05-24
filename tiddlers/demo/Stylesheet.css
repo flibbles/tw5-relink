@@ -1,3 +1,10 @@
+/*\
+tags: $:/tags/Stylesheet
+title: Stylesheet.css
+type: text/css
+
+\*/
+
 a.relink-dragger {
 	-moz-box-shadow:inset 0px 1px 0px 0px #caefab;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #caefab;
@@ -34,6 +41,9 @@ a.relink-dragger:hover {
 	top:1px;
 }
 
+a.relink-markdown.relink-dragger {
+	padding:4px 18px;
+}
 .relink-text {
 	padding: 0px;
 }

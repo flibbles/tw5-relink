@@ -1,3 +1,4 @@
-title: $:/config/PageControlButtons/Visibility/$:/core/ui/Buttons/
+title: $:/config/PageControlButtons/Visibility/$:/
 
-home: show
+core/ui/Buttons/home: show
+plugins/tiddlywiki/markdown/new-markdown-button: hide

@@ -1,0 +1,39 @@
+tags: Feature
+title: Markdown
+
+\define plugin() $:/plugins/flibbles/relink-markdown
+//Relink// has a supplemental child-plugin you can install which integrates markdown support. With that installed, your //text/x-markdown// tiddlers will be relinked along with your wiki tiddlers.
+
+This plugin is designed to work against the <a href="https://tiddlywiki.com/plugins/tiddlywiki/markdown/">core ''tiddlywiki/markdown'' plugin</a>, however, it will mostly support any other markdown plugin you choose to use (such as ''anstosa/tw5-markdown'' or others).
+
+!!! Markdown Syntax
+
+Relink-markdown supports markdown links and images:
+
+```
+[Link caption](#MyTiddler)
+
+![Image caption](MyImage.png)
+
+```
+Renaming ''~MyTiddler'' and ''~MyImage.png'' results in:
+
+```
+[Link caption(#OtherTiddler)
+
+![Image caption](OtherImage.png)
+```
+
+!!! Mixing Wiki and Markdown syntax
+
+''tiddlywiki/markdown'' and other plugins support mixing wiki and markdown syntax in your //text/x-markdown// files. //Relink-markdown// will seemlessly support whatever your markdown plugin supports.
+
+For those unfamiliar with ''tiddlywiki/markdown'', you can configure what ~WikiSyntax your markdown files support by editing the ''~$:/config/markdown/renderWikiTextPragma'' tiddler.
+
+!!! Install
+
+To install //Relink-markdown//, first install //Relink//, then drag the following pill button onto your project:
+
+@@text-align:center;
+<$link to=<<plugin>> class="relink-dragger relink-markdown">Markdown support!</$link>
+@@
