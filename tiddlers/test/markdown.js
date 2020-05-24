@@ -217,13 +217,23 @@ it("impossible caption changes", function() {
 });
 
 it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
-	var text = "[Caption](#from) [[from]]";
-	test(text, "[Caption](#from) [[to there]]", {from: "from", type: "text/vnd.tiddlywiki"});
-	var output, wiki = new $tw.Wiki();
-	output = wiki.renderText("text/plain", "text/vnd.tiddlywiki", text);
-	expect(output).toEqual("[Caption](#from) from");
-	output = wiki.renderText("text/plain", "text/x-markdown", text);
-	expect(output).toEqual("Caption [[from]]");
+	function parseAndWiki(input, relinked, wikitext, markdown) {
+		test(input, relinked, {from: "from", type: "text/vnd.tiddlywiki"});
+		var output, wiki = new $tw.Wiki();
+		output = wiki.renderText("text/plain", "text/vnd.tiddlywiki", input);
+		expect(output).toEqual(wikitext);
+		output = wiki.renderText("text/plain", "text/x-markdown", input);
+		expect(output).toEqual(markdown);
+	};
+	parseAndWiki("[Caption](#from) [[from]]", "[Caption](#from) [[to there]]",
+	             "[Caption](#from) from", "Caption [[from]]");
+	// the codeblock rule
+	parseAndWiki("    <$link to='from'>C</$link>",
+	             "    <$link to='to there'>C</$link>",
+	             "C", "<$link to='from'>C</$link>");
+	parseAndWiki("T\n \n    <$link to='from'>C</$link>",
+	             "T\n \n    <$link to='to there'>C</$link>",
+	             "T\n \n    C", "T<$link to='from'>C</$link>");
 });
 
 it("respects indented code", function() {
@@ -233,7 +243,10 @@ it("respects indented code", function() {
 	test("   Text\n    [c](#from)", {from: "from", to: "to"});
 
 	test("\t[c](#from)", {from: "from", ignored: true});
+	test(" \t[c](#from)", {from: "from", ignored: true});
 	test("    [c](#from)", {from: "from", ignored: true});
+	test("      [c](#from)", {from: "from", ignored: true});
+	test("    \t[c](#from)", {from: "from", ignored: true});
 	test("    [c](#from)\n", {from: "from", ignored: true});
 	test("\n    [c](#from)\n", {from: "from", ignored: true});
 	test("\tText\n\t[c](#from)", {from: "from", ignored: true});
@@ -303,6 +316,11 @@ it("wikitextPragma with multiple pragma", function() {
 	testPragma(link, both, "\\rules only prettylink rules\n\\rules only prettylink");
 });
 
+it("wikitextPragma and code blocks", function() {
+	testPragma("    [c](#from%20here)", "    [c](#from%20here)", defaultPragma);
+	testPragma("T\n \n    [c](#from%20here)", "T\n \n    [c](#from%20here)", defaultPragma);
+});
+
 it("wikitext switch", function() {
 	testPragma(link, both, undefined);
 	testPragma(link, both, undefined, "true");
@@ -310,6 +328,11 @@ it("wikitext switch", function() {
 	testPragma(link, mdonly, undefined, "");
 	testPragma(link, mdonly, undefined, "false");
 	testPragma(link, mdonly, undefined, "false");
+});
+
+it("wikitext switch and other markdown rules", function() {
+	testPragma("    [c](#from%20here)", "    [c](#from%20here)", undefined, "false");
+	testPragma("T\n \n    [c](#from%20here)", "T\n \n    [c](#from%20here)", undefined, "false");
 });
 
 it("won't make placeholders with default markdown settings", function() {

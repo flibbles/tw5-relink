@@ -10,8 +10,7 @@ Handles markdown code blocks.
 We handle this so we know when ''not'' to parse markdown links.
 \*/
 
-//TODO: This rule could be accidentally disabled.
-//TODO: Make sure this doesn't run during parsing or vnd.tiddlywiki
+//TODO: Make sure It blocks wikirules too
 exports.name = "markdowncodeblock";
 exports.types = {block: true};
 
@@ -26,7 +25,7 @@ exports.findNextMatch = function(startPos) {
 	// We have to be stupid about this, because the Wikiparser likes to skip
 	// whitespace.
 	var line = this.parser.source.lastIndexOf('\n', startPos) + 1;
-	var regExp = /^([ \t]{4}|\t)\S[^\n]*(?:\n(?:[ \t]{4}|\t)\S[^\n]*)*/mg;
+	var regExp = /^([ \t]{4,}|\s*\t\s*)\S[^\n]*(?:\n(?:[ \t]{4,}|\s*\t\s*)\S[^\n]*)*/mg;
 	regExp.lastIndex = line;
 	var match = regExp.exec(this.parser.source);
 	if (match) {

@@ -26,7 +26,7 @@ exports.findNextMatch = function(startPos) {
 	// Then we back up one more time to the previous line. This line must be
 	// only whitespace.
 	line = text.lastIndexOf('\n', startPos-1) + 1;
-	var regExp = /^[^\S\n]+(?:\n(?:[ \t]{4}|\t)\S[^\n]*)+/mg;
+	var regExp = /^[^\S\n]+(?:\n(?:[ \t]{4,}|\s*\t\s*)\S[^\n]*)+/mg;
 	regExp.lastIndex = line;
 	var match = regExp.exec(text);
 	if (match) {

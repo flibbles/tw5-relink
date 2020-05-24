@@ -41,6 +41,8 @@ function parse(tiddler, fromTitle, toTitle, options) {
 	return entry;
 };
 
+var markdownRules = "markdownlink markdowncodeblock markdowncodeinline";
+
 parse.setWikitextState = function(wiki) {
 	var pragma,
 		wikitextTitle = "$:/config/markdown/renderWikiText";
@@ -48,7 +50,7 @@ parse.setWikitextState = function(wiki) {
 	if (value === undefined || value.toLowerCase() === "true") {
 		pragma = getPragmaFromTiddler(wiki);
 	} else {
-		pragma = "\\rules only markdownlink\n";
+		pragma = "\\rules only " + markdownRules + "\n";
 	}
 	// I think this is better than making a global variable, which makes
 	// testing precarious.
@@ -61,7 +63,7 @@ function getPragmaFromTiddler(wiki) {
 	var pragma = wiki.getTiddlerText(pragmaTitle);
 	if (pragma) {
 		pragma = pragma.trim();
-		pragma = pragma.replace(/^(\\rules[^\S\n]+only[^\r\n]*)/gm, "$1 markdownlink");
+		pragma = pragma.replace(/^(\\rules[^\S\n]+only[^\r\n]*)/gm, "$1 " + markdownRules);
 		return pragma + "\n";
 	} else {
 		return '';
