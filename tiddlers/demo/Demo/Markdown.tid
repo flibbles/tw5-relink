@@ -12,4 +12,4 @@ Links: [Link to Frodo](#Frodo)
 
 If your markdown plugin supports ~WikiText, so does Relink.
 
-<$link to="Frodo">Like this link</$link>
+<$text text="That includes"/> <<say-list "widgets macros [[whatever else]]">>
