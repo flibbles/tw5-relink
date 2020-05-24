@@ -50,3 +50,17 @@ exports.encodeLink = function(title) {
 		return problemChars[code] || str;
 	});
 };
+
+/**I don't actually use this, but I've kept the code around anyway.
+ * The only time this plugin is installed and markdown isn't enabled would
+ * be if the user forgot to install a markdown plugin, or they disabled it.
+ * I GUESS Relink should still be Relinking markdown in that case.
+ */
+exports.markdownEnabled = function() {
+	if (_enabled === undefined) {
+		var test = $tw.wiki.renderText("text/html", "text/x-markdown", "[test](#test)");
+		_enabled = (test.indexOf("<a") >= 0);
+	}
+	return _enabled;
+};
+var _enabled;

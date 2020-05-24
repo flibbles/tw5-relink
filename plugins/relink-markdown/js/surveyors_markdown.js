@@ -12,17 +12,13 @@ var _rule;
 function getLinkRule() {
 	if (_rule === undefined) {
 		_rule = null;
-		// We need to be using a markdown module that implements local links
-		var test = $tw.wiki.renderText("text/html", "text/x-markdown", "[test](#test)");
-		if (test.indexOf("<a") >= 0) {
-			// We also need our own rule to be activated and present
-			$tw.utils.each($tw.modules.types.wikirule, function(module) {
-				var exp = module.exports
-				if (exp.name === "markdownlink") {
-					_rule = exp;
-				}
-			});
-		}
+		// We also need our own rule to be activated and present
+		$tw.utils.each($tw.modules.types.wikirule, function(module) {
+			var exp = module.exports
+			if (exp.name === "markdownlink") {
+				_rule = exp;
+			}
+		});
 	}
 	return _rule;
 };
