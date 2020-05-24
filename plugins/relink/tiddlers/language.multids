@@ -1,5 +1,8 @@
 title: $:/plugins/flibbles/relink/language/
 
+PluginLibrary: //Relink// Library
+PluginLibrary/Hint: The //Relink// library contains //Relink// as well as its supplemental plugins. It is maintained by Flibbles. See the [[github page|https://github.com/flibbles/tw5-relink]] for more information.
+
 Buttons/Delete/Hint: delete
 Buttons/LinkToInline/Hint: go to defining tiddler
 Buttons/NewAttribute/Hint: Specify a new widget/element attribute to be updated whenever a tiddler is renamed

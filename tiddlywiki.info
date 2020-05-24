@@ -2,6 +2,7 @@
 	"description": "Testing documentation, and demo framework for tw5-relink",
 	"plugins": [
 		"tiddlywiki/jasmine",
+		"tiddlywiki/pluginlibrary",
 		"tiddlywiki/markdown"
 	],
 	"themes": [
@@ -11,12 +12,19 @@
 	"build": {
 		"test": [
 			"--output", "./docs/",
-			"--rendertiddler","$:/core/save/all","test.html","text/plain"
+			"--rendertiddler","$:/core/save/all","test.html","text/plain", "", "publishFilter", "-$:/plugins/tiddlywiki/pluginlibrary"
 		],
 		"demo": [
 			"--setfield", "$:/plugins/flibbles/relink", "created", "Templates/release-date", "text/plain",
 			"--output", "./docs/",
-			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine"
+			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary",
+			"--build", "library"
+		],
+		"library": [
+			"--output", "./docs/library/",
+			"--makelibrary","$:/UpgradeLibrary",
+			"--savelibrarytiddlers","$:/UpgradeLibrary","[prefix[$:/plugins/flibbles/relink]]","recipes/library/tiddlers/","$:/UpgradeLibrary/List",
+			"--rendertiddler","$:/plugins/tiddlywiki/pluginlibrary/library.template.html","index.html","text/plain"
 		]
 	}
 }
