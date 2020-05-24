@@ -10,7 +10,6 @@ Handles markdown code blocks.
 We handle this so we know when ''not'' to parse markdown links.
 \*/
 
-//TODO: Make sure It blocks wikirules too
 exports.name = "markdowncodeblock";
 exports.types = {block: true};
 

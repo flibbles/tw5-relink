@@ -254,6 +254,12 @@ it("respects indented code", function() {
 	test("    Text\n    [c](#from)", {from: "from", ignored: true});
 	test("Text\n\n    [c](#from)", {from: "from", ignored: true});
 	test("Text\n    \n    [c](#from)", {from: "from", ignored: true});
+
+	test("    [c](#from)\n[d](#from)", "    [c](#from)\n[d](#to)", {from: "from", to: "to"});
+
+	// Other rules too
+	test("    <$link to='from here'/>", {ignored: true});
+	test("Test\n \n    <$link to='from here'/>", {ignored: true});
 });
 
 describe("tiddlywiki/markdown plugin", function() {
