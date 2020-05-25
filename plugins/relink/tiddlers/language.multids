@@ -22,10 +22,10 @@ Error/RelinkFilterOperator: Filter Error: Unknown suffix for the 'relink' filter
 Error/ReportFailedRelinks: Relink could not update '<<from>>' to '<<to>>' inside the following tiddlers:
 Error/UnrecognizedType: Relink parse error: Unrecognized field type '<<type>>'
 
-Help/Attributes: See the [[Attributes documentation page|https://flibbles.github.io/tw5-relink/#Attributes]] for details.
-Help/Fields: See the [[Fields documentation page|https://flibbles.github.io/tw5-relink/#Fields]] for details.
-Help/Macros: See the [[Macros documentation page|https://flibbles.github.io/tw5-relink/#Macros]] for details.
-Help/Operators: See the [[Operators documentation page|https://flibbles.github.io/tw5-relink/#Operators]] for details.
+Help/Attributes: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Attributes]]}}}>Attributes documentation page</a> for details.
+Help/Fields: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Fields]]}}}>Fields documentation page</a> for details.
+Help/Macros: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Macros]]}}}>Macros documentation page</a> for details.
+Help/Operators: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Operators]]}}}>Operators documentation page</a> for details.
 
 TiddlerInfo/References/Empty: No tiddlers contain any fields, links, macros, transclusions, or widgets referencing this one
 TiddlerInfo/References/Description: The following tiddlers contain fields, links, macros, transclusions, or widgets referencing this one:
