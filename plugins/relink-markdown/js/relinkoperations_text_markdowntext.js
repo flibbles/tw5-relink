@@ -12,67 +12,159 @@ whichever markdown plugin you're using.
 /*global $tw: false */
 "use strict";
 
+var utils = require("$:/plugins/flibbles/relink/js/utils/markdown.js");
 var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var wikitextHandler = settings.getType('wikitext');
+var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")['text/vnd.tiddlywiki'];
+var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
+var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
-var markdownRuleClasses;
+var MarkdownEntry = EntryNode.newType("markdown");
+
+// TODO: I think this can use entryCollection
+MarkdownEntry.prototype.report = function() {
+	var output = [];
+	$tw.utils.each(this.children, function(child) {
+		// All wikitext children should be able to report
+		$tw.utils.each(child.report(), function(report) {
+			output.push(report);
+		});
+	});
+	return output;
+};
+
+function MarkdownRelinker(text, fromTitle, toTitle, options) {
+	this.wiki = options.wiki;
+	this.entry = new MarkdownEntry();
+	this.builder = new Rebuilder(text);
+	this.fromTitle = fromTitle;
+	this.toTitle = toTitle;
+	this.options = options;
+	if(!this.mdInlineRuleClasses) {
+		MarkdownRelinker.prototype.mdInlineRuleClasses = $tw.modules.createClassesFromModules("relinkmarkdownrule","inline",$tw.WikiRuleBase);
+	}
+	if(!this.mdBlockRuleClasses) {
+		MarkdownRelinker.prototype.mdBlockRuleClasses = $tw.modules.createClassesFromModules("relinkmarkdownrule","block",$tw.WikiRuleBase);
+	}
+	this.source = text || "";
+	this.sourceLength = this.source.length;
+	// Set current parse position
+	this.pos = 0;
+	// Instantiate the parser block and inline rules
+	this.blockRules = this.instantiateRules(this.mdBlockRuleClasses,"block",0);
+	this.inlineRules = this.instantiateRules(this.mdInlineRuleClasses,"inline",0);
+	this.parseBlocks();
+};
+
+MarkdownRelinker.prototype = Object.create(WikiParser.prototype);
+
+MarkdownRelinker.prototype.parseBlock = function(terminatorRegExpString) {
+	var terminatorRegExp = /(\r?\n[^\S\n]*\r?\n)/mg;
+	this.skipEmptyLines();
+	if(this.pos >= this.sourceLength) {
+		return [];
+	}
+	// Look for a block rule that applies at the current position
+	var nextMatch = this.findNextMatch(this.blockRules, this.pos);
+	if(nextMatch && nextMatch.matchIndex === this.pos) {
+		return this.relinkRule(nextMatch);
+	}
+	return this.parseInlineRun(terminatorRegExp);
+};
+
+MarkdownRelinker.prototype.relinkRule = function(ruleInfo) {
+	var newEntry = ruleInfo.rule.relink(this.source, this.fromTitle, this.toTitle, this.options);
+	if (newEntry !== undefined) {
+		this.entry.add(newEntry);
+		if (newEntry.output) {
+			this.builder.add(newEntry.output, ruleInfo.matchIndex, this.pos);
+		}
+	}
+};
+
+MarkdownRelinker.prototype.parseInlineRunTerminated = function(terminatorRegExp,options) {
+	options = options || {};
+	var tree = [];
+	// Find the next occurrence of the terminator
+	terminatorRegExp.lastIndex = this.pos;
+	var terminatorMatch = terminatorRegExp.exec(this.source);
+	// Find the next occurrence of a inlinerule
+	var inlineRuleMatch = this.findNextMatch(this.inlineRules,this.pos);
+	// Loop around until we've reached the end of the text
+	while(this.pos < this.sourceLength && (terminatorMatch || inlineRuleMatch)) {
+		// Return if we've found the terminator, and it precedes any inline rule match
+		if(terminatorMatch) {
+			if(!inlineRuleMatch || inlineRuleMatch.matchIndex >= terminatorMatch.index) {
+				this.relinkWikitext(this.pos, terminatorMatch.index);
+				//if(options.eatTerminator) {
+					this.pos += terminatorMatch[0].length;
+				//}
+				return tree;
+			}
+		}
+		// Process any inline rule, along with the text preceding it
+		if(inlineRuleMatch) {
+			// Preceding text
+			this.relinkWikitext(this.pos, inlineRuleMatch.matchIndex);
+			this.relinkRule(inlineRuleMatch);
+			// Look for the next inline rule
+			inlineRuleMatch = this.findNextMatch(this.inlineRules,this.pos);
+			// Look for the next terminator match
+			terminatorRegExp.lastIndex = this.pos;
+			terminatorMatch = terminatorRegExp.exec(this.source);
+		}
+	}
+	// Process the remaining text
+	this.relinkWikitext(this.pos, this.sourceLength);
+	return tree;
+};
+
+MarkdownRelinker.prototype.skipEmptyLines = function() {
+	var emptyRegExp = /(?:[^\S\n]*\n)+/mg;
+	emptyRegExp.lastIndex = this.pos;
+	var emptyMatch = emptyRegExp.exec(this.source);
+	if(emptyMatch && emptyMatch.index === this.pos) {
+		this.pos = emptyRegExp.lastIndex;
+	}
+};
+
+MarkdownRelinker.prototype.relinkWikitext = function(startPos, end) {
+	if (startPos < end) {
+		var settings = utils.getSettings(this.wiki);
+		if (settings.wikitext) {
+			var substr = this.source.substring(this.pos, end);
+
+			var pragma = settings.wikitextPragma;
+			var wikiEntry = wikitextHandler.relink(pragma + substr, this.fromTitle, this.toTitle, this.options);
+			if (wikiEntry != undefined) {
+				this.entry.add(wikiEntry);
+				if (wikiEntry.output) {
+					this.builder.add(wikiEntry.output.slice(pragma.length), startPos, end);
+				}
+			}
+		}
+	}
+	this.pos = end;
+}
 
 function parse(tiddler, fromTitle, toTitle, options) {
 	var placeholder = new Placeholder();
-	if (!markdownRuleClasses) {
-		markdownRuleClasses = $tw.modules.createClassesFromModules("relinkmarkdowntextrule", "inline", $tw.WikiRuleBase);
-	}
 	var extraOptions = $tw.utils.extend(
 		{
 			currentTiddler: tiddler.fields.title,
-			type: "text/x-markdown",
 			placeholder: placeholder
 		}, options);
-	var pragma = options.wiki._relinkMarkdownPragma || '';
-	var text = pragma + tiddler.fields.text;
-	var entry = wikitextHandler.relink(text, fromTitle, toTitle, extraOptions);
-	if (entry && entry.output) {
+	var relinker = new MarkdownRelinker(tiddler.fields.text, fromTitle, toTitle, extraOptions);
+	var entry = relinker.entry;
+	if (entry.children.length > 0) {
 		// If there's output, we've also got to prepend any macros
 		// that the placeholder defined.
 		var preamble = placeholder.getPreamble();
-		entry.output = preamble + entry.output.slice(pragma.length);
+		entry.output = preamble + relinker.builder.results();
+		return entry;
 	}
-	return entry;
+	return undefined;
 };
-
-var markdownRules = "markdownlink markdowncodeblock markdowncodeinline codeinline codeblock";
-
-parse.setWikitextState = function(wiki) {
-	var pragma,
-		wikitextTitle = "$:/config/markdown/renderWikiText";
-	var value = wiki.getTiddlerText(wikitextTitle);
-	if (value === undefined || value.toLowerCase() === "true") {
-		pragma = getPragmaFromTiddler(wiki);
-	} else {
-		pragma = "\\rules only " + markdownRules + "\n";
-	}
-	// I think this is better than making a global variable, which makes
-	// testing precarious.
-	// Still hate that tiddlywiki/markdown is making me do this.
-	wiki._relinkMarkdownPragma = pragma;
-};
-
-function getPragmaFromTiddler(wiki) {
-	var pragmaTitle = "$:/config/markdown/renderWikiTextPragma";
-	var pragma = wiki.getTiddlerText(pragmaTitle);
-	if (pragma) {
-		pragma = pragma.trim();
-		pragma = pragma.replace(/^(\\rules[^\S\n]+only[^\r\n]*)/gm, "$1 " + markdownRules);
-		return pragma + "\n";
-	} else {
-		return '';
-	}
-};
-
-// This weird setup is so we can test this method, but also have it only
-// calculate once when Tiddlywiki loads, which is the same time the
-// tiddlywiki/markdown plugin calculates.
-parse.setWikitextState($tw.wiki);
 
 exports["text/x-markdown"] = parse;

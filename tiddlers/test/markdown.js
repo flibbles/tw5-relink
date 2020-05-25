@@ -284,7 +284,6 @@ function testPragma(text, expected, pragma, switchValue) {
 	if (switchValue !== undefined) {
 		wiki.addTiddler({title: switchTitle, text: switchValue});
 	}
-	mdParser.setWikitextState(wiki);
 	test(text, expected, {wiki: wiki});
 };
 
@@ -363,7 +362,6 @@ it("won't make placeholders with default markdown settings", function() {
 	// because default markdown settings prohibit macrodefs at all.
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: pragmaTitle, text: defaultPragma});
-	mdParser.setWikitextState(wiki);
 	test("<$link to='from here' />[C](#from%20here)",
 	     "<$link to='from here' />[C](#to%20'there%22)",
 	     {to: "to 'there\"", wiki: wiki, fails: 1});

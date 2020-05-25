@@ -1,5 +1,5 @@
 /*\
-module-type: relinksurveyor
+module-type: library
 title: $:/plugins/flibbles/relink/js/surveyors/markdown.js
 type: application/javascript
 

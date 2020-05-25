@@ -12,6 +12,7 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var WikitextEntry = EntryNode.newType("wikitext");
 
+// TODO: I think this can use entryCollection
 WikitextEntry.prototype.report = function() {
 	var output = [];
 	$tw.utils.each(this.children, function(child) {
@@ -126,6 +127,8 @@ WikiRelinker.prototype.parseBlock = function(terminatorRegExp) {
 	}
 	var nextMatch = this.findNextMatch(this.blockRules, this.pos);
 	if(nextMatch && nextMatch.matchIndex === this.pos) {
+		// TODO: I think I need to return this and not carry on down to
+		//       paresInlineRun
 		this.relinkRule(nextMatch);
 	}
 	return this.parseInlineRun(terminatorRegExp);

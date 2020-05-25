@@ -1,5 +1,5 @@
 /*\
-module-type: wikirule
+module-type: relinkmarkdownrule
 title: $:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext/footnote.js
 type: application/javascript
 
@@ -26,10 +26,6 @@ exports.init = function(parser) {
 };
 
 exports.findNextMatch = function(startPos) {
-	if (!this.parser.fromTitle || this.parser.type !== "text/x-markdown") {
-		// This is an ordinary parser. Skip this.
-		return undefined;
-	}
 	this.match = this.matchFootnote(this.parser.source, startPos);
 	return this.match ? this.match.index : undefined;
 };

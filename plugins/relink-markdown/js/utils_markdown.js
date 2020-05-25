@@ -51,6 +51,25 @@ exports.encodeLink = function(title) {
 	});
 };
 
+exports.getSettings = function(wiki) {
+	// Stored here so it's only calculated once, but also so it's different
+	// per tiddler for testing
+	if (wiki._markdownSettings === undefined) {
+		var settings = Object.create(null);
+		var text = wiki.getTiddlerText("$:/config/markdown/renderWikiText");
+		settings.wikitext =  (text === undefined || text.toLowerCase() === "true");
+		text = wiki.getTiddlerText("$:/config/markdown/renderWikiTextPragma");
+		if (text) {
+			text = text.trim() + '\n';
+		} else {
+			text = '';
+		}
+		settings.wikitextPragma = text;
+		wiki._markdownSettings = settings;
+	}
+	return wiki._markdownSettings;
+};
+
 /**I don't actually use this, but I've kept the code around anyway.
  * The only time this plugin is installed and markdown isn't enabled would
  * be if the user forgot to install a markdown plugin, or they disabled it.

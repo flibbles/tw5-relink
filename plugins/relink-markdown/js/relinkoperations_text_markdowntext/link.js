@@ -1,5 +1,5 @@
 /*\
-module-type: wikirule
+module-type: relinkmarkdownrule
 title: $:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext/link.js
 type: application/javascript
 
@@ -59,10 +59,6 @@ exports.init = function(parser) {
 };
 
 exports.findNextMatch = function(startPos) {
-	if (!this.parser.fromTitle || this.parser.type !== "text/x-markdown") {
-		// This is an ordinary parser. Skip this.
-		return undefined;
-	}
 	this.endMatch = this.matchLink(this.parser.source, startPos);
 	return this.endMatch ? this.endMatch.index : undefined;
 };
