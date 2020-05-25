@@ -114,9 +114,7 @@ WikiRelinker.prototype.parseBlock = function(terminatorRegExp) {
 	}
 	var nextMatch = this.findNextMatch(this.blockRules, this.pos);
 	if(nextMatch && nextMatch.matchIndex === this.pos) {
-		// TODO: I think I need to return this and not carry on down to
-		//       paresInlineRun
-		this.relinkRule(nextMatch);
+		return this.relinkRule(nextMatch);
 	}
 	return this.parseInlineRun(terminatorRegExp);
 };
