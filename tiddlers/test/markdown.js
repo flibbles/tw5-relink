@@ -280,6 +280,7 @@ it("inline code", function() {
 	test("```[c](#from%20here)```", ignore);
 	test("```\n[c](#from%20here)\n```", ignore);
 	test("```javascript\n[c](#from%20here)\n```", ignore);
+	test("`[c](#from)``[c](#from)``", "`[c](#to)``[c](#from)``", process);
 
 	test("``[c](#from)\n\na``[c](#from)", process);
 	test("``[c](#from)\na\n``\n[c](#from)",
