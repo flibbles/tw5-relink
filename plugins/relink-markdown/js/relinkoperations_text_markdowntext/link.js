@@ -11,7 +11,7 @@ Handles markdown links
 
 var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
 var settings = require("$:/plugins/flibbles/relink/js/settings");
-var wikitext = settings.getType('wikitext');
+var markdown = settings.getType('markdown');
 
 function LinkEntry() {};
 LinkEntry.prototype.name = "markdownlink";
@@ -132,7 +132,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		link = em[4];
 	this.parser.pos = em.index + em[1].length + caption.length + em[0].length + 2;
 	if (!image) {
-		var newCaption = wikitext.relink(caption, fromTitle, toTitle, options);
+		var newCaption = markdown.relink(caption, fromTitle, toTitle, options);
 		if (newCaption) {
 			modified = true;
 			entry.captionEntry = newCaption;
