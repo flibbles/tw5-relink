@@ -283,6 +283,10 @@ it("wikitextPragma and backticks", function() {
 	test("``[c](#from)\n\n``[c](#from)", process);
 	test("``[c](#from)\na\n``[c](#from)",
 	     "``[c](#from)\na\n``[c](#to)", process);
+	test("T```[c](#from)```[c](#from)", "T```[c](#from)```[c](#to)", process);
+	test("T````[c](#from)````[c](#from)", "T````[c](#from)````[c](#to)", process);
+	test("T````[c](#from)`````[c](#from)", process);
+	test("``````[c](#from)``````", ignore);
 });
 
 describe("tiddlywiki/markdown plugin", function() {
