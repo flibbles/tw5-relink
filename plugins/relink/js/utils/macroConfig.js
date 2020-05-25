@@ -44,6 +44,12 @@ MacroConfig.prototype.refresh = function(changes) {
 	return false;
 };
 
+// So fieldtypes can access settings through options.settings, instead of
+// including this file, which they can't, because that'd be cyclical dependency
+MacroConfig.prototype.getType = function(name) {
+	return settings.getType(name);
+};
+
 // This class does no special handling of fields, operators, or attributes.
 // we pass it along to the parent.
 MacroConfig.prototype.getFields = function() {

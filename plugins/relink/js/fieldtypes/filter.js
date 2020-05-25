@@ -3,7 +3,6 @@ This specifies logic for updating filters to reflect title changes.
 \*/
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
-var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
