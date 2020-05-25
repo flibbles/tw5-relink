@@ -23,21 +23,7 @@ exports.types = {block: true};
 exports.init = function(parser) {
 	this.parser = parser;
 	this.matchRegExp = /(\[[^\^\s\]][^\s\]]*\]:[^\S\n]*)(#?)(\S+)([^\S\n]*(?:\n|$))/mg;
-};
-
-exports.findNextMatch = function(startPos) {
-	this.match = this.matchFootnote(this.parser.source, startPos);
-	return this.match ? this.match.index : undefined;
-};
-
-exports.survey = function(text) {
-	return this.matchFootnote(text, 0);
-};
-
-exports.matchFootnote = function(text, pos) {
-	var matchRegExp = /(\[[^\^\s\]][^\s\]]*\]:[^\S\n]*)(#?)(\S+)([^\S\n]*(?:\n|$))/mg;
-	matchRegExp.lastIndex = pos;
-	return matchRegExp.exec(text);
+	this.maxIndent = 3;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -47,7 +33,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	this.parser.pos = m.index + m[0].length;
 	if (m[2] === "#" && decodeURIComponent(link) === fromTitle) {
 		entry = new FootnoteEntry();
-		entry.output = m[1] + m[2] + utils.encodeLink(toTitle) + m[4];
+		entry.output = this.indentString + m[1] + m[2] + utils.encodeLink(toTitle) + m[4];
 	}
 	return entry;
 };

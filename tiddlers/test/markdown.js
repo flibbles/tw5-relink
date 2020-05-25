@@ -237,16 +237,24 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 });
 
 it("footnotes", function() {
-	test("[1]:#from", {from: "from", to: "to"});
-	test("[1]: #from", {from: "from", to: "to"});
-	test("[1]: #from\n\n", {from: "from", to: "to"});
-	test("[1]:\t\t#from\t\t\n", {from: "from", to: "to"});
-	test("[1]:#from\r\n", {from: "from", to: "to"});
-	test("[1]: #from%20here", "[1]: #to%20there");
+	var ignore = {from: "from", ignored: true};
+	var process = {from: "from", to: "to"};
+	test("[1]:#from", process);
+	test("[1]: #from", process);
+	test("[1]: #from\n\n", process);
+	test("[1]:\t\t#from\t\t\n", process);
+	test("[1]:#from\r\n", process);
+	test("   [1]:#from", process);
+	test("text\n\n   [1]:#from", process);
+
+	test("text\n[1]:#from", ignore);
+	test("text\nd[1]:#from", ignore);
 });
 
 it("respects indented code", function() {
+	test("[c](#from)", {from: "from", to: "to"});
 	test("   [c](#from)", {from: "from", to: "to"});
+	test("Text\n[c](#from)", {from: "from", to: "to"});
 	test("Text\n    [c](#from)", {from: "from", to: "to"});
 	test("Text\n    [c](#from)", {from: "from", to: "to"});
 	test("   Text\n    [c](#from)", {from: "from", to: "to"});
@@ -295,6 +303,8 @@ it("code", function() {
 	var process = {from: "from", to: "to"};
 	test("```\n\n[c](#from)\n```\n[c](#from)", "```\n\n[c](#from)\n```\n[c](#to)", process);
 	test("```\n\n[c](#from)\n```[c](#from)", ignore);
+	test("   ```\n\n[c](#from)\n   ```\n[c](#from)",
+	     "   ```\n\n[c](#from)\n   ```\n[c](#to)", process);
 	test("```\n[c](#from)", ignore);
 	test("s```\n[c](#from)", process);
 

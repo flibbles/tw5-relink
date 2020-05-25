@@ -30,6 +30,9 @@ MarkdownRuleBase.prototype.findNextMatch = function(startPos) {
 			  && (indent > this.parser.indent + this.maxIndent))) {
 				continue;
 			}
+			var nl = this.parser.source.lastIndexOf('\n', this.match.index-1)+1;
+			this.indentString = this.parser.source.substring(nl, this.match.index);
+			return nl < startPos ? startPos : nl;
 		}
 		return this.match.index;
 	}
