@@ -23,10 +23,10 @@ function MarkdownRelinker(text, fromTitle, toTitle, options) {
 	this.toTitle = toTitle;
 	this.options = options;
 	if(!this.mdInlineRuleClasses) {
-		MarkdownRelinker.prototype.mdInlineRuleClasses = $tw.modules.createClassesFromModules("relinkmarkdownrule","inline",$tw.WikiRuleBase);
+		MarkdownRelinker.prototype.mdInlineRuleClasses = $tw.modules.createClassesFromModules("relinkmarkdownrule","inline",$tw.MarkdownRuleBase);
 	}
 	if(!this.mdBlockRuleClasses) {
-		MarkdownRelinker.prototype.mdBlockRuleClasses = $tw.modules.createClassesFromModules("relinkmarkdownrule","block",$tw.WikiRuleBase);
+		MarkdownRelinker.prototype.mdBlockRuleClasses = $tw.modules.createClassesFromModules("relinkmarkdownrule","block",$tw.MarkdownRuleBase);
 	}
 	this.source = text || "";
 	this.sourceLength = this.source.length;
@@ -35,6 +35,9 @@ function MarkdownRelinker(text, fromTitle, toTitle, options) {
 	// Instantiate the parser block and inline rules
 	this.blockRules = this.instantiateRules(this.mdBlockRuleClasses,"block",0);
 	this.inlineRules = this.instantiateRules(this.mdInlineRuleClasses,"inline",0);
+	// instantiateRules first with indent==undefined so we can match regardless
+	// of tabdepth. Now we need to be strict about it.
+	this.indent = 0;
 	this.parseBlocks();
 };
 

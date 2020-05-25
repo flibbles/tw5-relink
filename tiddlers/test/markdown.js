@@ -271,7 +271,7 @@ it("respects indented code", function() {
 	test("Test\n \n    <$link to='from here'/>", {ignored: true});
 });
 
-it("inline code", function() {
+it("code", function() {
 	var ignore = {from: "from", ignored: true};
 	var process = {from: "from", to: "to"};
 	// Inline code

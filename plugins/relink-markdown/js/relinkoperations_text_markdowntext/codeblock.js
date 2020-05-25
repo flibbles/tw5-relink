@@ -16,7 +16,8 @@ exports.types = {inline: true};
 
 exports.init = function(parser) {
 	this.parser = parser;
-	this.matchRegExp = /^ {0,3}(```+)[^\n`]*(?:\n|$)/mg;
+	this.matchRegExp = /(```+)[^\n`]*(?:\n|$)/mg;
+	this.maxIndent = 3;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {

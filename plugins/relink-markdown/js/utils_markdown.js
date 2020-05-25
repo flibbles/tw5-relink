@@ -59,6 +59,27 @@ exports.indexOfParagraph = function(text, startPos) {
 	return match ? regExp.lastIndex : -1;
 };
 
+/** Returns how much indentation there is between pos and the previous
+ * newline (or other char).
+ * tabs are counted as 4 chars.
+ */
+exports.indentation = function(text, pos, startChar) {
+	var p = text.lastIndexOf(startChar || '\n', pos-1);
+	var count = 0;
+	while (++p < pos) {
+		var c = text.charAt(p);
+		if (c === ' ') {
+			count++;
+		} else if (c === '\t') {
+			count = count + 4 - (count%4);
+		} else {
+			return -1;
+		}
+	}
+	return count;
+};
+
+
 exports.getSettings = function(wiki) {
 	// Stored here so it's only calculated once, but also so it's different
 	// per tiddler for testing
