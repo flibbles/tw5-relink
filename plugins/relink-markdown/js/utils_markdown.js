@@ -51,6 +51,14 @@ exports.encodeLink = function(title) {
 	});
 };
 
+// Returns index of next paragraph, or -1
+exports.indexOfParagraph = function(text, startPos) {
+	var regExp = /\n\s*\n/mg;
+	regExp.lastIndex = startPos || 0;
+	var match = regExp.exec(text);
+	return match ? regExp.lastIndex : -1;
+};
+
 exports.getSettings = function(wiki) {
 	// Stored here so it's only calculated once, but also so it's different
 	// per tiddler for testing

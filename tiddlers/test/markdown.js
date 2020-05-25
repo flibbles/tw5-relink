@@ -271,6 +271,20 @@ it("respects indented code", function() {
 	test("Test\n \n    <$link to='from here'/>", {ignored: true});
 });
 
+it("wikitextPragma and backticks", function() {
+	var ignore = {from: "from", ignored: true};
+	var process = {from: "from", to: "to"};
+	test("`[c](#from%20here)`", ignore);
+	test("``[c](#from%20here)``", ignore);
+	test("```[c](#from%20here)```", ignore);
+	test("```\n[c](#from%20here)\n```", ignore);
+	test("```javascript\n[c](#from%20here)\n```", ignore);
+
+	test("``[c](#from)\n\n``[c](#from)", process);
+	test("``[c](#from)\na\n``[c](#from)",
+	     "``[c](#from)\na\n``[c](#to)", process);
+});
+
 describe("tiddlywiki/markdown plugin", function() {
 
 var mdParser = require("$:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext.js")["text/x-markdown"];
@@ -333,15 +347,6 @@ it("wikitextPragma with multiple pragma", function() {
 it("wikitextPragma and code blocks", function() {
 	testPragma("    [c](#from%20here)", "    [c](#from%20here)", defaultPragma);
 	testPragma("T\n \n    [c](#from%20here)", "T\n \n    [c](#from%20here)", defaultPragma);
-});
-
-it("wikitextPragma and backticks", function() {
-	testPragma("`[c](#from%20here)`", "`[c](#from%20here)`", defaultPragma);
-	testPragma("``[c](#from%20here)``", "``[c](#from%20here)``", defaultPragma);
-	testPragma("```[c](#from%20here)```", "```[c](#from%20here)```", defaultPragma);
-	testPragma("```\n[c](#from%20here)\n```", "```\n[c](#from%20here)\n```", defaultPragma);
-	testPragma("```javascript\n[c](#from%20here)\n```",
-	           "```javascript\n[c](#from%20here)\n```", defaultPragma);
 });
 
 it("wikitext switch", function() {

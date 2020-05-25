@@ -7,6 +7,8 @@ Handles markdown `code` and ``code``.
 
 \*/
 
+var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
+
 exports.name = "codeinline";
 exports.types = {inline: true};
 
@@ -21,7 +23,10 @@ exports.relink = function() {
 	reEnd.lastIndex = this.parser.pos;
 	var match = reEnd.exec(this.parser.source);
 	if (match) {
-		this.parser.pos = match.index + match[0].length;
+		var nextGraph = utils.indexOfParagraph(this.parser.source, this.matchRegExp.lastIndex);
+		if (nextGraph < 0 || nextGraph > match.index) {
+			this.parser.pos = match.index + match[0].length;
+		}
 	}
 	return undefined;
 };

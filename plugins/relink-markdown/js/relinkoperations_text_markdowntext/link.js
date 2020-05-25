@@ -98,12 +98,7 @@ exports.matchLink = function(text, pos) {
 		var regExp = /\(()()(\s*#?)((?:[^\s\(\)]|\([^\s\(\)]*\))+)((?:\s+(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|\([^)]*\)))?\s*)\)/g;
 		regExp.lastIndex = linkStart;
 		match = regExp.exec(text);
-		if (match && match.index === linkStart && !this.hasParagraphBreaks(match[0])) {
-
-			if (match[0].match(/\n\s*\n/)) {
-				// Paragraph breaks are not allowed
-				return undefined;
-			}
+		if (match && match.index === linkStart && utils.indexOfParagraph(match[0]) < 0) {
 			match[2] = caption;
 			if (text.charAt(pos-1) === "!") {
 				match.index = pos-1;
@@ -116,11 +111,6 @@ exports.matchLink = function(text, pos) {
 		}
 	} while (!match);
 	return match;
-};
-
-exports.hasParagraphBreaks = function(text) {
-	// Paragraph breaks are not allowed
-	return !!text.match(/\n\s*\n/);
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
