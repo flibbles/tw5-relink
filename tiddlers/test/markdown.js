@@ -271,22 +271,35 @@ it("respects indented code", function() {
 	test("Test\n \n    <$link to='from here'/>", {ignored: true});
 });
 
-it("wikitextPragma and backticks", function() {
+it("inline code", function() {
 	var ignore = {from: "from", ignored: true};
 	var process = {from: "from", to: "to"};
+	// Inline code
 	test("`[c](#from%20here)`", ignore);
 	test("``[c](#from%20here)``", ignore);
 	test("```[c](#from%20here)```", ignore);
 	test("```\n[c](#from%20here)\n```", ignore);
 	test("```javascript\n[c](#from%20here)\n```", ignore);
 
-	test("``[c](#from)\n\n``[c](#from)", process);
-	test("``[c](#from)\na\n``[c](#from)",
-	     "``[c](#from)\na\n``[c](#to)", process);
+	test("``[c](#from)\n\na``[c](#from)", process);
+	test("``[c](#from)\na\n``\n[c](#from)",
+	     "``[c](#from)\na\n``\n[c](#to)", process);
 	test("T```[c](#from)```[c](#from)", "T```[c](#from)```[c](#to)", process);
 	test("T````[c](#from)````[c](#from)", "T````[c](#from)````[c](#to)", process);
 	test("T````[c](#from)`````[c](#from)", process);
 	test("``````[c](#from)``````", ignore);
+
+	// Block code
+	var ignore = {from: "from", ignored: true};
+	var process = {from: "from", to: "to"};
+	test("```\n\n[c](#from)\n```\n[c](#from)", "```\n\n[c](#from)\n```\n[c](#to)", process);
+	test("```\n\n[c](#from)\n```[c](#from)", ignore);
+	test("```\n[c](#from)", ignore);
+	test("s```\n[c](#from)", process);
+
+	// Both in weird ways
+	test("T```[c](#from)\n```[c](#from)", "T```[c](#to)\n```[c](#from)", process);
+	test("T```[c](#from)\n```\n[c](#from)", "T```[c](#to)\n```\n[c](#from)", process);
 });
 
 describe("tiddlywiki/markdown plugin", function() {
