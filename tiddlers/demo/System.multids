@@ -1,5 +1,6 @@
 title: $:/
 
+config/markdown/renderWikiTextPragma: \rules only html image macrocallinline syslink transcludeinline wikilink filteredtranscludeblock macrocallblock transcludeblock superscript
 config/RelinkOnRename: yes
 config/TiddlerInfo/Default: $:/plugins/flibbles/relink/ui/TiddlerInfo/References
 DefaultTiddlers: Relink Demo Frodo

@@ -7,9 +7,12 @@ type: text/x-markdown
 
 Images: ![Image of Frodo](Frodo.svg)
 Links: [Link to Frodo](#Frodo)
+Footnotes[^^1^^]
 
 ### Wikitext
 
 If your markdown plugin supports ~WikiText, so does Relink.
 
 <$text text="That includes"/> <<say-list "widgets macros [[whatever else]]">>
+
+[ ^^1^^]: #Frodo
