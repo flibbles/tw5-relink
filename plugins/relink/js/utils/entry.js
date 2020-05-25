@@ -29,6 +29,17 @@ EntryNode.prototype.add = function(entry) {
 	this.children.push(entry);
 };
 
+EntryNode.prototype.report = function() {
+	var output = [];
+	$tw.utils.each(this.children, function(child) {
+		// All wikitext children should be able to report
+		$tw.utils.each(child.report(), function(report) {
+			output.push(report);
+		});
+	});
+	return output;
+};
+
 function EntryCollection() {
 	this.children = Object.create(null);
 	this.types = Object.create(null);

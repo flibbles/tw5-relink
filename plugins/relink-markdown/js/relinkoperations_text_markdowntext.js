@@ -22,18 +22,6 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var MarkdownEntry = EntryNode.newType("markdown");
 
-// TODO: I think this can use entryCollection
-MarkdownEntry.prototype.report = function() {
-	var output = [];
-	$tw.utils.each(this.children, function(child) {
-		// All wikitext children should be able to report
-		$tw.utils.each(child.report(), function(report) {
-			output.push(report);
-		});
-	});
-	return output;
-};
-
 function MarkdownRelinker(text, fromTitle, toTitle, options) {
 	this.wiki = options.wiki;
 	this.entry = new MarkdownEntry();

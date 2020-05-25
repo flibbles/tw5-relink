@@ -12,19 +12,6 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var WikitextEntry = EntryNode.newType("wikitext");
 
-// TODO: I think this can use entryCollection
-WikitextEntry.prototype.report = function() {
-	var output = [];
-	$tw.utils.each(this.children, function(child) {
-		// All wikitext children should be able to report
-		$tw.utils.each(child.report(), function(report) {
-			output.push(report);
-		});
-	});
-	return output;
-};
-
-
 function collectRules() {
 	var rules = Object.create(null);
 	$tw.modules.forEachModuleOfType("relinkwikitextrule", function(title, exports) {
