@@ -12,3 +12,9 @@ This page is meant more for the developer so they don't forget what's left to do
 ** And I need to track variables set in `<$set>` even though those aren't ever involved in relinking. They may be part of an importvariables attribute value.
 * macrocall relinker rule doesn't do any logging.
 * Better respect for global rules settings when making placeholder or downgrade decisions.
+
+!!! Markdown
+
+* Footnote captions can contain wikitext which we don't handle.
+* I'm using an over-eager relinker which isn't the Relink way.
+* Footnotes should determine if they're linking to tiddlers or images, so it knows whether there should or shouldn't be a '#'.

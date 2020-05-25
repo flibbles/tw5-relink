@@ -99,6 +99,19 @@ exports.getSettings = function(wiki) {
 	return wiki._markdownSettings;
 };
 
+// This is the maximum length a reported caption may be
+exports.captionLength = 15;
+
+/** Abridges a string to one that is more log-friendly.
+ */
+exports.abridge = function(string) {
+	var safe = string.replace(/\s+/mg, ' ');
+	if (safe.length > this.captionLength) {
+		safe = safe.substr(0, this.captionLength) + "...";
+	}
+	return safe;
+};
+
 /**I don't actually use this, but I've kept the code around anyway.
  * The only time this plugin is installed and markdown isn't enabled would
  * be if the user forgot to install a markdown plugin, or they disabled it.

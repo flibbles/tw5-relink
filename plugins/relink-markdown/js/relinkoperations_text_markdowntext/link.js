@@ -28,7 +28,7 @@ LinkEntry.prototype.report = function() {
 		});
 	};
 	if (this.linkChanged) {
-		var safeCaption = this.abridge(this.caption);
+		var safeCaption = utils.abridge(this.caption);
 		output.push(this.prefix+"[" + safeCaption + "](" + hash + ")");
 	}
 	return output;
@@ -40,19 +40,8 @@ LinkEntry.prototype.eachChild = function(method) {
 	}
 };
 
-LinkEntry.prototype.abridge = function(string) {
-	var safe = string.replace(/\s+/mg, ' ');
-	if (safe.length > exports.reportCaptionLength) {
-		safe = safe.substr(0, exports.reportCaptionLength) + "...";
-	}
-	return safe;
-};
-
 exports.name = "markdownlink";
 exports.types = {inline: true};
-
-// This is the maximum length a reported caption may be
-exports.reportCaptionLength = 15;
 
 exports.init = function(parser) {
 	this.parser = parser;

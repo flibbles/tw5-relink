@@ -23,6 +23,9 @@ MarkdownRuleBase.prototype.init = function(parser) {
 MarkdownRuleBase.prototype.findNextMatch = function(startPos) {
 	this.matchRegExp.lastIndex = startPos;
 	while (this.match = this.matchRegExp.exec(this.parser.source)) {
+		if (utils.indexOfParagraph(this.match[0]) >= 0) {
+			continue;
+		}
 		if (this.maxIndent !== undefined) {
 			var indent = utils.indentation(this.parser.source,this.match.index);
 			if (indent < 0

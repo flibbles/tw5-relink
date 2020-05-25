@@ -14,7 +14,7 @@ var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
 function FootnoteEntry() {};
 FootnoteEntry.prototype.name = "markdownfootnote";
 FootnoteEntry.prototype.report = function() {
-	return ["DUD"];
+	return ["[" + utils.abridge(this.caption) + "]:"];
 };
 
 exports.name = "markdownfootnote";
@@ -22,18 +22,21 @@ exports.types = {block: true};
 
 exports.init = function(parser) {
 	this.parser = parser;
-	this.matchRegExp = /(\[[^\^\s\]][^\s\]]*\]:[^\S\n]*)(#?)(\S+)([^\S\n]*(?:\n|$))/mg;
+	this.matchRegExp = /\[((?:[^\\\]]|\\.)*)\]:(\s*)(#?)(\S+)([^\S\n]*(?:\n|$))/mg;
 	this.maxIndent = 3;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match,
-		link = m[3],
+		link = m[4],
 		entry;
 	this.parser.pos = m.index + m[0].length;
-	if (m[2] === "#" && decodeURIComponent(link) === fromTitle) {
+	if (m[1].charAt(0) !== "^"
+	 && m[3] === "#"
+	 && decodeURIComponent(link) === fromTitle) {
 		entry = new FootnoteEntry();
-		entry.output = this.indentString + m[1] + m[2] + utils.encodeLink(toTitle) + m[4];
+		entry.caption = m[1];
+		entry.output = this.indentString + "[" + m[1] + "]:" + m[2] + m[3] + utils.encodeLink(toTitle) + m[5];
 	}
 	return entry;
 };

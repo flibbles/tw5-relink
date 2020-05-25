@@ -262,4 +262,13 @@ it("markdown links", function() {
 	testMD("![cap](from 'bob\\'s tooltip')", ["![cap]()"]);
 });
 
+it("markdown footnotes", function() {
+	function testMD(text, expected, extraTiddlers) {
+		test({type: "text/x-markdown", text: text}, expected, extraTiddlers);
+	};
+	testMD("Text[1]\n\n[1]: #from\n", ["[1]:"]);
+	testMD("[Long\nmulti\nline\ncaption]: #from", ["[Long multi line...]:"]);
+	testMD("[Long\r\nmulti\r\nline\r\ncaption]: #from", ["[Long multi line...]:"]);
+});
+
 });

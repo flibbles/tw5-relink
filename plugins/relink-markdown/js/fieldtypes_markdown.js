@@ -46,7 +46,7 @@ MarkdownRelinker.prototype = Object.create(WikiParser.prototype);
 module.exports
 
 MarkdownRelinker.prototype.parseBlock = function(terminatorRegExpString) {
-	var terminatorRegExp = /(\r?\n[^\S\n]*\r?\n)/mg;
+	var terminatorRegExp = /([^\S\n]*\r?\n)/mg;
 	this.skipEmptyLines();
 	if(this.pos >= this.sourceLength) {
 		return [];

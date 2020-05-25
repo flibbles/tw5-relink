@@ -239,17 +239,51 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 it("footnotes", function() {
 	var ignore = {from: "from", ignored: true};
 	var process = {from: "from", to: "to"};
+	test("[]:#from", process);
 	test("[1]:#from", process);
 	test("[1]: #from", process);
+	test("[1]:# from", ignore);
+	test("[1]:\n#from", process);
+	test("[1]:\n#from   ", process);
+	test("[1]:\n\n#from", ignore);
 	test("[1]: #from\n\n", process);
 	test("[1]:\t\t#from\t\t\n", process);
 	test("[1]:#from\r\n", process);
 	test("   [1]:#from", process);
 	test("text\n\n   [1]:#from", process);
 
-	test("text\n[1]:#from", ignore);
+	test("[^text]:#from", ignore);
+
+	test("[te]xt]:#from", ignore);
+	test("[t\\]ext]:#from", process);
+	test("[t\\\\]ext]:#from", ignore);
+	test("[t\\\\\\]ext]:#from", process);
+	//test("[\\]text]:#from", process);
+	test("[te\nxt]:#from", process);
+	test("[te\n\nxt]:#from", ignore);
+	test("[te xt]:#from", process);
+	test("[te\n \t\nxt]:#from", ignore);
+	test("[te\n d  \nxt]:#from", process);
+	// This one should be true, but I gave up on perfect parsing.
+	//test("text\n[1]:#from", ignore);
 	test("text\nd[1]:#from", ignore);
+	test("Text[1]\n1.\n[1]: #from", process);
+
+	test("[1]: #from%20here", "[1]: #to%20there");
+	test("[1\n\n2]: #else\n\n[3]: #from", process);
 });
+
+/* INCOMPLETE PARSING: I'm skipping these because updating the captions here
+ * also means updating the caption occurrences throughout the document,
+ * which involves WAY more ability to jump around than the WikiParser gives
+ * me.
+it("footnote caption", function() {
+	var to = "t}}x";
+	// Fails because inner wikitext can't change on its own
+	test("[<$link to={{from}}/>]:#from", "[<$link to={{from}}/>]:#"+encodeURIComponent(to), {from: "from", to: to, fails: 1});
+	test("[<$link to='from' tag={{from}} />]:#else", "[<$link to='"+to+"' tag={{from}} />]:#else", {from: "from", to: to, fails: 1});
+});
+ */
 
 /* INCOMPLETE PARSING:
 it("respects indented code", function() {
