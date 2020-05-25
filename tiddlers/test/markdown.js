@@ -313,6 +313,34 @@ it("code", function() {
 	test("T```[c](#from)\n```\n[c](#from)", "T```[c](#to)\n```\n[c](#from)", process);
 });
 
+it("lists", function() {
+	var ignore = {from: "from", ignored: true};
+	var process = {from: "from", to: "to"};
+	test("1. D\n\n      [c](#from)", process);
+	test("10000. D\n\n          [c](#from)", process);
+	test("* D\n\n     [c](#from)", process);
+	test("+ D\n\n     [c](#from)", process);
+	test("- D\n\n     [c](#from)", process);
+	test("   1. D\n\n         [c](#from)", process);
+	test("   1. D\n\n     [c](#from)", ignore);
+	test("1.    D\n\n       [c](#from)", process);
+	test("1.    D\n\n          [c](#from)", ignore);
+	// This list contains block code in this one
+	test("1.     D\n\n       [c](#from)", ignore);
+
+	test("1 . D\n\n    [c](#from)", ignore);
+	test("*D\n\n    [c](#from)", ignore);
+	test("+D\n\n    [c](#from)", ignore);
+	test("-D\n\n    [c](#from)", ignore);
+	test("1.D\n\n    [c](#from)", ignore);
+
+	// far enough away that it's a new block
+	test("1. D\n\n\n    [c](#from)", ignore);
+	test("1.\n      D\n\n       [c](#from)", ignore);
+
+	test("Content\n1. D\n\n      [c](#from)", process);
+});
+
 describe("tiddlywiki/markdown plugin", function() {
 
 var mdParser = require("$:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext.js")["text/x-markdown"];
