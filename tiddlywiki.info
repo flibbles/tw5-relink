@@ -10,6 +10,9 @@
 		"tiddlywiki/snowwhite"
 	],
 	"build": {
+		"dist": [
+			"--build", "demo", "library"
+		],
 		"test": [
 			"--output", "./docs/",
 			"--rendertiddler","$:/core/save/all","test.html","text/plain", "", "publishFilter", "-$:/plugins/tiddlywiki/pluginlibrary"
@@ -17,8 +20,7 @@
 		"demo": [
 			"--setfield", "$:/plugins/flibbles/relink", "created", "Templates/release-date", "text/plain",
 			"--output", "./docs/",
-			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary",
-			"--build", "library"
+			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary"
 		],
 		"library": [
 			"--output", "./docs/library/",

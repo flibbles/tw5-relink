@@ -8,13 +8,16 @@ This plugin is designed to work against the <a href="https://tiddlywiki.com/plug
 
 !!! Markdown Syntax
 
-Relink-markdown supports markdown links and images:
+Relink-markdown supports markdown links, images, and footnotes:
 
 ```
 [Link caption](#MyTiddler)
 
 ![Image caption](MyImage.png)
 
+Footnote[1]
+
+[1]: #MyTiddler
 ```
 Renaming ''~MyTiddler'' and ''~MyImage.png'' results in:
 
@@ -22,6 +25,10 @@ Renaming ''~MyTiddler'' and ''~MyImage.png'' results in:
 [Link caption(#OtherTiddler)
 
 ![Image caption](OtherImage.png)
+
+Footnote[1]
+
+[1]: #OtherTiddler
 ```
 
 !!! Mixing Wiki and Markdown syntax
