@@ -1,3 +1,6 @@
+* Markdown support
+** Or rather there is now a supplimental plugin which you can also install which adds markdown support to relink.
+* Integration with Tiddlywiki plugin manager. Now Relink has its own tab in the ''Add Plugins'' wizard.
 * Fixed bug where Relink would mangle widget attributes in //very// rare cases.
 * Fixed bug where renaming prettyLinks to something with a '|' char might mess up.
 * Relink now respects `\rules` settings when it comes to deciding whether to convert wikitext into widgets or other patterns.
