@@ -9,6 +9,7 @@ var utils = require("test/utils");
 function test(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var type = options.type || "text/x-markdown";
+	options.type = options.fromType; // So we can make from an image
 	var failCount = options.fails || 0;
 	var wiki = options.wiki;
 	var results = utils.relink({text: text, type: type}, options);
@@ -239,6 +240,7 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 it("footnotes", function() {
 	var ignore = {from: "from", ignored: true};
 	var process = {from: "from", to: "to"};
+	test("[]:from", ignore);
 	test("[]:#from", process);
 	test("[1]:#from", process);
 	test("[1]: #from", process);
@@ -271,6 +273,19 @@ it("footnotes", function() {
 
 	test("[1]: #from%20here", "[1]: #to%20there");
 	test("[1\n\n2]: #else\n\n[3]: #from", process);
+});
+
+it("footnotes for images", function() {
+	test("[1]: from.png", {from: "from.png", to: "to.png", fromType: "image/png"});
+	// Still relinks in case someone wants to just link to an image instead of embed it
+	test("[1]: #from.png", {from: "from.png", to: "to.png", fromType: "image/png"});
+	test("[1]:  from%20here.png", "[1]:  to%20there.png", {from: "from here.png", to: "to there.png", fromType: "image/png"});
+
+	// types
+	test("[1]: from.svg", {from: "from.svg", to: "to.svg", fromType: "image/svg+xml"});
+	test("[1]: from.jpg", {from: "from.jpg", to: "to.jpg", fromType: "image/jpeg"});
+	test("[1]: from.gif", {from: "from.gif", to: "to.gif", fromType: "image/gif"});
+	test("[1]: from.ico", {from: "from.ico", to: "to.ico", fromType: "image/x-icon"});
 });
 
 /* INCOMPLETE PARSING: I'm skipping these because updating the captions here

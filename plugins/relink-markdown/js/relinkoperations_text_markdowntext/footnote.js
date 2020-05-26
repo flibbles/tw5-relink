@@ -32,7 +32,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		entry;
 	this.parser.pos = m.index + m[0].length;
 	if (m[1].charAt(0) !== "^"
-	 && m[3] === "#"
+	 && (m[3] === "#" || options.wiki.isImageTiddler(toTitle))
 	 && decodeURIComponent(link) === fromTitle) {
 		entry = new FootnoteEntry();
 		entry.caption = m[1];

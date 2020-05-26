@@ -34,7 +34,7 @@ exports.relink = function(fields, options) {
 	if (!wiki.getTiddler(results.from)) {
 		// There are a couple tests that add the "from" tiddler
 		// themselves. So we want to make sure not to override them.
-		wiki.addTiddler({title: results.from});
+		wiki.addTiddler({title: results.from, type: options.type});
 	}
 	results.log = exports.collect("log", function() {
 	results.warn = exports.collect("warn", function() {
