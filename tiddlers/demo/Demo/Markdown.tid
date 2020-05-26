@@ -1,4 +1,4 @@
-description: <p>Optionally, //Relink// fully supports markdown. It works seemlessly with any of the major markdown plugins.</p><p>''Warning: Markdown support requires you to download the <$link to=Markdown>//Relink-markdown// supplimental plugin</$link>.''</p>
+description: <p>Optionally, //Relink// fully supports markdown. It works seemlessly with any of the major markdown plugins.</p><p>{{$:/core/images/warning}} ''Warning:'' Markdown support requires you to download the <$link to=Markdown>//Relink-markdown// supplimental plugin</$link>.</p>
 list-after: 
 tags: Demo
 type: text/x-markdown

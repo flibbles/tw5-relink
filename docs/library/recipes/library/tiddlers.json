@@ -1,0 +1,34 @@
+[
+    {
+        "name": "Relink",
+        "title": "$:/plugins/flibbles/relink",
+        "description": "Flexibility when relinking renamed tiddlers",
+        "author": "Flibbles",
+        "version": "1.10.0",
+        "core-version": ">=5.1.14",
+        "source": "https://github.com/flibbles/tw5-relink",
+        "demo": "http://flibbles.github.io/tw5-relink/",
+        "list": "readme configuration",
+        "dependents": "",
+        "plugin-type": "plugin",
+        "type": "application/json",
+        "readme": "When renaming a tiddler, Relink can update the fields, filters, and widgets\nof all other tiddlers. However, it works through whitelisting.\n\nIt's already configured to update tiddler titles for all core widgets, filters,\nand fields, but the whitelists can be customized for each of this in the\nconfiguration panel.\n\nSee <a href={{$:/plugins/flibbles/relink!!source}}>the tw5-relink website</a> for more details and examples.\n",
+        "requires-reload": "yes"
+    },
+    {
+        "name": "Relink Markdown",
+        "title": "$:/plugins/flibbles/relink-markdown",
+        "description": "Markdown support for Relink",
+        "author": "Flibbles",
+        "version": "1.10.0",
+        "core-version": ">=5.1.14",
+        "parent-plugin": "$:/plugins/flibbles/relink",
+        "source": "https://github.com/flibbles/tw5-relink",
+        "list": "readme",
+        "dependents": "",
+        "plugin-type": "plugin",
+        "type": "application/json",
+        "readme": "Markdown support for Relink.\n\n...or Relink support for Markdown.\n\nThis supplimental plugin allows ''text/x-markdown'' files to be relinked. This means markdown linking syntax like `[Caption](#MyTiddler)` is supported. If your markdown supports wikitext markup as well, this will handle that too.\n\nThis plugin is designed for `tiddlywiki/markdown`, but it will also work for `anstosa/tw5-markdown` and others.\n",
+        "requires-reload": "yes"
+    }
+]
