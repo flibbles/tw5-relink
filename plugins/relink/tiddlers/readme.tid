@@ -8,5 +8,4 @@ It's already configured to update tiddler titles for all core widgets, filters,
 and fields, but the whitelists can be customized for each of this in the
 configuration panel.
 
-See [[the tw5-relink website|https://github.com/flibbles/tw5-relink]] for
-more details and examples.
+See <a href={{$:/plugins/flibbles/relink!!source}}>the tw5-relink website</a> for more details and examples.
