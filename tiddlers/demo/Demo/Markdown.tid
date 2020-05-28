@@ -3,18 +3,19 @@ list-after:
 tags: Demo
 type: text/x-markdown
 
-Links: [Link to Frodo](#Frodo)
+Links: [Link to Frodo](#Frodo)  
 Footnotes[^^1^^]
 
-| Direct links | Footnotes links |
-| ------------ | --------------- |
+| Direct links | Footnotes |
+| ------------ | --------- |
 | ![Direct](Frodo.svg) | ![Footnote][image] |
 
 ### Wikitext
 
 If your markdown plugin supports ~WikiText, so does Relink.
 
-<$text text="That includes"/> <<say-list "widgets macros [[whatever else]]">>
+<$text text="That includes"/>
+<<say-list "widgets macros [[whatever else]]">>
 
 [ ^^1^^]: #Frodo
 [image]: Frodo.svg

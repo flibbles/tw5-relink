@@ -20,7 +20,7 @@
 		"demo": [
 			"--setfield", "$:/plugins/flibbles/relink", "created", "Templates/release-date", "text/plain",
 			"--output", "./docs/",
-			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary"
+			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary -[prefix[$:/UpgradeLibrary]]"
 		],
 		"library": [
 			"--output", "./docs/library/",
