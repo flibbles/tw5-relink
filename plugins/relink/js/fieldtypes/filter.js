@@ -123,7 +123,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 			if (val === fromTitle) {
 				var entry = {name: "title"};
 				var newVal = wrapTitle(toTitle, preference);
-				if (newVal === undefined) {
+				if (newVal === undefined || (options.inBraces && newVal.indexOf('}}}') >= 0)) {
 					if (!options.placeholder) {
 						entry.impossible = true;
 						filterEntry.add(entry);
@@ -162,9 +162,10 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
  * value must be able to be wrapped in curly braces. (i.e. '{{{...}}}')
  */
 exports.relinkInBraces = function(filter, fromTitle, toTitle, options) {
-	var entry = this.relink(filter, fromTitle, toTitle, options);
+	var braceOptions = $tw.utils.extend({inBraces: true}, options);
+	var entry = this.relink(filter, fromTitle, toTitle, braceOptions);
 	if (entry && entry.output && !canBeInBraces(entry.output)) {
-		// Although I think we can actually do this one.
+		// It was possible, but it won't fit in braces, so we must give up
 		delete entry.output;
 		entry.impossible = true;
 	}
@@ -173,7 +174,7 @@ exports.relinkInBraces = function(filter, fromTitle, toTitle, options) {
 
 function wrapTitle(value, preference) {
 	var choices = {
-		"": function(v) {return !/[\s\[\]]/.test(v); },
+		"": function(v) {return /^[^\s\[\]]*[^\s\[\]\}]$/.test(v); },
 		"[": canBePrettyOperand,
 		"'": function(v) {return v.indexOf("'") < 0; },
 		'"': function(v) {return v.indexOf('"') < 0; }
@@ -268,7 +269,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 					break;
 				}
 				var wrapped;
-				if (!canBePrettyOperand(entry.output)) {
+				if (!canBePrettyOperand(entry.output) || (options.inBraces && entry.output.indexOf('}}}') >= 0)) {
 					if (!options.placeholder) {
 						delete entry.output;
 						entry.impossible = true;

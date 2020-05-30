@@ -60,8 +60,8 @@ it("filtered attributes", function() {
 	testText("[img width  =  {{{  [tag[from here]]   }}} [s]]");
 	testText("[img width={{{[tag[from here]]}}} [s]].",
 	         "\\define relink-1() A]B\n[img width={{{[tag<relink-1>]}}} [s]].", {to: "A]B"});
-	var r = testText("[img width={{{'from here'}}} [from here]]",
-	                 "[img width={{{'from here'}}} [A}}}B]]", {to:"A}}}B"});
+	var r = testText("[img width={{{[r{from here}]}}} [from here]]",
+	                 "[img width={{{[r{from here}]}}} [A}}}B]]", {to:"A}}}B"});
 	expect(r.fails.length).toEqual(1);
 });
 

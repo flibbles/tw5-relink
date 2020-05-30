@@ -56,18 +56,35 @@ it('preserves pretty whitespace', function() {
 	testText("{{{   [[from here]]   ||  from here  }}}");
 });
 
-it('rightly judges unpretty', function() {
-	function testUnpretty(to) {
-		testText("Test: {{{[[from here]]}}}.",
-		         "Test: <$list filter="+to+"/>.",
-		         {to: to});
-	};
-	testUnpretty("Curly}}Closers");
+it('pretty but tricky', function() {
 	// This doesn't have to become unpretty if it's considered as a block,
 	// since the block parser goes to the end of the line and therefor
 	// correctly parses the curly braces.
 	// However, it's too much work to test for, so just downgrade it.
-	testUnpretty("Curly}}Closers}");
+	testText("{{{from}}} inline", "{{{[[closecurly}]]}}} inline",
+	         {from: "from", to: "closecurly}"});
+	// If it's not at the end though, it's not as big of a deal
+	testText("{{{from}}} inline", "{{{close}curly}}} inline",
+	         {from: "from", to: "close}curly"});
+});
+
+it('prefers widget or placeholder', function() {
+	// If filtered transclude uses the parseInBraces method, then the filter
+	// will make a placeholder so that it can be contained in braces, but
+	// that's more drastic than just downgrading to a list.
+	testText("{{{from}}}", "<$list filter=to}}}here/>", {from: "from", to: "to}}}here"});
+});
+
+it('rightly judges unpretty', function() {
+	function testUnpretty(to) {
+		testText("Test: {{{from}}} inline",
+		         "Test: <$list filter="+to+"/> inline",
+		         {from: "from", to: to});
+	};
+	// Two curlies seems like an odd number, but it's what the inline rule
+	// looks for since after two, it may include that width information
+	// This WOULD work if it wasn't a filtered transclude.
+	testUnpretty("Curly}}Closers");
 	testUnpretty("Bars|Bars");
 });
 

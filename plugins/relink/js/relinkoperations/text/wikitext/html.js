@@ -89,7 +89,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			if (entry === undefined) {
 				continue;
 			}
-			if (!entry.impossible) {
+			if (entry.output) {
 				// +4 for '{{' and '}}'
 				oldLength = attr.textReference.length + 4;
 				quotedValue = "{{"+entry.output+"}}";
@@ -99,7 +99,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			if (entry === undefined) {
 				continue;
 			}
-			if (!entry.impossible) {
+			if (entry.output) {
 				// +6 for '{{{' and '}}}'
 				oldLength = attr.filter.length + 6;
 				quotedValue = "{{{"+ entry.output +"}}}";

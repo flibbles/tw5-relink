@@ -128,13 +128,26 @@ it('fails on bad indirect attributes', function() {
 	expect(r.fails.length).toEqual(1);
 });
 
+it("handles failure on special operands that fail internally", function() {
+	// This was returning {{{undefined}}} in v1.10.0
+	var r;
+	r = testText("<$a b={{{[c{from here}]}}} />",
+	             "<$a b={{{[c{from here}]}}} />", {to: "E}}E"});
+	expect(r.fails.length).toEqual(1);
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("t", "arg", "reference"));
+	r = testText("<$a b=<<t arg:'from here'>> />",
+	             "<$a b=<<t arg:'from here'>> />", {to: "E!!E", wiki:wiki});
+	expect(r.fails.length).toEqual(1);
+});
+
 it("failure doesn't prevent other relinks", function() {
 	var r = testText("<$link tooltip={{from here}} to='from here' />",
 	                 "<$link tooltip={{from here}} to='to}there' />",
 	                 {to: "to}there"});
 	expect(r.fails.length).toEqual(1);
-	var r = testText("<$link tooltip={{{[[from here]]}}} to='from here' />",
-	                 "<$link tooltip={{{[[from here]]}}} to='A}}}B' />",
+	var r = testText("<$link tooltip={{{[r{from here}]}}} to='from here' />",
+	                 "<$link tooltip={{{[r{from here}]}}} to='A}}}B' />",
 	                 {to: "A}}}B"});
 	expect(r.fails.length).toEqual(1);
 	var wiki = new $tw.Wiki();
@@ -150,6 +163,15 @@ it('supports filter attribute values', function() {
 	testText("<$link to={{{[[from here]]}}}/>");
 	testText("<$link to=   {{{[[from here]]}}}    />");
 	testText("<$link to={{{[[from here]]}}}/>", {to: "to {}there"});
+});
+
+it('placeholders bad names in filtered attribute values', function() {
+	var ph = utils.placeholder;
+	var to = "brack}}}s";
+	testText("<$w a={{{from}}}/>", ph(1,to) + "<$w a={{{[<relink-1>]}}}/>",
+	         {from: "from", to: to});
+	testText("<$w a={{{[tag[from]]}}}/>", ph(1,to) + "<$w a={{{[tag<relink-1>]}}}/>",
+	         {from: "from", to: to});
 });
 
 it('uses macros for literally unquotable titles', function() {

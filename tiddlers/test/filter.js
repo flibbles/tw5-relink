@@ -218,8 +218,6 @@ it('resorts to placeholders when possible', function() {
 	         ph(1,to)+"\\import [<relink-1>]\n", {to: to});
 	testText("\\import from\n",
 	         ph(1,to)+"\\import [<relink-1>]\n", {to: to, from: "from"});
-	testText("\\import from\n",
-	         ph(1,to)+"\\import [<relink-1>]\n", {to: to, from: "from"});
 	testText("\\import +'from here'\n",
 	         ph(1,to)+"\\import +[<relink-1>]\n", {to: to});
 	testText("\\import [![from here]]\n",
