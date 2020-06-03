@@ -1,1 +1,2 @@
 * Fixed bug where filtered widget attributes might corrupt if reference parameter in nested list cannot be renamed. (i.e. `<$widget attr={{{ [operator{myTitle}] }}} />`. If myTitle can't be renamed, attribute would corrupt.) 
+* Fixed bug where all later filter operators in a run would be reported as containing the target tiddler, even if they didn't.

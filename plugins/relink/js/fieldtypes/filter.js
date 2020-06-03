@@ -235,7 +235,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 			operator.operator = "title";
 		}
 
-		var entry, type;
+		var entry = undefined, type;
 
 		p = nextBracketPos + 1;
 		switch (bracket) {

@@ -238,6 +238,9 @@ it("filters", function() {
 
 	// Multiples
 	testFilter("from [tag[from]oper{from}]", ["", "[tag[]]", "[oper{}]"]);
+
+	// BUG: Doesn't report for any operators later in a run
+	testFilter("[tag[from]something[else]]", ["[tag[]]"]);
 });
 
 it("markdown links", function() {
