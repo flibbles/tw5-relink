@@ -1,8 +1,9 @@
 caption: Roadmap
 title: Roadmap
 
-This page is meant more for the developer so they don't forget what's left to do.
+This page is meant for the developer so they don't forget what's left to do.
 
+* The plugin names shown on the whitelist tables are using the descriptions, not the names.
 * Filters could do a better job of renaming title-only entries. i.e. `{{{ [[MyTiddler]] }}}` would become `{{{ [<relink-1>] }}}` on tough renames.
 * Macros cached after encountering `<$importvariables>` should be popped after encountering `</$importvariables>`.
 * Document the filters included with //Relink//.
