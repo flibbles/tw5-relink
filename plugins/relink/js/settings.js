@@ -23,7 +23,9 @@ $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
 });
 
 $tw.modules.forEachModuleOfType("relinksurveyor", function(title, exports) {
-	surveyors.push(exports);
+	if (exports.survey) {
+		surveyors.push(exports);
+	}
 });
 
 function Settings(wiki) {

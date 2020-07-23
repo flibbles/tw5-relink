@@ -19,8 +19,10 @@ function collectRules() {
 		if (typeof names === "string") {
 			names = [names];
 		}
-		for (var i = 0; i < names.length; i++) {
-			rules[names[i]] = exports;
+		if (names !== undefined) {
+			for (var i = 0; i < names.length; i++) {
+				rules[names[i]] = exports;
+			}
 		}
 	});
 	return rules;
