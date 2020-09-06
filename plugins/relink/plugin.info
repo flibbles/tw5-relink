@@ -7,7 +7,7 @@
 	"core-version": ">=5.1.14",
 	"source": "https://github.com/flibbles/tw5-relink",
 	"demo": "http://flibbles.github.io/tw5-relink/",
-	"list": "readme configuration",
+	"list": "readme configuration license",
 	"dependents": "",
 	"plugin-type": "plugin"
 }

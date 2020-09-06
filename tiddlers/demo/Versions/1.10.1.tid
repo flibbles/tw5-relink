@@ -3,3 +3,4 @@
 * Fixed bug where all later filter operators in a run would be reported as containing the target tiddler, even if they didn't.
 * Added `<$list emptyMessage />` attribute to core whitelist as wikitext.
 * Made it so if a tiddler's title is relinked, all tiddlers that reference it will also be relinked. This doesn't happen in core Relink, but some people need to make plugins where this can happen.
+* Added license tab
