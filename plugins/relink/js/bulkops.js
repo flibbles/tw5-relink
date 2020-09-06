@@ -29,7 +29,6 @@ exports.startup = function() {
  *  This replaces the existing function in core Tiddlywiki.
  */
 function relinkTiddler(fromTitle, toTitle, options) {
-	var self = this;
 	var failures = [];
 	var records = this.getRelinkReport(fromTitle, toTitle, options);
 	for (var title in records) {
@@ -50,9 +49,14 @@ function relinkTiddler(fromTitle, toTitle, options) {
 		// If any fields changed, update tiddler
 		if (update) {
 			var tiddler = this.getTiddler(title);
-			var newTiddler = new $tw.Tiddler(tiddler,changes,self.getModificationFields())
+			var newTiddler = new $tw.Tiddler(tiddler,changes,this.getModificationFields())
 			newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
-			self.addTiddler(newTiddler);
+			this.addTiddler(newTiddler);
+			// If the title changed, we need to perform a nested rename
+			if (newTiddler.fields.title !== title) {
+				this.deleteTiddler(title);
+				this.relinkTiddler(title, newTiddler.fields.title,options);
+			}
 		}
 	};
 	if (failures.length > 0) {
