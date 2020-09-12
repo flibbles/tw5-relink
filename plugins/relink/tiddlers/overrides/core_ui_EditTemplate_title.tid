@@ -5,6 +5,20 @@ title: $:/core/ui/EditTemplate/title
 
 <$reveal state="!!draft.title" type="nomatch" text={{!!draft.of}} tag="div">
 
+<$vars pattern="""[\|\[\]{}]""" bad-chars="""`| [ ] { }`""">
+
+<$list filter="[all[current]regexp:draft.title<pattern>]" variable="listItem">
+
+<div class="tc-message-box">
+
+{{$:/core/images/warning}} {{$:/language/EditTemplate/Title/BadCharacterWarning}}
+
+</div>
+
+</$list>
+
+</$vars>
+
 <$list filter="[{!!draft.title}!is[missing]]" variable="listItem">
 
 <div class="tc-message-box">
