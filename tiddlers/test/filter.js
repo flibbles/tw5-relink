@@ -232,6 +232,12 @@ it('resorts to placeholders when possible', function() {
 	         {to: to, wiki: wiki});
 });
 
+it('handles named filter run prefixes', function() {
+	testFilter("[tag[from here]] :reduce[add<accumulator>add{from here!!value}]");
+	// Bad prefixes don't technically make illegal filters, just filters that return errors.
+	testFilter("[tag[from here]] :badprefix[add<accumulator>add{from here!!value}]");
+});
+
 /** This is legacy support. Originally, the value of the configuration tiddlers
  *  was set to "yes" because I didn't think it really mattered, but it turns
  *  out it may actually be other values one day, so I'm switching it to title
