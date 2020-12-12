@@ -1,0 +1,13 @@
+{
+	"name": "Relink Title",
+	"title": "$:/plugins/flibbles/relink-title",
+	"description": "Renames tiddlers with titles derived from Relinked tiddler",
+	"author": "Flibbles",
+	"version": "1.10.0",
+	"core-version": ">=5.1.14",
+	"parent-plugin": "$:/plugins/flibbles/relink",
+	"source": "https://github.com/flibbles/tw5-relink",
+	"list": "readme",
+	"dependents": "",
+	"plugin-type": "plugin"
+}
