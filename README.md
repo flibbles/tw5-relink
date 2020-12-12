@@ -18,6 +18,8 @@ customizable.
 
 For a demonstration, and for documentation, see the [tiddlywiki demo site](https://flibbles.github.io/tw5-relink/).
 
+_quick note_: Relink doesn't support NodeJS tiddlywikis that lazy load. [See the documentation for more details](https://flibbles.github.io/tw5-relink/#Lazy Loading).
+
 ## How to install
 
 Visit the [demo site](https://flibbles.github.io/tw5-relink/). It will have a little thingy you can drag onto your tiddlywiki project. (The demo site will explain it better.)
