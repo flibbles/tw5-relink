@@ -1,0 +1,13 @@
+caption: Custom
+list-after: 
+tags: Titles
+title: Titles/custom
+
+If you wish, you can customize the generated filter used to determine what tiddlers are renamed, and how. During a relink of a target tiddler, every tiddler will be passed to this filter one at a time. If the filter produces any output, that tiddler will be renamed to the first result.
+
+These variables are accessable to the filter:
+
+* `fromTiddler`: This is the title that the target tiddler is being renamed from.
+* `toTiddler`: This is what the target tiddler is being renamed to.
+
+Also, other plugins are able to add their own //Relink-titles// presets using the <<tag $:/tags/flibbles/relink/TitleFilterPreset>> tag.

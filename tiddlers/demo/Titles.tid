@@ -1,0 +1,17 @@
+plugin: $:/plugins/flibbles/relink-titles
+tags: Plugin
+title: Titles
+
+The //Relink// supplemental child-plugin, //Relink-titles// allows for other tiddlers to have their titles renamed when specific target tiddlers are relinked. Usually, these other tiddlers will relate to the target tiddler in some way.
+
+<$list filter="[tag[Titles]]">
+
+!!! {{!!caption}}
+
+<$transclude />
+
+</$list>
+
+@@text-align:center;
+<$link to={{!!plugin}} class="relink-dragger relink-titles">Titles support!</$link>
+@@

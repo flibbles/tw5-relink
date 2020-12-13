@@ -1,0 +1,25 @@
+caption: directory
+tags: Titles
+title: Titles/directory
+
+This //Titles// setting is for when your tiddlers are set up hierarchically, like a filesystem. When renaming a target tiddler, //Relink// will change the titles of all tiddlers that would be considered nested within the target tiddler. For instance:
+
+```
+        Images
+        ├── ...
+        ├── Images/2019
+        │       ├── Images/2019/01-Trip-to-Spain
+        │       ├── Images/2019/05-School
+        │       └── Images/2019/12-Christmas
+        └── ...
+```
+
+Renaming `Images` to `Pictures` would also rename
+
+* `Images/2019` to `Pictures/2019`
+* `Images/2019/Trip-to-Spain` to `Pictures/2019/Trip-to-Spain`
+* ...and so on.
+
+If you were to instead rename `Images/2019` to `Images/2020`, then all of the `Images/2019/*` files would be properly renamed, but `Images` would remain untouched.
+
+This is also effectively //moves// directories and their contents. Let's suppose we renamed `Images` to `Archive/Images`. All nested tiddlers of `Images` would likewise have `Archive/` appended to them. 

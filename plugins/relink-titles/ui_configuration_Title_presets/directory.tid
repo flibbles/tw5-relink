@@ -3,6 +3,4 @@ filter: [removeprefix<fromTiddler>prefix[/]addprefix<toTiddler>]
 tags: $:/tags/flibbles/relink/TitleFilterPreset
 title: $:/plugins/flibbles/relink/ui/configuration/Title/FilterPresets/directory
 
-When renaming a target tiddler, this options will make //Relink// change the titles of all tiddlers that would be considered children of the target tiddler.
-
-For instance, renaming `Images` to `Pictures` would rename `Images/2019` to `Pictures/2019`, and `Images/2019/Trip-to-Spain` to `Pictures/2019/Trip-to-Spain`
+For wikis set up hierarchically like a filesystem, this option will update all tiddlers nested inside the target tiddler. i.e. `fromTiddler/subdir` becomes `toTiddler/subdir`.
