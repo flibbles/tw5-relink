@@ -7,6 +7,7 @@
 	"core-version": ">=5.1.14",
 	"parent-plugin": "$:/plugins/flibbles/relink",
 	"source": "https://github.com/flibbles/tw5-relink",
+	"demo": "http://flibbles.github.io/tw5-relink/",
 	"list": "readme configuration",
 	"dependents": "",
 	"plugin-type": "plugin"

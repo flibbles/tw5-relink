@@ -1,6 +1,8 @@
 /*\
 
-Tests syslinks, like $:/this/tiddler, but not ~$:/this/tiddler.
+Tests syslinks, like
+
+	$:/this/tiddler, but not ~$:/this/tiddler.
 
 \*/
 

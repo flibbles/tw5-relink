@@ -1,4 +1,4 @@
-caption: Custom
+caption: {{$:/plugins/flibbles/relink-titles/language/FilterPresets/Custom/Caption}}
 list-after: 
 tags: Titles
 title: Titles/custom
@@ -10,4 +10,4 @@ These variables are accessable to the filter:
 * `fromTiddler`: This is the title that the target tiddler is being renamed from.
 * `toTiddler`: This is what the target tiddler is being renamed to.
 
-Also, other plugins are able to add their own //Relink-titles// presets using the <<tag $:/tags/flibbles/relink/TitlesFilterPreset>> tag.
+Also, other plugins are able to add their own //Relink-titles// presets using the <<tag $:/tags/flibbles/relink-titles/FilterPreset>> tag.
