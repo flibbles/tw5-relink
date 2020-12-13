@@ -46,10 +46,20 @@ it("only takes first result from tiddler", function() {
 	test("$:/prefix/from here", "$:/prefix/to there", {wiki: wiki});
 });
 
+/*
 it("tries not to let you rename every single tiddler", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(configTiddler("[[Agent Smith]]"));
 	test("bystander", "bystander", {wiki: wiki});
+});
+*/
+
+it("doesn't infinitely loop over tiddlers", function() {
+	var wiki = new $tw.Wiki();
+	// The resulting tiddler from this would be applicable for renaming,
+	// thus it might rename ad-infinitum if it doesn't check itself.
+	wiki.addTiddler(configTiddler("[prefix<fromTiddler>addsuffix[-changed]]"));
+	test("from here/sub", "from here/sub-changed", {wiki: wiki});
 });
 
 /*it("handles name collisions", function() {

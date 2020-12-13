@@ -23,13 +23,18 @@ TitleEntry.prototype.report = function() {
 };
 
 exports['title'] = function(tiddler, fromTitle, toTitle, changes, options) {
-	var filter = getFilter(fromTitle, toTitle, options);
-	var widget = getWidget(fromTitle, toTitle, options);
-	var outTitle = filter.call(options.wiki, [tiddler.fields.title], widget);
-	if (outTitle[0]) {
-		var entry = new TitleEntry();
-		entry.output = outTitle[0];
-		changes.title = entry;
+	options.__titlesTouched = options.__titlesTouched || Object.create(null);
+	if (!options.__titlesTouched[tiddler.fields.title]) {
+		var filter = getFilter(fromTitle, toTitle, options);
+		var widget = getWidget(fromTitle, toTitle, options);
+		var outTitle = filter.call(options.wiki, [tiddler.fields.title], widget);
+		if (outTitle[0]) {
+			var entry = new TitleEntry();
+			entry.output = outTitle[0];
+			changes.title = entry;
+			// Record that we've touched this one, so we only touch it once.
+			options.__titlesTouched[outTitle[0]] = true;
+		}
 	}
 };
 
