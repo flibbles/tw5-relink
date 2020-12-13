@@ -12,10 +12,9 @@ sure that those tiddlers are properly relinked too.
 /*global $tw: false */
 "use strict";
 
-var prefix = "$:/prefix/";
 var configTiddler = "$:/config/flibbles/relink/titles/filter"; 
-
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
+var language = require("$:/plugins/flibbles/relink/js/language.js");
 
 var TitleEntry = EntryNode.newType("ghost");
 
@@ -24,7 +23,7 @@ TitleEntry.prototype.report = function() {
 };
 
 exports['title'] = function(tiddler, fromTitle, toTitle, changes, options) {
-	var filter = getFilter(options.wiki);
+	var filter = getFilter(fromTitle, toTitle, options);
 	var widget = getWidget(fromTitle, toTitle, options);
 	var outTitle = filter.call(options.wiki, [tiddler.fields.title], widget);
 	if (outTitle[0]) {
@@ -46,13 +45,21 @@ function getWidget(fromTitle, toTitle, options) {
 	return options.__titlesWidget;
 };
 
-function getFilter(wiki) {
-	return wiki.getCacheForTiddler(configTiddler, "relinkFilter", function() {
-		var tiddler = wiki.getTiddler(configTiddler);
+function getFilter(fromTitle, toTitle, options) {
+	return options.wiki.getCacheForTiddler(configTiddler, "relinkFilter", function() {
+		var tiddler = options.wiki.getTiddler(configTiddler);
 		if (tiddler && tiddler.fields.text) {
-			return wiki.compileFilter(tiddler.fields.text);
-		} else {
-			return function() { return []; };
+			var compiled = options.wiki.compileFilter(tiddler.fields.text);
+			var widget = getWidget(fromTitle, toTitle, options);
+			var testOutput = compiled.call(options.wiki, [configTiddler], widget);
+			if (testOutput.length > 0) {
+				// If this filter would even change the tiddler containing
+				// the filter, then it's GOT to be wrong.
+				language.alert("This filter is dangerous");
+			} else {
+				return compiled;
+			}
 		}
+		return function() { return []; };
 	});
 };
