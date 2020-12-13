@@ -1,0 +1,9 @@
+title: $:/plugins/flibbles/relink-titles/readme
+
+Highly customizable relinking of tiddler titles //related// to the renamed tiddler.
+
+* Rename a hierarchy of subtiddlers when renaming a root tiddler.
+* Rename related settings tiddlers, such as `$:/prefix/MyTiddler` when renaming `MyTiddler`.
+* Whatever else you want, so long as you can build a filter for it.
+
+See <a href={{$:/plugins/flibbles/relink-titles!!source}}>the tw5-relink website</a> for more details and examples.

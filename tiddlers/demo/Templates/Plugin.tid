@@ -1,5 +1,12 @@
 title: Templates/Plugin
 
-!! {{!!caption}}
+<$tiddler tiddler=<<currentTab>> >
+
+<$tiddler tiddler={{!!plugin}}>
+
+<$transclude tiddler="$:/core/ui/Components/plugin-info" />
+</$tiddler>
 
 <$transclude />
+
+</$tiddler></$tiddler>

@@ -1,0 +1,6 @@
+caption: {{$:/plugins/flibbles/relink-titles/language/FilterPresets/Prefix/Caption}}
+filter: [removesuffix<fromTiddler>match[$:/prefix/]addsuffix<toTiddler>]
+tags: $:/tags/flibbles/relink-titles/FilterPreset
+title: $:/plugins/flibbles/relink-titles/configuration/FilterPresets/prefix
+
+And there is also this option too!

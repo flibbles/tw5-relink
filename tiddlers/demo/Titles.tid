@@ -6,11 +6,15 @@ The //Relink// supplemental child-plugin, //Relink-titles// allows for other tid
 
 <$list filter="[tag[Titles]]">
 
-!!! {{!!caption}}
+!! {{!!caption}}
 
 <$transclude />
 
 </$list>
+
+!!! Install
+
+To install //Relink-titles//, first install //Relink//, then drag the following pill button onto your project:
 
 @@text-align:center;
 <$link to={{!!plugin}} class="relink-dragger relink-titles">Titles support!</$link>

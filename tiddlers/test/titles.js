@@ -23,7 +23,7 @@ function test(target, expected, options) {
 };
 
 function configTiddler(filter) {
-	return {title: "$:/config/flibbles/relink/titles/filter", text: filter};
+	return {title: "$:/config/flibbles/relink-titles/filter", text: filter};
 };
 
 describe("titles", function() {

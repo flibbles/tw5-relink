@@ -1,6 +1,6 @@
 /*\
 module-type: relinkoperator
-title: $:/plugins/flibbles/relink/js/relinkoperations/title.js
+title: $:/plugins/flibbles/relink-titles/relinkoperations/title.js
 type: application/javascript
 
 Renames tiddlers which have titles derived from fromTitle. Then it makes
@@ -12,7 +12,7 @@ sure that those tiddlers are properly relinked too.
 /*global $tw: false */
 "use strict";
 
-var configTiddler = "$:/config/flibbles/relink/titles/filter"; 
+var configTiddler = "$:/config/flibbles/relink-titles/filter";
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 var language = require("$:/plugins/flibbles/relink/js/language.js");
 
