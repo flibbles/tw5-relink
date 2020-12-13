@@ -1,12 +1,12 @@
-caption: {{$:/plugins/flibbles/relink/language/Title/Caption}}
+caption: {{$:/plugins/flibbles/relink/language/Titles/Caption}}
 tags: $:/tags/flibbles/relink/Configuration
-title: $:/plugins/flibbles/relink/ui/configuration/Title
+title: $:/plugins/flibbles/relink/ui/configuration/Titles
 
-\define lingo-base() $:/plugins/flibbles/relink/language/Title/
+\define lingo-base() $:/plugins/flibbles/relink/language/Titles/
 \define filterTiddler() $:/config/flibbles/relink/titles/filter
-\define custom-state() $:/state/flibbles/relink/Title/custom
+\define custom-state() $:/state/flibbles/relink/Titles/custom
 
-<$list filter="[[$:/tags/flibbles/relink/TitleFilterPreset]tagging[]]">
+<$list filter="[[$:/tags/flibbles/relink/TitlesFilterPreset]tagging[]]">
 
 <$vars nl="""
 """>

@@ -1,6 +1,6 @@
-caption: {{$:/plugins/flibbles/relink/language/Title/FilterPresets/Directory/Caption}}
+caption: {{$:/plugins/flibbles/relink/language/Titles/FilterPresets/Directory/Caption}}
 filter: [removeprefix<fromTiddler>prefix[/]addprefix<toTiddler>]
-tags: $:/tags/flibbles/relink/TitleFilterPreset
-title: $:/plugins/flibbles/relink/ui/configuration/Title/FilterPresets/directory
+tags: $:/tags/flibbles/relink/TitlesFilterPreset
+title: $:/plugins/flibbles/relink/ui/configuration/Titles/FilterPresets/directory
 
 For wikis set up hierarchically like a filesystem, this option will update all tiddlers nested inside the target tiddler. i.e. `fromTiddler/subdir` becomes `toTiddler/subdir`.

@@ -1,6 +1,6 @@
 {
-	"name": "Relink Title",
-	"title": "$:/plugins/flibbles/relink-title",
+	"name": "Relink Titles",
+	"title": "$:/plugins/flibbles/relink-titles",
 	"description": "Renames tiddlers with titles derived from Relinked tiddler",
 	"author": "Flibbles",
 	"version": "1.10.0",

@@ -10,4 +10,4 @@ These variables are accessable to the filter:
 * `fromTiddler`: This is the title that the target tiddler is being renamed from.
 * `toTiddler`: This is what the target tiddler is being renamed to.
 
-Also, other plugins are able to add their own //Relink-titles// presets using the <<tag $:/tags/flibbles/relink/TitleFilterPreset>> tag.
+Also, other plugins are able to add their own //Relink-titles// presets using the <<tag $:/tags/flibbles/relink/TitlesFilterPreset>> tag.
