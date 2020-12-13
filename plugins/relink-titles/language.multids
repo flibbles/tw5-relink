@@ -1,0 +1,5 @@
+title: $:/plugins/flibbles/relink/language/Title/
+
+Caption: Titles
+FilterPresets/Directory/Caption: rename subdirectories
+FilterPresets/Prefix/Caption: prefix for $:/prefix

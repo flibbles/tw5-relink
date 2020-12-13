@@ -1,0 +1,27 @@
+caption: {{$:/plugins/flibbles/relink/language/Title/Caption}}
+tags: $:/tags/flibbles/relink/Configuration
+title: $:/plugins/flibbles/relink/ui/configuration/Title
+
+\define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
+\define filterTiddler() $:/config/flibbles/relink/titles/filter
+
+<$list filter="[[$:/tags/flibbles/relink/TitleFilterPreset]tagging[]]">
+
+<$vars filter={{{ [{!!filter}addsuffix[
+]] }}} >
+
+<$checkbox
+	tiddler=<<filterTiddler>>
+	field="text"
+	checked={{{ [<filterTiddler>get[text]join[]search{!!filter}] [<filterTiddler>get[text]!search{!!filter}addprefix{!!filter}] [{!!filter}] +[first[]] }}}
+	unchecked={{{ [<filterTiddler>get[text]search{!!filter}split{!!filter}join[]] [<filterTiddler>get[text]!search{!!filter}] [[]] +[first[]] }}}
+> {{!!caption}}</$checkbox>
+
+<$transclude />
+
+</$vars></$list>
+
+During a relink, every tiddler will be passed to this filter one at a time. If it produces any output, that tiddler will be renamed to the result. The variables `fromTiddler` and `toTiddler` are defined as what the triggering relinked tiddler was and will be called.
+
+<$edit tag="textarea" tiddler=<<filterTiddler>> class="tc-edit-texteditor"/>
+
