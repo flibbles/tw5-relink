@@ -14,7 +14,7 @@ function test(target, expected, options) {
 	options.target = target
 	var results = utils.relink({text: text}, options);
 	var changed = options.wiki.getTiddler(expected);
-	expect(changed).not.toBeUndefined();
+	expect(changed).withContext("Expected tiddler '"+expected+"' to exist").not.toBeUndefined();
 	expect(changed.fields.text).toBe(target); // the text should be the old target name
 	expect(changed.fields.title).toEqual(expected);
 	if (expected !== target) {
@@ -64,16 +64,23 @@ it("doesn't infinitely loop over tiddlers", function() {
 	test("from here/sub", "from here/sub-changed", {wiki: wiki});
 });
 
-/*
-it("handles name collisions", function() {
+it("doesn't wipe the content of changed tiddler", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
-		configTiddler("[[A]]"),
-		{title: "A"},
-		{title: "B"}]);
-	test("$:/prefix/from here", "Z", {wiki: wiki, errorCount: 2});
+		configTiddler("[removeprefix<fromTiddler>prefix[/]addprefix<toTiddler>]"),
+		{title: "from here/path"}]);
+	test("from here/path/end", "to there/path/end", {wiki: wiki});
 });
-*/
+
+it("doesn't clobber existing tiddlers", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		configTiddler("[match[A]addsuffix[B]]"),
+		{title: "A"},
+		{title: "AB", text: "original text"}]);
+	var r = test("A", "A", {wiki: wiki, fails: 1});
+	expect(r.wiki.getTiddler("AB").fields.text).toBe("original text");
+});
 
 "maybe handles malformed tiddlers gracefully??";
 

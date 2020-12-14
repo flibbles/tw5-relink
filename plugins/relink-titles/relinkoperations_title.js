@@ -30,9 +30,16 @@ exports['title'] = function(tiddler, fromTitle, toTitle, changes, options) {
 		var outTitle = filter.call(options.wiki, [tiddler.fields.title], widget);
 		if (outTitle[0]) {
 			var entry = new TitleEntry();
-			entry.output = outTitle[0];
+			if (options.wiki.getTiddler(outTitle[0])) {
+				// There's already a tiddler there. We won't clobber it.
+				entry.impossible = true;
+			} else {
+				entry.output = outTitle[0];
+			}
 			changes.title = entry;
 			// Record that we've touched this one, so we only touch it once.
+			// Both its prior and latter. Neither should be touched again.
+			options.__titlesTouched[tiddler.fields.title] = true;
 			options.__titlesTouched[outTitle[0]] = true;
 		}
 	}
