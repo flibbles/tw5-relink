@@ -6,11 +6,11 @@ tags: Demo
      <<currentTiddler>>/nested/path
      would update appropriately.-->
 
-	<$vars dir={{{ [[Frodo]addsuffix[/]] }}} >
+<$vars dir={{{ [[Frodo]addsuffix[/]] }}} >
 
-	<$list filter="[prefix<dir>]" />
+<$list filter="[prefix<dir>]" />
 
-	</$vars>
+</$vars>
 ---
 <!-- Relink-titles is configured so that tiddlers
      like Example/setting/<<currentTiddler>>

@@ -3,6 +3,8 @@ plugin: $:/plugins/flibbles/relink-titles
 tags: Plugin
 title: Plugins/Titles
 
+{{$:/core/images/warning}} ''Do not use this plugin yet!'' It's currently in alpha and is subject to change. It should be done in a few days though.
+
 The //Relink// supplemental child-plugin, //Relink-titles// allows for other tiddlers to have their titles renamed when specific target tiddlers are relinked. Usually, these other tiddlers will relate to the target tiddler in some way.
 
 <$list filter="[tag[Titles]]">
