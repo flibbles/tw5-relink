@@ -75,6 +75,17 @@ it("unquotable titles", function() {
 });
 
 it("prints simple if not on browser", function() {
+	utils.collect("log", function() {
+		// This block has nothing to do with the test.
+		// But if testAlert ends up running before the wikitext relinker
+		// instantiates, then it'll fail because the browser will think
+		// it's NodeJS, which it isn't, and we can't have that confusion
+		// when executing modules. So we do this dummy stuff just to
+		// force the instantiation before we get to work.
+		var tmpWiki = new $tw.Wiki();
+		tmpWiki.addTiddler({title: "test", text: "[[A]]"});
+		tmpWiki.renameTiddler("A", "B");
+	});
 	var message = testAlert(new $tw.Wiki(), ["TidA", "Tid]]B"]);
 	expect(message).toContain("TidA");
 	expect(message.indexOf("[[TidA]]")).toBeLessThan(0);
