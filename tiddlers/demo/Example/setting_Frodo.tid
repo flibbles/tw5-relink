@@ -1,0 +1,9 @@
+title: Example/setting/Frodo
+
+This tiddler doesn't actually do anything, but there are settings tiddlers like this that do. Take the core's button visibility tiddlers:
+
+```
+$:/config/ViewToolbarButtons/Visibility/$:/core/ui/Buttons/info
+```
+
+It contains the visibility setting for the `$:/core/ui/Buttons/info` button. Of course it's unlikely that you'll be changing the names of buttons like that often, but you may want to utilize a similar paradigm for some other solution. //Relink-titles// has got you covered.
