@@ -141,6 +141,8 @@ Error message and password prompt
 
 <p>This <a class="tc-tiddlylink-external" href="https://tiddlywiki.com" rel="noopener noreferrer" target="_blank">TiddlyWiki</a> contains the following tiddlers:</p><p><ul>
 
+<li>$:/config/flibbles/relink-titles/filter</li>
+
 <li>$:/config/flibbles/relink/fields/description</li>
 
 <li>$:/config/flibbles/relink/fields/example-filter</li>
@@ -176,6 +178,8 @@ Error message and password prompt
 <li>$:/plugins/flibbles/relink</li>
 
 <li>$:/plugins/flibbles/relink-markdown</li>
+
+<li>$:/plugins/flibbles/relink-titles</li>
 
 <li>$:/plugins/tiddlywiki/markdown</li>
 
@@ -215,6 +219,8 @@ Error message and password prompt
 
 <li>Demo/Markdown</li>
 
+<li>Demo/Titles</li>
+
 <li>Demo/Transcludes</li>
 
 <li>Demo/Widgets</li>
@@ -229,6 +235,10 @@ Error message and password prompt
 
 <li>Eärendil</li>
 
+<li>Example/setting/Frodo</li>
+
+<li>Example/setting/Rosie</li>
+
 <li>Fields</li>
 
 <li>Filter</li>
@@ -236,6 +246,12 @@ Error message and password prompt
 <li>Frodo</li>
 
 <li>Frodo.svg</li>
+
+<li>Frodo/inventory</li>
+
+<li>Frodo/stats</li>
+
+<li>Frodo/stats/kills</li>
 
 <li>Hackability</li>
 
@@ -261,11 +277,19 @@ Error message and password prompt
 
 <li>Macros/ul</li>
 
-<li>Markdown</li>
-
 <li>Mithril</li>
 
 <li>Operators</li>
+
+<li>Plugins</li>
+
+<li>Plugins/Markdown</li>
+
+<li>Plugins/Titles</li>
+
+<li>Plugins/Titles/custom</li>
+
+<li>Plugins/Titles/directory</li>
 
 <li>Pragma</li>
 
@@ -282,6 +306,8 @@ Error message and password prompt
 <li>Templates/Hello</li>
 
 <li>Templates/now</li>
+
+<li>Templates/Plugin</li>
 
 <li>Templates/release-date</li>
 
@@ -373,6 +399,11 @@ Error message and password prompt
 <!--~~ Ordinary tiddlers ~~-->
 
 <div id="storeArea" style="display:none;">
+<div title="$:/config/flibbles/relink-titles/filter">
+<pre>[removeprefix&lt;fromTiddler&gt;prefix[/]addprefix&lt;toTiddler&gt;]
+[removesuffix&lt;fromTiddler&gt;match[Example/setting/]addsuffix&lt;toTiddler&gt;]
+</pre>
+</div>
 <div title="$:/config/flibbles/relink/fields/description">
 <pre>wikitext</pre>
 </div>
@@ -11193,6 +11224,70 @@ Error message and password prompt
     }
 }</pre>
 </div>
+<div author="Flibbles" core-version="&gt;=5.1.14" demo="http://flibbles.github.io/tw5-relink/" dependents="" description="Renames tiddlers with titles derived from Relinked tiddler" list="readme configuration" name="Relink Titles" parent-plugin="$:/plugins/flibbles/relink" plugin-type="plugin" source="https://github.com/flibbles/tw5-relink" title="$:/plugins/flibbles/relink-titles" type="application/json" version="1.10.0">
+<pre>{
+    &quot;tiddlers&quot;: {
+        &quot;$:/config/flibbles/relink-titles/filter&quot;: {
+            &quot;title&quot;: &quot;$:/config/flibbles/relink-titles/filter&quot;,
+            &quot;text&quot;: &quot;&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/configuration&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/configuration&quot;,
+            &quot;caption&quot;: &quot;{{$:/plugins/flibbles/relink-titles/language/Caption}}&quot;,
+            &quot;tags&quot;: &quot;$:/tags/flibbles/relink/Configuration&quot;,
+            &quot;text&quot;: &quot;\\define lingo-base() $:/plugins/flibbles/relink-titles/language/\n\\define filterTiddler() $:/config/flibbles/relink-titles/filter\n\\define custom-state() $:/state/flibbles/relink-titles/custom\n\n&lt;&lt;lingo Help&gt;&gt;\n\n&lt;$vars nl=\&quot;\&quot;\&quot;\n\&quot;\&quot;\&quot;&gt;\n\n&lt;table&gt;\n\n&lt;tbody&gt;\n\n&lt;$list filter=\&quot;[[$:/tags/flibbles/relink-titles/FilterPreset]tagging[]]\&quot;&gt;\n\n&lt;$vars filter={{{ [{!!filter}addsuffix&lt;nl&gt;] }}} &gt;\n\n&lt;tr&gt;\n\n&lt;td&gt;\n\n&lt;$checkbox\n\ttiddler=&lt;&lt;filterTiddler&gt;&gt;\n\tfield=\&quot;text\&quot;\n\tchecked={{{ [&lt;filterTiddler&gt;get[text]join[]search&lt;filter&gt;] [&lt;filterTiddler&gt;get[text]!search&lt;filter&gt;addprefix&lt;filter&gt;] [&lt;filter&gt;] +[first[]] }}}\n\tunchecked={{{ [&lt;filterTiddler&gt;get[text]search&lt;filter&gt;split&lt;filter&gt;join[]] [&lt;filterTiddler&gt;get[text]!search&lt;filter&gt;] [[]] +[first[]] }}}\n&gt; ''{{!!caption}}'':&lt;/$checkbox&gt;\n&lt;$transclude /&gt;\n\n&lt;/td&gt;\n&lt;/tr&gt;\n&lt;/$vars&gt;&lt;/$list&gt;\n\n&lt;/tbody&gt;&lt;/table&gt;\n\n&lt;$edit tag=\&quot;textarea\&quot; tiddler=&lt;&lt;filterTiddler&gt;&gt; class=\&quot;tc-edit-texteditor\&quot;/&gt;\n\n&lt;&lt;lingo Hint&gt;&gt;\n\n&lt;/$vars&gt;\n&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/configuration/FilterPresets/directory&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/configuration/FilterPresets/directory&quot;,
+            &quot;caption&quot;: &quot;{{$:/plugins/flibbles/relink-titles/language/FilterPresets/Directory/Caption}}&quot;,
+            &quot;filter&quot;: &quot;[removeprefix&lt;fromTiddler&gt;prefix[/]addprefix&lt;toTiddler&gt;]&quot;,
+            &quot;tags&quot;: &quot;$:/tags/flibbles/relink-titles/FilterPreset&quot;,
+            &quot;text&quot;: &quot;For wikis set up hierarchically like a filesystem, this option will update all tiddlers nested inside the target tiddler. i.e. `fromTiddler/subdir` becomes `toTiddler/subdir`.\n&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/configuration/FilterPresets/prefix&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/configuration/FilterPresets/prefix&quot;,
+            &quot;caption&quot;: &quot;{{$:/plugins/flibbles/relink-titles/language/FilterPresets/Prefix/Caption}}&quot;,
+            &quot;filter&quot;: &quot;[removesuffix&lt;fromTiddler&gt;match[$:/prefix/]addsuffix&lt;toTiddler&gt;]&quot;,
+            &quot;tags&quot;: &quot;$:/tags/flibbles/relink-titles/FilterPreset&quot;,
+            &quot;text&quot;: &quot;And there is also this option too!\n&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/language/Caption&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/language/Caption&quot;,
+            &quot;text&quot;: &quot;Titles&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/language/FilterPresets/Custom/Caption&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/language/FilterPresets/Custom/Caption&quot;,
+            &quot;text&quot;: &quot;Custom&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/language/FilterPresets/Directory/Caption&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/language/FilterPresets/Directory/Caption&quot;,
+            &quot;text&quot;: &quot;rename subdirectories&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/language/FilterPresets/Prefix/Caption&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/language/FilterPresets/Prefix/Caption&quot;,
+            &quot;text&quot;: &quot;prefix for $:/prefix&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/language/Help&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/language/Help&quot;,
+            &quot;text&quot;: &quot;See the &lt;a href={{{ [{$:/plugins/flibbles/relink-titles!!demo}addsuffix[#Plugins/Titles]] }}}&gt;//Relink-titles// documentation page&lt;/a&gt; for details.&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/language/Hint&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/language/Hint&quot;,
+            &quot;text&quot;: &quot;The variables `fromTiddler` and `toTiddler` are defined as what the triggering relinked tiddler was and will be called.&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/readme&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/readme&quot;,
+            &quot;text&quot;: &quot;Highly customizable relinking of tiddler titles //related// to the renamed tiddler.\n\n* Rename a hierarchy of subtiddlers when renaming a root tiddler.\n* Rename related settings tiddlers, such as `$:/prefix/MyTiddler` when renaming `MyTiddler`.\n* Whatever else you want, so long as you can build a filter for it.\n\nSee &lt;a href={{$:/plugins/flibbles/relink-titles!!source}}&gt;the tw5-relink website&lt;/a&gt; for more details and examples.\n&quot;
+        },
+        &quot;$:/plugins/flibbles/relink-titles/relinkoperations/title.js&quot;: {
+            &quot;title&quot;: &quot;$:/plugins/flibbles/relink-titles/relinkoperations/title.js&quot;,
+            &quot;text&quot;: &quot;/*\\\nmodule-type: relinkoperator\ntitle: $:/plugins/flibbles/relink-titles/relinkoperations/title.js\ntype: application/javascript\n\nRenames tiddlers which have titles derived from fromTitle. Then it makes\nsure that those tiddlers are properly relinked too.\n\n\\*/\n\n/*jslint node: false, browser: true */\n/*global $tw: false */\n\&quot;use strict\&quot;;\n\nvar configTiddler = \&quot;$:/config/flibbles/relink-titles/filter\&quot;;\nvar EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');\nvar language = require(\&quot;$:/plugins/flibbles/relink/js/language.js\&quot;);\n\nvar TitleEntry = EntryNode.newType(\&quot;ghost\&quot;);\n\nTitleEntry.prototype.report = function() {\n\treturn [\&quot;title: \&quot; + this.output];\n};\n\nexports['title'] = function(tiddler, fromTitle, toTitle, changes, options) {\n\toptions.__titlesTouched = options.__titlesTouched || Object.create(null);\n\tif (!options.__titlesTouched[tiddler.fields.title]) {\n\t\tvar filter = getFilter(fromTitle, toTitle, options);\n\t\tvar widget = getWidget(fromTitle, toTitle, options);\n\t\tvar outTitle = filter.call(options.wiki, [tiddler.fields.title], widget);\n\t\tif (outTitle[0]) {\n\t\t\tvar entry = new TitleEntry();\n\t\t\tif (options.wiki.getTiddler(outTitle[0])) {\n\t\t\t\t// There's already a tiddler there. We won't clobber it.\n\t\t\t\tentry.impossible = true;\n\t\t\t} else {\n\t\t\t\tentry.output = outTitle[0];\n\t\t\t}\n\t\t\tchanges.title = entry;\n\t\t\t// Record that we've touched this one, so we only touch it once.\n\t\t\t// Both its prior and latter. Neither should be touched again.\n\t\t\toptions.__titlesTouched[tiddler.fields.title] = true;\n\t\t\toptions.__titlesTouched[outTitle[0]] = true;\n\t\t}\n\t}\n};\n\nfunction getWidget(fromTitle, toTitle, options) {\n\t// we cache the dummy widget in options, so we only need one for an entire\n\t// relink operation\n\tif (!options.__titlesWidget) {\n\t\tvar parentWidget = options.wiki.makeWidget();\n\t\tparentWidget.setVariable('fromTiddler', fromTitle);\n\t\tparentWidget.setVariable('toTiddler', toTitle);\n\t\toptions.__titlesWidget = options.wiki.makeWidget(null, {parentWidget: parentWidget});\n\t}\n\treturn options.__titlesWidget;\n};\n\nfunction getFilter(fromTitle, toTitle, options) {\n\treturn options.wiki.getCacheForTiddler(configTiddler, \&quot;relinkFilter\&quot;, function() {\n\t\tvar tiddler = options.wiki.getTiddler(configTiddler);\n\t\tif (tiddler &amp;&amp; tiddler.fields.text) {\n\t\t\tvar compiled = options.wiki.compileFilter(tiddler.fields.text);\n\t\t\tvar widget = getWidget(fromTitle, toTitle, options);\n\t\t\tvar testOutput = compiled.call(options.wiki, [configTiddler], widget);\n\t\t\tif (testOutput.length &gt; 0) {\n\t\t\t\t// If this filter would even change the tiddler containing\n\t\t\t\t// the filter, then it's GOT to be wrong.\n\t\t\t\tlanguage.alert(\&quot;This filter is dangerous\&quot;);\n\t\t\t} else {\n\t\t\t\treturn compiled;\n\t\t\t}\n\t\t}\n\t\treturn function() { return []; };\n\t});\n};\n&quot;,
+            &quot;module-type&quot;: &quot;relinkoperator&quot;,
+            &quot;type&quot;: &quot;application/javascript&quot;
+        }
+    }
+}</pre>
+</div>
 <div dependents="" description="Markdown parser based on remarkable by Jon Schlinkert" list="readme usage" name="Markdown" plugin-type="plugin" title="$:/plugins/tiddlywiki/markdown" type="application/json" version="5.1.23-prerelease">
 <pre>{
     &quot;tiddlers&quot;: {
@@ -11630,7 +11725,7 @@ BilboBaggins is a ~CamelCase link. Visit ~BilboBaggins to test Wikilinks.
 ''Tagging'': &lt;$macrocall $name=&quot;ul&quot; tag=&quot;Frodo&quot; /&gt;
 </pre>
 </div>
-<div caption="Markdown" description="&lt;p&gt;Optionally, //Relink// fully supports markdown. It works seemlessly with any of the major markdown plugins.&lt;/p&gt;&lt;p&gt;{{$:/core/images/warning}} ''Warning:'' Markdown support requires you to download the &lt;$link to=Markdown&gt;//Relink-markdown// supplimental plugin&lt;/$link&gt;.&lt;/p&gt;" list-after="" tags="Demo" title="Demo/Markdown" type="text/x-markdown">
+<div caption="Markdown" description="&lt;p&gt;Optionally, //Relink// fully supports markdown. It works seemlessly with any of the major markdown plugins.&lt;/p&gt;&lt;p&gt;{{$:/core/images/warning}} ''Warning:'' Markdown support requires you to download the &lt;&lt;link-to-tab Plugins Plugins/Markdown &quot;//Relink-markdown// supplimental plugin&quot;&gt;&gt;.&lt;/p&gt;" list-after="" tags="Demo" title="Demo/Markdown" type="text/x-markdown">
 <pre>Links: [Link to Frodo](#Frodo)  
 Footnotes[^^1^^]
 
@@ -11647,6 +11742,25 @@ If your markdown plugin supports ~WikiText, so does Relink.
 
 [ ^^1^^]: #Frodo
 [image]: Frodo.svg
+</pre>
+</div>
+<div caption="Titles" description="&lt;p&gt;Optionally, //Relink// can change tiddler titles somehow related to the renamed tiddler. This might include updating assocated settings tiddlers, or nested tiddlers of a filesystem-like directory, or whatever else you wish.&lt;/p&gt;&lt;p&gt;{{$:/core/images/warning}} ''Warning:'' Titles support requires you to download the &lt;&lt;link-to-tab Plugins Plugins/Titles &quot;//Relink-titles// supplimental plugin&quot;&gt;&gt;.&lt;/p&gt;" tags="Demo" title="Demo/Titles">
+<pre>&lt;!-- Relink-titles is configured to update
+     all filesystem-like nested tiddlers. So,
+     &lt;&lt;currentTiddler&gt;&gt;/nested/path
+     would update appropriately.--&gt;
+
+&lt;$vars dir={{{ [[Frodo]addsuffix[/]] }}} &gt;
+
+&lt;$list filter=&quot;[prefix&lt;dir&gt;]&quot; /&gt;
+
+&lt;/$vars&gt;
+---
+&lt;!-- Relink-titles is configured so that tiddlers
+     like Example/setting/&lt;&lt;currentTiddler&gt;&gt;
+     will rename appropriately. --&gt;
+
+&lt;$list filter=&quot;[prefix[Example/setting/]]&quot; /&gt;
 </pre>
 </div>
 <div caption="Transcludes" description="Relink handles both the tiddler and the template tiddler. If the new titles, become too complex, it may convert the transclude into its widget equivalent." tags="Demo" title="Demo/Transcludes">
@@ -11701,6 +11815,20 @@ Besides relinking tiddlers, //Relink// includes other features.
 </div>
 <div caption="Light of Eärendil" tags="Frodo" title="Eärendil">
 <pre>The Light of Eärendil is a light to [[Frodo]] in dark places when all other lights go out. It was given to him by Galadriel.
+</pre>
+</div>
+<div title="Example/setting/Frodo">
+<pre>This tiddler doesn't actually do anything, but there are settings tiddlers like this that do. Take the core's button visibility tiddlers:
+
+```
+$:/config/ViewToolbarButtons/Visibility/$:/core/ui/Buttons/info
+```
+
+It contains the visibility setting for the `$:/core/ui/Buttons/info` button. Of course it's unlikely that you'll be changing the names of buttons like that often, but you may want to utilize a similar paradigm for some other solution. //Relink-titles// has got you covered.
+</pre>
+</div>
+<div title="Example/setting/Rosie">
+<pre>the `Example/setting` tiddler for the non-existent `Rosie` tiddler.
 </pre>
 </div>
 <div caption="Fields" tags="Documentation Construct" title="Fields">
@@ -11794,6 +11922,23 @@ Click &lt;&lt;show-reference-button&gt;&gt; for information on what tiddler's re
 		d=&quot;M 1244 334 C 1224 336 1162 456 1085 455 C 1033 455 1010 477 997 504 C 966 567 1005 638 1044 657 C 1093 560 1132 490 1167 480 C 1212 467 1262 351 1247 335 C 1247 334 1245 334 1244 334 z M 1181 570 C 1102 681 1045 767 1045 767 C 996 737 939 729 933 740 C 928 752 981 807 980 927 C 780 926 488 928 442 878 C 442 878 416 825 403 884 C 360 1075 141 1140 142 1172 C 144 1216 426 1111 474 1055 C 505 1020 581 1009 647 1008 C 681 1008 817 1007 980 1010 L 979 1064 C 651 1073 536 1180 538 1323 C 542 1532 647 1618 895 1616 C 739 1798 605 1904 492 1954 C 334 2024 162 1975 163 2006 C 163 2022 226 2010 414 2105 C 580 2189 805 1829 974 1664 L 967 2431 C 966 2608 926 2853 815 2959 C 819 2880 775 2853 721 2836 C 659 2817 503 2959 732 3023 C 921 3073 1054 2764 1074 2649 C 1086 2580 1114 2553 1117 2531 C 1356 2647 1521 2518 1510 2501 C 1498 2462 1144 2556 1147 2211 C 1147 2137 1152 1913 1157 1655 C 1390 1896 1366 1928 1516 2061 C 1683 2209 1932 2157 1930 2132 C 1926 2094 1815 2226 1215 1630 C 1551 1664 1589 1459 1593 1339 C 1600 1167 1387 1076 1169 1079 C 1170 1056 1170 1037 1170 1014 C 1416 1022 1658 1037 1683 1069 C 1744 1151 2081 1327 2094 1300 C 2103 1279 1871 1214 1771 910 C 1762 882 1743 885 1727 904 C 1684 955 1347 941 1172 932 C 1177 742 1180 596 1181 570 z M 913 1139 C 937 1139 960 1140 979 1140 L 975 1532 C 775 1583 676 1511 682 1333 C 688 1156 813 1138 913 1139 z M 1222 1156 C 1340 1155 1441 1170 1445 1365 C 1451 1631 1211 1555 1168 1546 C 1165 1540 1162 1533 1160 1525 C 1162 1401 1165 1277 1167 1156 C 1186 1156 1204 1156 1222 1156 z&quot; /&gt;
 &lt;/g&gt;
 &lt;/svg&gt;
+</pre>
+</div>
+<div title="Frodo/inventory">
+<pre>* Lembas bread
+* Pipe-weed
+</pre>
+</div>
+<div title="Frodo/stats" type="application/x-tiddler-dictionary">
+<pre>Birth: 22 September, 2968
+Death: Unknown
+Hair: Brown
+</pre>
+</div>
+<div title="Frodo/stats/kills">
+<pre>Kill count: 0
+
+No one. Frodo killed //no one// in the entire trilogy. I didn't realize that until researching it for this specific tiddler.
 </pre>
 </div>
 <div tags="Feature" title="Hackability">
@@ -11954,7 +12099,7 @@ There are two ways to do this.
 &lt;&lt;link-to-tab Demo Demo/Macros Demo&gt;&gt;
 </pre>
 </div>
-<div qualifiers="Demo 1577183281 Types 2094947537" tags="$:/tags/Macro" title="Macros/link-to-tab">
+<div qualifiers="Demo 1577183281 Types 2094947537 Plugins -1909702749" tags="$:/tags/Macro" title="Macros/link-to-tab">
 <pre>\relink link-to-tab tiddler tab caption:wikitext
 \define link-to-tab(tiddler, tab, caption)
 &lt;$button class=&quot;tc-btn-invisible tc-tiddlylink&quot;&gt;
@@ -12047,9 +12192,46 @@ This will automatically show the show the //Relink// references infoTab for demo
 This macro is globally available because of the tag &lt;&lt;tag $:/tags/Macro&gt;&gt;. It relies on [[Whitelisting]] to declare its parameters. You can see the whitelist configuration &lt;&lt;link-to-config-tab Macros here&gt;&gt;.
 </pre>
 </div>
-<div tags="Feature" title="Markdown">
-<pre>\define plugin() $:/plugins/flibbles/relink-markdown
-//Relink// has a supplemental child-plugin you can install which integrates markdown support. With that installed, your //text/x-markdown// tiddlers will be relinked along with your wiki tiddlers.
+<div caption="Mithril armor" tags="Frodo" title="Mithril">
+<pre>Mithril is armor worn by [[Frodo]], given by [[Bilbo Baggins|BilboBaggins]]
+</pre>
+</div>
+<div caption="Operators" tags="Documentation Construct" title="Operators">
+<pre>\rules except wikilink
+Whenever a filter is processed by Relink, whether in a field, an attribute, or a filtered transclude expression, it will only update the operands of whitelisted operators. Each operator must be configured a particular [[type|Types]].
+
+''Suffixes'' can optionally be a part of a whitelist configuration. Let's say you whitelist the operator `myOperator:mySuffix`. The only instances of //myOperator//'s which will be updated are when they have the suffix //mySuffix//.
+
+However, if you whitelisted just `myOperator`, then its operand will update regardless of whether it's `[myOperator[myTitle]]` or `[myOperator:someSuffix[myTitle]]` or whatever. The suffix is ignored.
+
+`[field:title[]]` is another good example. It's a default configuration which will only update //field// if it's suffix is set to //title//.
+
+!!! Defaults
+
+`tag`, `title`, and `field:title` are whitelisted by default. That means on rename //MyTiddler// -&gt; //New Tiddler//:
+
+`[title[MyTiddler]] [tag[MyTiddler]!field:title[MyTiddler]]`
+
+becomes
+
+`[title[New Tiddler]] [tag[New Tiddler]!field:title[New Tiddler]]`
+
+''Title'' is special. If it's whitelisted, then it includes all shorthands for title. All runs of the filter: `[title[MyTiddler]] [[MyTiddler]] MyTiddler &quot;MyTiddler&quot; 'MyTiddler'` would all be changed on a rename of //MyTiddler//.
+
+&lt;&lt;link-to-tab Demo Demo/Filters Demo&gt;&gt;
+</pre>
+</div>
+<div caption="Supplemental Plugins" tags="Relink" title="Plugins">
+<pre>//Relink// has additional sub-plugins which provide additional features for more specific needs.
+
+&lt;$macrocall $name=&quot;tabs&quot;
+	tabsList=&quot;[tag[Plugin]]&quot;
+	default={{{ [tag[Plugin]first[]] }}}
+	template=&quot;Templates/Plugin&quot;/&gt;
+</pre>
+</div>
+<div caption="Markdown" plugin="$:/plugins/flibbles/relink-markdown" tags="Feature Plugin" title="Plugins/Markdown">
+<pre>//Relink// has a supplemental child-plugin you can install which integrates markdown support. With that installed, your //text/x-markdown// tiddlers will be relinked along with your wiki tiddlers.
 
 This plugin is designed to work against the &lt;a href=&quot;https://tiddlywiki.com/plugins/tiddlywiki/markdown/&quot;&gt;core ''tiddlywiki/markdown'' plugin&lt;/a&gt;, however, it will mostly support any other markdown plugin you choose to use (such as ''anstosa/tw5-markdown'' or others).
 
@@ -12089,37 +12271,69 @@ For those unfamiliar with ''tiddlywiki/markdown'', you can configure what ~WikiS
 To install //Relink-markdown//, first install //Relink//, then drag the following pill button onto your project:
 
 @@text-align:center;
-&lt;$link to=&lt;&lt;plugin&gt;&gt; class=&quot;relink-dragger relink-markdown&quot;&gt;Markdown support!&lt;/$link&gt;
+&lt;$link to={{!!plugin}} class=&quot;relink-dragger relink-markdown&quot;&gt;Markdown support!&lt;/$link&gt;
 @@
 </pre>
 </div>
-<div caption="Mithril armor" tags="Frodo" title="Mithril">
-<pre>Mithril is armor worn by [[Frodo]], given by [[Bilbo Baggins|BilboBaggins]]
+<div caption="Titles" plugin="$:/plugins/flibbles/relink-titles" tags="Plugin" title="Plugins/Titles">
+<pre>{{$:/core/images/warning}} ''Do not use this plugin yet!'' It's currently in alpha and is subject to change. It should be done in a few days though.
+
+The //Relink// supplemental child-plugin, //Relink-titles// allows for other tiddlers to have their titles renamed when specific target tiddlers are relinked. Usually, these other tiddlers will relate to the target tiddler in some way.
+
+&lt;$list filter=&quot;[tag[Titles]]&quot;&gt;
+
+!! {{!!caption}}
+
+&lt;&lt;&lt;
+
+&lt;$transclude /&gt;
+
+&lt;&lt;&lt;
+
+&lt;/$list&gt;
+
+!!! Install
+
+To install //Relink-titles//, first install //Relink//, then drag the following pill button onto your project:
+
+@@text-align:center;
+&lt;$link to={{!!plugin}} class=&quot;relink-dragger relink-titles&quot;&gt;Titles support!&lt;/$link&gt;
+@@
 </pre>
 </div>
-<div caption="Operators" tags="Documentation Construct" title="Operators">
-<pre>\rules except wikilink
-Whenever a filter is processed by Relink, whether in a field, an attribute, or a filtered transclude expression, it will only update the operands of whitelisted operators. Each operator must be configured a particular [[type|Types]].
+<div caption="{{$:/plugins/flibbles/relink-titles/language/FilterPresets/Custom/Caption}}" list-after="" tags="Titles" title="Plugins/Titles/custom">
+<pre>If you wish, you can customize the generated filter used to determine what tiddlers are renamed, and how. During a relink of a target tiddler, every tiddler will be passed to this filter one at a time. If the filter produces any output, that tiddler will be renamed to the first result.
 
-''Suffixes'' can optionally be a part of a whitelist configuration. Let's say you whitelist the operator `myOperator:mySuffix`. The only instances of //myOperator//'s which will be updated are when they have the suffix //mySuffix//.
+These variables are accessable to the filter:
 
-However, if you whitelisted just `myOperator`, then its operand will update regardless of whether it's `[myOperator[myTitle]]` or `[myOperator:someSuffix[myTitle]]` or whatever. The suffix is ignored.
+* `fromTiddler`: This is the title that the target tiddler is being renamed from.
+* `toTiddler`: This is what the target tiddler is being renamed to.
 
-`[field:title[]]` is another good example. It's a default configuration which will only update //field// if it's suffix is set to //title//.
+Also, other plugins are able to add their own //Relink-titles// presets using the &lt;&lt;tag $:/tags/flibbles/relink-titles/FilterPreset&gt;&gt; tag.
+</pre>
+</div>
+<div caption="{{$:/plugins/flibbles/relink-titles/language/FilterPresets/Directory/Caption}}" tags="Titles" title="Plugins/Titles/directory">
+<pre>This //Titles// setting is for when your tiddlers are set up hierarchically, like a filesystem. When renaming a target tiddler, //Relink// will change the titles of all tiddlers that would be considered nested within the target tiddler. For instance:
 
-!!! Defaults
+```
+        Images
+        ├── ...
+        ├── Images/2019
+        │       ├── Images/2019/01-Trip-to-Spain
+        │       ├── Images/2019/05-School
+        │       └── Images/2019/12-Christmas
+        └── ...
+```
 
-`tag`, `title`, and `field:title` are whitelisted by default. That means on rename //MyTiddler// -&gt; //New Tiddler//:
+Renaming `Images` to `Pictures` would also rename
 
-`[title[MyTiddler]] [tag[MyTiddler]!field:title[MyTiddler]]`
+* `Images/2019` to `Pictures/2019`
+* `Images/2019/Trip-to-Spain` to `Pictures/2019/Trip-to-Spain`
+* ...and so on.
 
-becomes
+If you were to instead rename `Images/2019` to `Images/2020`, then all of the `Images/2019/*` files would be properly renamed, but `Images` would remain untouched.
 
-`[title[New Tiddler]] [tag[New Tiddler]!field:title[New Tiddler]]`
-
-''Title'' is special. If it's whitelisted, then it includes all shorthands for title. All runs of the filter: `[title[MyTiddler]] [[MyTiddler]] MyTiddler &quot;MyTiddler&quot; 'MyTiddler'` would all be changed on a rename of //MyTiddler//.
-
-&lt;&lt;link-to-tab Demo Demo/Filters Demo&gt;&gt;
+This is also effectively //moves// directories and their contents. Let's suppose we renamed `Images` to `Archive/Images`. All nested tiddlers of `Images` would likewise have `Archive/` appended to them. 
 </pre>
 </div>
 <div caption="Pragma //(//\//define, //\//rules, ...)//" tags="Documentation WikiText" title="Pragma">
@@ -12338,6 +12552,19 @@ a.relink-markdown.relink-dragger {
 </div>
 <div title="Templates/now">
 <pre>&lt;&lt;now [UTC]YYYY0MM0DD0hh0mm0ssXXX&gt;&gt;
+</pre>
+</div>
+<div title="Templates/Plugin">
+<pre>&lt;$tiddler tiddler=&lt;&lt;currentTab&gt;&gt; &gt;
+
+&lt;$tiddler tiddler={{!!plugin}}&gt;
+
+&lt;$transclude tiddler=&quot;$:/core/ui/Components/plugin-info&quot; /&gt;
+&lt;/$tiddler&gt;
+
+&lt;$transclude /&gt;
+
+&lt;/$tiddler&gt;&lt;/$tiddler&gt;
 </pre>
 </div>
 <div title="Templates/release-date">
