@@ -8,13 +8,15 @@ var utils = require("test/utils");
 
 
 function test(target, expected, options) {
-	var text;
-	[text, expected, options] = utils.prepArgs("", expected, options);
+	var text = target;
+	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var failCount = options.fails || 0;
 	options.target = target
 	var results = utils.relink({text: text}, options);
 	var changed = options.wiki.getTiddler(expected);
-	expect(changed && changed.fields.title).toEqual(expected);
+	expect(changed).not.toBeUndefined();
+	expect(changed.fields.text).toBe(target); // the text should be the old target name
+	expect(changed.fields.title).toEqual(expected);
 	if (expected !== target) {
 		expect(options.wiki.getTiddler(target)).toBeUndefined();
 	}
@@ -62,14 +64,16 @@ it("doesn't infinitely loop over tiddlers", function() {
 	test("from here/sub", "from here/sub-changed", {wiki: wiki});
 });
 
-/*it("handles name collisions", function() {
+/*
+it("handles name collisions", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		configTiddler("[[A]]"),
 		{title: "A"},
 		{title: "B"}]);
 	test("$:/prefix/from here", "Z", {wiki: wiki, errorCount: 2});
-});*/
+});
+*/
 
 "maybe handles malformed tiddlers gracefully??";
 

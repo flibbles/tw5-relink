@@ -1,7 +1,7 @@
 caption: {{$:/plugins/flibbles/relink-titles/language/FilterPresets/Custom/Caption}}
 list-after: 
 tags: Titles
-title: Titles/custom
+title: Plugins/Titles/custom
 
 If you wish, you can customize the generated filter used to determine what tiddlers are renamed, and how. During a relink of a target tiddler, every tiddler will be passed to this filter one at a time. If the filter produces any output, that tiddler will be renamed to the first result.
 
