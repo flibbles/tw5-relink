@@ -45,3 +45,5 @@ To install //Relink-markdown//, first install //Relink//, then drag the followin
 @@text-align:center;
 <$link to={{!!plugin}} class="relink-dragger relink-markdown">Markdown support!</$link>
 @@
+
+<<link-to-tab Demo Demo/Markdown Demo>>

@@ -26,3 +26,5 @@ To install //Relink-titles//, first install //Relink//, then drag the following 
 @@text-align:center;
 <$link to={{!!plugin}} class="relink-dragger relink-titles">Titles support!</$link>
 @@
+
+<<link-to-tab Demo Demo/Titles Demo>>
