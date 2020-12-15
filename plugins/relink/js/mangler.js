@@ -24,6 +24,11 @@ exports.relinkmangler = RelinkManglerWidget;
 
 RelinkManglerWidget.prototype = new Widget();
 
+// This wraps alert so it can be monkeypatched during testing.
+RelinkManglerWidget.prototype.alert = function(message) {
+	alert(message);
+};
+
 RelinkManglerWidget.prototype.handleAddFieldEvent = function(event) {
 	var param = event.paramObject;
 	if (typeof param !== "object" || !param.field) {
@@ -36,7 +41,7 @@ RelinkManglerWidget.prototype.handleAddFieldEvent = function(event) {
 		return true;
 	}
 	if(!$tw.utils.isValidFieldName(trimmedName)) {
-		language.alert($tw.language.getString(
+		this.alert($tw.language.getString(
 			"InvalidFieldName",
 			{variables:
 				{fieldName: trimmedName}
@@ -64,14 +69,14 @@ RelinkManglerWidget.prototype.handleAddParameterEvent = function(event) {
 	var param = event.paramObject;
 	if (param && param.macro && param.parameter) {
 		if (/\s/.test(param.macro.trim())) {
-			language.alert(language.getString(
+			this.alert(language.getString(
 				"Error/InvalidMacroName",
 				{ variables: {macroName: param.macro},
 				  wiki: this.wiki
 				}
 			));
 		} else if (/[ \/]/.test(param.parameter.trim())) {
-			language.alert(language.getString(
+			this.alert(language.getString(
 				"Error/InvalidParameterName",
 				{ variables: {parameterName: param.parameter},
 				  wiki: this.wiki
@@ -88,14 +93,14 @@ RelinkManglerWidget.prototype.handleAddAttributeEvent = function(event) {
 	var param = event.paramObject;
 	if (param && param.element && param.attribute) {
 		if (/[ \/]/.test(param.element.trim())) {
-			language.alert(language.getString(
+			this.alert(language.getString(
 				"Error/InvalidElementName",
 				{ variables: {elementName: param.element},
 				  wiki: this.wiki
 				}
 			));
 		} else if (/[ \/]/.test(param.attribute.trim())) {
-			language.alert(language.getString(
+			this.alert(language.getString(
 				"Error/InvalidAttributeName",
 				{ variables: {attributeName: param.attribute},
 				  wiki: this.wiki

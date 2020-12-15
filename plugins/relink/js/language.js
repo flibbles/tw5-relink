@@ -26,15 +26,6 @@ exports.logAll = function(entry, title, from, to) {
 	}
 };
 
-function logRelink(raw, title, from, to) {
-	return "Renaming '"+from+"' to '"+to+"' in '" + title + "': "+raw;
-};
-
-// This wraps alert so it can be monkeypatched during testing.
-exports.alert = function(message) {
-	alert(message);
-};
-
 exports.getString = function(title, options) {
 	title = "$:/plugins/flibbles/relink/language/" + title;
 	return options.wiki.renderTiddler("text/plain", title, options);
@@ -62,4 +53,8 @@ exports.reportFailures = function(failureList, options) {
 		}
 	});
 	logger.alert(placeholder.getPreamble() + alertString + "\n" + reportList.join(""));
+};
+
+function logRelink(raw, title, from, to) {
+	return "Renaming '"+from+"' to '"+to+"' in '" + title + "': "+raw;
 };

@@ -5,7 +5,7 @@ Tests the relink mangler used to add fields in configuration.
 \*/
 
 var utils = require("test/utils");
-var language = require("$:/plugins/flibbles/relink/js/language.js");
+var Mangler = require("$:/plugins/flibbles/relink/js/mangler.js").relinkmangler;
 var prefix = "$:/config/flibbles/relink/";
 var defaultTiddler = "$:/config/flibbles/relink/settings/default-type";
 
@@ -20,7 +20,7 @@ function test(type, paramObject, options) {
 	var event = { type: type, paramObject: paramObject };
 	var results = {wiki: wiki, alerts: []};
 	var appendAlert = function(message) { results.alerts.push(message); };
-	utils.monkeyPatch(language, "alert", appendAlert, function() {
+	utils.monkeyPatch(Mangler.prototype, "alert", appendAlert, function() {
 		results.output = mangler.dispatchEvent(event);
 	});
 	return results;
