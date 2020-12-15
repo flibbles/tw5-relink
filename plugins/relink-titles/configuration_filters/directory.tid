@@ -3,4 +3,4 @@ filter: [removeprefix<fromTiddler>prefix[/]addprefix<toTiddler>]
 tags: $:/tags/flibbles/relink-titles/Filter
 title: $:/plugins/flibbles/relink-titles/configuration/filters/directory
 
-For wikis set up hierarchically like a filesystem, this option will update all tiddlers nested inside the target tiddler. i.e. `fromTiddler/subdir` becomes `toTiddler/subdir`.
+{{$:/plugins/flibbles/relink-titles/language/Directory/Description}}

@@ -2,7 +2,8 @@ title: $:/plugins/flibbles/relink-titles/language/
 
 Caption: Titles
 Custom/Caption: Custom
-Directory/Caption: rename subdirectories
+Directory/Caption: Rename subdirectories
+Directory/Description: For wikis set up hierarchically using `/`, like a filesystem. This option will update all tiddlers nested inside the target tiddler. i.e. `fromTiddler/path/file` becomes `toTiddler/path/file`.
 Prefix/Caption: prefix for $:/prefix
 Help: See the <a href={{{ [{$:/plugins/flibbles/relink-titles!!demo}addsuffix[#Plugins/Titles]] }}}>//Relink-titles// documentation page</a> for details.
 Hint: The variables `fromTiddler` and `toTiddler` are defined as what the triggering relinked tiddler was and will be called.
