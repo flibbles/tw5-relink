@@ -133,8 +133,8 @@ it("doesn't wipe the content of changed tiddler", function() {
 	});
 	expect(wiki.getTiddler("to there/path/end").fields.text).toBe("Not clobbered");
 	expect(logs).toEqual([
-		"Renaming 'from here' to 'to there' in 'from here/path': title: to there/path",
-		"Renaming 'from here' to 'to there' in 'from here/path/end': title: to there/path/end"]);
+		"Renaming 'from here' to 'to there' in 'from here/path': title: from here/path",
+		"Renaming 'from here' to 'to there' in 'from here/path/end': title: from here/path/end"]);
 });
 
 it("doesn't clobber existing tiddlers", function() {
@@ -169,7 +169,7 @@ it("reports", function() {
 		{title: "from/target"},
 		{title: "from"}]);
 	var output = wiki.filterTiddlers("[[from/target]relink:report[from]]");
-	expect(output).toEqual(["title: from/target-changed"]);
+	expect(output).toEqual(["title: from/target"]);
 });
 
 it("reports for dry-run", function() {
@@ -191,7 +191,7 @@ it("reports for dry-run: bad pidgeon-holing", function() {
 		{title: "from/C"},
 		{title: "from"}]);
 	var output = wiki.filterTiddlers("[enlist[from/A from/B from/C]relink:report[from]]");
-	expect(output).toEqual(["title: pidgeonhole", "title: pidgeonhole", "title: pidgeonhole"]);
+	expect(output).toEqual(["title: from/A", "title: from/B", "title: from/C"]);
 });
 
 it("tries not to let you rename every single tiddler", function() {

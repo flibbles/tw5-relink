@@ -31,7 +31,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 	var entry = new PrettyLinkEntry();
 	entry.caption = caption;
-	entry.link = toTitle;
+	entry.link = fromTitle;
 	entry.output = this.makeLink(toTitle, caption, options);
 	if (entry.output === undefined) {
 		entry.impossible = true;

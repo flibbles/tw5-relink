@@ -20,7 +20,7 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 var TitleEntry = EntryNode.newType("title");
 
 TitleEntry.prototype.report = function() {
-	return ["title: " + this.output];
+	return ["title: " + this.title];
 };
 
 exports['title'] = function(tiddler, fromTitle, toTitle, changes, options) {
@@ -34,6 +34,7 @@ exports['title'] = function(tiddler, fromTitle, toTitle, changes, options) {
 			var result = output[0];
 			if (result && (result !== tiddler.fields.title || fromTitle === toTitle)) {
 				var entry = new TitleEntry();
+				entry.title = tiddler.fields.title;
 				if (fromTitle !== toTitle && (options.wiki.getTiddler(result) || cache.touched[result])) {
 					// There's already a tiddler there. We won't clobber it.
 					entry.impossible = true;

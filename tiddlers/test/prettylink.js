@@ -18,7 +18,7 @@ describe("prettylink", function() {
 
 it('prettylinks', function() {
 	var r = testText("Link to [[from here]].");
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': [[to there]]"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': [[from here]]"]);
 	testText("Link to [[description|from here]].");
 	testText("Link to [[description|from here]].", {to: "to|there"});
 	testText("Link to [[weird]desc|from here]].");
@@ -54,7 +54,7 @@ it('unpretty and without caption', function() {
 	                 utils.placeholder(1,unquotable) +
 	                 "Link to <$link to=<<relink-1>>/>.",
 	                 {to: unquotable});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+unquotable+"' in 'test': [["+unquotable+"]]"]);
+	expect(r.log).toEqual(["Renaming 'from here' to '"+unquotable+"' in 'test': [[from here]]"]);
 });
 
 it('unpretty, without caption, and pre 5.1.20', function() {
