@@ -158,6 +158,16 @@ it("reports", function() {
 	expect(output).toEqual(["title: from/target-changed"]);
 });
 
+it("reports for dry-run", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		customTiddler("[prefix<fromTiddler>]"),
+		{title: "from/target"},
+		{title: "from"}]);
+	var output = wiki.filterTiddlers("[[from/target]relink:report[from]]");
+	expect(output).toEqual(["title: from/target"]);
+});
+
 "maybe handles malformed tiddlers gracefully??";
 
 });
