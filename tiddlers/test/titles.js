@@ -140,6 +140,12 @@ it("doesn't rename two tiddlers to the same thing", function() {
 	expect(r.wiki.getTiddler("pidgeonhole").fields.text).toBe("I was A");
 });
 
+it("doesn't make same-name changes during live relinking", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(customTiddler("[prefix<fromTiddler>]"));
+	var r = test("from here/test", "from here/test", {wiki: wiki});
+});
+
 it("reports", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
@@ -178,6 +184,11 @@ it("tries not to let you rename every single tiddler", function() {
 	test("bystander", "bystander", {wiki: wiki});
 });
 
-"maybe handles malformed tiddlers gracefully??";
+it("handles malformed custom filters gracefully", function() {
+	var wiki = new $tw.Wiki();
+	// It's missing its closing bracket
+	wiki.addTiddler(customTiddler("[removeprefix<fromTiddler>addprefix<toTiddler>"));
+	test("from here/test", "from here/test", {wiki: wiki});
+});
 
 });

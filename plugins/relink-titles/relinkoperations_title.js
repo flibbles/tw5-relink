@@ -34,7 +34,7 @@ exports['title'] = function(tiddler, fromTitle, toTitle, changes, options) {
 			var filter = filters[i];
 			var output = filter.call(options.wiki, [tiddler.fields.title], widget);
 			var result = output[0];
-			if (result) {
+			if (result && (result !== tiddler.fields.title || fromTitle === toTitle)) {
 				var entry = new TitleEntry();
 				if (fromTitle !== toTitle && (options.wiki.getTiddler(result) || cache.touched[result])) {
 					// There's already a tiddler there. We won't clobber it.
