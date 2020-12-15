@@ -31,17 +31,7 @@ exports.logAll = function(entry, title, from, to, options) {
 
 exports.logRelink = function(raw, args, title, from, to, options) {
 	raw = "Renaming '"+from+"' to '"+to+"' in '" + title + "': "+raw;
-	// This is cheap, but whatevs. To do a proper
-	// rendering would require working through a wiki
-	// object. Too heavy weight for log messages.
-	var msg = raw.replace(/<<([^<>]+)>>/g, function(match, key) {
-		var value = args[key];
-		if (key === "field") {
-			value = descriptor(value);
-		};
-		return value || ("<<"+key+">>");
-	});
-	console.log(msg);
+	console.log(raw);
 };
 
 // This wraps alert so it can be monkeypatched during testing.
@@ -76,25 +66,4 @@ exports.reportFailures = function(failureList, options) {
 		}
 	});
 	logger.alert(placeholder.getPreamble() + alertString + "\n" + reportList.join(""));
-};
-
-exports.log = {
-	"html": "<<<element>> /> element",
-	"field": "<<field>>",
-	"filteredtransclude": "filtered transclusion",
-	"image": "image",
-	"import": "\\import filter",
-	"macrodef": "<<macro>> definition",
-	"prettylink": "prettylink",
-	"syslink": "syslink",
-	"transclude": "transclusion",
-	"wikilink": "CamelCase link",
-};
-
-function descriptor(field) {
-	if (field === "tags") {
-		return "tags";
-	} else {
-		return field + " field" ;
-	}
 };
