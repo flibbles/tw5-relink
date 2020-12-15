@@ -36,7 +36,7 @@ exports['title'] = function(tiddler, fromTitle, toTitle, changes, options) {
 			var result = output[0];
 			if (result) {
 				var entry = new TitleEntry();
-				if ((options.wiki.getTiddler(result) && fromTitle !== toTitle) || cache.touched[result]) {
+				if (fromTitle !== toTitle && (options.wiki.getTiddler(result) || cache.touched[result])) {
 					// There's already a tiddler there. We won't clobber it.
 					entry.impossible = true;
 				} else {

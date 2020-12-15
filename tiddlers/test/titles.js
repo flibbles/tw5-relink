@@ -168,6 +168,18 @@ it("reports for dry-run", function() {
 	expect(output).toEqual(["title: from/target"]);
 });
 
+it("reports for dry-run: bad pidgeon-holing", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		customTiddler("[prefix<fromTiddler>then[pidgeonhole]]"),
+		{title: "from/A"},
+		{title: "from/B"},
+		{title: "from/C"},
+		{title: "from"}]);
+	var output = wiki.filterTiddlers("[enlist[from/A from/B from/C]relink:report[from]]");
+	expect(output).toEqual(["title: pidgeonhole", "title: pidgeonhole", "title: pidgeonhole"]);
+});
+
 "maybe handles malformed tiddlers gracefully??";
 
 });
