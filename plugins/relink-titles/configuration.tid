@@ -3,42 +3,27 @@ tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink-titles/configuration
 
 \define lingo-base() $:/plugins/flibbles/relink-titles/language/
-\define filterTiddler() $:/config/flibbles/relink-titles/filter
-\define custom-state() $:/state/flibbles/relink-titles/custom
+\define customTiddler() $:/config/flibbles/relink-titles/custom
 
 <<lingo Help>>
 
-<$vars nl="""
-""">
-
 <table>
-
 <tbody>
-
-<$list filter="[[$:/tags/flibbles/relink-titles/FilterPreset]tagging[]]">
-
-<$vars filter={{{ [{!!filter}addsuffix<nl>] }}} >
-
+<$list filter="[[$:/tags/flibbles/relink-titles/Filter]tagging[]]">
 <tr>
-
 <td>
-
 <$checkbox
-	tiddler=<<filterTiddler>>
+	tiddler={{{ [all[current]addprefix[$:/config/flibbles/relink-titles/disabled/]] }}}
 	field="text"
-	checked={{{ [<filterTiddler>get[text]join[]search<filter>] [<filterTiddler>get[text]!search<filter>addprefix<filter>] [<filter>] +[first[]] }}}
-	unchecked={{{ [<filterTiddler>get[text]search<filter>split<filter>join[]] [<filterTiddler>get[text]!search<filter>] [[]] +[first[]] }}}
-> ''{{!!caption}}'':</$checkbox>
+	checked="enabled"
+	unchecked="disabled"
+	default="enabled"
+> ''{{!!caption}}''</$checkbox></td><td>
 <$transclude />
-
-</td>
-</tr>
-</$vars></$list>
-
+</td></tr></$list>
 </tbody></table>
 
-<$edit tag="textarea" tiddler=<<filterTiddler>> class="tc-edit-texteditor"/>
+!!! <<lingo Custom/Caption>>
 
 <<lingo Hint>>
-
-</$vars>
+<$edit tag="textarea" tiddler=<<customTiddler>> class="tc-edit-texteditor"/>
