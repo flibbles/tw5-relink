@@ -29,3 +29,16 @@ title: $:/plugins/flibbles/relink-titles/configuration
 
 <<lingo Hint>>
 <$edit tag="textarea" tiddler=<<customTiddler>> class="tc-edit-texteditor"/>
+
+<!-- We want to sanity check the custom tiddler, but we can only do it on
+     Tiddlywiki versions that support "subfilter". So first two filter steps
+     confirm that subfilter isn't just a field:subfilter[] operator. -->
+<$vars
+	fromTiddler="testTiddler"
+	toTiddler="testTiddler">
+<$list
+	variable="erroneousTiddler"
+	filter="[subfilter<customTiddler>field:title<customTiddler>subfilter{$:/config/flibbles/relink-titles/custom}]" >
+
+{{$:/core/images/warning}} <<lingo Warning>>
+</$list></$vars>

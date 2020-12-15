@@ -105,14 +105,6 @@ it("can have empty disabler tiddlers", function() {
 	test("from here/test", "to there/test-A", {wiki: wiki});
 });
 
-/*
-it("tries not to let you rename every single tiddler", function() {
-	var wiki = new $tw.Wiki();
-	wiki.addTiddler(customTiddler("[[Agent Smith]]"));
-	test("bystander", "bystander", {wiki: wiki});
-});
-*/
-
 it("doesn't infinitely loop over tiddlers", function() {
 	var wiki = new $tw.Wiki();
 	// The resulting tiddler from this would be applicable for renaming,
@@ -178,6 +170,12 @@ it("reports for dry-run: bad pidgeon-holing", function() {
 		{title: "from"}]);
 	var output = wiki.filterTiddlers("[enlist[from/A from/B from/C]relink:report[from]]");
 	expect(output).toEqual(["title: pidgeonhole", "title: pidgeonhole", "title: pidgeonhole"]);
+});
+
+it("tries not to let you rename every single tiddler", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(customTiddler("[[Agent Smith]]"));
+	test("bystander", "bystander", {wiki: wiki});
 });
 
 "maybe handles malformed tiddlers gracefully??";

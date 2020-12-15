@@ -23,12 +23,14 @@ There are several preset rules you can use. Or you can write a custom rename rul
 
 !!! Custom rules
 
-If you wish, you can add a custom filter rule used to determine what tiddlers are renamed, and how. During a relink of a target tiddler, every tiddler will be passed to this filter one at a time (after they've passed through all other rules). If the filter produces any output, the first result will be used to rename the given tiddler.
+If you wish, you can add a custom filter rule used to determine what tiddlers are renamed, and how. During a relink of a target tiddler, every tiddler will be passed to this filter one at a time (assuming they've passed through all other rules unchanged). If the filter produces any output, the first result will be used to rename the given tiddler.
 
 These variables are accessable to the filter:
 
 * `fromTiddler`: This is the title that the target tiddler is being renamed from.
 * `toTiddler`: This is what the target tiddler is being renamed to.
+
+''Note:'' //Relink-titles// will attempt to recognize erroneous filters, such as any that would actually change the very system tiddler the filter is stored in. It will provide a warning message and likely throw the filter out during relinking, but this safeguard is not perfect. If you're adding a custom rename rule, I recommend backing up your project and then testing it. Bad rules can cause real damage.
 
 !!! Third Party Integration
 

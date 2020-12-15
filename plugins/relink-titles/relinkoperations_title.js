@@ -58,9 +58,10 @@ function getCache(fromTitle, toTitle, options) {
 		// we cache the dummy widget, the filters, and the touch list
 		// in the options, so we only need to do this all once for
 		// for an entire relink operation
+		var widget = getWidget(fromTitle, toTitle, options);
 		options.__titlesCache = {
-			widget: getWidget(fromTitle, toTitle, options),
-			filters: getFilters(fromTitle, toTitle, options),
+			widget: widget,
+			filters: getFilters(widget, options),
 			touched: Object.create(null)
 		};
 	}
@@ -74,30 +75,46 @@ function getWidget(fromTitle, toTitle, options) {
 	return options.wiki.makeWidget(null, {parentWidget: parentWidget});
 };
 
-function getFilters(fromTitle, toTitle, options) {
+function getFilters(widget, options) {
 	var subFilters = [];
 	$tw.utils.each(options.wiki.getTiddlersWithTag(filterTag), function(title) {
-		var filter = getTiddlerFilter(title, "filter", options);
+		var filter = getPresetFilter(title, options);
 		if (filter) {
 			subFilters.push(filter);
 		}
 	});
-	var filter = getTiddlerFilter(customFilterTiddler, "text", options);
+	var filter = getCustomFilter(widget, options);
 	if (filter) {
 		subFilters.push(filter);
 	}
 	return subFilters;
 };
 
-function getTiddlerFilter(title, field, options) {
+function getCustomFilter(widget, options) {
+	return options.wiki.getCacheForTiddler(customFilterTiddler, "relinkFilter", function() {
+		var tiddler = options.wiki.getTiddler(customFilterTiddler);
+		if (tiddler && tiddler.fields.text) {
+			var filter = options.wiki.compileFilter(tiddler.fields.text);
+			// We sanity test the custom filter. Make sure it wouldn't change
+			// itself.
+			var testOutput = filter.call(options.wiki, [customFilterTiddler], widget);
+			if (testOutput.length == 0) {
+				return filter;
+			}
+		}
+		return null;
+	});
+};
+
+function getPresetFilter(title, options) {
 	var configTiddler = options.wiki.getTiddler(configPrefix + title);
 	if (configTiddler && configTiddler.fields.text === "disabled") {
 		return null;
 	}
 	return options.wiki.getCacheForTiddler(title, "relinkFilter", function() {
 		var tiddler = options.wiki.getTiddler(title);
-		if (tiddler && tiddler.fields[field]) {
-			return options.wiki.compileFilter(tiddler.fields[field]);
+		if (tiddler && tiddler.fields.filter) {
+			return options.wiki.compileFilter(tiddler.fields.filter);
 		} else {
 			return null;
 		}

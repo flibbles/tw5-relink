@@ -7,3 +7,4 @@ Directory/Description: For wikis set up hierarchically using `/`, like a filesys
 Prefix/Caption: prefix for $:/prefix
 Help: See the <a href={{{ [{$:/plugins/flibbles/relink-titles!!demo}addsuffix[#Plugins/Titles]] }}}>//Relink-titles// documentation page</a> for details.
 Hint: The variables `fromTiddler` and `toTiddler` are defined as what the triggering relinked tiddler was and will be called.
+Warning: ''Warning:'' This filter appears unsafe. It seems to indiscriminately change tiddlers into ''<$text text=<<erroneousTiddler>> />'', and it will probably be thrown out.
