@@ -3,13 +3,15 @@ plugin: $:/plugins/flibbles/relink-titles
 tags: Plugin
 title: Plugins/Titles
 
-{{$:/core/images/warning}} ''Do not use this plugin yet!'' It's currently in alpha and is subject to change. It should be done in a few days though.
-
 The //Relink// supplemental child-plugin, //Relink-titles// allows for other tiddlers to have their titles renamed when specific target tiddlers are relinked. Usually, these other tiddlers will relate to the target tiddler in some way.
 
-<$list filter="[tag[Titles]]">
+There are several preset rules you can use. Or you can write a custom rename rule for your project. //Or// third party plugins can introduce their own preset rules.
 
-!! {{!!caption}}
+!!! Preset Rules
+
+<$list filter="[tag[TitlesPreset]]">
+
+!!!! {{!!caption}}
 
 <<<
 
@@ -18,6 +20,26 @@ The //Relink// supplemental child-plugin, //Relink-titles// allows for other tid
 <<<
 
 </$list>
+
+!!! Custom rules
+
+If you wish, you can add a custom filter rule used to determine what tiddlers are renamed, and how. During a relink of a target tiddler, every tiddler will be passed to this filter one at a time (after they've passed through all other rules). If the filter produces any output, the first result will be used to rename the given tiddler.
+
+These variables are accessable to the filter:
+
+* `fromTiddler`: This is the title that the target tiddler is being renamed from.
+* `toTiddler`: This is what the target tiddler is being renamed to.
+
+!!! Third Party Integration
+
+If you have a plugin of your own, you can integrate with //Relink-titles// so it will relink titles related to each other in ways specific to your plugin. All you need to do is create a tiddler in your plugin with the following fields:
+
+* ''caption'': This will show up next to the checkbox in the //Relink-titles// configuration page.
+* ''filter'': A filter that follows the same rules as the "Custom" textbox below. This is the rule that your extension intruduces.
+* ''tags'': Must contain <<tag $:/tags/flibbles/relink-titles/Filter>>
+* ''text'': The tiddler's body should contain a //brief// description of what your rule is for.
+
+By default, your rules will automatically be enabled, but the user can disable them from the //Relink// or //Relink-titles// configuration menu. There's an [[example rule in this demo|Plugins/Titles/example]] that you can check out. 
 
 !!! Install
 

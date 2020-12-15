@@ -19,7 +19,9 @@ title: $:/plugins/flibbles/relink-titles/configuration
 	unchecked="disabled"
 	default="enabled"
 > ''{{!!caption}}''</$checkbox></td><td>
+
 <$transclude />
+
 </td></tr></$list>
 </tbody></table>
 

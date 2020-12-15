@@ -1,5 +1,5 @@
-caption: {{$:/plugins/flibbles/relink-titles/language/FilterPresets/Directory/Caption}}
-tags: Titles
+caption: {{$:/plugins/flibbles/relink-titles/language/Directory/Caption}}
+tags: TitlesPreset
 title: Plugins/Titles/directory
 
 This //Titles// setting is for when your tiddlers are set up hierarchically, like a filesystem. When renaming a target tiddler, //Relink// will change the titles of all tiddlers that would be considered nested within the target tiddler. For instance:
