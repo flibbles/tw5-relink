@@ -10,7 +10,6 @@ only supports single-value fields.
 "use strict";
 
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
-var log = require('$:/plugins/flibbles/relink/js/language.js').logRelink;
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var FieldEntry = EntryNode.newType("field");

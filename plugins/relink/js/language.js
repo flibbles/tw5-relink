@@ -19,19 +19,15 @@ exports.eachImpossible = function(rootEntry, method) {
 	}
 };
 
-exports.logAll = function(entry, title, from, to, options) {
+exports.logAll = function(entry, title, from, to) {
 	var report = entry.report();
 	for (var i = 0; i < report.length; i++) {
-		exports.logRelink(report[i], entry, title, from, to, options);
+		console.log(logRelink(report[i], title, from, to));
 	}
-	//if (entry.impossible) {
-		//return;
-	//}
 };
 
-exports.logRelink = function(raw, args, title, from, to, options) {
-	raw = "Renaming '"+from+"' to '"+to+"' in '" + title + "': "+raw;
-	console.log(raw);
+function logRelink(raw, title, from, to) {
+	return "Renaming '"+from+"' to '"+to+"' in '" + title + "': "+raw;
 };
 
 // This wraps alert so it can be monkeypatched during testing.
