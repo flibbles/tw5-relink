@@ -32,20 +32,21 @@ exports['title'] = function(tiddler, fromTitle, toTitle, changes, options) {
 		var widget = cache.widget;
 		for (var i = 0; i < filters.length; i++) {
 			var filter = filters[i];
-			var outTitle = filter.call(options.wiki, [tiddler.fields.title], widget);
-			if (outTitle[0]) {
+			var output = filter.call(options.wiki, [tiddler.fields.title], widget);
+			var result = output[0];
+			if (result) {
 				var entry = new TitleEntry();
-				if (options.wiki.getTiddler(outTitle[0])) {
+				if (options.wiki.getTiddler(result) || cache.touched[result]) {
 					// There's already a tiddler there. We won't clobber it.
 					entry.impossible = true;
 				} else {
-					entry.output = outTitle[0];
+					entry.output = result;
 				}
 				changes.title = entry;
 				// Record that we've touched this one, so we only touch it once.
 				// Both its prior and latter. Neither should be touched again.
 				cache.touched[tiddler.fields.title] = true;
-				cache.touched[outTitle[0]] = true;
+				cache.touched[result] = true;
 				break;
 			}
 		}

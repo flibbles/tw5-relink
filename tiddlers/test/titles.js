@@ -139,6 +139,15 @@ it("doesn't clobber existing tiddlers", function() {
 	expect(r.wiki.getTiddler("AB").fields.text).toBe("original text");
 });
 
+it("doesn't rename two tiddlers to the same thing", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		customTiddler("[prefix<fromTiddler>then[pidgeonhole]]"),
+		{title: "from here/A", text: "I was A"}]);
+	var r = test("from here/B", "from here/B", {wiki: wiki, fails: 1});
+	expect(r.wiki.getTiddler("pidgeonhole").fields.text).toBe("I was A");
+});
+
 it("reports", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
