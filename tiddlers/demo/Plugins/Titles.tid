@@ -43,6 +43,8 @@ If you have a plugin of your own, you can integrate with //Relink-titles// so it
 
 By default, your rules will automatically be enabled, but the user can disable them from the //Relink// or //Relink-titles// configuration menu. There's an [[example rule in this demo|Plugins/Titles/example]] that you can check out. 
 
+If you want your rule to be disabled by default, simply create a tiddler in your plugin called `$:/config/flibbles/relink-titles/disabled/<<yourRulesTiddler>>` with its text set to ''disabled''.
+
 !!! Install
 
 To install //Relink-titles//, first install //Relink//, then drag the following pill button onto your project:
