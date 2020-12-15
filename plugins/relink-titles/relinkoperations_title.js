@@ -16,8 +16,6 @@ var customFilterTiddler = "$:/config/flibbles/relink-titles/custom";
 var filterTag = "$:/tags/flibbles/relink-titles/Filter";
 var configPrefix = "$:/config/flibbles/relink-titles/disabled/";
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
-var language = require("$:/plugins/flibbles/relink/js/language.js");
-
 
 var TitleEntry = EntryNode.newType("title");
 

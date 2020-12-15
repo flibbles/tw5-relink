@@ -29,6 +29,7 @@ exports.startup = function() {
  *  This replaces the existing function in core Tiddlywiki.
  */
 function relinkTiddler(fromTitle, toTitle, options) {
+	options = options || {};
 	var failures = [];
 	var records = this.getRelinkReport(fromTitle, toTitle, options);
 	for (var title in records) {

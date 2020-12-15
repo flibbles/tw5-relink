@@ -119,6 +119,17 @@ it("doesn't wipe the content of changed tiddler", function() {
 		customTiddler("[removeprefix<fromTiddler>prefix[/]addprefix<toTiddler>]"),
 		{title: "from here/path"}]);
 	test("from here/path/end", "to there/path/end", {wiki: wiki});
+
+	// Now we do it again, but manually calling relink without options, because
+	// it's the options field where we cache the info to not clobber tiddlers.
+	wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		customTiddler("[removeprefix<fromTiddler>prefix[/]addprefix<toTiddler>]"),
+		{title: "from here"},
+		{title: "from here/path"},
+		{title: "from here/path/end", text: "Not clobbered"}]);
+	wiki.relinkTiddler("from here", "to there");
+	expect(wiki.getTiddler("to there/path/end").fields.text).toBe("Not clobbered");
 });
 
 it("doesn't clobber existing tiddlers", function() {
