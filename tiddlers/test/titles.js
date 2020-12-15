@@ -139,6 +139,16 @@ it("doesn't clobber existing tiddlers", function() {
 	expect(r.wiki.getTiddler("AB").fields.text).toBe("original text");
 });
 
+it("reports", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		customTiddler("[removeprefix<fromTiddler>addprefix<toTiddler>addsuffix[-changed]]"),
+		{title: "from/target"},
+		{title: "from"}]);
+	var output = wiki.filterTiddlers("[[from/target]relink:report[from]]");
+	expect(output).toEqual(["title: from/target-changed"]);
+});
+
 "maybe handles malformed tiddlers gracefully??";
 
 });
