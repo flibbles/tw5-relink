@@ -1,7 +1,7 @@
-description: <p>Optionally, //Relink// fully supports markdown. It works seemlessly with any of the major markdown plugins.</p><p>{{$:/core/images/warning}} ''Warning:'' Markdown support requires you to download the <<link-to-tab Plugins Plugins/Markdown "//Relink-markdown// supplimental plugin">>.</p>
-list-after: 
-tags: Demo
+description: Optionally, //Relink// fully supports markdown. It works seemlessly with any of the major markdown plugins.
+tags: Demo Supplemental
 type: text/x-markdown
+warning: Markdown support requires you to download the <<link-to-tab Plugins Plugins/Markdown "//Relink-markdown// supplimental plugin">>.
 
 Links: [Link to Frodo](#Frodo)  
 Footnotes[^^1^^]

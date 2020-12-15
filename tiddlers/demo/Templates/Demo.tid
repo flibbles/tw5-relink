@@ -24,10 +24,14 @@ title: Templates/Demo
 </table>
 </$list>
 
-
 @@.relink-demo-description
 <$transclude field="description" />
 @@
+
+<$list filter="[all[current]has[warning]]">
+
+{{$:/core/images/warning}} ''Warning:'' {{!!warning}}
+</$list>
 
 <$list filter="[all[current]search::literal[define relink-]]">
 

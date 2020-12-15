@@ -1,5 +1,6 @@
-description: <p>Optionally, //Relink// can change tiddler titles somehow related to the renamed tiddler. This might include updating assocated settings tiddlers, or nested tiddlers of a filesystem-like directory, or whatever else you wish.</p><p>{{$:/core/images/warning}} ''Warning:'' Titles support requires you to download the <<link-to-tab Plugins Plugins/Titles "//Relink-titles// supplimental plugin">>.</p>
-tags: Demo
+description: Optionally, //Relink// can change tiddler titles somehow related to the renamed tiddler. This might include updating assocated settings tiddlers, or nested tiddlers of a filesystem-like directory, or whatever else you wish.
+tags: Demo Supplemental
+warning: Titles support requires you to download the <<link-to-tab Plugins Plugins/Titles "//Relink-titles// supplimental plugin">>.
 
 <!-- Relink-titles is configured to update
      all filesystem-like nested tiddlers. So,
