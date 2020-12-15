@@ -13,8 +13,9 @@ function testText(text, expected, options) {
 	return results;
 };
 
-function logMessage(toThere) {
-	return "Renaming 'from here' to '"+toThere+"' in filtered transclusion of tiddler 'test'"
+function logMessage(toThere, innerBracketStuff) {
+	innerBracketStuff = innerBracketStuff || '';
+	return "Renaming 'from here' to '"+toThere+"' in 'test': {{{"+innerBracketStuff+"}}}";
 };
 
 describe("filtered transcludes", function() {
@@ -89,18 +90,18 @@ it('rightly judges unpretty', function() {
 });
 
 it('unpretty (degrades to widget)', function() {
-	function test(to, text, expected) {
+	function test(to, text, expected, innerBracket) {
 		var results = testText(text, expected, {to: to});
-		var message = logMessage(to);
+		var message = logMessage(to, innerBracket);
 		expect(results.log).toEqual([message]);
 	};
 	test("bar|here", "{{{[[from here]]}}}", "<$list filter=bar|here/>");
 	test("bar|here", "{{{[[from here]]}}}", "<$list filter=bar|here/>");
-	test("bar|","{{{A||from here}}}","<$list filter=A template=bar|/>");
-	test("cur}","{{{A||from here}}}","<$list filter=A template=cur}/>");
-	test("cur{","{{{A||from here}}}","<$list filter=A template=cur{/>");
+	test("bar|","{{{A||from here}}}","<$list filter=A template=bar|/>", "A||");
+	test("cur}","{{{A||from here}}}","<$list filter=A template=cur}/>", "A||");
+	test("cur{","{{{A||from here}}}","<$list filter=A template=cur{/>", "A||");
 	test("bar|", "{{{[[from here]]|tooltip||Template}}width:50;}.A.B",
-	             "<$list filter=bar| tooltip=tooltip template=Template style=width:50; itemClass='A B'/>");
+	             "<$list filter=bar| tooltip=tooltip template=Template style=width:50; itemClass='A B'/>", "||Template");
 
 	// preserves block newline whitespace
 	test("A|B", "{{{[[from here]]}}}\nTxt", "<$list filter=A|B/>\nTxt");

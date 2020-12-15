@@ -50,12 +50,12 @@ it("touches eligible tiddlers", function() {
 
 it('still relinks tags', function() {
 	var r = testTags("[[from here]] another", ['to there', 'another']);
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in tags of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': tags"]);
 });
 
 it('still relinks lists', function() {
 	var r = testList("[[from here]] another", ['to there', 'another']);
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in list field of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': list"]);
 });
 
 // I can't actually prevent Tiddlywiki from doing this, so might as well
@@ -68,7 +68,7 @@ it('duplicates are removed by TiddlyWiki', function() {
 it('relinks filter field', function() {
 	var r = testField("[title[from here]] stuff", "[title[to there]] stuff",
 	                  {field: "filter", type: "filter"});
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in filter field of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': filter: [title[]]"]);
 });
 
 it('lists work with strange titles', function() {
@@ -131,12 +131,12 @@ it('still respects dontRenameInLists', function() {
 
 it('relinks custom field', function() {
 	var r = testField("from here");
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in test field of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': test"]);
 });
 
 it('relinks custom list', function() {
 	var r = testField("A [[from here]] B", {type: "list"});
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in test field of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': test"]);
 });
 
 it('ignores blank custom field settings', function() {

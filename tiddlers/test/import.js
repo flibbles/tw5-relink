@@ -20,7 +20,7 @@ describe("import pragma", function() {
 
 it('import pragma', function() {
 	var r = testText("\\import [title[from here]]\nstuff.");
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in \\import filter of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': \\import [title[]]"]);
 	testText("\\rules except prettylink\n\\import [[from here]]\nnot prettylink.");
 	testText("\\import [[from|here]]\ndon't parse as prettylink.",
 	         {from: "from|here"});
@@ -38,7 +38,7 @@ it('tricky downgrade', function() {
 	var r = testText("\\import [[from here]]\nstuff",
 	         utils.placeholder(1,to)+"\\import [<relink-1>]\nstuff",
 	         {to: to});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in \\import filter of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test': \\import"]);
 });
 
 it('reports failures', function() {

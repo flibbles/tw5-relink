@@ -23,7 +23,7 @@ describe("syslink", function() {
 it('syslink', function() {
 	var r;
 	r = testText("A $:/sys/link please", {from: "$:/sys/link", to: "$:/to/there"});
-	expect(r.log).toEqual(["Renaming '$:/sys/link' to '$:/to/there' in syslink of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming '$:/sys/link' to '$:/to/there' in 'test': ~$:/sys/link"]);
 	testText("A ~$:/sys/link please", {ignored: true});
 	testText("A ~$:/sys/link please", {from: "~WikiLink", ignored: true});
 	testText("A $:/sys/link please", "A [[to there]] please");

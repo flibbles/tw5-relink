@@ -20,23 +20,17 @@ exports.eachImpossible = function(rootEntry, method) {
 };
 
 exports.logAll = function(entry, title, from, to, options) {
-	var raw = exports.log[entry.name];
-	if (entry.impossible) {
-		return;
+	var report = entry.report();
+	for (var i = 0; i < report.length; i++) {
+		exports.logRelink(report[i], entry, title, from, to, options);
 	}
-	if (raw) {
-		exports.logRelink(raw, entry, title, from, to, options);
-		return;
-	}
-	if (entry.eachChild) {
-		entry.eachChild(function(child) {
-			exports.logAll(child, title, from, to, options);
-		});
-	}
+	//if (entry.impossible) {
+		//return;
+	//}
 };
 
 exports.logRelink = function(raw, args, title, from, to, options) {
-	raw = "Renaming '"+from+"' to '"+to+"' in " + raw + " of tiddler '"+title+"'";
+	raw = "Renaming '"+from+"' to '"+to+"' in '" + title + "': "+raw;
 	// This is cheap, but whatevs. To do a proper
 	// rendering would require working through a wiki
 	// object. Too heavy weight for log messages.

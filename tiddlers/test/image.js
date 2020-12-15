@@ -17,7 +17,7 @@ describe("image", function() {
 
 it("image", function() {
 	var r = testText("Image to [img[from here]].");
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in image of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': [img[]]"]);
 	testText("to [img[from here]][[from here]]");
 	// quotes can make us scan too early for the source
 	testText("[img class='a' [']].",
@@ -115,7 +115,7 @@ it("unpretty source", function() {
 	var r = testText("Image [img[from here]] end",
 	                 "Image <$image source=to]there/> end",
 	                 {to: "to]there"});
-	expect(r.log).toEqual(["Renaming 'from here' to 'to]there' in image of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to]there' in 'test': [img[]]"]);
 	testText("Image [img[Description|from here]] end",
 	         "Image <$image tooltip=Description source=to]there/> end",
 	         {to: "to]there"});
@@ -139,7 +139,7 @@ it("unpretty source and bad widget", function() {
 	var r = testText("Image [img[Description|from here]] end",
 	                 "\\define relink-1() "+title+"\nImage <$image tooltip=Description source=<<relink-1>>/> end",
 	                 {to: title});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+title+"' in image of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'from here' to '"+title+"' in 'test': [img[Description]]"]);
 
 });
 

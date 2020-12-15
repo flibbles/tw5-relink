@@ -21,7 +21,7 @@ describe("wikilink", function() {
 it('wikilinks', function() {
 	var r;
 	r = testText("A WikiLink please", {from: "WikiLink", to: "WikiChange"});
-	expect(r.log).toEqual(["Renaming 'WikiLink' to 'WikiChange' in CamelCase link of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'WikiLink' to 'WikiChange' in 'test': ~WikiLink"]);
 	testText("A ~WikiLink please", {ignored: true});
 	testText("A ~WikiLink please", {from: "~WikiLink", ignored: true});
 	testText("A WikiLink please", "A [[to there]] please");
@@ -44,7 +44,7 @@ it('tricky cases', function() {
 	var tricky = "bad' title]]\"";
 	var macro = utils.placeholder;
 	var r = testText("A WikiLink please", macro(1,tricky)+"A <$link to=<<relink-1>>/> please", {to: tricky});
-	expect(r.log).toEqual(["Renaming 'WikiLink' to '"+tricky+"' in CamelCase link of tiddler 'test'"]);
+	expect(r.log).toEqual(["Renaming 'WikiLink' to '"+tricky+"' in 'test': ~WikiLink"]);
 });
 
 it('respects \\rules', function() {

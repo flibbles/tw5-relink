@@ -128,8 +128,13 @@ it("doesn't wipe the content of changed tiddler", function() {
 		{title: "from here"},
 		{title: "from here/path"},
 		{title: "from here/path/end", text: "Not clobbered"}]);
-	wiki.relinkTiddler("from here", "to there");
+	var logs = utils.collect("log", function() {
+		wiki.relinkTiddler("from here", "to there");
+	});
 	expect(wiki.getTiddler("to there/path/end").fields.text).toBe("Not clobbered");
+	expect(logs).toEqual([
+		"Renaming 'from here' to 'to there' in 'from here/path': title: to there/path",
+		"Renaming 'from here' to 'to there' in 'from here/path/end': title: to there/path/end"]);
 });
 
 it("doesn't clobber existing tiddlers", function() {

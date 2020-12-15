@@ -15,19 +15,15 @@ function testText(text, expected, options) {
 	return results;
 };
 
-function logMessage(toThere, but) {
-	var msg = "Renaming 'from here' to '"+toThere+"' in transclusion of tiddler 'test'"
-	if (but) {
-		msg = "%c" + msg + " %c" + but;
-	}
-	return msg;
-};
-
 // Tests text like testText, but it also checks log message
-function testTextAndLog(text, toTitle, expected, but) {
-	var msg = logMessage(toTitle, but);
+function testTextAndLog(text, toTitle, expected, innerBracketStuff) {
+	innerBracketStuff = innerBracketStuff || '';
+	if (typeof innerBracketStuff === "string") {
+		innerBracketStuff = [innerBracketStuff];
+	}
+	var logs = innerBracketStuff.map((a) => "Renaming 'from here' to '"+toTitle+"' in 'test': {{"+a+"}}");
 	var results = testText(text, expected, {to: toTitle});
-	expect(results.log).toEqual([msg]);
+	expect(results.log).toEqual(logs);
 };
 
 describe("transcludes", function() {
@@ -92,19 +88,19 @@ it('rightly judges unpretty', function() {
 
 it('unpretty (degrades to widget)', function() {
 	var to = "curly {}";
-	function test(text, expected) {
-		testTextAndLog(text, to, expected);
+	function test(text, expected, bracketStuff) {
+		testTextAndLog(text, to, expected, bracketStuff);
 	}
 	test("{{from here}}.", "<$tiddler tiddler='"+to+"'>{{}}</$tiddler>.");
-	test("{{||from here}}.", "<$transclude tiddler='"+to+"'/>.");
-	test("{{other title||from here}}.", "<$tiddler tiddler='other title'><$transclude tiddler='"+to+"'/></$tiddler>.");
-	test("{{from here||Template}}.", "<$tiddler tiddler='"+to+"'>{{||Template}}</$tiddler>.");
-	test("{{from here!!field}}.", "<$tiddler tiddler='"+to+"'>{{!!field}}</$tiddler>.");
-	test("{{from here##index}}.", "<$tiddler tiddler='"+to+"'>{{##index}}</$tiddler>.");
+	test("{{||from here}}.", "<$transclude tiddler='"+to+"'/>.", "||");
+	test("{{other title||from here}}.", "<$tiddler tiddler='other title'><$transclude tiddler='"+to+"'/></$tiddler>.", "other title||");
+	test("{{from here||Template}}.", "<$tiddler tiddler='"+to+"'>{{||Template}}</$tiddler>.", "||Template");
+	test("{{from here!!field}}.", "<$tiddler tiddler='"+to+"'>{{!!field}}</$tiddler>.", "!!field");
+	test("{{from here##index}}.", "<$tiddler tiddler='"+to+"'>{{##index}}</$tiddler>.", "##index");
 	// I don't know why anyone would do these, but Relink will manage it.
 	//test("{{from here!!field||Template}}.", "<$tiddler tiddler='"+to+"'>{{##index}}</$tiddler>.");
 	//test("{{from here##index||Template}}.", "<$tiddler tiddler='"+to+"'>{{##index}}</$tiddler>.");
-	test("{{from here||from here}}.", "<$tiddler tiddler='"+to+"'><$transclude tiddler='"+to+"'/></$tiddler>.");
+	test("{{from here||from here}}.", "<$tiddler tiddler='"+to+"'><$transclude tiddler='"+to+"'/></$tiddler>.", ["||"+to, to+"||"]);
 
 	// preserves block newline whitespace
 	test("{{from here}}\nTxt", "<$tiddler tiddler='"+to+"'>{{}}</$tiddler>\nTxt");
@@ -137,32 +133,32 @@ it('respects \\rules', function() {
 it('unpretty, but the title is unquotable', function() {
 	var to = "curly {}";
 	var other = "a'\"";
-	testTextAndLog("{{"+other+"||from here}}.", to, utils.placeholder(1,other)+"<$tiddler tiddler=<<relink-1>>><$transclude tiddler='"+to+"'/></$tiddler>.");
+	testTextAndLog("{{"+other+"||from here}}.", to, utils.placeholder(1,other)+"<$tiddler tiddler=<<relink-1>>><$transclude tiddler='"+to+"'/></$tiddler>.", other+"||");
 });
 
 it('unpretty and unquotable', function() {
 	var to = "has {curly} 'apos' \"quotes\"";
-	function test(text, expected) {
-		testTextAndLog(text, to, expected);
+	function test(text, expected, bracketStuff) {
+		testTextAndLog(text, to, expected, bracketStuff);
 	}
 	test("{{from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{}}</$tiddler>.");
-	test("{{||from here}}.", utils.placeholder(1,to)+"<$transclude tiddler=<<relink-1>>/>.");
-	test("{{from here||Template}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{||Template}}</$tiddler>.");
-	test("{{from here!!field}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{!!field}}</$tiddler>.");
-	test("{{from here##index}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{##index}}</$tiddler>.");
+	test("{{||from here}}.", utils.placeholder(1,to)+"<$transclude tiddler=<<relink-1>>/>.", "||");
+	test("{{from here||Template}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{||Template}}</$tiddler>.", "||Template");
+	test("{{from here!!field}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{!!field}}</$tiddler>.", "!!field");
+	test("{{from here##index}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{##index}}</$tiddler>.", "##index");
 	// Strange nonsense syntax we support
-	test("{{from here||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>><$transclude tiddler=<<relink-1>>/></$tiddler>.");
-	test("{{from here!!field||Template}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{!!field||Template}}</$tiddler>.");
-	test("{{from here##index||Template}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{##index||Template}}</$tiddler>.");
-	test("{{title##index||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=title><$transclude tiddler=<<relink-1>> index=index/></$tiddler>.");
-	test("{{title!!field||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=title><$transclude tiddler=<<relink-1>> field=field/></$tiddler>.");
+	test("{{from here||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>><$transclude tiddler=<<relink-1>>/></$tiddler>.", ["||"+to, to+"||"]);
+	test("{{from here!!field||Template}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{!!field||Template}}</$tiddler>.", "!!field||Template");
+	test("{{from here##index||Template}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{##index||Template}}</$tiddler>.", "##index||Template");
+	test("{{title##index||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=title><$transclude tiddler=<<relink-1>> index=index/></$tiddler>.", "title##index||");
+	test("{{title!!field||from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=title><$transclude tiddler=<<relink-1>> field=field/></$tiddler>.", "title!!field||");
 	var other = "a'\"";
 	var index = "'apos' and \"quotes\"";
 	// Double placeholder insanity. What kind of
 	// sick pervert names their tiddlers like this?
-	test("{{a'\"||from here}}.", utils.placeholder(1,to)+utils.placeholder(2,other)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>>/></$tiddler>.");
+	test("{{a'\"||from here}}.", utils.placeholder(1,to)+utils.placeholder(2,other)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>>/></$tiddler>.", other+"||");
 	// This case is so preposterous, I'm not sure I even want to cover it.
-	test("{{  "+other+"##"+index+"||from here  }}.", utils.placeholder(1,to)+utils.placeholder(2,other)+utils.placeholder("index-1",index)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>> index=<<relink-index-1>>/></$tiddler>.");
+	test("{{  "+other+"##"+index+"||from here  }}.", utils.placeholder(1,to)+utils.placeholder(2,other)+utils.placeholder("index-1",index)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>> index=<<relink-index-1>>/></$tiddler>.", "  "+other+"##"+index+"||");
 });
 
 /** This test has to call the makeTemplate function directly because it's
