@@ -4,7 +4,7 @@
         "title": "$:/plugins/flibbles/relink",
         "description": "Flexibility when relinking renamed tiddlers",
         "author": "Flibbles",
-        "version": "1.10.1",
+        "version": "1.10.2",
         "core-version": ">=5.1.14",
         "source": "https://github.com/flibbles/tw5-relink",
         "demo": "http://flibbles.github.io/tw5-relink/",
@@ -29,6 +29,23 @@
         "plugin-type": "plugin",
         "type": "application/json",
         "readme": "Markdown support for Relink.\n\n...or Relink support for Markdown.\n\nThis supplimental plugin allows ''text/x-markdown'' files to be relinked. This means markdown linking syntax like `[Caption](#MyTiddler)` is supported. If your markdown supports wikitext markup as well, this will handle that too.\n\nThis plugin is designed for `tiddlywiki/markdown`, but it will also work for `anstosa/tw5-markdown` and others.\n",
+        "requires-reload": "yes"
+    },
+    {
+        "name": "Relink Titles",
+        "title": "$:/plugins/flibbles/relink-titles",
+        "description": "Renames tiddlers with titles derived from Relinked tiddler",
+        "author": "Flibbles",
+        "version": "1.10.2",
+        "core-version": ">=5.1.14",
+        "parent-plugin": "$:/plugins/flibbles/relink",
+        "source": "https://github.com/flibbles/tw5-relink",
+        "demo": "http://flibbles.github.io/tw5-relink/",
+        "list": "readme configuration",
+        "dependents": "",
+        "plugin-type": "plugin",
+        "type": "application/json",
+        "readme": "Highly customizable relinking of tiddler titles //related// to the renamed tiddler.\n\n* Rename a hierarchy of subtiddlers when renaming a root tiddler.\n* Make custom filter rules to rename other tiddlers the way you want when Relinking.\n* Integrates with other plugins for plugin-specific rules.\n\nSee <a href={{$:/plugins/flibbles/relink-titles!!source}}>the tw5-relink website</a> for more details and examples.\n\n{{$:/core/images/warning}} ''Warning:'' You must use //Relink// v1.10.2 or greater with this, or this plugin may delete some tiddler bodies while trying to relink titles.\n",
         "requires-reload": "yes"
     }
 ]

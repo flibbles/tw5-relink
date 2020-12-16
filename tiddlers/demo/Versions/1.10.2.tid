@@ -1,0 +1,5 @@
+created: 20201215235344179
+
+* ''If you're using //Relink-titles//, this release is vital.'' Otherwise this release isn't that important.
+* Made minor but highly important change so that Relink-titles can function without deleting countless tiddlers by mistake.
+* Revamped the console log results to be more concise, easier to read, simpler, and automatically extensible to plugin material like Markdown, Titles, and others (which weren't logging before)
