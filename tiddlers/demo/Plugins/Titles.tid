@@ -47,7 +47,7 @@ If you want your rule to be disabled by default, simply create a tiddler in your
 
 !!! Install
 
-To install //Relink-titles//, first install //Relink//, then drag the following pill button onto your project:
+To install //Relink-titles//, first install //Relink// (''make sure you're using <<link-to-tab Versions Versions/1.10.0 "version 1.10.2 or greater">>''!), then drag the following pill button onto your project:
 
 @@text-align:center;
 <$link to={{!!plugin}} class="relink-dragger relink-titles">Titles support!</$link>
