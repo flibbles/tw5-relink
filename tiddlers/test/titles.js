@@ -147,6 +147,17 @@ it("doesn't clobber existing tiddlers", function() {
 	expect(r.wiki.getTiddler("AB").fields.text).toBe("original text");
 });
 
+it("doesn't override other changes with nested renames", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		customTiddler("[removeprefix<fromTiddler>addprefix<toTiddler>]"),
+		{title: "from here/path", text: "[[from here/path/end]];"},
+		{title: "from here/path/end", text: "[[from here/path]]."}]);
+	var r = test("A", "A", {wiki: wiki});
+	expect(r.wiki.getTiddler("to there/path").fields.text).toBe("[[to there/path/end]];");
+	expect(r.wiki.getTiddler("to there/path/end").fields.text).toBe("[[to there/path]].");
+});
+
 it("doesn't rename two tiddlers to the same thing", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
