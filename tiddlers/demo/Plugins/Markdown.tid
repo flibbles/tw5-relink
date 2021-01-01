@@ -34,7 +34,7 @@ Footnote[1]
 
 !!! Mixing Wiki and Markdown syntax
 
-''tiddlywiki/markdown'' and other plugins support mixing wiki and markdown syntax in your //text/x-markdown// files. //Relink-markdown// will seemlessly support whatever your markdown plugin supports.
+''tiddlywiki/markdown'' and other plugins support mixing wiki and markdown syntax in your //text/x-markdown// files. //Relink-markdown// will seamlessly support whatever your markdown plugin supports.
 
 For those unfamiliar with ''tiddlywiki/markdown'', you can configure what ~WikiSyntax your markdown files support by editing the ''~$:/config/markdown/renderWikiTextPragma'' tiddler.
 
