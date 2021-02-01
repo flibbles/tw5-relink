@@ -1,0 +1,7 @@
+created: 20210201022024210
+
+\rules except wikilink
+
+* Updated macrocall relinking to support new macrocall rule in TW v5.1.24-prerelease. ''Note:'' Without this change, Relink will RSoD a lot on the cutting edge version.
+* Changed the plugin library tiddler to not use any language tiddler transclusion, so it can be imported and used by other plugin libraries.
+* New default tiddler on demo to brag about my other plugins, like tw5-uglify.
