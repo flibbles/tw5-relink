@@ -1,0 +1,13 @@
+title: Other plugins by Flibbles
+
+\rules except wikilink
+
+Other plugins I've developed for TiddlyWiki5
+
+!! [[Uglify|https://flibbles.github.io/tw5-uglify/]]
+
+Scrunch TiddlyWiki down! Minify javascript and JSON to serve from Node.JS, shrink down your TiddlyWiki file, or compress your own plugins before publishing them.
+
+!! [[XML|https://flibbles.github.io/tw5-xml/]]
+
+Toolkit for doing all things XML --- XPath and JQuery-like filters and widgets. XML rendering. Automatic template application. And more.

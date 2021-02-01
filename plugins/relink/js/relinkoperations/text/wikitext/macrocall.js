@@ -37,15 +37,35 @@ MacrocallEntry.prototype.forEachChildReport = function(report, parameter, type) 
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	// Get all the details of the match
-	var macroName = this.match[1],
-		paramString = this.match[2],
+	var macroName,
+		paramString,
+		macroText,
+		start;
+	if (this.nextCall) {
+		var params = this.nextCall.params;
+		// this.nextCall is used >=v5.1.24
+		macroName = this.nextCall.name;
+		if (params.length > 0) {
+			paramString = text.substring($tw.utils.skipWhiteSpace(text, params[0].start), params[params.length-1].end);
+		} else {
+			paramString = '';
+		}
+		macroText = text.substring(this.nextCall.start, this.nextCall.end);
+		// Move past the macro call
+		this.parser.pos = this.nextCall.end;
+		start = this.nextCall.start;
+	} else {
+		//  this.match is used <v5.1.24
+		macroName = this.match[1];
+		paramString = this.match[2];
 		macroText = this.match[0];
-	// Move past the macro call
-	this.parser.pos = this.matchRegExp.lastIndex;
+		// Move past the macro call
+		this.parser.pos = this.matchRegExp.lastIndex;
+		start = this.matchRegExp.lastIndex - macroText.length;
+	}
 	if (!options.settings.survey(macroText, fromTitle, options)) {
 		return undefined;
 	}
-	var start = this.matchRegExp.lastIndex - this.match[0].length;
 	var managedMacro = options.settings.getMacro(macroName);
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
@@ -57,7 +77,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var macroInfo = {
 		name: macroName,
 		start: start,
-		end: this.matchRegExp.lastIndex,
+		end: this.parser.pos,
 		params: params
 	};
 	var mayBeWidget = !options.noWidgets;

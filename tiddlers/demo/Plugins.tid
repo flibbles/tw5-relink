@@ -2,7 +2,7 @@ caption: Supplemental Plugins
 tags: Relink
 title: Plugins
 
-//Relink// has additional sub-plugins which provide additional features for more specific needs.
+//Relink// has additional sub-plugins which provide additional features for more specific needs. (I've also made some [[unrelated plugins|Other plugins by Flibbles]]  you might be interested in!)
 
 <$macrocall $name="tabs"
 	tabsList="[tag[Plugin]]"
