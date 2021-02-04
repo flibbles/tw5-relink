@@ -28,9 +28,7 @@ function collectRules() {
 	return rules;
 }
 
-function WikiRelinker(type, text, fromTitle, toTitle, options) {
-	this.entry = new WikitextEntry();
-	this.builder = new Rebuilder(text);
+function WikiWalker(type, text, options) {
 	this.options = options;
 	if (!this.relinkMethodsInjected) {
 		var rules = collectRules();
@@ -44,14 +42,12 @@ function WikiRelinker(type, text, fromTitle, toTitle, options) {
 		});
 		WikiRelinker.prototype.relinkMethodsInjected = true;
 	}
-	this.fromTitle = fromTitle;
-	this.toTitle = toTitle;
 	WikiParser.call(this, type, text, options);
 };
 
-WikiRelinker.prototype = Object.create(WikiParser.prototype);
+WikiWalker.prototype = Object.create(WikiParser.prototype);
 
-WikiRelinker.prototype.parsePragmas = function() {
+WikiWalker.prototype.parsePragmas = function() {
 	while (true) {
 		this.skipWhitespace();
 		if (this.pos >= this.sourceLength) {
@@ -61,24 +57,24 @@ WikiRelinker.prototype.parsePragmas = function() {
 		if (!nextMatch || nextMatch.matchIndex !== this.pos) {
 			break;
 		}
-		this.relinkRule(nextMatch);
+		this.handleRule(nextMatch);
 	}
 	return [];
 };
 
-WikiRelinker.prototype.parseInlineRunUnterminated = function(options) {
+WikiWalker.prototype.parseInlineRunUnterminated = function(options) {
 	var nextMatch = this.findNextMatch(this.inlineRules, this.pos);
 	while (this.pos < this.sourceLength && nextMatch) {
 		if (nextMatch.matchIndex > this.pos) {
 			this.pos = nextMatch.matchIndex;
 		}
-		this.relinkRule(nextMatch);
+		this.handleRule(nextMatch);
 		nextMatch = this.findNextMatch(this.inlineRules, this.pos);
 	}
 	this.pos = this.sourceLength;
 };
 
-WikiRelinker.prototype.parseInlineRunTerminated = function(terminatorRegExp,options) {
+WikiWalker.prototype.parseInlineRunTerminated = function(terminatorRegExp,options) {
 	options = options || {};
 	terminatorRegExp.lastIndex = this.pos;
 	var terminatorMatch = terminatorRegExp.exec(this.source);
@@ -97,7 +93,7 @@ WikiRelinker.prototype.parseInlineRunTerminated = function(terminatorRegExp,opti
 			if (inlineRuleMatch.matchIndex > this.pos) {
 				this.pos = inlineRuleMatch.matchIndex;
 			}
-			this.relinkRule(inlineRuleMatch);
+			this.handleRule(inlineRuleMatch);
 			inlineRuleMatch = this.findNextMatch(this.inlineRules, this.pos);
 			terminatorRegExp.lastIndex = this.pos;
 			terminatorMatch = terminatorRegExp.exec(this.source);
@@ -108,7 +104,7 @@ WikiRelinker.prototype.parseInlineRunTerminated = function(terminatorRegExp,opti
 
 };
 
-WikiRelinker.prototype.parseBlock = function(terminatorRegExp) {
+WikiWalker.prototype.parseBlock = function(terminatorRegExp) {
 	var terminatorRegExp = /(\r?\n\r?\n)/mg;
 	this.skipWhitespace();
 	if (this.pos >= this.sourceLength) {
@@ -116,12 +112,78 @@ WikiRelinker.prototype.parseBlock = function(terminatorRegExp) {
 	}
 	var nextMatch = this.findNextMatch(this.blockRules, this.pos);
 	if(nextMatch && nextMatch.matchIndex === this.pos) {
-		return this.relinkRule(nextMatch);
+		return this.handleRule(nextMatch);
 	}
 	return this.parseInlineRun(terminatorRegExp);
 };
 
-WikiRelinker.prototype.relinkRule = function(ruleInfo) {
+WikiWalker.prototype.amendRules = function(type, names) {
+	var only;
+	WikiParser.prototype.amendRules.call(this, type, names);
+	if (type === "only") {
+		only = true;
+	} else if (type === "except") {
+		only = false;
+	} else {
+		return;
+	}
+	if (only !== (names.indexOf("macrodef") >= 0)) {
+		this.options.placeholder = undefined
+	}
+	if (only !== (names.indexOf("html") >= 0)) {
+		this.options.noWidgets = true;
+	}
+	if (only !== (names.indexOf("prettylink") >= 0)) {
+		this.options.noPrettylinks = true;
+	}
+};
+
+/// Reporter
+
+function WikiReporter(type, text, callback, options) {
+	this.callback = callback;
+	WikiWalker.call(this, type, text, options);
+};
+
+WikiReporter.prototype = Object.create(WikiWalker.prototype);
+
+WikiReporter.prototype.handleRule = function(ruleInfo) {
+	if (ruleInfo.rule.report) {
+		ruleInfo.rule.report(this.source, this.callback, this.options);
+	} else {
+		if (ruleInfo.rule.matchRegExp !== undefined) {
+			this.pos = ruleInfo.rule.matchRegExp.lastIndex;
+		} else {
+			// We can't easily determine the end of this
+			// rule match. We'll "parse" it so that
+			// parser.pos gets updated, but we throw away
+			// the results.
+			ruleInfo.rule.parse();
+		}
+	}
+};
+
+exports.report = function(wikitext, callback, options) {
+	var matchingRule,
+		newOptions = $tw.utils.extend({}, options);
+	newOptions.settings = options.settings.createChildLibrary(options.currentTiddler);
+	// Unfortunately it's the side-effect of creating this that reports.
+	new WikiReporter(options.type, wikitext, callback, newOptions);
+};
+
+/// Relinker
+
+function WikiRelinker(type, text, fromTitle, toTitle, options) {
+	this.entry = new WikitextEntry();
+	this.builder = new Rebuilder(text);
+	this.fromTitle = fromTitle;
+	this.toTitle = toTitle;
+	WikiWalker.call(this, type, text, options);
+};
+
+WikiRelinker.prototype = Object.create(WikiWalker.prototype);
+
+WikiRelinker.prototype.handleRule = function(ruleInfo) {
 	if (ruleInfo.rule.relink) {
 		var newEntry = ruleInfo.rule.relink(this.source, this.fromTitle, this.toTitle, this.options);
 		if (newEntry !== undefined) {
@@ -140,27 +202,6 @@ WikiRelinker.prototype.relinkRule = function(ruleInfo) {
 			// the results.
 			ruleInfo.rule.parse();
 		}
-	}
-};
-
-WikiRelinker.prototype.amendRules = function(type, names) {
-	var only;
-	WikiParser.prototype.amendRules.call(this, type, names);
-	if (type === "only") {
-		only = true;
-	} else if (type === "except") {
-		only = false;
-	} else {
-		return;
-	}
-	if (only !== (names.indexOf("macrodef") >= 0)) {
-		this.options.placeholder = undefined
-	}
-	if (only !== (names.indexOf("html") >= 0)) {
-		this.options.noWidgets = true;
-	}
-	if (only !== (names.indexOf("prettylink") >= 0)) {
-		this.options.noPrettylinks = true;
 	}
 };
 
