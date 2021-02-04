@@ -14,6 +14,8 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var FieldEntry = EntryNode.newType("field");
 
+exports.name = 'fields';
+
 FieldEntry.prototype.report = function() {
 	var self = this;
 	var output = [];
@@ -33,7 +35,21 @@ FieldEntry.prototype.report = function() {
 	return output;
 };
 
-exports['fields'] = function(tiddler, fromTitle, toTitle, changes, options) {
+exports.report = function(tiddler, callback, options) {
+	var fields = options.settings.getFields();
+	$tw.utils.each(fields, function(handler, field) {
+		var input = tiddler.fields[field];
+		handler.report(input, function(blurb, title) {
+			if (blurb) {
+				callback(field + ': ' + blurb, title);
+			} else {
+				callback(field, title);
+			}
+		}, options);
+	});
+};
+
+exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = options.settings.getFields();
 	$tw.utils.each(fields, function(handler, field) {
 		var input = tiddler.fields[field];

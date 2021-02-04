@@ -37,10 +37,11 @@ exports.getRelinkReport = function(fromTitle, toTitle, options) {
 	return cache[toTitle];
 };
 
-exports.getRelinkReferences = function(title, options) {
+exports.getTiddlerRelinkReferences = function(title, options) {
 	var tiddler = this.getTiddler(title),
 		references = Object.create(null),
 	options = options || {};
+	options.settings = this.getRelinkConfig();
 	if (tiddler) {
 		for (var relinker in relinkOperators) {
 			relinkOperators[relinker].report(tiddler, function(blurb, title) {
@@ -50,6 +51,24 @@ exports.getRelinkReferences = function(title, options) {
 		}
 	}
 	return references;
+};
+
+exports.getTiddlerRelinkBackreferences = function(targetTitle, options) {
+	var tiddlerList = this.getRelinkableTitles();
+	var backRefs = Object.create(null);
+	for (var i = 0; i < tiddlerList.length; i++) {
+		var title = tiddlerList[i];
+		var tiddler = this.getTiddler(title);
+		if (tiddler
+			&& !tiddler.fields["plugin-type"]
+			&& tiddler.fields.type !== "application/javascript") {
+			var referenceMap = this.getTiddlerRelinkReferences(title, options);
+			if (referenceMap[targetTitle]) {
+				backRefs[title] = referenceMap[targetTitle];
+			}
+		}
+	}
+	return backRefs;
 };
 
 function getFreshRelinkReport(wiki, fromTitle, toTitle, options) {

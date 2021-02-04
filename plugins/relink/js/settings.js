@@ -14,7 +14,11 @@ $tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
 	NewType.prototype = exports;
 	NewType.typeName = exports.name;
 	fieldTypes[exports.name] = NewType;
-	// For legacy reasons, some of the field types can go by other names
+	// For legacy, if the NewType doesn't have a report method, we add one
+	if (!exports.report) {
+		exports.report = function() {};
+	}
+	// Also for legacy, some of the field types can go by other names
 	if (exports.aliases) {
 		$tw.utils.each(exports.aliases, function(alias) {
 			fieldTypes[alias] = NewType;

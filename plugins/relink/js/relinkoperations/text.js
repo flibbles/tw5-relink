@@ -41,7 +41,7 @@ exports.report = function(tiddler, callback, options) {
 	if (fields.text) {
 		var type = exceptions[fields.title] || fields.type || defaultOperator;
 		if (textOperators[type]) {
-			var entry = textOperators[type].call(this, tiddler, fromTitle, toTitle, options);
+			var entry = textOperators[type].report(tiddler, callback, options);
 		}
 	}
 };
