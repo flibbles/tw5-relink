@@ -9,12 +9,17 @@ and tries to swap it out if it is.
 /*global $tw: false */
 "use strict";
 
-var type = 'text/vnd.tiddlywiki';
 var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var wikitextHandler = settings.getType('wikitext');
 
-exports[type] = function(tiddler, fromTitle, toTitle, options) {
+exports.name = 'text/vnd.tiddlywiki';
+
+exports.report = function(tiddler, callback, options) {
+	wikitextHandler.report(tiddler.fields.text, callback, options);
+};
+
+exports.relink = function(tiddler, fromTitle, toTitle, options) {
 	var placeholder = new Placeholder();
 	var currentOptions = $tw.utils.extend(
 		{

@@ -11,6 +11,12 @@ wikitext.
 
 var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getType('filter');
 
-exports['text/x-tiddler-filter'] = function(tiddler, fromTitle, toTitle, options) {
+exports.name = 'text/x-tiddler-filter';
+
+exports.report = function(tiddler, callback, options) {
+	return filterHandler.report(tiddler.fields.text, callback, options);
+};
+
+exports.relink = function(tiddler, fromTitle, toTitle, options) {
 	return filterHandler.relink(tiddler.fields.text, fromTitle, toTitle, options)
 };

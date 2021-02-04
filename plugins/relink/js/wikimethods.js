@@ -8,8 +8,21 @@ Introduces some utility methods used by Relink.
 var MacroSettings = require('$:/plugins/flibbles/relink/js/utils/macroConfig.js');
 var Settings = require("$:/plugins/flibbles/relink/js/settings.js");
 
-var relinkOperations = Object.create(null);
-$tw.modules.applyMethods('relinkoperator', relinkOperations);
+var relinkOperators = Object.create(null);
+$tw.modules.forEachModuleOfType('relinkoperator', function(title, module) {
+	if (module.name !== undefined) {
+		relinkOperators[module.name] = module;
+	} else {
+		// TODO: Maybe put some kind of warning message here that
+		// this module needs to be updated?
+		// Legacy support. It has a relinker, but not a reporter
+		for (var entry in module) {
+			relinkOperators[entry] = {
+				relink: module[entry],
+				report: function() {}};
+		}
+	}
+});
 
 /** Returns a pair like this,
  *  { title: {field: entry, ... }, ... }
@@ -22,6 +35,21 @@ exports.getRelinkReport = function(fromTitle, toTitle, options) {
 		cache[toTitle] = getFreshRelinkReport(this, fromTitle, toTitle, options);
 	}
 	return cache[toTitle];
+};
+
+exports.getRelinkReferences = function(title, options) {
+	var tiddler = this.getTiddler(title),
+		references = Object.create(null),
+	options = options || {};
+	if (tiddler) {
+		for (var relinker in relinkOperators) {
+			relinkOperators[relinker].report(tiddler, function(blurb, title) {
+				references[title] = references[title] || [];
+				references[title].push(blurb);
+			}, options);
+		}
+	}
+	return references;
 };
 
 function getFreshRelinkReport(wiki, fromTitle, toTitle, options) {
@@ -42,8 +70,8 @@ function getFreshRelinkReport(wiki, fromTitle, toTitle, options) {
 			&& tiddler.fields.type !== "application/javascript") {
 				try {
 					var entries = Object.create(null);
-					for (var operation in relinkOperations) {
-						relinkOperations[operation](tiddler, fromTitle, toTitle, entries, options);
+					for (var operation in relinkOperators) {
+						relinkOperators[operation].relink(tiddler, fromTitle, toTitle, entries, options);
 					}
 					for (var field in entries) {
 						// So long as there is one key,
