@@ -43,6 +43,12 @@ OperatorEntry.prototype.report = function() {
 	return "[" + (op.prefix || '') + op.operator + suffix + operand + "]";
 };
 
+exports.report = function(filter, callback, options) {
+	// I cheat here for now. Relink handles reporting too in cases where
+	// fromTitle is undefined. toTitle is the callback in those cases.
+	exports.relink(filter, undefined, callback, options);
+};
+
 /**Returns undefined if no change was made.
  */
 exports.relink = function(filter, fromTitle, toTitle, options) {
@@ -120,7 +126,11 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 			} else if (match[5]) {
 				preference = '';
 			}
-			if (val === fromTitle) {
+			if (fromTitle === undefined) {
+				// Report it
+				toTitle('', val);
+			} else if (val === fromTitle) {
+				// Relink it
 				var entry = {name: "title"};
 				var newVal = wrapTitle(toTitle, preference);
 				if (newVal === undefined || (options.inBraces && newVal.indexOf('}}}') >= 0)) {
@@ -243,6 +253,14 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 				type = "indirect";
 				nextBracketPos = filterString.indexOf("}",p);
 				var operand = filterString.substring(p,nextBracketPos);
+				// We've got a live reference. relink or report
+				if (fromTitle === undefined) {
+					// Just report it
+					refHandler.report(operand, function(blurb, title) {
+						toTitle(operatorBlurb(operator, '{' + blurb + '}'), title);
+					}, options);
+					break;
+				}
 				entry = refHandler.relinkInBraces(operand, fromTitle, toTitle, options);
 				if (entry && entry.output) {
 					// We don't check the whitelist.
@@ -258,6 +276,13 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 				var handler = fieldType(whitelist, operator);
 				if (!handler) {
 					// This operator isn't managed. Bye.
+					break;
+				}
+				if (fromTitle === undefined) {
+					// We just have to report it. Nothing more.
+					handler.report(operand, function(blurb, title) {
+						toTitle(operatorBlurb(operator, '[' + blurb + ']'), title);
+					}, options);
 					break;
 				}
 				entry = handler.relink(operand, fromTitle, toTitle, options);
@@ -319,6 +344,14 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 	// Return the parsing position
 	return p;
 }
+
+function operatorBlurb(operator, enquotedOperand) {
+	var suffix = '';
+	if (operator.suffix) {
+		suffix = ':' + operator.suffix;
+	}
+	return '[' + (operator.prefix || '') + operator.operator + suffix + enquotedOperand + ']';
+};
 
 // Returns the relinker needed for a given operator, or returns undefined.
 function fieldType(whitelist, operator) {
