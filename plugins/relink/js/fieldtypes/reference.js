@@ -24,6 +24,23 @@ ReferenceEntry.prototype.report = function() {
 	return [""];
 };
 
+// TODO: Test {{}} case, so it doesn't return empty string.
+exports.report = function(value, callback, options) {
+	if (value) {
+		var reference = $tw.utils.parseTextReference(value),
+			title = reference.title,
+			blurb = '';
+		if (title) {
+			if (reference.field) {
+				blurb = '!!' + reference.field;
+			} else if (reference.index) {
+				blurb = '##' + reference.index;
+			}
+			callback(blurb, title);
+		}
+	}
+};
+
 exports.relink = function(value, fromTitle, toTitle, options) {
 	var entry;
 	if (value) {
