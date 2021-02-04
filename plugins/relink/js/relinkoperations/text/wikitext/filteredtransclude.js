@@ -41,8 +41,22 @@ FilteredTranscludeEntry.prototype.report = function() {
 	return output;
 };
 
+exports.report = function(text, callback, options) {
+	var m = this.match,
+		filter = m[1],
+		template = m[3],
+		append = template ? '||' + template + '}}}' : '}}}';
+	filterHandler.report(filter, function(blurb, title) {
+		callback('{{{' + blurb + append, title);
+	}, options);
+	if (template) {
+		callback('{{{' + filter + '||}}}', template);
+	}
+	this.parser.pos = this.matchRegExp.lastIndex;
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var m = this.match;
+	var m = this.match,
 		filter = m[1],
 		tooltip = m[2],
 		template = m[3],

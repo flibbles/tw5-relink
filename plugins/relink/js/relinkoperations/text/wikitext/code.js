@@ -10,6 +10,10 @@ ignore their contents.
 
 exports.name = ["codeinline", "codeblock"];
 
+exports.report = function(text, callback, options) {
+	this.relink(text, null, null, options);
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var reEnd;
 	this.parser.pos = this.matchRegExp.lastIndex;

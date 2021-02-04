@@ -14,3 +14,5 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	this.parser.pos = this.endMatchRegExp.lastIndex;
 	return undefined;
 };
+
+exports.report = exports.relink;

@@ -19,6 +19,16 @@ PrettyLinkEntry.prototype.report = function() {
 
 exports.name = "prettylink";
 
+exports.report = function(text, callback, options) {
+	var text = this.match[1],
+		link = this.match[2] || text;
+	// TODO: Test for this. Is it external or no?
+	if (!$tw.utils.isLinkExternal(link)) {
+		callback('[[' + text + ']]', link);
+	}
+	this.parser.pos = this.matchRegExp.lastIndex;
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var caption, m = this.match;

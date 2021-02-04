@@ -52,7 +52,7 @@ exports.report = function(filter, callback, options) {
 /**Returns undefined if no change was made.
  */
 exports.relink = function(filter, fromTitle, toTitle, options) {
-	if (!options.settings.survey(filter, fromTitle, options)) {
+	if (fromTitle && !options.settings.survey(filter, fromTitle, options)) {
 		return undefined;
 	}
 	var filterEntry = new FilterEntry();
