@@ -23,18 +23,6 @@ it("works on empty reports", function() {
 	test({text: "This text has no links"}, []);
 });
 
-it("transcludes", function() {
-	test({text: "Reference {{from}} stuff"}, ["{{}}"]);
-	test({text: "{{from||template}}"}, ["{{||template}}"]);
-	test({text: "{{other||from}}"}, ["{{other||}}"]);
-	test({text: "{{from!!field}}"}, ["{{!!field}}"]);
-	test({text: "{{from##index}}"}, ["{{##index}}"]);
-	test({text: "{{from!!field||template}}"}, ["{{!!field||template}}"]);
-
-	// Multiples allowed
-	test({text: "{{from!!F||from}}"}, ["{{!!F||from}}", "{{from!!F||}}"]);
-});
-
 it("prettylinks", function() {
 	test({text: "Text [[from]] stuff"}, ["[[from]]"]);
 	test({text: "[[Caption|from]]"}, ["[[Caption]]"]);

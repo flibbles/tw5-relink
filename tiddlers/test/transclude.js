@@ -200,4 +200,30 @@ it('transclude obeys rules', function() {
 	         {ignored: true});
 });
 
+it("reports", function() {
+	function test(text, expected) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddler({title: 'test', text: text});
+		var refs = wiki.getTiddlerRelinkReferences('test');
+		expect(refs).toEqual(expected);
+	};
+	test("Reference {{from}} stuff", {from: ["{{}}"]});
+	test("{{from||template}}", {from: ["{{||template}}"], template: ["{{from||}}"]});
+	test("{{||template}}", {template: ["{{||}}"]});
+	test("{{from||  }}", {from: ["{{}}"]});
+	test("{{from!!field}}", {from: ["{{!!field}}"]});
+	test("{{from##index}}", {from: ["{{##index}}"]});
+	test("{{from!!field||template}}", {from: ["{{!!field||template}}"], template: ["{{from!!field||}}"]});
+
+	// Empty
+	test("Reference {{}} stuff", {});
+	test("Reference {{!!field}} stuff", {});
+	// Whitespace
+	test("{{   from \n||   template   }}", {from: ["{{||template}}"], template: ["{{from||}}"]});
+	test("{{\n\nfrom!!field   }}", {from: ["{{!!field}}"]});
+
+	// Multiples allowed
+	test("{{from!!F||from}}", {from: ["{{!!F||from}}", "{{from!!F||}}"]});
+});
+
 });

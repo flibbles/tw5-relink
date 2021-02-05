@@ -41,6 +41,29 @@ TranscludeEntry.prototype.report = function() {
 	return output;
 };
 
+exports.report = function(text, callback, options) {
+	var m = this.match,
+		refString = $tw.utils.trim(m[1]),
+		ref = $tw.utils.parseTextReference(refString);
+		template = $tw.utils.trim(m[2]);
+	if (ref.title) {
+		var suffix = '';
+		if (ref.index) {
+			suffix = '##' + ref.index;
+		} else if (ref.field) {
+			suffix = '!!' + ref.field;
+		}
+		if (template) {
+			suffix = suffix + '||' + template;
+		}
+		callback('{{' + suffix + '}}', ref.title)
+	}
+	if (template) {
+		callback('{{' + refString + '||}}', template);
+	}
+	this.parser.pos = this.matchRegExp.lastIndex;
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match,
 		reference = $tw.utils.parseTextReference(m[1]),
