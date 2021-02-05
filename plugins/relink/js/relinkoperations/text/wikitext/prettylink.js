@@ -22,7 +22,6 @@ exports.name = "prettylink";
 exports.report = function(text, callback, options) {
 	var text = this.match[1],
 		link = this.match[2] || text;
-	// TODO: Test for this. Is it external or no?
 	if (!$tw.utils.isLinkExternal(link)) {
 		callback('[[' + text + ']]', link);
 	}

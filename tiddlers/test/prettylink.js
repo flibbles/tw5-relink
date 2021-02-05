@@ -137,4 +137,22 @@ it('respects rules', function() {
 	expect(r.fails.length).toEqual(1);
 });
 
+it("reports", function() {
+	function test(text, expected) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddler({title: 'test', text: text});
+		var refs = wiki.getTiddlerRelinkReferences('test');
+		expect(refs).toEqual(expected);
+	};
+	test("Text [[from]] stuff", {from: ["[[from]]"]});
+	test("[[https://www.google.com]] stuff", {});
+	test("[[Caption|from]]", {from: ["[[Caption]]"]});
+	// Preserve whitespace. Newlines are illegal, so don't worry about them.
+	test("[[Caption |from]]", {from: ["[[Caption ]]"]});
+	test("[[|from]]", {from: ["[[]]"]});
+	// Not a valid tiddler, but also not a valid prettylink
+	test("[[ from ]]", {' from ': ["[[ from ]]"]});
+});
+
+
 });

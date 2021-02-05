@@ -23,13 +23,6 @@ it("works on empty reports", function() {
 	test({text: "This text has no links"}, []);
 });
 
-it("prettylinks", function() {
-	test({text: "Text [[from]] stuff"}, ["[[from]]"]);
-	test({text: "[[Caption|from]]"}, ["[[Caption]]"]);
-	// Preserve whitespace. Newlines are illegal, so don't worry about them.
-	test({text: "[[Caption |from]]"}, ["[[Caption ]]"]);
-});
-
 it("wikiLinks", function() {
 	test({text: "Text WikiFrom stuff", from: "WikiFrom"}, ["~WikiFrom"]);
 	utils.monkeyPatch($tw.config.textPrimitives, "unWikiLink", "%", function() {
