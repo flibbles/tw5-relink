@@ -34,52 +34,17 @@ MacrocallEntry.prototype.forEachChildReport = function(report, parameter, type) 
 	return "<<" + this.macro + " " + rtn + ">>";
 };
 
-
 exports.relink = function(text, fromTitle, toTitle, options) {
-	// Get all the details of the match
-	var macroName,
-		paramString,
-		macroText,
-		start;
-	if (this.nextCall) {
-		var params = this.nextCall.params;
-		// this.nextCall is used >=v5.1.24
-		macroName = this.nextCall.name;
-		if (params.length > 0) {
-			paramString = text.substring($tw.utils.skipWhiteSpace(text, params[0].start), params[params.length-1].end);
-		} else {
-			paramString = '';
-		}
-		macroText = text.substring(this.nextCall.start, this.nextCall.end);
-		// Move past the macro call
-		this.parser.pos = this.nextCall.end;
-		start = this.nextCall.start;
-	} else {
-		//  this.match is used <v5.1.24
-		macroName = this.match[1];
-		paramString = this.match[2];
-		macroText = this.match[0];
-		// Move past the macro call
-		this.parser.pos = this.matchRegExp.lastIndex;
-		start = this.matchRegExp.lastIndex - macroText.length;
-	}
-	if (!options.settings.survey(macroText, fromTitle, options)) {
-		return undefined;
-	}
-	var managedMacro = options.settings.getMacro(macroName);
+	var macroInfo = getInfoFromRule(this, text);
+	var managedMacro = options.settings.getMacro(macroInfo.name);
+	this.parser.pos = macroInfo.end;
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
 		return undefined;
 	}
-	var offset = macroName.length+2;
-	offset = $tw.utils.skipWhiteSpace(macroText, offset);
-	var params = parseParams(paramString, offset+start);
-	var macroInfo = {
-		name: macroName,
-		start: start,
-		end: this.parser.pos,
-		params: params
-	};
+	if (!options.settings.survey(macroInfo.text, fromTitle, options)) {
+		return undefined;
+	}
 	var mayBeWidget = !options.noWidgets;
 	var names = getParamNames(macroInfo.name, macroInfo.params, options);
 	if (names === undefined) {
@@ -189,6 +154,27 @@ function relinkMacroInvocation(macro, text, fromTitle, toTitle, mayBeWidget, opt
 		return macroEntry;
 	}
 	return undefined;
+};
+
+function getInfoFromRule(rule, text) {
+	// Get all the details of the match
+	var macroInfo = rule.nextCall;
+	if (macroInfo) {
+		// rule.nextCall is used >=v5.1.24
+		macroInfo.text = text.substring(macroInfo.start, macroInfo.end);
+	} else {
+		//  rule.match is used <v5.1.24
+		var match = rule.match,
+			offset = $tw.utils.skipWhiteSpace(match[0], match[1].length+2);
+		macroInfo = {
+			name: match[1],
+			text: match[0], //TODO: Temporary, remove text usage
+			start: rule.matchRegExp.lastIndex - match[0].length,
+			end: rule.matchRegExp.lastIndex,
+		};
+		macroInfo.params = parseParams(match[2], offset+macroInfo.start);
+	}
+	return macroInfo;
 };
 
 function mustBeAWidget(macro) {
