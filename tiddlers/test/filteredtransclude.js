@@ -143,4 +143,19 @@ it('unpretty and unquotable', function() {
 	test("bar|bar", "{{{Title|"+tooltip+"||from here}}}", ph("tooltip-1",tooltip) + "<$list filter=Title tooltip=<<relink-tooltip-1>> template=bar|bar/>");
 });
 
+it("reports", function() {
+	function test(text, expected) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddler({title: 'test', text: text});
+		wiki.addTiddlers(utils.setupTiddlers());
+		var refs = wiki.getTiddlerRelinkReferences('test');
+		expect(refs).toEqual(expected);
+	};
+	test("content here {{{from}}} content there", {from: ["{{{}}}"]});
+	test("{{{\n[enlist[1]]\n[tag[from]]\n[enlist[2]]}}}", {from: ["{{{[tag[]]}}}"]});
+	test("{{{  from\n||\ntemplate  }}}", {from: ["{{{||template}}}"], template: ["{{{from||}}}"]});
+	test("{{{[tag[else]]\r\n[enlist[1]] ||from}}}", {else: ["{{{[tag[]]||from}}}"], from: ["{{{[tag[else]] [enlist[1]]||}}}"]});
+	test("{{{from||from}}}", {from: ["{{{||from}}}", "{{{from||}}}"]});
+});
+
 });

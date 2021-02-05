@@ -10,11 +10,7 @@ ignore their contents.
 
 exports.name = ["codeinline", "codeblock"];
 
-exports.report = function(text, callback, options) {
-	this.relink(text, null, null, options);
-};
-
-exports.relink = function(text, fromTitle, toTitle, options) {
+exports.relink = function(text) {
 	var reEnd;
 	this.parser.pos = this.matchRegExp.lastIndex;
 	// I'm lazy. This relink method works for both codeblock and codeinline
@@ -34,3 +30,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 	return undefined;
 };
+
+// Same thing. Just skip the pos ahead.
+exports.report = exports.relink;

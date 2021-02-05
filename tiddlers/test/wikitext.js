@@ -16,6 +16,13 @@ function testText(text, expected, options) {
 	return results;
 };
 
+function testReport(text, expected) {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'test', text: text});
+	var refs = wiki.getTiddlerRelinkReferences('test');
+	expect(refs).toEqual(expected);
+};
+
 describe("wikitext", function() {
 
 it('allows all other unmanaged wikitext rules', function() {
@@ -66,6 +73,7 @@ it('continues on after impossible relink', function() {
 it('comments', function() {
 	testText("<!--[[from here]]-->", {ignored: true});
 	testText("<!--\n\n[[from here]]\n\n-->", {ignored: true});
+	testReport("<!--\n\n[[from here]]\n\n-->", {});
 
 	var inline = "Inline <!-- [[from here]] --> inline";
 	var block = "<!--\n\n[[from here]]\n\n-->";
@@ -86,6 +94,7 @@ it('code blocks', function() {
 	test("\n\n```\nThis VarName shouldn't update.\n```\n");
 	test("\n```javascript\nThis VarName shouldn't update.\n```\n", true);
 	test("\n\n```javascript\nThis VarName shouldn't update.\n```\n");
+	test("\n\n```\nFakeout```\n[[content]]\n```\n");
 	test(" ``This VarName shouldn't update.``");
 	test(" ```This VarName shouldn't update.```", true);
 	test("``This VarName shouldn't update.``");
@@ -95,6 +104,8 @@ it('code blocks', function() {
 	test("\n```\nThis VarName shouldn't update.\n", true);
 	test("``This VarName shouldn't update.\n", true);
 	test("`This VarName shouldn't update.\n", true);
+	testReport("\n`[[no]]` [[yes]]", {yes: ["[[yes]]"]});
+	testReport("```\nFakeout```\n[[link]]\n```\n[[yes]]", {yes: ["[[yes]]"]});
 });
 
 it('field', function() {

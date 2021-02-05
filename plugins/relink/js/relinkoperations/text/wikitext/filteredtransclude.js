@@ -44,13 +44,13 @@ FilteredTranscludeEntry.prototype.report = function() {
 exports.report = function(text, callback, options) {
 	var m = this.match,
 		filter = m[1],
-		template = m[3],
+		template = $tw.utils.trim(m[3]),
 		append = template ? '||' + template + '}}}' : '}}}';
 	filterHandler.report(filter, function(blurb, title) {
 		callback('{{{' + blurb + append, title);
 	}, options);
 	if (template) {
-		callback('{{{' + filter + '||}}}', template);
+		callback('{{{' + $tw.utils.trim(filter).replace(/\r?\n/mg, ' ') + '||}}}', template);
 	}
 	this.parser.pos = this.matchRegExp.lastIndex;
 };

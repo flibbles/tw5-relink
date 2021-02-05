@@ -130,14 +130,6 @@ it("images", function() {
 	test({text: "[img height={{from}} [from]]"},["[img height={{}}]","[img[]]"]);
 });
 
-it("filteredtranscludes", function() {
-	test({text: "{{{from}}}"}, ["{{{}}}"]);
-	test({text: "{{{[tag[from]]}}}"}, ["{{{[tag[]]}}}"]);
-	test({text: "{{{from ||template}}}"}, ["{{{||template}}}"]);
-	test({text: "{{{[tag[else]] ||from}}}"}, ["{{{[tag[else]] ||}}}"]);
-	test({text: "{{{from||from}}}"}, ["{{{||from}}}", "{{{from||}}}"]);
-});
-
 it("pragmas", function() {
 	test({text: "\\import [tag[from]]\n"}, ["\\import [tag[]]"]);
 	test({text: "\\import from\n"}, ["\\import"]);
