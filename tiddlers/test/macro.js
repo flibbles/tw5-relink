@@ -328,4 +328,44 @@ it('keeps up to date with macro changes', function() {
 	expect(t.tiddler.fields.text).toEqual("Macro <<test 'to there'>>.");
 });
 
+it("report", function() {
+	var def = "\\define test(title, filt, ref, list, wiki) stuff\n";
+	var global = {title: 'global', tags: '$:/tags/Macro', text: def};
+	function test(text, expected, extra) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddlers([
+			{title: 'test', text: text},
+			utils.macroConf("test", "title", "title"),
+			utils.macroConf("test", "ref", "reference"),
+			utils.macroConf("test", "filt", "filter"),
+			utils.macroConf("test", "list", "list"),
+			utils.macroConf("test", "wiki", "wikitext")]);
+		wiki.addTiddlers(utils.setupTiddlers());
+		if (extra) {
+			wiki.addTiddler(extra);
+		}
+		var refs = wiki.getTiddlerRelinkReferences('test');
+		expect(refs).toEqual(expected);
+	};
+	test("<<test title:from>>", {from: ["<<test title>>"]}, global);
+	test("<<test from>>", {from: ["<<test title>>"]}, global);
+	test("<<test filt:'[tag[from]]'>>", {from: ['<<test filt: "[tag[]]">>']}, global);
+	test("<<test filt:'from'>>", {from: ['<<test filt>>']}, global);
+	test("<<test ref:'from'>>", {from: ['<<test ref>>']}, global);
+	test("<<test ref:'from##index'>>", {from: ['<<test ref: "##index">>']}, global);
+	test("<<test list:'from A'>>", {from: ['<<test list>>'], A: ['<<test list>>']}, global);
+	test("<<test wiki: {{from##index}}>>", {from: ['<<test wiki: "{{##index}}">>']}, global);
+
+	// Multiples
+	test("<<test from filt:'[[from]]'>>", {from: ["<<test title>>", "<<test filt>>"]}, global);
+	test("<<test filt:'[list[from]tag[from]]'>>", {from: ['<<test filt: "[list[]]">>', '<<test filt: "[tag[]]">>']}, global);
+	test("<<test from>>\n<<test from>>", {from: ["<<test title>>", "<<test title>>"]}, global);
+
+	// Missing macro definition
+	test("<<test title:from>>", {from: ["<<test title>>"]});
+	test("<<test from>>", {});
+	// One possible, one not.
+	test("<<test title:A B>>", {A: ["<<test title>>"]});
+});
+
 });

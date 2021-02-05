@@ -34,6 +34,12 @@ MacrocallEntry.prototype.forEachChildReport = function(report, parameter, type) 
 	return "<<" + this.macro + " " + rtn + ">>";
 };
 
+exports.report = function(text, callback, options) {
+	var macroInfo = getInfoFromRule(this, text);
+	this.parser.pos = macroInfo.end;
+	reportMacroInvocation(macroInfo, callback, options);
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var macroInfo = getInfoFromRule(this, text);
 	var managedMacro = options.settings.getMacro(macroInfo.name);
@@ -69,6 +75,39 @@ exports.relinkAttribute = function(macro, text, fromTitle, toTitle, options) {
 		entry.output = macroToStringMacro(entry.output, text, options);
 	}
 	return entry;
+};
+
+function reportMacroInvocation(macro, callback, options) {
+	var managedMacro = options.settings.getMacro(macro.name);
+	if (!managedMacro) {
+		// We don't manage this macro. Bye.
+		return undefined;
+	}
+	for (var managedArg in managedMacro) {
+		var index;
+		try {
+			index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, options);
+		} catch (e) {
+			if (e instanceof CannotFindMacroDef) {
+				continue;
+			}
+		}
+		if (index < 0) {
+			// this arg either was not supplied, or we can't find
+			// the definition, so we can't tie it to an anonymous
+			// argument. Either way, move on to the next.
+			continue;
+		}
+		var param = macro.params[index];
+		var handler = managedMacro[managedArg];
+		var entry = handler.report(param.value, function(blurb, title) {
+			var rtn = managedArg;
+			if (blurb) {
+				rtn += ': "' + blurb + '"';
+			}
+			callback('<<' + macro.name + ' ' + rtn + '>>', title);
+		}, options);
+	}
 };
 
 /**Processes the given macro,

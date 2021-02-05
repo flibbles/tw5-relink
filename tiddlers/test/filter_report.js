@@ -67,45 +67,6 @@ it("html", function() {
 	     ["<$text text={{{}}} />", "<$text text={{{[tag[]]}}} />"]);
 });
 
-it("macrocall", function() {
-	function testMacro(text, expected) {
-		var def = "\\define test(title, filt, ref, list, wiki) stuff\n";
-		test({text: def + text}, expected, [
-			utils.macroConf("test", "title", "title"),
-			utils.macroConf("test", "ref", "reference"),
-			utils.macroConf("test", "filt", "filter"),
-			utils.macroConf("test", "list", "list"),
-			utils.macroConf("test", "wiki", "wikitext")]);
-	};
-	testMacro("<<test title:from>>", ["<<test title>>"]);
-	testMacro("<<test from>>", ["<<test title>>"]);
-	testMacro("<<test filt:'[tag[from]]'>>", ['<<test filt: "[tag[]]">>']);
-	testMacro("<<test filt:'from'>>", ['<<test filt>>']);
-	testMacro("<<test ref:'from'>>", ['<<test ref>>']);
-	testMacro("<<test ref:'from##index'>>", ['<<test ref: "##index">>']);
-	testMacro("<<test list:'from A B'>>", ['<<test list>>']);
-	testMacro("<<test wiki: {{from##index}}>>", ['<<test wiki: "{{##index}}">>']);
-
-	// Multiples
-	testMacro("<<test from filt:'[[from]]'>>", ["<<test title>>", "<<test filt>>"]);
-	testMacro("<<test filt:'[list[from]tag[from]]'>>", ['<<test filt: "[list[]]">>', '<<test filt: "[tag[]]">>']);
-	testMacro("<<test from>>\n<<test from>>", ["<<test title>>", "<<test title>>"]);
-});
-
-it("macrocall when missing definition", function() {
-	function testMacro(text, expected) {
-		test({text: text}, expected, [
-			utils.macroConf("test", "title", "title"),
-			utils.macroConf("test", "ref", "reference"),
-			utils.macroConf("test", "filt", "filter"),
-			utils.macroConf("test", "list", "list")]);
-	};
-	testMacro("<<test title:from>>", ["<<test title>>"]);
-	testMacro("<<test from>>", []);
-	// One possible, one not.
-	testMacro("<<test title:from from>>", ["<<test title>>"]);
-});
-
 it("images", function() {
 	test({text: "[img[from]]"}, ["[img[]]"]);
 	test({text: "[img[Caption|from]]"}, ["[img[Caption]]"]);
