@@ -88,14 +88,10 @@ function reportMacroInvocation(macro, callback, options) {
 		try {
 			index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, options);
 		} catch (e) {
-			if (e instanceof CannotFindMacroDef) {
-				continue;
-			}
+			continue;
 		}
 		if (index < 0) {
-			// this arg either was not supplied, or we can't find
-			// the definition, so we can't tie it to an anonymous
-			// argument. Either way, move on to the next.
+			// The argument was not supplied. Move on to next.
 			continue;
 		}
 		var param = macro.params[index];
@@ -123,15 +119,6 @@ function relinkMacroInvocation(macro, text, fromTitle, toTitle, mayBeWidget, opt
 	var modified = false;
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
-		return undefined;
-	}
-	if (macro.params.every(function(p) {
-		return !options.settings.survey(p.value, fromTitle, options);
-	})) {
-		// We cut early if the fromTitle doesn't even appear
-		// anywhere in the title. This is to avoid any headache
-		// about finding macro definitions (and any resulting
-		// exceptions if there isn't even a title to replace.
 		return undefined;
 	}
 	var outMacro = $tw.utils.extend({}, macro);
