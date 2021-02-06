@@ -41,9 +41,25 @@ it('tricky downgrade', function() {
 	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test': \\import"]);
 });
 
-it('reports failures', function() {
+it('handles failures', function() {
 	var r = testText("\\import [tag{from here}]\nstuff",
 	                 {ignored: true, to: "to}there", fails: 1});
+});
+
+it("reports", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers(utils.setupTiddlers());
+	function test(tiddler, expected) {
+		wiki.addTiddler(tiddler);
+		var refs = wiki.getTiddlerRelinkReferences(tiddler.title);
+		expect(refs).toEqual(expected);
+	};
+	test({title: 'A', text: "\\import [tag[from]]\n"}, {from: ["\\import [tag[]]"]});
+	test({title: 'B', text:  "\\import from\n[[link]]"}, {from: ["\\import"], link: ['[[link]]']});
+	wiki.addTiddlers([
+		{title: 'localA', tags: 'imports', text: '\\define second() localB\n'},
+		{title: 'localB', text: '\\relink third var\n\\define third(var) t\n'}]);
+	test({title: 'C', text: "\\import [tag[imports]]\n\\import [<second>]\n<<third mytitle>>\n"}, {imports: ["\\import [tag[]]"], mytitle: ["<<third var>>"]});
 });
 
 });

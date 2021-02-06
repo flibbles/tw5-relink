@@ -26,6 +26,23 @@ ImportEntry.prototype.report = function() {
 	});
 };
 
+exports.report = function(text, callback, options) {
+	// This moves the pos for us
+	var parseTree = this.parse();
+	var filter = parseTree[0].attributes.filter.value;
+	filterRelinker.report(filter, function(blurb, title) {
+		if (blurb) {
+			blurb = '\\import ' + blurb;
+		} else {
+			blurb = '\\import';
+		}
+		callback(blurb, title);
+	}, options);
+	// Before we go, we need to actually import the variables
+	// it's calling for, and any /relink pragma
+	options.settings.import(filter);
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	// In this one case, I'll let the parser parse out the filter and move
 	// the ptr.
