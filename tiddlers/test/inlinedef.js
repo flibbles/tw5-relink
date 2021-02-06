@@ -125,47 +125,41 @@ it('can accumulate horizontally', function() {
 	testText("\\relink test list:list\n\\relink test field\n<<test list:'[[from here]]' field:'from here'>>");
 });
 
-it('linedef macros update appropriately', function() {
+it('linedef macros update appropriately', async function() {
 	var wiki = new $tw.Wiki();
-	// First patch in a method that performs update events synchronously
-	utils.monkeyPatch($tw.utils, "nextTick", (fn) => fn(), function() {
-		// First, force everything to instantiate
-		testText("<<test 'from here'>>", {wiki: wiki, ignored: true});
+	// First, force everything to instantiate
+	testText("<<test 'from here'>>", {wiki: wiki, ignored: true});
 
-		// Add a macro def and relink declaration,
-		// and ensure macros update
-		wiki.eventsTriggered = false;
-		wiki.addTiddler({title: "macro", text: "\\define test(field) $field$\n\\relink test field:title", tags: "$:/tags/Macro"});
-		testText("<<test field:'from here'>>", {wiki: wiki});
+	// Add a macro def and relink declaration,
+	// and ensure macros update
+	wiki.addTiddler({title: "macro", text: "\\define test(field) $field$\n\\relink test field:title", tags: "$:/tags/Macro"});
+	await utils.flush();
+	testText("<<test field:'from here'>>", {wiki: wiki});
 
-		// Next we modify an existing macro, and test it.
-		wiki.eventsTriggered = false;
-		wiki.addTiddler({title: "macro", text: "\\define test(field) $field$\n\\relink test field:reference", tags: "$:/tags/Macro"});
-		testText("<<test field:'from here!!stuff'>>", {wiki: wiki});
+	// Next we modify an existing macro, and test it.
+	wiki.addTiddler({title: "macro", text: "\\define test(field) $field$\n\\relink test field:reference", tags: "$:/tags/Macro"});
+	await utils.flush();
+	testText("<<test field:'from here!!stuff'>>", {wiki: wiki});
 
-		// Next we remove an existing macro, and ensure it's gone.
-		wiki.eventsTriggered = false;
-		wiki.deleteTiddler("macro");
-		testText("<<test field:'from here!!stuff'>>", {ignored: true, wiki: wiki});
-	});
+	// Next we remove an existing macro, and ensure it's gone.
+	wiki.deleteTiddler("macro");
+	await utils.flush();
+	testText("<<test field:'from here!!stuff'>>", {ignored: true, wiki: wiki});
 });
 
-it("linedef macros don't cling to outdated global defs", function() {
+it("linedef macros don't cling to outdated global defs", async function() {
 	// This test confirms that inlinemacro defs aren't copying and
 	// holding onto global defs longer than they should.
 	// This could happen if the inline defs had any settings for a macro
 	// themselves.
-	utils.monkeyPatch($tw.utils, "nextTick", (fn) => fn(), function() {
-		var wiki = new $tw.Wiki();
-		wiki.eventsTriggered = false;
-		wiki.addTiddler(utils.macroConf("test", "field"));
-		wiki.eventsTriggered = false;
-		wiki.addTiddler({title: "A", text: "\\relink test other", tags: "$:/tags/Macro"});
-		testText("<<test field:'from here' other:'from here'>>", {wiki: wiki});
-		wiki.eventsTriggered = false;
-		wiki.addTiddler(utils.macroConf("test", "field", "reference"));
-		testText("<<test field:'from here!!stuff'>>", {wiki: wiki});
-	});
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("test", "field"));
+	wiki.addTiddler({title: "A", text: "\\relink test other", tags: "$:/tags/Macro"});
+	await utils.flush();
+	testText("<<test field:'from here' other:'from here'>>", {wiki: wiki});
+	wiki.addTiddler(utils.macroConf("test", "field", "reference"));
+	await utils.flush();
+	testText("<<test field:'from here!!stuff'>>", {wiki: wiki});
 });
 
 it("linedef macros don't parse too much", function() {
