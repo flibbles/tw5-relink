@@ -7,22 +7,7 @@ Introduces some utility methods used by Relink.
 
 var MacroSettings = require('$:/plugins/flibbles/relink/js/utils/macroConfig.js');
 var Settings = require("$:/plugins/flibbles/relink/js/settings.js");
-
-var relinkOperators = Object.create(null);
-$tw.modules.forEachModuleOfType('relinkoperator', function(title, module) {
-	if (module.name !== undefined) {
-		relinkOperators[module.name] = module;
-	} else {
-		// TODO: Maybe put some kind of warning message here that
-		// this module needs to be updated?
-		// Legacy support. It has a relinker, but not a reporter
-		for (var entry in module) {
-			relinkOperators[entry] = {
-				relink: module[entry],
-				report: function() {}};
-		}
-	}
-});
+var utils = require("./utils.js");
 
 /** Returns a pair like this,
  *  { title: {field: entry, ... }, ... }
@@ -32,23 +17,16 @@ exports.getRelinkReport = function(fromTitle, toTitle, options) {
 		return Object.create(null);
 	});
 	if (!cache[toTitle]) {
-		cache[toTitle] = getFreshRelinkReport(this, fromTitle, toTitle, options);
+		cache[toTitle] = utils.getRelinkResults(this, fromTitle, toTitle, options);
 	}
 	return cache[toTitle];
 };
 
-exports.getTiddlerRelinkReferences = function(title, options) {
-	var tiddler = this.getTiddler(title),
-		references = Object.create(null),
-	options = options || {};
-	options.settings = this.getRelinkConfig();
-	if (tiddler) {
-		for (var relinker in relinkOperators) {
-			relinkOperators[relinker].report(tiddler, function(blurb, title) {
-				references[title] = references[title] || [];
-				references[title].push(blurb);
-			}, options);
-		}
+exports.getTiddlerRelinkReferences = function(title) {
+	var refIndexer = this.getIndexer("RelinkReferencesIndexer"),
+		references = refIndexer && refIndexer.lookup(title);
+	if (!references) {
+		references = utils.getTiddlerRelinkReferences(this, title);
 	}
 	return references;
 };
@@ -71,47 +49,6 @@ exports.getTiddlerRelinkBackreferences = function(targetTitle, options) {
 	return backRefs;
 };
 
-function getFreshRelinkReport(wiki, fromTitle, toTitle, options) {
-	options = options || {};
-	options.wiki = options.wiki || wiki;
-	options.settings = wiki.getRelinkConfig();
-	fromTitle = (fromTitle || "").trim();
-	toTitle = (toTitle || "").trim();
-	var changeList = Object.create(null);
-	if(fromTitle && toTitle) {
-		var tiddlerList = wiki.getRelinkableTitles();
-		for (var i = 0; i < tiddlerList.length; i++) {
-			var title = tiddlerList[i];
-			var tiddler = wiki.getTiddler(title);
-			// Don't touch plugins or JavaScript modules
-			if(tiddler
-			&& !tiddler.fields["plugin-type"]
-			&& tiddler.fields.type !== "application/javascript") {
-				try {
-					var entries = Object.create(null);
-					for (var operation in relinkOperators) {
-						relinkOperators[operation].relink(tiddler, fromTitle, toTitle, entries, options);
-					}
-					for (var field in entries) {
-						// So long as there is one key,
-						// add it to the change list.
-						changeList[title] = entries;
-						break;
-					}
-				} catch (e) {
-					// Should we test for instanceof Error instead?: yes
-					// Does that work in the testing environment?: no
-					if (e.message) {
-						e.message = e.message + "\nWhen relinking '" + title + "'";
-					}
-					throw e;
-				}
-			}
-		}
-	}
-	return changeList;
-};
-
 exports.getRelinkableTitles = function() {
 	var toUpdate = "$:/config/flibbles/relink/to-update";
 	var self = this;
@@ -124,7 +61,6 @@ exports.getRelinkableTitles = function() {
 		}
 	})();
 };
-
 
 exports.getRelinkConfig = function() {
 	if (this._relinkConfig === undefined) {

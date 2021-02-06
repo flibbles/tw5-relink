@@ -129,6 +129,15 @@ exports.monkeyPatch = function(container, method, alternative, block) {
 	}
 };
 
+/** Flushes any enqueued events in Tiddlywiki. So all pending changes get
+ *  written.
+ */
+exports.flush = function(wiki) {
+	return new Promise(function(resolve, reject) {
+		$tw.utils.nextTick(resolve);
+	});
+};
+
 exports.addPlugin = function(pluginName, tiddlers, options) {
 	options = options || {};
 	var wiki = options.wiki || new $tw.Wiki();

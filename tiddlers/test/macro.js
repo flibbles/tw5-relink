@@ -313,14 +313,12 @@ it('attribute invocations', function() {
 	testText("Before <$a b\n=\n<<test stuff 'from here'>>\n/> After");
 });
 
-it('keeps up to date with macro changes', function() {
+it('keeps up to date with macro changes', async function() {
 	var wiki = new $tw.Wiki();
 	var t = testText("Macro <<test stuff 'from here'>>.", {wiki: wiki});
-	utils.monkeyPatch($tw.utils, "nextTick", (fn) => fn(), function() {
-		wiki.eventsTriggered = false;
-		wiki.addTiddler({ title: "testMacro", tags: "$:/tags/Macro",
-			text: "\\define test(Btitle) title is first now\n"});
-	});
+	wiki.addTiddler({ title: "testMacro", tags: "$:/tags/Macro",
+		text: "\\define test(Btitle) title is first now\n"});
+	await utils.flush();
 
 	// Btitle is the first argument now. Relink should realize that.
 	// DON'T USE testText, because that'll reoverwrite the new testMacro
