@@ -6,9 +6,9 @@ be skipped over.
 \*/
 
 var utils = require("test/utils");
+var Logger = $tw.utils.Logger.prototype;
 
 function testAlert(wiki, tiddlers, browser) {
-	var results = [];
 	wiki.addTiddlers([
 		{title: "$:/plugins/flibbles/relink/language/Error/ReportFailedRelinks", text: "<<from>>-<<to>>"},
 		{title: "from here"}]);
@@ -17,26 +17,28 @@ function testAlert(wiki, tiddlers, browser) {
 			title: tiddlers[i],
 			text: "{{{[tag{from here}]}}}"});
 	}
-	function alert(msg) { results.push(msg); }
+	spyOn(Logger, 'alert');
 	// We momentarily pretend to be (or not to be) a browser
 	utils.monkeyPatch($tw, "browser", browser, function() {
-	utils.monkeyPatch($tw.utils.Logger.prototype, "alert", alert, function() {
-	utils.collect("log", function() {
 		// deliberately not passing options.
 		// renameTiddler should work without it.
 		wiki.renameTiddler("from here", "to}}there");
 	});
-	});
-	});
 	// There should only ever be a single alert, no matter how many failed
 	// relinks there were.
-	expect(results.length).toEqual(1);
+	expect(Logger.alert).toHaveBeenCalledTimes(1);
 	var expectedMessage = "from here-to}}there";
+	var results = Logger.alert.calls.first().args;
 	expect(results[0]).toContain(expectedMessage);
 	return results[0];
 };
 
 describe('failure alerts', function() {
+
+beforeEach(function() {
+	// We're just suppressing the log here.
+	spyOn(console, 'log');
+});
 
 it("single alert for multiple tiddlers", function() {
 	var message = testAlert(new $tw.Wiki(), ["TiddlerA", "TiddlerB"], true);
