@@ -18,49 +18,49 @@ function test(type, paramObject, options) {
 	parentWidget.execute();
 	var mangler = parentWidget.children[0];
 	var event = { type: type, paramObject: paramObject };
-	var results = {wiki: wiki, alerts: []};
-	var appendAlert = function(message) { results.alerts.push(message); };
-	utils.monkeyPatch(Mangler.prototype, "alert", appendAlert, function() {
-		results.output = mangler.dispatchEvent(event);
-	});
-	return results;
+	var output = mangler.dispatchEvent(event);
+	return wiki;
 };
 
 describe("mangler", function() {
 
+beforeEach(function() {
+	spyOn(Mangler.prototype, 'alert');
+});
+
 it('supports default custom type', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: defaultTiddler, text: "dummy-type"});
-	var output = test("relink-add-field", {field: "test"}, {wiki: wiki});
-	var results = output.wiki.getTiddler(prefix + "fields/test");
+	test("relink-add-field", {field: "test"}, {wiki: wiki});
+	var results = wiki.getTiddler(prefix + "fields/test");
 	expect(results.fields.text).toEqual("dummy-type");
 });
 
 it('adds fields', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: defaultTiddler, text: "wikitext"});
-	var output = test("relink-add-field", {field: "test"}, {wiki: wiki});
-	var results = output.wiki.getTiddler(prefix + "fields/test");
+	test("relink-add-field", {field: "test"}, {wiki: wiki});
+	var results = wiki.getTiddler(prefix + "fields/test");
 	expect(results.fields.text).toEqual("wikitext");
 });
 
 it('rejects illegal fields', function() {
-	var output = test("relink-add-field", {field: "te$t"});
-	var results = output.wiki.getTiddler(prefix + "fields/te$t");
+	var wiki = test("relink-add-field", {field: "te$t"});
+	var results = wiki.getTiddler(prefix + "fields/te$t");
 	expect(results).toBeUndefined();
-	expect(output.alerts.length).toEqual(1);
-	// We don't test the output, since it's Tiddlywiki's, but we do make
-	// sure we're properly supplying the field name for the warning string
-	// to embed.
-	expect(output.alerts[0]).toContain("te$t");
+	expect(Mangler.prototype.alert).toHaveBeenCalledTimes(1);
+	// We don't test the output, since it's Tiddlywiki's,
+	// but we do make sure we're properly supplying the
+	// field name for the warning string to embed.
+	expect(Mangler.prototype.alert.calls.argsFor(0)[0]).toContain('te$t');
 });
 
 it('ignores some fields', function() {
 	function ignore(field, expectedNonexistent) {
-		var output = test("relink-add-field", {field: field});
-		var results = output.wiki.getTiddler(prefix + "fields/");
+		var wiki = test("relink-add-field", {field: field});
+		var results = wiki.getTiddler(prefix + "fields/");
 		expect(results).toBeUndefined();
-		expect(output.alerts.length).toEqual(0);
+		expect(Mangler.prototype.alert).toHaveBeenCalledTimes(0);
 	}
 	ignore("   ");
 	ignore("");
@@ -70,17 +70,17 @@ it('ignores some fields', function() {
 it('adds operators', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: defaultTiddler, text: "list"});
-	var output = test("relink-add-operator", {operator: "test"}, {wiki: wiki});
-	var results = output.wiki.getTiddler(prefix + "operators/test");
+	test("relink-add-operator", {operator: "test"}, {wiki: wiki});
+	var results = wiki.getTiddler(prefix + "operators/test");
 	expect(results.fields.text).toEqual("list");
 });
 
 it('adds odd operators', function() {
 	function op(input, expectedSuffix) {
-		var output = test("relink-add-operator", {operator: input});
-		var results = output.wiki.getTiddler(prefix + expectedSuffix);
+		var wiki = test("relink-add-operator", {operator: input});
+		var results = wiki.getTiddler(prefix + expectedSuffix);
 		expect(results.fields.text).toEqual("title");
-		expect(output.alerts.length).toEqual(0);
+		expect(Mangler.prototype.alert).toHaveBeenCalledTimes(0);
 	}
 	op("   test ", "operators/test");
 	op("tESt", "operators/tESt");
@@ -92,10 +92,10 @@ it('adds odd operators', function() {
 it('adds macro parameters', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: defaultTiddler, text: "filter"});
-	var output = test("relink-add-parameter",
+	test("relink-add-parameter",
 		{macro: "test", parameter: "field"},
 		{wiki: wiki});
-	var results = output.wiki.getTiddler(prefix + "macros/test/field");
+	var results = wiki.getTiddler(prefix + "macros/test/field");
 	expect(results.fields.text).toEqual("filter");
 });
 
@@ -115,8 +115,9 @@ it('rejects bad macros and parameters', function() {
 		var results = wiki.getTiddler(
 			prefix + "macros/"+macro+"/"+parameter);
 		expect(results).toBeUndefined();
-		expect(output.alerts.length).toEqual(1);
-		expect(output.alerts[0]).toEqual(error);
+		expect(Mangler.prototype.alert).toHaveBeenCalledTimes(1);
+		expect(Mangler.prototype.alert).toHaveBeenCalledWith(error);
+		Mangler.prototype.alert.calls.reset();
 	};
 	fail("test space", "param", "test space");
 	fail("test", "field/slash", "field/slash");
@@ -125,10 +126,10 @@ it('rejects bad macros and parameters', function() {
 
 it('adds odd parameters', function() {
 	function op(macro, parameter, expectedSuffix) {
-		var output = test("relink-add-parameter", {macro: macro, parameter: parameter});
-		var results = output.wiki.getTiddler(prefix + expectedSuffix);
+		var wiki = test("relink-add-parameter", {macro: macro, parameter: parameter});
+		var results = wiki.getTiddler(prefix + expectedSuffix);
 		expect(results.fields.text).toEqual("title");
-		expect(output.alerts.length).toEqual(0);
+		expect(Mangler.prototype.alert).toHaveBeenCalledTimes(0);
 	}
 	op("   test ", " param  ", "macros/test/param");
 	op("test/slash", "param", "macros/test/slash/param");
@@ -142,10 +143,10 @@ it('adds odd parameters', function() {
 it('adds element attributes', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: defaultTiddler, text: "reference"});
-	var output = test("relink-add-attribute",
+	test("relink-add-attribute",
 		{element: "test", attribute: "field"},
 		{wiki: wiki});
-	var results = output.wiki.getTiddler(prefix + "attributes/test/field");
+	var results = wiki.getTiddler(prefix + "attributes/test/field");
 	expect(results.fields.text).toEqual("reference");
 });
 
@@ -155,13 +156,14 @@ it('rejects bad elements and attributes', function() {
 		wiki.addTiddlers([
 			{title: "$:/plugins/flibbles/relink/language/Error/InvalidElementName", text: "<$text text=<<elementName>> />"},
 			{title: "$:/plugins/flibbles/relink/language/Error/InvalidAttributeName", text: "<$text text=<<attributeName>> />"}]);
-		var output = test("relink-add-attribute",
-		                  {element: element, attribute: attribute},
-		                  {wiki: wiki});
+		test("relink-add-attribute",
+			{element: element, attribute: attribute},
+			{wiki: wiki});
 		var results = wiki.getTiddler(prefix + "attributes/"+element+"/"+attribute);
 		expect(results).toBeUndefined();
-		expect(output.alerts.length).toEqual(1);
-		expect(output.alerts[0]).toEqual(error);
+		expect(Mangler.prototype.alert).toHaveBeenCalledTimes(1);
+		expect(Mangler.prototype.alert).toHaveBeenCalledWith(error);
+		Mangler.prototype.alert.calls.reset();
 	};
 	fail("te/st", "attr", "te/st");
 	fail("te st", "attr", "te st");
@@ -171,10 +173,10 @@ it('rejects bad elements and attributes', function() {
 
 it('adds odd attributes', function() {
 	function op(element, attribute, expectedSuffix) {
-		var output = test("relink-add-attribute", {element: element, attribute: attribute});
-		var results = output.wiki.getTiddler(prefix + expectedSuffix);
+		var wiki = test("relink-add-attribute", {element: element, attribute: attribute});
+		var results = wiki.getTiddler(prefix + expectedSuffix);
 		expect(results.fields.text).toEqual("title");
-		expect(output.alerts.length).toEqual(0);
+		expect(Mangler.prototype.alert).toHaveBeenCalledTimes(0);
 	}
 	op("   test ", " attr  ", "attributes/test/attr");
 	op("tESt", "aTTr", "attributes/tESt/aTTr");

@@ -99,7 +99,6 @@ it("handles errors with at least some grace", function() {
 it("doesn't relink if from and to are the same", function() {
 	var results = utils.relink({text: "[[from here]]"}, {to: "from here"});
 	expect(results.log.length).toEqual(0);
-	expect(results.warn.length).toEqual(0);
 	expect(results.fails.length).toEqual(0);
 });
 

@@ -37,14 +37,12 @@ exports.relink = function(fields, options) {
 		wiki.addTiddler({title: results.from, type: options.type});
 	}
 	results.log = exports.collect("log", function() {
-	results.warn = exports.collect("warn", function() {
 	results.fails = exports.collectFailures(function() {
 		var tiddler = new $tw.Tiddler({title: target}, fields);
 		var title = tiddler.fields.title;
 		wiki.addTiddler(tiddler);
 		wiki.renameTiddler(results.from, results.to, options);
 		results.tiddler = wiki.getTiddler(title);
-	});
 	});
 	});
 	return results;

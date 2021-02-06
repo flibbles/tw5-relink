@@ -62,12 +62,11 @@ it('unpretty, without caption, and pre 5.1.20', function() {
 	// It doesn't fill in <$link to="tiddler" /> with the caption of
 	// "tiddler". Also, we must placeholder both caption and "to", or else
 	// we might desync the link with its caption with later name changes.
-	utils.monkeyPatch(prettylink, "shorthandSupported", () => false, function() {
-		testText("Link to [[from here]].",
-		         utils.placeholder(1, "to [bracks]") +
-		         "Link to <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link>.",
-		         {to: "to [bracks]"});
-	});
+	spyOn(prettylink, 'shorthandSupported').and.returnValue(false);
+	testText("Link [[from here]].",
+			 utils.placeholder(1, "to [bracks]") +
+			 "Link <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link>.",
+			 {to: "to [bracks]"});
 });
 
 it('has dangerous caption content', function() {
