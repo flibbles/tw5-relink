@@ -28,38 +28,6 @@ it("syslinks", function() {
 	     ["~$:/sys/link"]);
 });
 
-it("html", function() {
-	test({text: "<$link to='from' />"}, ["<$link to />"]);
-	test({text: "<$text text={{from}} />"}, ["<$text text={{}} />"]);
-	test({text: "<$text text={{from!!F}} />"}, ["<$text text={{!!F}} />"]);
-	test({text: "<$list filter='from' />"}, ["<$list filter />"]);
-	test({text: "<$list filter='[tag[from]]' />"}, ['<$list filter="[tag[]]" />']);
-	test({text: "<$A ref='from' />"}, ['<$A ref />'],
-		[utils.attrConf("$A", "ref", "reference")]);
-	test({text: "<$A ref='from!!field' />"}, ['<$A ref="!!field" />'],
-		[utils.attrConf("$A", "ref", "reference")]);
-	test({text: "<$A wiki='text {{from!!field}}' />"},
-	     ['<$A wiki="{{!!field}}" />'],
-	     [utils.attrConf("$A", "wiki", "wikitext")]);
-
-	// Macro attributes
-	test({text: "\\define test(title)\n<$link to=<<test from>> />"},
-	     ["<$link to=<<test title>> />"],
-	     [utils.macroConf("test", "title", "title")]);
-	test({text: "<$link to=<<test filt: '[tag[from]]'>> />"},
-	     ['<$link to=<<test filt: "[tag[]]">> />'],
-	     [utils.macroConf("test", "filt", "filter")]);
-	test({text: "<$link to=<<test filt: 'from [tag[from]]'>> />"},
-	     ['<$link to=<<test filt>> />', '<$link to=<<test filt: "[tag[]]">> />'],
-	     [utils.macroConf("test", "filt", "filter")]);
-
-	// Multiples
-	test({text: "<$link to='from' tooltip={{from}} />"},
-	     ["<$link to />", "<$link tooltip={{}} />"]);
-	test({text: "<$text text={{{from [tag[from]]}}} />"},
-	     ["<$text text={{{}}} />", "<$text text={{{[tag[]]}}} />"]);
-});
-
 it("images", function() {
 	test({text: "[img[from]]"}, ["[img[]]"]);
 	test({text: "[img[Caption|from]]"}, ["[img[Caption]]"]);

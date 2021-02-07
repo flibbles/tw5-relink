@@ -38,6 +38,65 @@ HtmlEntry.prototype.forEachChildReport = function(report, attribute, type) {
 	return "<" + this.element + " " + rtn + " />";
 };
 
+exports.report = function(text, callback, options) {
+	var managedElement = options.settings.getAttribute(this.nextTag.tag);
+	var importFilterAttr;
+	var element = this.nextTag.tag;
+	for (var attributeName in this.nextTag.attributes) {
+		var attr = this.nextTag.attributes[attributeName];
+		var nextEql = text.indexOf('=', attr.start);
+		// This is the rare case of changing tiddler
+		// "true" to something else when "true" is
+		// implicit, like <$link to /> We ignore those.
+		if (nextEql < 0 || nextEql > attr.end) {
+			continue;
+		}
+		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
+			importFilterAttr = attr;
+		}
+		var oldLength, quotedValue = undefined, entry;
+		if (attr.type === "string") {
+			var handler = getAttributeHandler(this.nextTag, attributeName, options);
+			if (!handler) {
+				// We don't manage this attribute. Bye.
+				continue;
+			}
+			handler.report(attr.value, function(blurb, title) {
+				if (blurb) {
+					callback('<' + element + ' ' + attributeName + '="' + blurb + '" />', title);
+				} else {
+					callback('<' + element + ' ' + attributeName + ' />', title);
+				}
+			}, options);
+		} else if (attr.type === "indirect") {
+			entry = refHandler.report(attr.textReference, function(blurb, title) {
+				callback('<' + element + ' ' + attributeName + '={{' + blurb + '}} />', title);
+			}, options);
+		} else if (attr.type === "filtered") {
+			entry = filterHandler.report(attr.filter, function(blurb, title) {
+				callback('<' + element + ' ' + attributeName + '={{{' + blurb + '}}} />', title);
+			}, options);
+		} else if (attr.type === "macro") {
+			var macro = attr.value;
+			entry = macrocall.reportAttribute(macro, function(blurb, title) {
+				callback('<' + element + ' ' + attributeName + '=' + blurb + ' />', title);
+			}, options);
+		}
+		if (quotedValue === undefined) {
+			continue;
+		}
+		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
+			// If this is an import variable filter, we gotta
+			// remember this new value when we import lower down.
+			importFilterAttr = quotedValue;
+		}
+	}
+	if (importFilterAttr) {
+		processImportFilter(importFilterAttr, options);
+	}
+	this.parser.pos = this.nextTag.end;
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var managedElement = options.settings.getAttribute(this.nextTag.tag),
 		builder = new Rebuilder(text, this.nextTag.start);

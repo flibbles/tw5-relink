@@ -37,7 +37,7 @@ MacrocallEntry.prototype.forEachChildReport = function(report, parameter, type) 
 exports.report = function(text, callback, options) {
 	var macroInfo = getInfoFromRule(this, text);
 	this.parser.pos = macroInfo.end;
-	reportMacroInvocation(macroInfo, callback, options);
+	this.reportAttribute(macroInfo, callback, options);
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -77,7 +77,8 @@ exports.relinkAttribute = function(macro, text, fromTitle, toTitle, options) {
 	return entry;
 };
 
-function reportMacroInvocation(macro, callback, options) {
+/** As in, report a macrocall invocation that is an html attribute. */
+exports.reportAttribute = function(macro, callback, options) {
 	var managedMacro = options.settings.getMacro(macro.name);
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.

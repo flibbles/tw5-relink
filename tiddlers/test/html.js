@@ -265,4 +265,49 @@ it('mixed failure with string and reference attributes', function() {
 	         {to: "to}}there", fails: 1});
 });
 
+/*
+TODO: More tests here, especially $macrocall, and $import with nested macrocall
+it("html", function() {
+	function test(text, expected, extraTiddlers) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddler({title: 'test', text: text});
+		wiki.addTiddlers(utils.setupTiddlers());
+		if (extraTiddlers) {
+			wiki.addTiddlers(extraTiddlers);
+		}
+		var refs = wiki.getTiddlerRelinkReferences('test');
+		expect(refs).toEqual(expected);
+	};
+	test("<$link to='from' />", {from: ["<$link to />"]});
+	test("<$text text={{from}} />", {from: ["<$text text={{}} />"]});
+	test("<$text text={{from!!F}} />", {from: ["<$text text={{!!F}} />"]});
+	test("<$list filter='from' />", {from: ["<$list filter />"]});
+	test("<$list filter='[tag[from]]' />", {from: ['<$list filter="[tag[]]" />']});
+	test("<$A ref='from' />", {from: ['<$A ref />']},
+		[utils.attrConf("$A", "ref", "reference")]);
+	test("<$A ref='from!!field' />", {from: ['<$A ref="!!field" />']},
+		[utils.attrConf("$A", "ref", "reference")]);
+	test("<$A wiki='text {{from!!field}}' />",
+	     {from: ['<$A wiki="{{!!field}}" />']},
+	     [utils.attrConf("$A", "wiki", "wikitext")]);
+
+	// Macro attributes
+	test("\\define test(title) stuff\n<$link to=<<test from>> />",
+	     {from: ["<$link to=<<test title>> />"]},
+	     [utils.macroConf("test", "title", "title")]);
+	test("<$link to=<<test filt: '[tag[from]]'>> />",
+	     {from: ['<$link to=<<test filt: "[tag[]]">> />']},
+	     [utils.macroConf("test", "filt", "filter")]);
+	test("<$link to=<<test filt: 'from [tag[from]]'>> />",
+	     {from: ['<$link to=<<test filt>> />', '<$link to=<<test filt: "[tag[]]">> />']},
+	     [utils.macroConf("test", "filt", "filter")]);
+
+	// Multiples
+	test("<$link to='from' tooltip={{from}} />",
+	     {from: ["<$link to />", "<$link tooltip={{}} />"]});
+	test("<$text text={{{from [tag[from]]}}} />",
+	     {from: ["<$text text={{{}}} />", "<$text text={{{[tag[]]}}} />"]});
+});
+*/
+
 });
