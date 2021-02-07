@@ -23,13 +23,6 @@ it("works on empty reports", function() {
 	test({text: "This text has no links"}, []);
 });
 
-it("wikiLinks", function() {
-	test({text: "Text WikiFrom stuff", from: "WikiFrom"}, ["~WikiFrom"]);
-	utils.monkeyPatch($tw.config.textPrimitives, "unWikiLink", "%", function() {
-		test({text: "Text WikiFrom stuff", from: "WikiFrom"}, ["%WikiFrom"]);
-	});
-});
-
 it("syslinks", function() {
 	test({text: "Text $:/sys/link stuff", from: "$:/sys/link"},
 	     ["~$:/sys/link"]);

@@ -85,4 +85,18 @@ it('respects \\rules', function() {
 	test("\\rules only wikilink prettylink", {to: tricky, ignored: true, fails: 1});
 });
 
+it("reports", async function() {
+	// I'd test for wikilinks enabled or disabled, but that setting persists
+	// even between new TiddlyWikis. It'd need a full Node reset to change.
+	function test(expected) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddler({title: 'test', text: 'S WikiCat ~WikiDog %WikiPig E'});
+		expect(wiki.getTiddlerRelinkReferences('test')).toEqual(expected);
+	};
+	test({WikiCat: ['~WikiCat'], WikiPig: ['~WikiPig']});
+	utils.monkeyPatch($tw.config.textPrimitives, "unWikiLink", "%", function() {
+		test({WikiCat: ['%WikiCat'], WikiDog: ['%WikiDog']});
+	});
+});
+
 });

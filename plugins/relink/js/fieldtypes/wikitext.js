@@ -40,7 +40,7 @@ function WikiWalker(type, text, options) {
 				}
 			}
 		});
-		WikiRelinker.prototype.relinkMethodsInjected = true;
+		WikiWalker.prototype.relinkMethodsInjected = true;
 	}
 	WikiParser.call(this, type, text, options);
 };
