@@ -21,10 +21,10 @@ $tw.modules.forEachModuleOfType('relinkoperator', function(title, module) {
 	}
 });
 
-exports.getTiddlerRelinkReferences = function(wiki, title) {
+exports.getTiddlerRelinkReferences = function(wiki, title, options) {
 	var tiddler = wiki.getTiddler(title),
 		references = Object.create(null),
-	options = options || {};
+		options = options || {};
 	options.settings = wiki.getRelinkConfig();
 	if (tiddler) {
 		for (var relinker in relinkOperators) {

@@ -101,8 +101,8 @@ Settings.prototype.getMacros = function() {
 	return flatten(this.settings.macros);
 };
 
-Settings.prototype.refresh = function(changes) {
-	for (var title in changes) {
+Settings.prototype.refresh = function(changedTiddlers) {
+	for (var title in changedTiddlers) {
 		if (title.substr(0, prefix.length) === prefix) {
 			this.settings = compileSettings(this.wiki);
 			return true;

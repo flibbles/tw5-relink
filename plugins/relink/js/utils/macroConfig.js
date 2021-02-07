@@ -6,7 +6,6 @@ This handles the fetching and distribution of relink settings.
 \*/
 
 var settings = require('$:/plugins/flibbles/relink/js/settings.js');
-var Widget = require("$:/core/modules/widgets/widget.js").widget;
 
 function MacroConfig(wiki, parent, title) {
 	this.macros = Object.create(null);
@@ -130,9 +129,9 @@ MacroConfig.prototype.addWidget = function(widget) {
 MacroConfig.prototype.getVariableWidget = function() {
 	if (!this.widget) {
 		var varWidget = this.parent && this.parent.widget;
-		var parentWidget = new Widget({}, {parentWidget: varWidget});
+		var parentWidget = this.wiki.makeWidget(null,{parentWidget: varWidget});
 		parentWidget.setVariable("currentTiddler", this.title);
-		var widget = new Widget({}, {parentWidget: parentWidget});
+		var widget = this.wiki.makeWidget(null, {parentWidget: parentWidget});
 		this.addWidget(widget);
 	}
 	return this.widget;
