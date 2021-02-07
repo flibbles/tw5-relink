@@ -76,4 +76,16 @@ it("broken macro", function() {
 	testText("\\define macro()\nContent\n[[from here]]\n");
 });
 
+it("reports", function() {
+	function test(text, expected) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddler({title: 'test', text: text});
+		expect(wiki.getTiddlerRelinkReferences('test')).toEqual(expected);
+	};
+	test("\\define macro() from\n", {});
+	test("\\define macro()  \n\n[[A]]\n\\end  \n[[B]]", {A: ["\\define macro() [[A]]"], B: ["[[B]]"]});
+	test("\\rules except macrodef\n\\define macro() [[A]]\n", {A: ['[[A]]']});
+	test("\\define\t\tmacro()    \t  [[T]]\n", {T: ['\\define macro() [[T]]']});
+});
+
 });

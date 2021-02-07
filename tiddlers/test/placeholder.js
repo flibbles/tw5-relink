@@ -157,4 +157,16 @@ it('Detects imported placeholder macros', function() {
 	         {wiki: wiki, to: to});
 });
 
+it("reports", function() {
+	function test(text, expected) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddler({title: 'test', text: text});
+		wiki.addTiddlers(utils.setupTiddlers());
+		expect(wiki.getTiddlerRelinkReferences('test')).toEqual(expected);
+	};
+	test("\\define relink-1() from\n", {from: ["\\define relink-1()"]});
+	test("\\define relink-filter-1() [tag[from]]\n", {from: ["\\define relink-filter-1() [tag[]]"]});
+	test("\\define relink-list-1() A from\n", {A: ['\\define relink-list-1()'], from: ["\\define relink-list-1()"]});
+});
+
 });
