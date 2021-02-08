@@ -16,6 +16,7 @@ it("caches report results when indexing", function() {
 	spyOn(operators.text, 'report').and.callThrough();
 	wiki.addTiddler({title: 'test', text: '[[x]]'});
 	expect(wiki.getTiddlerRelinkReferences('test')).toEqual({x: ['[[x]]']});
+	wiki.addTiddler({title: 'unrelated', text: 'unrelated'});
 	expect(wiki.getTiddlerRelinkReferences('test')).toEqual({x: ['[[x]]']});
 	expect(operators.text.report).toHaveBeenCalledTimes(1);
 });
@@ -29,6 +30,26 @@ it("doesn't cache report results when not indexing", function() {
 	expect(operators.text.report).toHaveBeenCalledTimes(2);
 });
 
+it("detects changes to configuration", async function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'test', filter: '[tag[x]]'});
+	expect(wiki.getTiddlerRelinkReferences('test')).toEqual({});
+	wiki.addTiddler(utils.operatorConf('tag'));
+	wiki.addTiddler(utils.fieldConf('filter', 'filter'));
+	await utils.flush();
+	expect(wiki.getTiddlerRelinkReferences('test')).toEqual({x: ['filter: [tag[]]']});
+});
+
+it("detects changes to global macro definitions", async function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'test', text: '<<macro x>>'});
+	expect(wiki.getTiddlerRelinkReferences('test')).toEqual({});
+	wiki.addTiddler({title: 'def', tags: '$:/tags/Macro', text: '\\relink macro arg\n\\define macro(arg) $arg$'});
+	await utils.flush();
+	expect(wiki.getTiddlerRelinkReferences('test')).toEqual({x: ['<<macro arg>>']});
+});
+
+/*
 it("reports when import tiddler list would change", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers(utils.setupTiddlers());
@@ -41,5 +62,6 @@ it("reports when import tiddler list would change", function() {
 	refs = wiki.getTiddlerRelinkReferences('test');
 	expect(refs).toEqual({local: ['\\import [tag[]]'], from: ['<<macro val>>']});
 });
+*/
 
 });

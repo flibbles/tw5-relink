@@ -26,9 +26,11 @@ ReferencesIndexer.prototype.update = function(updateDescriptor) {
 	if (!this.index) {
 		return;
 	}
+	/*
 	if (updateDescriptor.old.exists) {
 		delete this.index[updateDescriptor.old.tiddler.fields.title];
 	}
+	*/
 };
 
 ReferencesIndexer.prototype.lookup = function(title) {

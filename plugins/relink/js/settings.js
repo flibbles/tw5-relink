@@ -193,6 +193,9 @@ function dir(string) {
 	}
 }
 
+/* Turns {dir: {file1: 'value1', file2: 'value2'}}
+ * into {dir/file1: 'value1', dir/file2: 'value2'}
+ */
 function flatten(set) {
 	var signatures = Object.create(null);
 	for (var outerName in set) {

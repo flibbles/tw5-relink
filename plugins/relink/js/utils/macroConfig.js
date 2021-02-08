@@ -31,7 +31,7 @@ MacroConfig.prototype.import = function(filter) {
 };
 
 MacroConfig.prototype.refresh = function(changes) {
-	this.parent.refresh(changes);
+	var rtn = this.parent.refresh(changes);
 	if (this.widget.refresh(changes)) {
 		this.macros = Object.create(null);
 		// Recompile all our widgets in the same order
@@ -40,7 +40,7 @@ MacroConfig.prototype.refresh = function(changes) {
 		}
 		return true;
 	}
-	return false;
+	return rtn;
 };
 
 // So fieldtypes can access settings through options.settings, instead of

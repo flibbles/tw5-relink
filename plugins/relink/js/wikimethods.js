@@ -23,12 +23,7 @@ exports.getRelinkReport = function(fromTitle, toTitle, options) {
 };
 
 exports.getTiddlerRelinkReferences = function(title) {
-	var refIndexer = this.getIndexer("RelinkReferencesIndexer"),
-		references = refIndexer && refIndexer.lookup(title);
-	if (!references) {
-		references = utils.getTiddlerRelinkReferences(this, title);
-	}
-	return references;
+	return getIndexer(this).lookup(title);
 };
 
 exports.getTiddlerRelinkBackreferences = function(targetTitle, options) {
@@ -64,6 +59,7 @@ exports.getRelinkableTitles = function() {
 
 exports.getRelinkConfig = function() {
 	if (this._relinkConfig === undefined) {
+		var wiki = this;
 		var settings = new Settings(this);
 		var config = new MacroSettings(this, settings);
 		config.import( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
@@ -73,9 +69,29 @@ exports.getRelinkConfig = function() {
 		this.eventListeners = this.eventListeners || {};
 		this.eventListeners.change = this.eventListeners.change || [];
 		this.eventListeners.change.unshift(function(changes) {
-			config.refresh(changes);
+			if (config.refresh(changes)) {
+				getIndexer(wiki).rebuild();
+			}
 		});
 		this._relinkConfig = config;
 	}
 	return this._relinkConfig;
+};
+
+/** Returns the Relink indexer, or a dummy object which pretends to be one.
+ */
+function getIndexer(wiki) {
+	if (!wiki._relink_indexer) {
+		var indexer = wiki.getIndexer && wiki.getIndexer("RelinkReferencesIndexer");
+		if (!indexer) {
+			indexer = {
+				lookup: function(title) {
+					return utils.getTiddlerRelinkReferences(wiki, title);
+				},
+				rebuild: function() {}
+			}
+		}
+		wiki._relink_indexer = indexer;
+	}
+	return wiki._relink_indexer;
 };
