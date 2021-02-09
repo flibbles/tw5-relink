@@ -187,10 +187,11 @@ WikiRelinker.prototype = Object.create(WikiWalker.prototype);
 
 WikiRelinker.prototype.handleRule = function(ruleInfo) {
 	if (ruleInfo.rule.relink) {
+		var start = ruleInfo.matchIndex;
 		var newEntry = ruleInfo.rule.relink(this.source, this.fromTitle, this.toTitle, this.options);
 		if (newEntry !== undefined) {
 			if (newEntry.output) {
-				newEntry.start = ruleInfo.matchIndex;
+				newEntry.start = start;
 				newEntry.end = this.pos;
 			}
 			return [newEntry];

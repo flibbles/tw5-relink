@@ -266,7 +266,10 @@ it('mixed failure with string and reference attributes', function() {
 });
 
 it('supports relinking of internal text content', function() {
-	testText("<$link to='from here'><$text text={{from here!!field}}></$link>");
+	testText("<$link to='whatevs'><$a b={{from here!!field}} /></$link>");
+	testText("<$link to='from here'><$a b={{from here!!field}} /></$link>");
+	testText("<$link to='whatevs'>[[from here]]</$link>");
+	testText("<$link to='from here'>[[from here]]</$link>");
 });
 
 it("html", function() {

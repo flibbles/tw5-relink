@@ -38,6 +38,18 @@ HtmlEntry.prototype.forEachChildReport = function(report, attribute, type) {
 	return "<" + this.element + " " + rtn + " />";
 };
 
+HtmlEntry.prototype.eachChild = function(method) {
+	for (var child in this.children) {
+		method(this.children[child]);
+	}
+	if (this.innerText) {
+		for (var i = 0; i < this.innerText.length; i++) {
+			method(this.innerText[i]);
+		}
+	}
+};
+
+// TODO: Needs to work with new modular parsing like the relink method does
 exports.report = function(text, callback, options) {
 	var managedElement = options.settings.getAttribute(this.nextTag.tag);
 	var importFilterAttr;
@@ -191,9 +203,18 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	if (importFilterAttr) {
 		processImportFilter(importFilterAttr, options);
 	}
-	this.parser.pos = this.nextTag.end;
-	if (widgetEntry.hasChildren()) {
-		widgetEntry.output = builder.results(this.nextTag.end);
+	var tag = this.parse()[0];
+	if (tag.children) {
+		widgetEntry.innerText = tag.children;
+		for (var i = 0; i < tag.children.length; i++) {
+			var child = tag.children[i];
+			if (child.output) {
+				builder.add(child.output, child.start, child.end);
+			}
+		}
+	}
+	if (widgetEntry.hasChildren() || widgetEntry.innerText) {
+		widgetEntry.output = builder.results(this.parser.pos);
 		return widgetEntry;
 	}
 	return undefined;
