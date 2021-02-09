@@ -265,8 +265,10 @@ it('mixed failure with string and reference attributes', function() {
 	         {to: "to}}there", fails: 1});
 });
 
-/*
-TODO: More tests here, especially $macrocall, and $import with nested macrocall
+it('supports relinking of internal text content', function() {
+	testText("<$link to='from here'><$text text={{from here!!field}}></$link>");
+});
+
 it("html", function() {
 	function test(text, expected, extraTiddlers) {
 		var wiki = new $tw.Wiki();
@@ -308,6 +310,5 @@ it("html", function() {
 	test("<$text text={{{from [tag[from]]}}} />",
 	     {from: ["<$text text={{{}}} />", "<$text text={{{[tag[]]}}} />"]});
 });
-*/
 
 });

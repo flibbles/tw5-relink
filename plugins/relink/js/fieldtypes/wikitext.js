@@ -48,6 +48,7 @@ function WikiWalker(type, text, options) {
 WikiWalker.prototype = Object.create(WikiParser.prototype);
 
 WikiWalker.prototype.parsePragmas = function() {
+	var entries = this.tree;
 	while (true) {
 		this.skipWhitespace();
 		if (this.pos >= this.sourceLength) {
@@ -57,24 +58,27 @@ WikiWalker.prototype.parsePragmas = function() {
 		if (!nextMatch || nextMatch.matchIndex !== this.pos) {
 			break;
 		}
-		this.handleRule(nextMatch);
+		entries.push.apply(entries, this.handleRule(nextMatch));
 	}
-	return [];
+	return entries;
 };
 
 WikiWalker.prototype.parseInlineRunUnterminated = function(options) {
+	var entries = [];
 	var nextMatch = this.findNextMatch(this.inlineRules, this.pos);
 	while (this.pos < this.sourceLength && nextMatch) {
 		if (nextMatch.matchIndex > this.pos) {
 			this.pos = nextMatch.matchIndex;
 		}
-		this.handleRule(nextMatch);
+		entries.push.apply(entries, this.handleRule(nextMatch));
 		nextMatch = this.findNextMatch(this.inlineRules, this.pos);
 	}
 	this.pos = this.sourceLength;
+	return entries;
 };
 
 WikiWalker.prototype.parseInlineRunTerminated = function(terminatorRegExp,options) {
+	var entries = [];
 	options = options || {};
 	terminatorRegExp.lastIndex = this.pos;
 	var terminatorMatch = terminatorRegExp.exec(this.source);
@@ -86,21 +90,21 @@ WikiWalker.prototype.parseInlineRunTerminated = function(terminatorRegExp,option
 				if (options.eatTerminator) {
 					this.pos += terminatorMatch[0].length;
 				}
-				return [];
+				return entries;
 			}
 		}
 		if (inlineRuleMatch) {
 			if (inlineRuleMatch.matchIndex > this.pos) {
 				this.pos = inlineRuleMatch.matchIndex;
 			}
-			this.handleRule(inlineRuleMatch);
+			entries.push.apply(entries, this.handleRule(inlineRuleMatch));
 			inlineRuleMatch = this.findNextMatch(this.inlineRules, this.pos);
 			terminatorRegExp.lastIndex = this.pos;
 			terminatorMatch = terminatorRegExp.exec(this.source);
 		}
 	}
 	this.pos = this.sourceLength;
-	return [];
+	return entries;
 
 };
 
@@ -174,8 +178,6 @@ exports.report = function(wikitext, callback, options) {
 /// Relinker
 
 function WikiRelinker(type, text, fromTitle, toTitle, options) {
-	this.entry = new WikitextEntry();
-	this.builder = new Rebuilder(text);
 	this.fromTitle = fromTitle;
 	this.toTitle = toTitle;
 	WikiWalker.call(this, type, text, options);
@@ -187,10 +189,11 @@ WikiRelinker.prototype.handleRule = function(ruleInfo) {
 	if (ruleInfo.rule.relink) {
 		var newEntry = ruleInfo.rule.relink(this.source, this.fromTitle, this.toTitle, this.options);
 		if (newEntry !== undefined) {
-			this.entry.add(newEntry);
 			if (newEntry.output) {
-				this.builder.add(newEntry.output, ruleInfo.matchIndex, this.pos);
+				newEntry.start = ruleInfo.matchIndex;
+				newEntry.end = this.pos;
 			}
+			return [newEntry];
 		}
 	} else {
 		if (ruleInfo.rule.matchRegExp !== undefined) {
@@ -203,6 +206,7 @@ WikiRelinker.prototype.handleRule = function(ruleInfo) {
 			ruleInfo.rule.parse();
 		}
 	}
+	return [];
 };
 
 exports.relink = function(wikitext, fromTitle, toTitle, options) {
@@ -214,9 +218,20 @@ exports.relink = function(wikitext, fromTitle, toTitle, options) {
 		newOptions = $tw.utils.extend({}, options);
 	newOptions.settings = options.settings.createChildLibrary(options.currentTiddler);
 	var parser = new WikiRelinker(options.type, wikitext, fromTitle, toTitle, newOptions);
-	if (parser.entry.children.length > 0) {
-		parser.entry.output = parser.builder.results();
-		return parser.entry;
+	// Now that we have an array of entries, let's produce the wikiText entry
+	// containing them all.
+	if (parser.tree.length > 0) {
+		var wikiEntry = new WikitextEntry();
+		var builder = new Rebuilder(wikitext);
+		for (var i = 0; i < parser.tree.length; i++) {
+			var entry = parser.tree[i];
+			wikiEntry.add(entry);
+			if (entry.output) {
+				builder.add(entry.output, entry.start, entry.end);
+			}
+		}
+		wikiEntry.output = builder.results();
+		return wikiEntry;
 	}
 	return undefined;
 };
