@@ -272,7 +272,7 @@ it('supports relinking of internal text content', function() {
 	testText("<$link to='from here'>[[from here]]</$link>");
 });
 
-it("html", function() {
+it("reports", function() {
 	function test(text, expected, extraTiddlers) {
 		var wiki = new $tw.Wiki();
 		wiki.addTiddler({title: 'test', text: text});
@@ -295,6 +295,9 @@ it("html", function() {
 	test("<$A wiki='text {{from!!field}}' />",
 	     {from: ['<$A wiki="{{!!field}}" />']},
 	     [utils.attrConf("$A", "wiki", "wikitext")]);
+
+	// Nested content
+	test("<$list><$link to='from'/></$list>", {from: ['<$link to />']});
 
 	// Macro attributes
 	test("\\define test(title) stuff\n<$link to=<<test from>> />",

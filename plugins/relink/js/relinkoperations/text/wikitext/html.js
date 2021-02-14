@@ -106,7 +106,7 @@ exports.report = function(text, callback, options) {
 	if (importFilterAttr) {
 		processImportFilter(importFilterAttr, options);
 	}
-	this.parser.pos = this.nextTag.end;
+	this.parse();
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
