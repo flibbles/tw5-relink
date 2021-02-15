@@ -8,7 +8,7 @@ It takes care of providing its own relink and report rules.
 
 \*/
 
-var settings = require('$:/plugins/flibbles/relink/js/settings.js');
+var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 var language = require('$:/plugins/flibbles/relink/js/language.js');
 
 exports.name = "relink";
@@ -34,7 +34,7 @@ exports.parse = function() {
 	var self = this;
 	this.interpretSettings(function(macro, parameter, type) {
 		macroName = macro;
-		if (type && !settings.getType(type)) {
+		if (type && !utils.getType(type)) {
 			error = language.getString("Error/UnrecognizedType",
 				{variables: {type: type}, wiki: self.parser.wiki});
 		}

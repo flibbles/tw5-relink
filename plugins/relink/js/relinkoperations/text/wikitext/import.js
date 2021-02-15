@@ -6,8 +6,7 @@ Handles import pragmas
 \import [tag[MyTiddler]]
 \*/
 
-var settings = require("$:/plugins/flibbles/relink/js/settings.js");
-var filterRelinker = settings.getType('filter');
+var filterRelinker = require("$:/plugins/flibbles/relink/js/utils.js").getType('filter');
 
 exports.name = "import";
 

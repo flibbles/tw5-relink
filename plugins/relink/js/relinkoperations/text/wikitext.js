@@ -10,8 +10,7 @@ and tries to swap it out if it is.
 "use strict";
 
 var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
-var settings = require('$:/plugins/flibbles/relink/js/settings.js');
-var wikitextHandler = settings.getType('wikitext');
+var wikitextHandler = require('$:/plugins/flibbles/relink/js/utils.js').getType('wikitext');
 
 exports.name = 'text/vnd.tiddlywiki';
 

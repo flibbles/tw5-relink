@@ -10,8 +10,7 @@ Handles markdown links
 \*/
 
 var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
-var settings = require("$:/plugins/flibbles/relink/js/settings");
-var markdown = settings.getType('markdown');
+var markdown = require("$:/plugins/flibbles/relink/js/utils").getType('markdown');
 
 function LinkEntry() {};
 LinkEntry.prototype.name = "markdownlink";

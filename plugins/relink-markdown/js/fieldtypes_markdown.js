@@ -10,6 +10,7 @@ whichever markdown plugin you're using.
 
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
+var wikitextHandler = require("$:/plugins/flibbles/relink/js/utils.js").getType('wikitext');
 var utils = require("$:/plugins/flibbles/relink/js/utils/markdown.js");
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")['text/vnd.tiddlywiki'];
 
@@ -122,7 +123,6 @@ MarkdownRelinker.prototype.relinkWikitext = function(startPos, end) {
 			var substr = this.source.substring(this.pos, end);
 
 			var pragma = config.wikitextPragma;
-			var wikitextHandler = this.options.settings.getType('wikitext');
 			var wikiEntry = wikitextHandler.relink(pragma + substr, this.fromTitle, this.toTitle, this.options);
 			if (wikiEntry != undefined) {
 				this.entry.add(wikiEntry);

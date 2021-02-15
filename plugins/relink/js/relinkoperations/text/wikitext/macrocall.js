@@ -9,7 +9,6 @@ Handles macro calls.
 
 var utils = require("./utils.js");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
-var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 exports.name = ["macrocallinline", "macrocallblock"];

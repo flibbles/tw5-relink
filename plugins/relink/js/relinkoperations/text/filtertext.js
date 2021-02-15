@@ -9,7 +9,7 @@ wikitext.
 /*global $tw: false */
 "use strict";
 
-var filterHandler = require("$:/plugins/flibbles/relink/js/settings").getType('filter');
+var filterHandler = require("$:/plugins/flibbles/relink/js/utils").getType('filter');
 
 exports.name = 'text/x-tiddler-filter';
 

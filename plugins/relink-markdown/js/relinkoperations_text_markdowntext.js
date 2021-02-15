@@ -13,8 +13,7 @@ whichever markdown plugin you're using.
 "use strict";
 
 var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
-var settings = require('$:/plugins/flibbles/relink/js/settings.js');
-var markdownHandler = settings.getType('markdown');
+var markdownHandler = require('$:/plugins/flibbles/relink/js/utils.js').getType('markdown');
 
 exports["text/x-markdown"] = function(tiddler, fromTitle, toTitle, options) {
 	var placeholder = new Placeholder();

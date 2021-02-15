@@ -5,21 +5,28 @@ Utility methods for relink.
 
 \*/
 
-var relinkOperators = Object.create(null);
-$tw.modules.forEachModuleOfType('relinkoperator', function(title, module) {
-	if (module.name !== undefined) {
-		relinkOperators[module.name] = module;
-	} else {
-		// TODO: Maybe put some kind of warning message here that
-		// this module needs to be updated?
-		// Legacy support. It has a relinker, but not a reporter
-		for (var entry in module) {
-			relinkOperators[entry] = {
-				relink: module[entry],
-				report: function() {}};
-		}
+var relinkOperators;
+
+function getRelinkOperators() {
+	if (!relinkOperators) {
+		relinkOperators = Object.create(null);
+		$tw.modules.forEachModuleOfType('relinkoperator', function(title, module) {
+			if (module.name !== undefined) {
+				relinkOperators[module.name] = module;
+			} else {
+				// TODO: Maybe put some kind of warning message here that
+				// this module needs to be updated?
+				// Legacy support. It has a relinker, but not a reporter
+				for (var entry in module) {
+					relinkOperators[entry] = {
+						relink: module[entry],
+						report: function() {}};
+				}
+			}
+		});
 	}
-});
+	return relinkOperators;
+};
 
 exports.getTiddlerRelinkReferences = function(wiki, title, options) {
 	var tiddler = wiki.getTiddler(title),
@@ -27,8 +34,8 @@ exports.getTiddlerRelinkReferences = function(wiki, title, options) {
 		options = options || {};
 	options.settings = wiki.getRelinkConfig();
 	if (tiddler) {
-		for (var relinker in relinkOperators) {
-			relinkOperators[relinker].report(tiddler, function(blurb, title) {
+		for (var relinker in getRelinkOperators()) {
+			getRelinkOperators()[relinker].report(tiddler, function(blurb, title) {
 				references[title] = references[title] || [];
 				references[title].push(blurb);
 			}, options);
@@ -55,8 +62,8 @@ exports.getRelinkResults = function(wiki, fromTitle, toTitle, options) {
 			&& tiddler.fields.type !== "application/javascript") {
 				try {
 					var entries = Object.create(null);
-					for (var operation in relinkOperators) {
-						relinkOperators[operation].relink(tiddler, fromTitle, toTitle, entries, options);
+					for (var operation in getRelinkOperators()) {
+						getRelinkOperators()[operation].relink(tiddler, fromTitle, toTitle, entries, options);
 					}
 					for (var field in entries) {
 						// So long as there is one key,
@@ -77,4 +84,55 @@ exports.getRelinkResults = function(wiki, fromTitle, toTitle, options) {
 	}
 	return changeList;
 };
+
+/**Returns a specific relinker.
+ * This is useful for wikitext rules which need to parse a filter or a list
+ */
+exports.getType = function(name) {
+	var Handler = getFieldTypes()[name];
+	return Handler ? new Handler() : undefined;
+};
+
+exports.getTypes = function() {
+	// We don't return fieldTypes, because we don't want it modified,
+	// and we need to filter out legacy names.
+	var rtn = Object.create(null);
+	for (var type in getFieldTypes()) {
+		var typeObject = getFieldTypes()[type];
+		rtn[typeObject.typeName] = typeObject;
+	}
+	return rtn;
+};
+
+exports.getDefaultType = function(wiki) {
+	var tiddler = wiki.getTiddler("$:/config/flibbles/relink/settings/default-type");
+	var defaultType = tiddler && tiddler.fields.text;
+	// make sure the default actually exists, otherwise default
+	return fieldTypes[defaultType] ? defaultType : "title";
+};
+
+var fieldTypes;
+
+function getFieldTypes() {
+	if (!fieldTypes) {
+		fieldTypes = Object.create(null);
+		$tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
+			function NewType() {};
+			NewType.prototype = exports;
+			NewType.typeName = exports.name;
+			fieldTypes[exports.name] = NewType;
+			// For legacy, if the NewType doesn't have a report method, we add one
+			if (!exports.report) {
+				exports.report = function() {};
+			}
+			// Also for legacy, some of the field types can go by other names
+			if (exports.aliases) {
+				$tw.utils.each(exports.aliases, function(alias) {
+					fieldTypes[alias] = NewType;
+				});
+			}
+		});
+	}
+	return fieldTypes;
+}
 

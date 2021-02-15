@@ -5,26 +5,9 @@ This handles the fetching and distribution of relink settings.
 
 \*/
 
-var fieldTypes = Object.create(null);
+var utils = require('./utils');
 var surveyors = [];
 var prefix = "$:/config/flibbles/relink/";
-
-$tw.modules.forEachModuleOfType("relinkfieldtype", function(title, exports) {
-	function NewType() {};
-	NewType.prototype = exports;
-	NewType.typeName = exports.name;
-	fieldTypes[exports.name] = NewType;
-	// For legacy, if the NewType doesn't have a report method, we add one
-	if (!exports.report) {
-		exports.report = function() {};
-	}
-	// Also for legacy, some of the field types can go by other names
-	if (exports.aliases) {
-		$tw.utils.each(exports.aliases, function(alias) {
-			fieldTypes[alias] = NewType;
-		});
-	}
-});
 
 $tw.modules.forEachModuleOfType("relinksurveyor", function(title, exports) {
 	if (exports.survey) {
@@ -37,33 +20,11 @@ function Settings(wiki) {
 	this.wiki = wiki;
 };
 
+///// Legacy. You used to be able to access the type from utils.
+Settings.getType = utils.getType;
+/////
+
 module.exports = Settings;
-
-/**Returns a specific relinker.
- * This is useful for wikitext rules which need to parse a filter or a list
- */
-Settings.getType = function(name) {
-	var Handler = fieldTypes[name];
-	return Handler ? new Handler() : undefined;
-};
-
-Settings.getTypes = function() {
-	// We don't return fieldTypes, because we don't want it modified,
-	// and we need to filter out legacy names.
-	var rtn = Object.create(null);
-	for (var type in fieldTypes) {
-		var typeObject = fieldTypes[type];
-		rtn[typeObject.typeName] = typeObject;
-	}
-	return rtn;
-};
-
-Settings.getDefaultType = function(wiki) {
-	var tiddler = wiki.getTiddler("$:/config/flibbles/relink/settings/default-type");
-	var defaultType = tiddler && tiddler.fields.text;
-	// make sure the default actually exists, otherwise default
-	return fieldTypes[defaultType] ? defaultType : "title";
-};
 
 Settings.prototype.survey = function(text, fromTitle, options) {
 	if (text) {
@@ -159,9 +120,9 @@ function compileSettings(wiki) {
 			var factory = exports.factories[category];
 			if (factory) {
 				var name = remainder.substr(category.length+1);
-				var Handler = fieldTypes[tiddler.fields.text];
-				if (Handler) {
-					var data = new Handler();
+				//TODO: This doesn't handle newline characters
+				var data = utils.getType(tiddler.fields.text);
+				if (data) {
 					data.source = title;
 					// Secret feature. You can access a config tiddler's
 					// fields from inside the fieldtype handler. Cool

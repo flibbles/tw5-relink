@@ -5,7 +5,7 @@ This handles the fetching and distribution of relink settings.
 
 \*/
 
-var settings = require('$:/plugins/flibbles/relink/js/settings.js');
+var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 
 function MacroConfig(wiki, parent, title) {
 	this.macros = Object.create(null);
@@ -46,7 +46,7 @@ MacroConfig.prototype.refresh = function(changes) {
 // So fieldtypes can access settings through options.settings, instead of
 // including this file, which they can't, because that'd be cyclical dependency
 MacroConfig.prototype.getType = function(name) {
-	return settings.getType(name);
+	return utils.getType(name);
 };
 
 // This class does no special handling of fields, operators, or attributes.
@@ -100,11 +100,11 @@ MacroConfig.prototype.getMacro = function(macroName) {
 
 MacroConfig.prototype.addSetting = function(macroName, parameter, type, sourceTitle) {
 	var macro = this.macros[macroName];
-	type = type || settings.getDefaultType(this.wiki);
+	type = type || utils.getDefaultType(this.wiki);
 	if (macro === undefined) {
 		macro = this.macros[macroName] = Object.create(null);
 	}
-	var handler = settings.getType(type);
+	var handler = utils.getType(type);
 	if (handler) {
 		handler.source = sourceTitle;
 		// We attach the fields of the defining tiddler for the benefit

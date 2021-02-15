@@ -11,9 +11,9 @@ should be changed.
 
 var utils = require("./utils.js");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
-var settings = require('$:/plugins/flibbles/relink/js/settings.js');
-var refHandler = settings.getType('reference');
-var filterHandler = settings.getType('filter');
+var getType = require('$:/plugins/flibbles/relink/js/utils.js').getType;
+var refHandler = getType('reference');
+var filterHandler = getType('filter');
 var macrocall = require("./macrocall.js");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 

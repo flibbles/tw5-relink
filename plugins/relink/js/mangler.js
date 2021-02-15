@@ -8,7 +8,7 @@ by the user. It's only used in Relink configuration.
 
 var Widget = require("$:/core/modules/widgets/widget.js").widget;
 var language = require('$:/plugins/flibbles/relink/js/language.js');
-var settings = require('$:/plugins/flibbles/relink/js/settings.js');
+var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 
 var RelinkManglerWidget = function(parseTreeNode,options) {
 	this.initialise(parseTreeNode,options);
@@ -123,6 +123,6 @@ function add(wiki, category/*, path parts*/) {
 		}
 		path = path + "/" + part;
 	}
-	var def = settings.getDefaultType(wiki);
+	var def = utils.getDefaultType(wiki);
 	wiki.addTiddler({title: path, text: def});
 };

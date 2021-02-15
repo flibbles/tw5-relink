@@ -8,7 +8,7 @@ that we may have previously install.
 
 \*/
 
-var settings = require("$:/plugins/flibbles/relink/js/settings");
+var utils = require("$:/plugins/flibbles/relink/js/utils");
 
 exports.name = "macrodef";
 
@@ -114,5 +114,5 @@ function getContentHandler(macroName, parameters) {
 	if (placeholder && parameters === '') {
 		type = placeholder[1] || 'title';
 	}
-	return settings.getType(type);
+	return utils.getType(type);
 };

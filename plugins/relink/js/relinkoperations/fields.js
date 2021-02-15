@@ -9,7 +9,6 @@ only supports single-value fields.
 /*global $tw: false */
 "use strict";
 
-var settings = require('$:/plugins/flibbles/relink/js/settings.js');
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var FieldEntry = EntryNode.newType("field");
