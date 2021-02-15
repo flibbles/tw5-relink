@@ -16,8 +16,8 @@ $tw.modules.forEachModuleOfType("relinksurveyor", function(title, exports) {
 });
 
 function Settings(wiki) {
-	this.settings = compileSettings(wiki);
 	this.wiki = wiki;
+	this.rebuild();
 };
 
 ///// Legacy. You used to be able to access the type from utils.
@@ -38,34 +38,34 @@ Settings.prototype.survey = function(text, fromTitle, options) {
 };
 
 Settings.prototype.getAttribute = function(elementName) {
-	return this.settings.attributes[elementName];
+	return this.attributes[elementName];
 };
 
 Settings.prototype.getAttributes = function() {
-	return flatten(this.settings.attributes);
+	return flatten(this.attributes);
 };
 
 
 Settings.prototype.getFields = function() {
-	return this.settings.fields;
+	return this.fields;
 };
 
 Settings.prototype.getOperators = function() {
-	return this.settings.operators;
+	return this.operators;
 };
 
 Settings.prototype.getMacro = function(macroName) {
-	return this.settings.macros[macroName];
+	return this.macros[macroName];
 };
 
 Settings.prototype.getMacros = function() {
-	return flatten(this.settings.macros);
+	return flatten(this.macros);
 };
 
 Settings.prototype.refresh = function(changedTiddlers) {
 	for (var title in changedTiddlers) {
 		if (title.substr(0, prefix.length) === prefix) {
-			this.settings = compileSettings(this.wiki);
+			this.rebuild();
 			return true;
 		}
 	}
@@ -85,7 +85,7 @@ Settings.prototype.refresh = function(changedTiddlers) {
  * their own factory methods to create settings that are generated exactly
  * once per rename.
  */
-exports.factories = {
+var factories = {
 	attributes: function(attributes, data, key) {
 		var elem = root(key);
 		var attr = key.substr(elem.length+1);
@@ -108,16 +108,16 @@ exports.factories = {
 	}
 };
 
-function compileSettings(wiki) {
-	var settings = Object.create(null);
-	for (var name in exports.factories) {
-		settings[name] = Object.create(null);
+Settings.prototype.rebuild = function() {
+	var self = this;
+	for (var name in factories) {
+		this[name] = Object.create(null);
 	}
-	wiki.eachShadowPlusTiddlers(function(tiddler, title) {
+	this.wiki.eachShadowPlusTiddlers(function(tiddler, title) {
 		if (title.substr(0, prefix.length) === prefix) {
 			var remainder = title.substr(prefix.length);
 			var category = root(remainder);
-			var factory = exports.factories[category];
+			var factory = factories[category];
 			if (factory) {
 				var name = remainder.substr(category.length+1);
 				//TODO: This doesn't handle newline characters
@@ -128,12 +128,11 @@ function compileSettings(wiki) {
 					// fields from inside the fieldtype handler. Cool
 					// tricks can be done with this.
 					data.fields = tiddler.fields;
-					factory(settings[category], data, name);
+					factory(self[category], data, name);
 				}
 			}
 		}
 	});
-	return settings;
 };
 
 /* Returns first bit of a path. path/to/tiddler -> path
