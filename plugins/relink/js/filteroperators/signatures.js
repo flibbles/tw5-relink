@@ -61,7 +61,7 @@ exports.source = function(source,operator,options) {
 
 function getSet(options) {
 	return options.wiki.getGlobalCache("relink-signatures", function() {
-		var config = options.wiki.getRelinkConfig();
+		var config = utils.getWikiContext(options.wiki);
 		var set = Object.create(null);
 		var categories = {
 			attributes: config.getAttributes(),

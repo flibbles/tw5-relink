@@ -1,71 +1,40 @@
 /*\
-module-type: library
 
 This handles the fetching and distribution of relink settings.
 
 \*/
 
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+var Context = require('./context').context;
 
-function MacroConfig(wiki, parent, title) {
+function ImportContext(wiki, parent) {
 	this.macros = Object.create(null);
 	this.parent = parent;
-	this.title = title;
 	this.wiki = wiki;
-	this.widgetList = [];
 	this.reservedmacroNames = Object.create(null);
 };
 
-module.exports = MacroConfig;
+exports.import = ImportContext;
 
-MacroConfig.prototype.import = function(filter) {
-	var parentWidget;
-	if (this.parent) {
-		parentWidget = this.getVariableWidget();
-	}
+ImportContext.prototype = new Context();
+
+
+ImportContext.prototype.import = function(filter) {
+	var parentWidget = this.getVariableWidget();
 	var importWidget = createImportWidget(filter, this.wiki, parentWidget);
 	this._compileList(importWidget.tiddlerList);
-	this.widgetList.push(importWidget);
 	// This only works if only one filter is imported
 	this.addWidget(importWidget);
 };
 
-MacroConfig.prototype.refresh = function(changes) {
-	var rtn = this.parent.refresh(changes);
-	if (this.widget.refresh(changes)) {
-		this.macros = Object.create(null);
-		// Recompile all our widgets in the same order
-		for (var i = 0; i < this.widgetList.length; i++) {
-			this._compileList(this.widgetList[i].tiddlerList );
-		}
+ImportContext.prototype.changed = function(changes) {
+	if (this.widget && this.widget.refresh(changes)) {
 		return true;
 	}
-	return rtn;
+	return false;
 };
 
-// This class does no special handling of fields, operators, or attributes.
-// we pass it along to the parent.
-MacroConfig.prototype.getFields = function() {
-	return this.parent.getFields();
-};
-
-MacroConfig.prototype.getOperators = function() {
-	return this.parent.getOperators();
-};
-
-MacroConfig.prototype.getAttributes = function() {
-	return this.parent.getAttributes();
-};
-
-MacroConfig.prototype.survey = function(text, fromTitle, options) {
-	return this.parent.survey(text, fromTitle, options);
-};
-
-MacroConfig.prototype.getAttribute = function(elementName) {
-	return this.parent.getAttribute(elementName);
-};
-
-MacroConfig.prototype.getMacros = function() {
+ImportContext.prototype.getMacros = function() {
 	var signatures = this.parent.getMacros();
 	for (var macroName in this.macros) {
 		var macro = this.macros[macroName];
@@ -77,7 +46,7 @@ MacroConfig.prototype.getMacros = function() {
 };
 
 // But macro we handle differently.
-MacroConfig.prototype.getMacro = function(macroName) {
+ImportContext.prototype.getMacro = function(macroName) {
 	var theseSettings = this.macros[macroName];
 	var parentSettings;
 	if (this.parent) {
@@ -92,7 +61,7 @@ MacroConfig.prototype.getMacro = function(macroName) {
 	return theseSettings || parentSettings;
 };
 
-MacroConfig.prototype.addSetting = function(macroName, parameter, type, sourceTitle) {
+ImportContext.prototype.addSetting = function(macroName, parameter, type, sourceTitle) {
 	var macro = this.macros[macroName];
 	type = type || utils.getDefaultType(this.wiki);
 	if (macro === undefined) {
@@ -109,18 +78,18 @@ MacroConfig.prototype.addSetting = function(macroName, parameter, type, sourceTi
 	}
 };
 
-MacroConfig.prototype.createChildLibrary = function(title) {
-	return new MacroConfig(this.wiki, this, title);
+ImportContext.prototype.createChildLibrary = function(title) {
+	return new ImportContext(this.wiki, this, title);
 };
 
-MacroConfig.prototype.addWidget = function(widget) {
+ImportContext.prototype.addWidget = function(widget) {
 	this.widget = widget;
 	while (this.widget.children.length > 0) {
 		this.widget = this.widget.children[0];
 	}
 };
 
-MacroConfig.prototype.getVariableWidget = function() {
+ImportContext.prototype.getVariableWidget = function() {
 	if (!this.widget) {
 		var varWidget = this.parent && this.parent.widget;
 		var parentWidget = this.wiki.makeWidget(null,{parentWidget: varWidget});
@@ -134,13 +103,13 @@ MacroConfig.prototype.getVariableWidget = function() {
 /**This takes macros, specifically relink placeholders, and remembers them
  * It creates a dummy object for them, since we'll never need the definition
  */
-MacroConfig.prototype.reserveMacroName = function(variableName) {
+ImportContext.prototype.reserveMacroName = function(variableName) {
 	this.reservedmacroNames[variableName] = {
 		value: "",
 		params: []};
 };
 
-MacroConfig.prototype.addMacroDefinition = function(setParseTreeNode) {
+ImportContext.prototype.addMacroDefinition = function(setParseTreeNode) {
 	var bottomWidget = this.getVariableWidget();
 	var setWidget = bottomWidget.makeChildWidget(setParseTreeNode);
 	setWidget.computeAttributes();
@@ -148,7 +117,7 @@ MacroConfig.prototype.addMacroDefinition = function(setParseTreeNode) {
 	this.addWidget(setWidget);
 };
 
-MacroConfig.prototype.getMacroDefinition = function(variableName) {
+ImportContext.prototype.getMacroDefinition = function(variableName) {
 	return this.getVariableWidget().variables[variableName] || $tw.macros[variableName] || this.reservedmacroNames[variableName];
 };
 
@@ -168,7 +137,7 @@ function createImportWidget(filter, wiki, parent) {
 	return importWidget;
 };
 
-MacroConfig.prototype._compileList = function(titleList) {
+ImportContext.prototype._compileList = function(titleList) {
 	for (var i = 0; i < titleList.length; i++) {
 		var parser = this.wiki.parseTiddler(titleList[i]);
 		if (parser) {

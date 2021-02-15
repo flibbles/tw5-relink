@@ -5,15 +5,13 @@ Introduces some utility methods used by Relink.
 
 \*/
 
-var MacroSettings = require('$:/plugins/flibbles/relink/js/utils/macroConfig.js');
-var Settings = require("$:/plugins/flibbles/relink/js/settings.js");
 var utils = require("./utils.js");
 
 /** Returns a pair like this,
  *  { title: {field: entry, ... }, ... }
  */
 exports.getRelinkReport = function(fromTitle, toTitle, options) {
-	var cache = this.getGlobalCache("relink-"+fromTitle, function() {
+	var cache = this.getGlobalCache("relink-report-"+fromTitle, function() {
 		return Object.create(null);
 	});
 	if (!cache[toTitle]) {
@@ -55,27 +53,6 @@ exports.getRelinkableTitles = function() {
 			return self.allTitles;
 		}
 	})();
-};
-
-exports.getRelinkConfig = function() {
-	if (this._relinkConfig === undefined) {
-		var wiki = this;
-		var settings = new Settings(this);
-		var config = new MacroSettings(this, settings);
-		config.import( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
-		// All this below is just wiki.addEventListener, only it
-		// puts the event in front, because we need to refresh our
-		// relink settings before updating tiddlers.
-		this.eventListeners = this.eventListeners || {};
-		this.eventListeners.change = this.eventListeners.change || [];
-		this.eventListeners.change.unshift(function(changes) {
-			if (config.refresh(changes)) {
-				getIndexer(wiki).rebuild();
-			}
-		});
-		this._relinkConfig = config;
-	}
-	return this._relinkConfig;
 };
 
 /** Returns the Relink indexer, or a dummy object which pretends to be one.

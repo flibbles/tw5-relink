@@ -5,6 +5,8 @@ the necessary supporting pragma when requested.
 
 \*/
 
+var utils = require('../utils');
+
 function Placeholder() {
 	this.placeholders = Object.create(null);
 	this.reverseMap = Object.create(null);
@@ -14,7 +16,7 @@ module.exports = Placeholder;
 
 Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
 	var placeholder = this.reverseMap[value];
-	var config = options.settings || options.wiki.getRelinkConfig();
+	var config = options.settings || utils.getWikiContext(options.wiki);
 	if (placeholder) {
 		return placeholder;
 	}

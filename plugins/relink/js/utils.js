@@ -32,7 +32,9 @@ exports.getTiddlerRelinkReferences = function(wiki, title, options) {
 	var tiddler = wiki.getTiddler(title),
 		references = Object.create(null),
 		options = options || {};
-	options.settings = wiki.getRelinkConfig();
+	if (!options.settings) {
+		options.settings = exports.getWikiContext(wiki);
+	}
 	if (tiddler) {
 		for (var relinker in getRelinkOperators()) {
 			getRelinkOperators()[relinker].report(tiddler, function(blurb, title) {
@@ -47,7 +49,7 @@ exports.getTiddlerRelinkReferences = function(wiki, title, options) {
 exports.getRelinkResults = function(wiki, fromTitle, toTitle, options) {
 	options = options || {};
 	options.wiki = options.wiki || wiki;
-	options.settings = wiki.getRelinkConfig();
+	options.settings = options.settings || exports.getWikiContext(wiki);
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var changeList = Object.create(null);
@@ -83,6 +85,24 @@ exports.getRelinkResults = function(wiki, fromTitle, toTitle, options) {
 		}
 	}
 	return changeList;
+};
+
+var Contexts = $tw.modules.applyMethods('relinkcontext');
+
+exports.getContext = function(name) {
+	return Contexts[name];
+};
+
+exports.getWikiContext = function(wiki) {
+	// TODO: do I have any potential name conflicts with my use of cache keys?
+	// This refreshes with every change, which is still too often. The indexer
+	// is better. It may keep its version even if the global cache clears.
+	return wiki.getGlobalCache('relink-context', function() {
+		var whitelist = new Contexts.whitelist(wiki);
+		var config = new Contexts.import(wiki, whitelist);
+		config.import( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
+		return config;
+	});
 };
 
 /**Returns a specific relinker.
