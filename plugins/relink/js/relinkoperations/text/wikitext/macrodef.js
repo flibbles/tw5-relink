@@ -9,6 +9,7 @@ that we may have previously install.
 \*/
 
 var utils = require("$:/plugins/flibbles/relink/js/utils");
+var VariableContext = utils.getContext('variable');
 
 exports.name = "macrodef";
 
@@ -34,13 +35,13 @@ exports.report = function(text, callback, options) {
 		macroEntry,
 		m = this.match,
 		name = m[1];
-	options.settings.addMacroDefinition(setParseTreeNode[0]);
+	this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, m[3]);
 	if (endMatch) {
 		var value = endMatch[2],
-			handler = getContentHandler(name, m[2]);
+			handler = utils.getType(getActiveType(name, m[2]));
 		if (handler) {
 			var entry = handler.report(value, function(blurb, title) {
 				var macroStr = '\\define ' + name + '()';
@@ -61,14 +62,20 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		name = m[1],
 		params = m[2],
 		multiline = m[3];
-	options.settings.addMacroDefinition(setParseTreeNode[0]);
+	this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, multiline);
 	if (endMatch) {
 		var value = endMatch[2],
-			handler = getContentHandler(name, params);
+			type = getActiveType(name, params),
+			handler = utils.getType(type || 'wikitext');
 		if (handler) {
+			// If this is an active relink placeholder, then let's remember it
+			if (type && options.placeholder) {
+				options.placeholder.registerExisting(name, value);
+			}
+			// Relink the contents
 			var entry = handler.relink(value, fromTitle, toTitle, options);
 		}
 		if (entry !== undefined) {
@@ -107,12 +114,12 @@ function getBodyMatch(text, pos, isMultiline) {
 	return match;
 };
 
-function getContentHandler(macroName, parameters) {
+function getActiveType(macroName, parameters) {
+	// TODO: Don't need to group that number
 	var placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(macroName);
 	// normal macro or special placeholder?
-	var type = 'wikitext';
 	if (placeholder && parameters === '') {
-		type = placeholder[1] || 'title';
+		return placeholder[1] || 'title';
 	}
-	return utils.getType(type);
+	return undefined;
 };

@@ -10,16 +10,19 @@ var utils = require('../utils');
 function Placeholder() {
 	this.placeholders = Object.create(null);
 	this.reverseMap = Object.create(null);
+	this.used = Object.create(null);
 };
 
 module.exports = Placeholder;
 
 Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
 	var placeholder = this.reverseMap[value];
-	var config = options.settings || utils.getWikiContext(options.wiki);
+	// TODO: This needs to distinguish reverseMaps for each category type, or
+	//       there might be a nasty conflict.
 	if (placeholder) {
 		return placeholder;
 	}
+	var config = options.settings || utils.getWikiContext(options.wiki);
 	var number = 0;
 	var prefix = "relink-"
 	if (category && category !== "title") {
@@ -30,11 +33,17 @@ Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
 	do {
 		number += 1;
 		placeholder = prefix + number;
-	} while (config.getMacroDefinition(placeholder));
-	config.reserveMacroName(placeholder);
+	} while (config.getMacroDefinition(placeholder) || this.used[placeholder]);
 	this.placeholders[placeholder] = value;
 	this.reverseMap[value] = placeholder;
+	this.used[placeholder] = true;
 	return placeholder;
+};
+
+// For registering placeholders that already existed
+Placeholder.prototype.registerExisting = function(key, value) {
+	this.reverseMap[value] = key;
+	this.used[key] = true;
 };
 
 Placeholder.prototype.getPreamble = function() {

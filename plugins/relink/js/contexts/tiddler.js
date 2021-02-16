@@ -18,4 +18,10 @@ function TiddlerContext(wiki, parentContext, title) {
 
 exports.tiddler = TiddlerContext;
 
-TiddlerContext.prototype = Object.create(Context);
+TiddlerContext.prototype = new Context();
+
+// TODO: Repetition here. So many contexts define this same method
+TiddlerContext.prototype.getMacroDefinition = function(variableName) {
+	// widget.variables is prototyped, so it looks up into all its parents too
+	return this.widget.variables[variableName] || $tw.macros[variableName];
+};

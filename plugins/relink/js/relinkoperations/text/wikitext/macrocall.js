@@ -36,7 +36,7 @@ MacrocallEntry.prototype.forEachChildReport = function(report, parameter, type) 
 exports.report = function(text, callback, options) {
 	var macroInfo = getInfoFromRule(this, text);
 	this.parser.pos = macroInfo.end;
-	this.reportAttribute(macroInfo, callback, options);
+	this.reportAttribute(this.parser, macroInfo, callback, options);
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -51,13 +51,13 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		return undefined;
 	}
 	var mayBeWidget = !options.noWidgets;
-	var names = getParamNames(macroInfo.name, macroInfo.params, options);
+	var names = getParamNames(this.parser, macroInfo.name, macroInfo.params, options);
 	if (names === undefined) {
 		// Needed the definition, and couldn't find it. So if a single
 		// parameter needs to placeholder, just fail.
 		mayBeWidget = false;
 	}
-	var entry = relinkMacroInvocation(macroInfo, text, fromTitle, toTitle, mayBeWidget, options);
+	var entry = relinkMacroInvocation(this.parser, macroInfo, text, fromTitle, toTitle, mayBeWidget, options);
 	if (entry && entry.output) {
 		entry.output =macroToString(entry.output, text, names, options);
 	}
@@ -68,8 +68,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
  *  Processes the same, except it can't downgrade into a widget if the title
  *  is complicated.
  */
-exports.relinkAttribute = function(macro, text, fromTitle, toTitle, options) {
-	var entry = relinkMacroInvocation(macro, text, fromTitle, toTitle, false, options);
+exports.relinkAttribute = function(parser, macro, text, fromTitle, toTitle, options) {
+	var entry = relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, false, options);
 	if (entry && entry.output) {
 		entry.output = macroToStringMacro(entry.output, text, options);
 	}
@@ -77,8 +77,8 @@ exports.relinkAttribute = function(macro, text, fromTitle, toTitle, options) {
 };
 
 /** As in, report a macrocall invocation that is an html attribute. */
-exports.reportAttribute = function(macro, callback, options) {
-	var managedMacro = options.settings.getMacro(macro.name);
+exports.reportAttribute = function(parser, macro, callback, options) {
+	var managedMacro = parser.context.getMacro(macro.name);
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
 		return undefined;
@@ -86,7 +86,7 @@ exports.reportAttribute = function(macro, callback, options) {
 	for (var managedArg in managedMacro) {
 		var index;
 		try {
-			index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, options);
+			index = getParamIndexWithinMacrocall(parser, macro.name, managedArg, macro.params, options);
 		} catch (e) {
 			continue;
 		}
@@ -114,8 +114,8 @@ exports.reportAttribute = function(macro, callback, options) {
  * Output of the returned entry isn't a string, but a macro object. It needs
  * to be converted.
  */
-function relinkMacroInvocation(macro, text, fromTitle, toTitle, mayBeWidget, options) {
-	var managedMacro = options.settings.getMacro(macro.name);
+function relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, mayBeWidget, options) {
+	var managedMacro = parser.context.getMacro(macro.name);
 	var modified = false;
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
@@ -128,7 +128,7 @@ function relinkMacroInvocation(macro, text, fromTitle, toTitle, mayBeWidget, opt
 	for (var managedArg in managedMacro) {
 		var index;
 		try {
-			index = getParamIndexWithinMacrocall(macro.name, managedArg, macro.params, options);
+			index = getParamIndexWithinMacrocall(parser, macro.name, managedArg, macro.params, options);
 		} catch (e) {
 			if (e instanceof CannotFindMacroDef) {
 				macroEntry.addChild(e);
@@ -248,7 +248,7 @@ function macroToStringMacro(macro, text, options) {
 
 /** Returns -1 if param definitely isn't in macrocall.
  */
-function getParamIndexWithinMacrocall(macroName, param, params, options) {
+function getParamIndexWithinMacrocall(parser, macroName, param, params, options) {
 	var index, i, anonsExist = false;
 	for (i = 0; i < params.length; i++) {
 		var name = params[i].name;
@@ -264,7 +264,7 @@ function getParamIndexWithinMacrocall(macroName, param, params, options) {
 		// it among the named ones, it must not be there.
 		return -1;
 	}
-	var expectedIndex = indexOfParameterDef(macroName, param, options);
+	var expectedIndex = indexOfParameterDef(parser, macroName, param, options);
 	// We've got to skip over all the named parameter instances.
 	if (expectedIndex >= 0) {
 		var anonI = 0;
@@ -275,7 +275,7 @@ function getParamIndexWithinMacrocall(macroName, param, params, options) {
 				}
 				anonI++;
 			} else {
-				var indexOfOther = indexOfParameterDef(macroName, params[i].name, options);
+				var indexOfOther = indexOfParameterDef(parser, macroName, params[i].name, options);
 				if (indexOfOther < expectedIndex) {
 					anonI++;
 				}
@@ -287,8 +287,8 @@ function getParamIndexWithinMacrocall(macroName, param, params, options) {
 
 // Looks up the definition of a macro, and figures out what the expected index
 // is for the given parameter.
-function indexOfParameterDef(macroName, paramName, options) {
-	var def = options.settings.getMacroDefinition(macroName);
+function indexOfParameterDef(parser, macroName, paramName, options) {
+	var def = parser.context.getMacroDefinition(macroName);
 	if (def === undefined) {
 		throw new CannotFindMacroDef();
 	}
@@ -301,7 +301,7 @@ function indexOfParameterDef(macroName, paramName, options) {
 	return -1;
 };
 
-function getParamNames(macroName, params, options) {
+function getParamNames(parser, macroName, params, options) {
 	var used = Object.create(null);
 	var rtn = new Array(params.length);
 	var anonsExist = false;
@@ -316,7 +316,7 @@ function getParamNames(macroName, params, options) {
 		}
 	}
 	if (anonsExist) {
-		var def = options.settings.getMacroDefinition(macroName);
+		var def = parser.context.getMacroDefinition(macroName);
 		if (def === undefined) {
 			// If there are anonymous parameters, and we can't
 			// find the definition, then we can't hope to create

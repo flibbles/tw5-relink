@@ -35,6 +35,7 @@ exports.getTiddlerRelinkReferences = function(wiki, title, options) {
 	if (!options.settings) {
 		options.settings = exports.getWikiContext(wiki);
 	}
+	options.wiki = wiki;
 	if (tiddler) {
 		for (var relinker in getRelinkOperators()) {
 			getRelinkOperators()[relinker].report(tiddler, function(blurb, title) {

@@ -11,7 +11,6 @@ function ImportContext(wiki, parent) {
 	this.macros = Object.create(null);
 	this.parent = parent;
 	this.wiki = wiki;
-	this.reservedmacroNames = Object.create(null);
 };
 
 exports.import = ImportContext;
@@ -78,10 +77,6 @@ ImportContext.prototype.addSetting = function(macroName, parameter, type, source
 	}
 };
 
-ImportContext.prototype.createChildLibrary = function(title) {
-	return new ImportContext(this.wiki, this, title);
-};
-
 ImportContext.prototype.addWidget = function(widget) {
 	this.widget = widget;
 	while (this.widget.children.length > 0) {
@@ -100,25 +95,8 @@ ImportContext.prototype.getVariableWidget = function() {
 	return this.widget;
 };
 
-/**This takes macros, specifically relink placeholders, and remembers them
- * It creates a dummy object for them, since we'll never need the definition
- */
-ImportContext.prototype.reserveMacroName = function(variableName) {
-	this.reservedmacroNames[variableName] = {
-		value: "",
-		params: []};
-};
-
-ImportContext.prototype.addMacroDefinition = function(setParseTreeNode) {
-	var bottomWidget = this.getVariableWidget();
-	var setWidget = bottomWidget.makeChildWidget(setParseTreeNode);
-	setWidget.computeAttributes();
-	setWidget.execute();
-	this.addWidget(setWidget);
-};
-
 ImportContext.prototype.getMacroDefinition = function(variableName) {
-	return this.getVariableWidget().variables[variableName] || $tw.macros[variableName] || this.reservedmacroNames[variableName];
+	return this.getVariableWidget().variables[variableName] || $tw.macros[variableName];
 };
 
 function createImportWidget(filter, wiki, parent) {

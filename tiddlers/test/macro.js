@@ -256,7 +256,7 @@ it('imported macros', function() {
 	test("<$importvariables filter=<<ptr otherTiddler>>><<other Z otherTiddler>></$importvariables>", {from: "otherTiddler", to: "toThereAgain"});
 });
 
-it('local macros', function() {
+it('local macros simple', function() {
 	function test(text, options) {
 		var wiki = new $tw.Wiki();
 		wiki.addTiddlers([

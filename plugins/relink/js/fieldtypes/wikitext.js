@@ -9,6 +9,8 @@ var type = 'text/vnd.tiddlywiki';
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
+var utils = require('$:/plugins/flibbles/relink/js/utils');
+var TiddlerContext = utils.getContext('tiddler');
 
 var WikitextEntry = EntryNode.newType("wikitext");
 
@@ -42,6 +44,7 @@ function WikiWalker(type, text, options) {
 		});
 		WikiWalker.prototype.relinkMethodsInjected = true;
 	}
+	this.context = new TiddlerContext(options.wiki, options.settings, options.currentTiddler);
 	WikiParser.call(this, type, text, options);
 };
 
@@ -168,11 +171,8 @@ WikiReporter.prototype.handleRule = function(ruleInfo) {
 };
 
 exports.report = function(wikitext, callback, options) {
-	var matchingRule,
-		newOptions = $tw.utils.extend({}, options);
-	newOptions.settings = options.settings.createChildLibrary(options.currentTiddler);
 	// Unfortunately it's the side-effect of creating this that reports.
-	new WikiReporter(options.type, wikitext, callback, newOptions);
+	new WikiReporter(options.type, wikitext, callback, options);
 };
 
 /// Relinker
@@ -215,15 +215,13 @@ exports.relink = function(wikitext, fromTitle, toTitle, options) {
 	if (!options.settings.survey(wikitext, fromTitle, options)) {
 		return undefined;
 	}
-	var matchingRule,
-		newOptions = $tw.utils.extend({}, options);
-	newOptions.settings = options.settings.createChildLibrary(options.currentTiddler);
-	var parser = new WikiRelinker(options.type, wikitext, fromTitle, toTitle, newOptions);
+	var parser = new WikiRelinker(options.type, wikitext, fromTitle, toTitle, options),
+		wikiEntry = undefined;
 	// Now that we have an array of entries, let's produce the wikiText entry
 	// containing them all.
 	if (parser.tree.length > 0) {
-		var wikiEntry = new WikitextEntry();
 		var builder = new Rebuilder(wikitext);
+		wikiEntry = new WikitextEntry();
 		for (var i = 0; i < parser.tree.length; i++) {
 			var entry = parser.tree[i];
 			wikiEntry.add(entry);
@@ -232,7 +230,6 @@ exports.relink = function(wikitext, fromTitle, toTitle, options) {
 			}
 		}
 		wikiEntry.output = builder.results();
-		return wikiEntry;
 	}
-	return undefined;
+	return wikiEntry;
 };

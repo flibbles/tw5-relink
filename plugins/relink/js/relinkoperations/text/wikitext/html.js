@@ -90,7 +90,7 @@ exports.report = function(text, callback, options) {
 			}, options);
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
-			entry = macrocall.reportAttribute(macro, function(blurb, title) {
+			entry = macrocall.reportAttribute(this.parser, macro, function(blurb, title) {
 				callback('<' + element + ' ' + attributeName + '=' + blurb + ' />', title);
 			}, options);
 		}
@@ -177,7 +177,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
-			entry = macrocall.relinkAttribute(macro, text, fromTitle, toTitle, options);
+			entry = macrocall.relinkAttribute(this.parser, macro, text, fromTitle, toTitle, options);
 			if (entry === undefined) {
 				continue;
 			}
