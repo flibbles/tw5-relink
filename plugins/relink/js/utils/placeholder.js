@@ -22,7 +22,7 @@ Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
 	if (placeholder) {
 		return placeholder;
 	}
-	var config = options.settings || utils.getWikiContext(options.wiki);
+	var config = (this.parser ? this.parser.context : options.settings) || utils.getWikiContext(options.wiki);
 	var number = 0;
 	var prefix = "relink-"
 	if (category && category !== "title") {

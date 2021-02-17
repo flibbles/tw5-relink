@@ -11,9 +11,10 @@ should be changed.
 
 var utils = require("./utils.js");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
-var getType = require('$:/plugins/flibbles/relink/js/utils.js').getType;
-var refHandler = getType('reference');
-var filterHandler = getType('filter');
+var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
+var refHandler = relinkUtils.getType('reference');
+var filterHandler = relinkUtils.getType('filter');
+var ImportContext = relinkUtils.getContext('import');
 var macrocall = require("./macrocall.js");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
@@ -51,7 +52,7 @@ HtmlEntry.prototype.eachChild = function(method) {
 
 // TODO: Needs to work with new modular parsing like the relink method does
 exports.report = function(text, callback, options) {
-	var managedElement = options.settings.getAttribute(this.nextTag.tag);
+	var managedElement = this.parser.context.getAttribute(this.nextTag.tag);
 	var importFilterAttr;
 	var element = this.nextTag.tag;
 	for (var attributeName in this.nextTag.attributes) {
@@ -68,7 +69,7 @@ exports.report = function(text, callback, options) {
 		}
 		var oldLength, quotedValue = undefined, entry;
 		if (attr.type === "string") {
-			var handler = getAttributeHandler(this.nextTag, attributeName, options);
+			var handler = getAttributeHandler(this.parser.context, this.nextTag, attributeName, options);
 			if (!handler) {
 				// We don't manage this attribute. Bye.
 				continue;
@@ -104,13 +105,13 @@ exports.report = function(text, callback, options) {
 		}
 	}
 	if (importFilterAttr) {
-		processImportFilter(importFilterAttr, options);
+		processImportFilter(this.parser, importFilterAttr, options);
 	}
 	this.parse();
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var managedElement = options.settings.getAttribute(this.nextTag.tag),
+	var managedElement = this.parser.context.getAttribute(this.nextTag.tag),
 		builder = new Rebuilder(text, this.nextTag.start);
 	var importFilterAttr;
 	var widgetEntry = new HtmlEntry();
@@ -129,13 +130,15 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			importFilterAttr = attr;
 		}
 		var oldLength, quotedValue = undefined, entry;
+		var nestedOptions = Object.create(options);
+		nestedOptions.settings = this.parser.context;
 		if (attr.type === "string") {
-			var handler = getAttributeHandler(this.nextTag, attributeName, options);
+			var handler = getAttributeHandler(this.parser.context, this.nextTag, attributeName, options);
 			if (!handler) {
 				// We don't manage this attribute. Bye.
 				continue;
 			}
-			entry = handler.relink(attr.value, fromTitle, toTitle, options);
+			entry = handler.relink(attr.value, fromTitle, toTitle, nestedOptions);
 			if (entry === undefined) {
 				continue;
 			}
@@ -201,7 +204,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		builder.add(quotedValue, valueStart, attr.end);
 	}
 	if (importFilterAttr) {
-		processImportFilter(importFilterAttr, options);
+		processImportFilter(this.parser, importFilterAttr, options);
 	}
 	var tag = this.parse()[0];
 	if (tag.children) {
@@ -223,17 +226,17 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 /** Returns the field handler for the given attribute of the given widget.
  *  If this returns undefined, it means we don't handle it. So skip.
  */
-function getAttributeHandler(widget, attributeName, options) {
+function getAttributeHandler(context, widget, attributeName, options) {
 	if (widget.tag === "$macrocall") {
 		var nameAttr = widget.attributes["$name"];
 		if (nameAttr) {
-			var macro = options.settings.getMacro(nameAttr.value);
+			var macro = context.getMacro(nameAttr.value);
 			if (macro) {
 				return macro[attributeName];
 			}
 		}
 	} else {
-		var element = options.settings.getAttribute(widget.tag);
+		var element = context.getAttribute(widget.tag);
 		if (element) {
 			return element[attributeName];
 		}
@@ -241,16 +244,16 @@ function getAttributeHandler(widget, attributeName, options) {
 	return undefined;
 };
 
-function computeAttribute(attribute, options) {
+function computeAttribute(context, attribute, options) {
 	var value;
 	if(attribute.type === "filtered") {
-		var parentWidget = options.settings.getVariableWidget();
+		var parentWidget = context.widget;
 		value = options.wiki.filterTiddlers(attribute.filter,parentWidget)[0] || "";
 	} else if(attribute.type === "indirect") {
-		var parentWidget = options.settings.getVariableWidget();
+		var parentWidget = context.widget;
 		value = options.wiki.getTextReference(attribute.textReference,"",parentWidget.variables.currentTiddler.value);
 	} else if(attribute.type === "macro") {
-		var parentWidget = options.settings.getVariableWidget();
+		var parentWidget = context.widget;
 		value = parentWidget.getVariable(attribute.value.name,{params: attribute.value.params});
 	} else { // String attribute
 		value = attribute.value;
@@ -260,12 +263,13 @@ function computeAttribute(attribute, options) {
 
 // This processes a <$importvariables> filter attribute and adds any new
 // variables to our parser.
-function processImportFilter(importAttribute, options) {
+function processImportFilter(parser, importAttribute, options) {
 	if (typeof importAttribute === "string") {
 		// It was changed. Reparse it. It'll be a quoted
 		// attribute value. Add a dummy attribute name.
 		importAttribute = $tw.utils.parseAttribute("p="+importAttribute, 0)
 	}
-	var importFilter = computeAttribute(importAttribute, options);
-	options.settings.import(importFilter);
+	var context = parser.context;
+	var importFilter = computeAttribute(context, importAttribute, options);
+	parser.context = new ImportContext(options.wiki, context, importFilter);
 };

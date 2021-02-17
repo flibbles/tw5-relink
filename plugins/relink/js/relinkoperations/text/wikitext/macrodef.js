@@ -41,7 +41,7 @@ exports.report = function(text, callback, options) {
 	var endMatch = getBodyMatch(text, this.parser.pos, m[3]);
 	if (endMatch) {
 		var value = endMatch[2],
-			handler = utils.getType(getActiveType(name, m[2]));
+			handler = utils.getType(getActiveType(name, m[2]) || 'wikitext');
 		if (handler) {
 			var entry = handler.report(value, function(blurb, title) {
 				var macroStr = '\\define ' + name + '()';

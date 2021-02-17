@@ -278,6 +278,8 @@ it('local macros work in nested wikitext', function() {
 	wiki.addTiddlers([
 		utils.macroConf("outer", "text", "wikitext"),
 		utils.macroConf("inner", "title", "title")]);
+	testText('\\define inner(title) content\n<<outer text:"""<<inner "from here">>""" >>', {wiki: wiki});
+	testText('\\define inner(title) content\n<$macrocall $name=outer text=<<inner "from here">> />', {wiki: wiki});
 	testText('\\define inner(title) content\n<$macrocall $name=outer text="""<<inner "from here">>""" />', {wiki: wiki});
 });
 

@@ -44,6 +44,10 @@ function WikiWalker(type, text, options) {
 		});
 		WikiWalker.prototype.relinkMethodsInjected = true;
 	}
+	// TODO: This isn't a great way to do this. The placeholder and the parser should be closer tied together.
+	if (options.placeholder) {
+		options.placeholder.parser = this;
+	}
 	this.context = new TiddlerContext(options.wiki, options.settings, options.currentTiddler);
 	WikiParser.call(this, type, text, options);
 };

@@ -6,7 +6,9 @@ Handles import pragmas
 \import [tag[MyTiddler]]
 \*/
 
-var filterRelinker = require("$:/plugins/flibbles/relink/js/utils.js").getType('filter');
+var utils = require("$:/plugins/flibbles/relink/js/utils.js");
+var filterRelinker = utils.getType('filter');
+var ImportContext = utils.getContext('import');
 
 exports.name = "import";
 
@@ -39,7 +41,7 @@ exports.report = function(text, callback, options) {
 	}, options);
 	// Before we go, we need to actually import the variables
 	// it's calling for, and any /relink pragma
-	options.settings.import(filter);
+	this.parser.context = new ImportContext(options.wiki, this.parser.context, filter);
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -61,7 +63,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 
 	// Before we go, we need to actually import the variables
 	// it's calling for, and any /relink pragma
-	options.settings.import(filter);
+	this.parser.context = new ImportContext(options.wiki, this.parser.context, filter);
 
 	return entry;
 };

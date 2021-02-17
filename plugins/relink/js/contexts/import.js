@@ -7,10 +7,11 @@ This handles the fetching and distribution of relink settings.
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 var Context = require('./context').context;
 
-function ImportContext(wiki, parent) {
+function ImportContext(wiki, parent, filter) {
 	this.macros = Object.create(null);
 	this.parent = parent;
 	this.wiki = wiki;
+	this.import(filter);
 };
 
 exports.import = ImportContext;

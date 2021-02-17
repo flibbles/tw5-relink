@@ -41,13 +41,13 @@ exports.report = function(text, callback, options) {
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var macroInfo = getInfoFromRule(this, text);
-	var managedMacro = options.settings.getMacro(macroInfo.name);
+	var managedMacro = this.parser.context.getMacro(macroInfo.name);
 	this.parser.pos = macroInfo.end;
 	if (!managedMacro) {
 		// We don't manage this macro. Bye.
 		return undefined;
 	}
-	if (!options.settings.survey(macroInfo.text, fromTitle, options)) {
+	if (!this.parser.context.survey(macroInfo.text, fromTitle, options)) {
 		return undefined;
 	}
 	var mayBeWidget = !options.noWidgets;
@@ -96,13 +96,15 @@ exports.reportAttribute = function(parser, macro, callback, options) {
 		}
 		var param = macro.params[index];
 		var handler = managedMacro[managedArg];
+		var nestedOptions = Object.create(options);
+		nestedOptions.settings = parser.context;
 		var entry = handler.report(param.value, function(blurb, title) {
 			var rtn = managedArg;
 			if (blurb) {
 				rtn += ': "' + blurb + '"';
 			}
 			callback('<<' + macro.name + ' ' + rtn + '>>', title);
-		}, options);
+		}, nestedOptions);
 	}
 };
 
@@ -143,7 +145,9 @@ function relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, mayBeWid
 		}
 		var param = macro.params[index];
 		var handler = managedMacro[managedArg];
-		var entry = handler.relink(param.value, fromTitle, toTitle, options);
+		var nestedOptions = Object.create(options);
+		nestedOptions.settings = parser.context;
+		var entry = handler.relink(param.value, fromTitle, toTitle, nestedOptions);
 		if (entry === undefined) {
 			continue;
 		}

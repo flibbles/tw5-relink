@@ -5,6 +5,7 @@ Utility methods for relink.
 
 \*/
 
+var macroFilter =  "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]";
 var relinkOperators;
 
 function getRelinkOperators() {
@@ -100,9 +101,7 @@ exports.getWikiContext = function(wiki) {
 	// is better. It may keep its version even if the global cache clears.
 	return wiki.getGlobalCache('relink-context', function() {
 		var whitelist = new Contexts.whitelist(wiki);
-		var config = new Contexts.import(wiki, whitelist);
-		config.import( "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]");
-		return config;
+		return new Contexts.import(wiki, whitelist, macroFilter);
 	});
 };
 
