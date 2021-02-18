@@ -132,7 +132,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var oldLength, quotedValue = undefined, entry;
 		var nestedOptions = Object.create(options);
 		nestedOptions.settings = this.parser.context;
-		if (attr.type === "string") {
+		switch (attr.type) {
+		case 'string':
 			var handler = getAttributeHandler(this.parser.context, this.nextTag, attributeName, options);
 			if (!handler) {
 				// We don't manage this attribute. Bye.
@@ -158,7 +159,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 					}
 				}
 			}
-		} else if (attr.type === "indirect") {
+			break;
+		case 'indirect':
 			entry = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
 			if (entry === undefined) {
 				continue;
@@ -168,7 +170,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				oldLength = attr.textReference.length + 4;
 				quotedValue = "{{"+entry.output+"}}";
 			}
-		} else if (attr.type === "filtered") {
+			break;
+		case 'filtered':
 			entry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, options);
 			if (entry === undefined) {
 				continue;
@@ -178,7 +181,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				oldLength = attr.filter.length + 6;
 				quotedValue = "{{{"+ entry.output +"}}}";
 			}
-		} else if (attr.type === "macro") {
+			break;
+		case 'macro':
 			var macro = attr.value;
 			entry = macrocall.relinkAttribute(this.parser, macro, text, fromTitle, toTitle, options);
 			if (entry === undefined) {
