@@ -17,5 +17,7 @@ exports.wikitext = WikitextContext;
 WikitextContext.prototype = new WidgetContext();
 
 // Unless this specific context has rules about it, widgets and prettyLInks are allowed.
-WikitextContext.prototype.noWidgets = function() { return false; }
-WikitextContext.prototype.noPrettylinks = function() { return false; }
+WikitextContext.prototype.allowWidgets = enabled;
+WikitextContext.prototype.allowPrettylinks = enabled;
+
+function enabled() { return true; };

@@ -142,12 +142,14 @@ WikiWalker.prototype.amendRules = function(type, names) {
 		this.options.placeholder = undefined
 	}
 	if (only !== (names.indexOf("html") >= 0)) {
-		this.options.noWidgets = true;
+		this.context.allowWidgets = disabled;
 	}
 	if (only !== (names.indexOf("prettylink") >= 0)) {
-		this.options.noPrettylinks = true;
+		this.context.allowPrettylinks = disabled;
 	}
 };
+
+function disabled() { return false; };
 
 /// Reporter
 

@@ -41,18 +41,18 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry = new PrettyLinkEntry();
 	entry.caption = caption;
 	entry.link = fromTitle;
-	entry.output = this.makeLink(toTitle, caption, options);
+	entry.output = this.makeLink(this.parser.context, toTitle, caption, options);
 	if (entry.output === undefined) {
 		entry.impossible = true;
 	}
 	return entry;
 };
 
-exports.makeLink = function(tiddler, caption, options) {
+exports.makeLink = function(context, tiddler, caption, options) {
 	var output, quoted;
-	if (!options.noPrettylinks && this.canBePretty(tiddler, !!caption)) {
+	if (context.allowPrettylinks() && this.canBePretty(tiddler, !!caption)) {
 		output = prettyLink(tiddler, caption);
-	} else if (options.noWidgets) {
+	} else if (!context.allowWidgets()) {
 		// We aren't allowed to make widgets. Gotta fail.
 		output = undefined;
 	} else if (caption === undefined) {

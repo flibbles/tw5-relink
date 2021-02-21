@@ -85,7 +85,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	if (modified) {
 		entry.reference = reference;
 		entry.template = template;
-		var output = this.makeTransclude(reference, template, options);
+		var output = this.makeTransclude(this.parser.context, reference, template, options);
 		if (output) {
 			// Adding any newline that might have existed is
 			// what allows this relink method to work for both
@@ -103,10 +103,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 /** This converts a reference and a template into a string representation
  *  of a transclude.
  */
-exports.makeTransclude = function(reference, template, options) {
+exports.makeTransclude = function(context, reference, template, options) {
 	var rtn;
 	if (!canBePrettyTemplate(template)) {
-		if (!options.noWidgets) {
+		if (context.allowWidgets()) {
 			var resultTemplate = wrap(template, options);
 			if (resultTemplate !== undefined) {
 				if (reference.title) {
@@ -121,7 +121,7 @@ exports.makeTransclude = function(reference, template, options) {
 			}
 		}
 	} else if (!canBePrettyTitle(reference.title)) {
-		if (!options.noWidgets) {
+		if (context.allowWidgets()) {
 			// This block and the next account for the 1%...
 			var resultTitle = wrap(reference.title, options);
 			if (resultTitle !== undefined) {

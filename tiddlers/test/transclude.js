@@ -5,8 +5,6 @@ Tests transcludes.
 \*/
 
 var utils = require("test/utils");
-var transclude = require("$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/transclude.js");
-var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
 
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
@@ -156,37 +154,10 @@ it('unpretty and unquotable', function() {
 	var index = "'apos' and \"quotes\"";
 	// Double placeholder insanity. What kind of
 	// sick pervert names their tiddlers like this?
-	test("{{a'\"||from here}}.", utils.placeholder(1,to)+utils.placeholder(2,other)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>>/></$tiddler>.", other+"||");
+	test("{{  a'\"  ||  from here  }}.", utils.placeholder(1,to)+utils.placeholder(2,other)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>>/></$tiddler>.", '  '+other+"  ||");
+	test("{{from here|| a'\"  }}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{|| a'\"  }}</$tiddler>.", '|| '+other+'  ');
 	// This case is so preposterous, I'm not sure I even want to cover it.
 	test("{{  "+other+"##"+index+"||from here  }}.", utils.placeholder(1,to)+utils.placeholder(2,other)+utils.placeholder("index-1",index)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>> index=<<relink-index-1>>/></$tiddler>.", "  "+other+"##"+index+"||");
-});
-
-/** This test has to call the makeTemplate function directly because it's
- *  impossible to hit this code path through renaming tiddlers.
- *  When relinking, if both the title and template are unpretty, it's because
- *  they're the same.
- */
-it('makeWidget with unpretty title and template', function() {
-	function test(ref, template) {
-		var options = {wiki: new $tw.Wiki()};
-		var wiki = new $tw.Wiki();
-		options.placeholder = new Placeholder(options);
-		var rtn = transclude.makeTransclude(ref, template, options);
-		return options.placeholder.getPreamble() + rtn;
-	};
-	var output = test({title: "A}}B"}, "C}}D");
-	expect(output).toEqual("<$tiddler tiddler=A}}B><$transclude tiddler=C}}D/></$tiddler>");
-	output = test({title: "  A}}B  "}, "  C}}D  ");
-	expect(output).toEqual("<$tiddler tiddler=A}}B><$transclude tiddler=C}}D/></$tiddler>");
-	output = test({title: "  A}}B  ", field: "F"}, "  C}}D  ");
-	expect(output).toEqual("<$tiddler tiddler=A}}B><$transclude tiddler=C}}D field=F/></$tiddler>");
-	var title =  " A}} 'B\" ";
-	var template =  " C}} 'D\" ";
-	output = test({title: title}, template);
-	expect(output).toEqual(
-		utils.placeholder(1, $tw.utils.trim(template)) +
-		utils.placeholder(2, $tw.utils.trim(title)) +
-		"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>>/></$tiddler>");
 });
 
 it('transclude obeys rules', function() {

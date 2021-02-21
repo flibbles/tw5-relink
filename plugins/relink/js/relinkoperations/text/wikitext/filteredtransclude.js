@@ -87,7 +87,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			return undefined;
 		}
 	} else {
-		var output = this.makeFilteredtransclude(filter, tooltip, template, style, classes, options);
+		var output = this.makeFilteredtransclude(this.parser.context, filter, tooltip, template, style, classes, options);
 		if (output === undefined) {
 			entry.impossible = true;
 		} else {
@@ -102,10 +102,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	return entry;
 };
 
-exports.makeFilteredtransclude = function(filter, tooltip, template, style, classes, options) {
+exports.makeFilteredtransclude = function(context, filter, tooltip, template, style, classes, options) {
 	if (canBePretty(filter) && canBePrettyTemplate(template)) {
 		return prettyList(filter, tooltip, template, style, classes);
-	} else if (!options.noWidgets) {
+	} else if (context.allowWidgets()) {
 		return widget(filter, tooltip, template, style, classes, options);
 	}
 	return undefined;

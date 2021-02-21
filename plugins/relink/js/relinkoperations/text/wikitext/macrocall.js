@@ -50,7 +50,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	if (!this.parser.context.survey(macroInfo.text, fromTitle, options)) {
 		return undefined;
 	}
-	var mayBeWidget = !options.noWidgets;
+	var mayBeWidget = this.parser.context.allowWidgets();
 	var names = getParamNames(this.parser, macroInfo.name, macroInfo.params, options);
 	if (names === undefined) {
 		// Needed the definition, and couldn't find it. So if a single

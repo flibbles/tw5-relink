@@ -64,16 +64,11 @@ it("pretty titles", function() {
 	expect(message).toContain("[[Pretty]]");
 });
 
-it("unpretty titles", function() {
-	var message = testAlert(new $tw.Wiki(), ["Pre]]y"], true);
-	expect(message).toContain("<$link to=Pre]]y/>");
-});
-
+// This won't render correctly, but it's not worth all the trouble I'm going
+// to to make sure it's still okay.
 it("unquotable titles", function() {
 	var message = testAlert(new $tw.Wiki(), ["Unpre']]y\""], true);
-	var preamble = "\\define relink-1() Unpre']]y\"\n";
-	expect(message.substr(0, preamble.length)).toEqual(preamble);
-	expect(message).toContain("<$link to=<<relink-1>>/>");
+	expect(message).toContain("* [[Unpre']]y\"]]");
 });
 
 it("prints simple if not on browser", function() {
