@@ -19,4 +19,9 @@ it('supports oldstyle relinktextoperators', function() {
 	expect(results.tiddler.fields.text).toBe('to there');
 });
 
+it('supports oldstyle wikitext rules', function() {
+	var results = utils.relink({text: '[?[Link|?c]]'}, {from: '?c'});
+	expect(results.tiddler.fields.text).toBe('[?[Link|?c]]');
+});
+
 });

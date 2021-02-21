@@ -20,6 +20,12 @@ function reportText(wiki, title) {
 	return wiki.getTiddlerRelinkReferences(title);
 };
 
+//TODO: Still need to test rules effect in \define blocks
+//      Also in filters taking wikitext as operands
+//      Also maybe in markdown too
+//TODO: Can placeholdering occur in nested wikitext?
+//TODO: Test noWidgets in nested context
+
 it('nested macro arguments', function() {
 	// Turns out nested wikitext in macro parameters doesn't obey \rules
 	const wiki = new $tw.Wiki();
