@@ -4,11 +4,9 @@ This handles the fetching and distribution of relink settings.
 
 \*/
 
-var utils = require('$:/plugins/flibbles/relink/js/utils.js');
-var Context = require('./context').context;
+var WidgetContext = require('./widget').widget;
 
 function ImportContext(wiki, parent, filter) {
-	this.macros = Object.create(null);
 	this.parent = parent;
 	this.wiki = wiki;
 	this.import(filter);
@@ -16,7 +14,7 @@ function ImportContext(wiki, parent, filter) {
 
 exports.import = ImportContext;
 
-ImportContext.prototype = new Context();
+ImportContext.prototype = new WidgetContext();
 
 
 ImportContext.prototype.import = function(filter) {
@@ -32,50 +30,6 @@ ImportContext.prototype.changed = function(changes) {
 		return true;
 	}
 	return false;
-};
-
-ImportContext.prototype.getMacros = function() {
-	var signatures = this.parent.getMacros();
-	for (var macroName in this.macros) {
-		var macro = this.macros[macroName];
-		for (var param in macro) {
-			signatures[macroName + "/" + param] = macro[param];
-		}
-	}
-	return signatures;
-};
-
-// But macro we handle differently.
-ImportContext.prototype.getMacro = function(macroName) {
-	var theseSettings = this.macros[macroName];
-	var parentSettings;
-	if (this.parent) {
-		parentSettings = this.parent.getMacro(macroName);
-	}
-	if (theseSettings && parentSettings) {
-		// gotta merge them without changing either. This is expensive,
-		// but it'll happen rarely.
-		var rtnSettings = $tw.utils.extend(Object.create(null), theseSettings, parentSettings);
-		return rtnSettings;
-	}
-	return theseSettings || parentSettings;
-};
-
-ImportContext.prototype.addSetting = function(macroName, parameter, type, sourceTitle) {
-	var macro = this.macros[macroName];
-	type = type || utils.getDefaultType(this.wiki);
-	if (macro === undefined) {
-		macro = this.macros[macroName] = Object.create(null);
-	}
-	var handler = utils.getType(type);
-	if (handler) {
-		handler.source = sourceTitle;
-		// We attach the fields of the defining tiddler for the benefit
-		// of any 3rd party field types that want access to them.
-		var tiddler = this.wiki.getTiddler(sourceTitle);
-		handler.fields = tiddler.fields;
-		macro[parameter] = handler;
-	}
 };
 
 ImportContext.prototype.addWidget = function(widget) {
@@ -96,6 +50,7 @@ ImportContext.prototype.getVariableWidget = function() {
 	return this.widget;
 };
 
+// TODO: I think this can be scrapped
 ImportContext.prototype.getMacroDefinition = function(variableName) {
 	return this.getVariableWidget().variables[variableName] || $tw.macros[variableName];
 };
@@ -126,7 +81,7 @@ ImportContext.prototype._compileList = function(titleList) {
 					for (var macroName in parseTreeNode.relink) {
 						var parameters = parseTreeNode.relink[macroName];
 						for (paramName in parameters) {
-							this.addSetting(macroName, paramName, parameters[paramName], titleList[i]);
+							this.addSetting(this.wiki, macroName, paramName, parameters[paramName], titleList[i]);
 						}
 					}
 				}

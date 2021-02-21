@@ -5,7 +5,7 @@ a tiddler must be refreshed.
 
 \*/
 
-var Context = require('./context.js').context;
+var WidgetContext = require('./widget.js').widget;
 
 function TiddlerContext(wiki, parentContext, title) {
 	this.title = title;
@@ -18,10 +18,4 @@ function TiddlerContext(wiki, parentContext, title) {
 
 exports.tiddler = TiddlerContext;
 
-TiddlerContext.prototype = new Context();
-
-// TODO: Repetition here. So many contexts define this same method
-TiddlerContext.prototype.getMacroDefinition = function(variableName) {
-	// widget.variables is prototyped, so it looks up into all its parents too
-	return this.widget.variables[variableName] || $tw.macros[variableName];
-};
+TiddlerContext.prototype = new WidgetContext();

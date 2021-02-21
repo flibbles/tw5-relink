@@ -39,3 +39,10 @@ Context.prototype.survey = function(text, fromTitle, options) {
 	return this.parent.survey(text, fromTitle, options);
 };
 
+Context.prototype.noPrettylinks = function() {
+	return this.parent && this.parent.noPrettylinks();
+};
+
+Context.prototype.noWidgets = function() {
+	return this.parent && this.parent.noWidgets();
+};

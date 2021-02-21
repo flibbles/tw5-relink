@@ -10,7 +10,7 @@ var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[typ
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 var utils = require('$:/plugins/flibbles/relink/js/utils');
-var TiddlerContext = utils.getContext('tiddler');
+var WikitextContext = utils.getContext('wikitext');
 
 var WikitextEntry = EntryNode.newType("wikitext");
 
@@ -48,7 +48,7 @@ function WikiWalker(type, text, options) {
 	if (options.placeholder) {
 		options.placeholder.parser = this;
 	}
-	this.context = new TiddlerContext(options.wiki, options.settings, options.currentTiddler);
+	this.context = new WikitextContext(options.settings);
 	WikiParser.call(this, type, text, options);
 };
 

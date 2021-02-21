@@ -4,7 +4,7 @@ This handles the context for variables. Either from $set, $vars, or \define
 
 \*/
 
-var Context = require('./context').context;
+var WidgetContext = require('./widget').widget;
 
 function VariableContext(parent, setParseTreeNode) {
 	this.parent = parent;
@@ -14,7 +14,7 @@ function VariableContext(parent, setParseTreeNode) {
 	setWidget.computeAttributes();
 	setWidget.execute();
 	// point our widget to bottom, where any other contexts would attach to
-	//TODO: Maybe this part can be moved into a common method. And the methods below too.
+	//TODO: Maybe this part can be moved into widgetContext.
 	this.widget = setWidget;
 	while (this.widget.children.length > 0) {
 		this.widget = this.widget.children[0];
@@ -23,9 +23,4 @@ function VariableContext(parent, setParseTreeNode) {
 
 exports.variable = VariableContext;
 
-VariableContext.prototype = new Context();
-
-VariableContext.prototype.getMacroDefinition = function(variableName) {
-	// widget.variables is prototyped, so it looks up into all its parents too
-	return this.widget.variables[variableName] || $tw.macros[variableName];
-};
+VariableContext.prototype = new WidgetContext();

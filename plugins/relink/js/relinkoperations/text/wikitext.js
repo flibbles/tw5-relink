@@ -22,11 +22,9 @@ exports.report = function(tiddler, callback, options) {
 
 exports.relink = function(tiddler, fromTitle, toTitle, options) {
 	var placeholder = new Placeholder();
-	var currentOptions = $tw.utils.extend(
-		{
-			currentTiddler: tiddler.fields.title,
-			placeholder: placeholder
-		}, options);
+	var currentOptions = Object.create(options);
+	currentOptions.currentTiddler = tiddler.fields.title;
+	currentOptions.placeholder = placeholder;
 	var entry = wikitextHandler.relink(tiddler.fields.text, fromTitle, toTitle, currentOptions);
 	if (entry && entry.output) {
 		// If there's output, we've also got to prepend any macros

@@ -32,10 +32,9 @@ function getRelinkOperators() {
 exports.getTiddlerRelinkReferences = function(wiki, title, options) {
 	var tiddler = wiki.getTiddler(title),
 		references = Object.create(null),
-		options = options || {};
-	if (!options.settings) {
-		options.settings = exports.getWikiContext(wiki);
-	}
+		options = options || {},
+		context = options.settings || exports.getWikiContext(wiki);
+	options.settings = new Contexts.tiddler(wiki, context, title);
 	options.wiki = wiki;
 	if (tiddler) {
 		for (var relinker in getRelinkOperators()) {
@@ -51,10 +50,10 @@ exports.getTiddlerRelinkReferences = function(wiki, title, options) {
 exports.getRelinkResults = function(wiki, fromTitle, toTitle, options) {
 	options = options || {};
 	options.wiki = options.wiki || wiki;
-	options.settings = options.settings || exports.getWikiContext(wiki);
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var changeList = Object.create(null);
+	var context = options.settings || exports.getWikiContext(wiki);
 	if(fromTitle && toTitle) {
 		var tiddlerList = wiki.getRelinkableTitles();
 		for (var i = 0; i < tiddlerList.length; i++) {
@@ -65,9 +64,11 @@ exports.getRelinkResults = function(wiki, fromTitle, toTitle, options) {
 			&& !tiddler.fields["plugin-type"]
 			&& tiddler.fields.type !== "application/javascript") {
 				try {
-					var entries = Object.create(null);
-					for (var operation in getRelinkOperators()) {
-						getRelinkOperators()[operation].relink(tiddler, fromTitle, toTitle, entries, options);
+					var entries = Object.create(null),
+						operators = getRelinkOperators();
+					options.settings = new Contexts.tiddler(wiki, context, title);
+					for (var operation in operators) {
+						operators[operation].relink(tiddler, fromTitle, toTitle, entries, options);
 					}
 					for (var field in entries) {
 						// So long as there is one key,
