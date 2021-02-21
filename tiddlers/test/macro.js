@@ -23,7 +23,19 @@ function testText(text, expected, options) {
 	return results;
 };
 
+function reportText(wiki, title) {
+	return wiki.getTiddlerRelinkReferences(title);
+};
+
+function getText(wiki, title) {
+	return wiki.getTiddler(title).fields.text;
+};
+
 describe("macro", function() {
+
+beforeEach(function() {
+	spyOn(console, 'log');
+});
 
 it('argument orders', function() {
 	testText("Macro <<test stuff 'from here' '[[from here]]' 'from here!!f'>>.");
@@ -326,6 +338,21 @@ it('keeps up to date with macro changes', async function() {
 	// DON'T USE testText, because that'll reoverwrite the new testMacro
 	t = utils.relink({text: "Macro <<test 'from here'>>."}, {wiki: wiki});
 	expect(t.tiddler.fields.text).toEqual("Macro <<test 'to there'>>.");
+});
+
+it('does not bleed local contexts into other tiddlers', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.macroConf('macro', 'A'),
+		{title: '1', text: '\\relink macro B\n<<macro B:from>>'},
+		{title: '2', text: '<<macro A:from B:from>>'},
+		{title: '3', text: '\\relink macro B\n<<macro B:from>>'}
+	]);
+	expect(reportText(wiki, '2')).toEqual({from: ['<<macro A>>']});
+	wiki.renameTiddler('from', 'to');
+	expect(getText(wiki, '1')).toBe('\\relink macro B\n<<macro B:to>>');
+	expect(getText(wiki, '2')).toBe('<<macro A:to B:from>>');
+	expect(getText(wiki, '3')).toBe('\\relink macro B\n<<macro B:to>>');
 });
 
 it("report", function() {
