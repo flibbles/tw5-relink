@@ -22,7 +22,8 @@ function MarkdownRelinker(text, fromTitle, toTitle, options) {
 	this.builder = new Rebuilder(text);
 	this.fromTitle = fromTitle;
 	this.toTitle = toTitle;
-	this.options = options;
+	this.options = Object.create(options);
+	this.options.macrodefCanBeDisabled = true;
 	if(!this.mdInlineRuleClasses) {
 		MarkdownRelinker.prototype.mdInlineRuleClasses = $tw.modules.createClassesFromModules("relinkmarkdownrule","inline",$tw.MarkdownRuleBase);
 	}

@@ -198,7 +198,7 @@ it('uses macros for literally unquotable titles', function() {
 
 it("doesn't use macros if forbidden by \\rules", function() {
 	var r = testText('\\rules except macrodef\n<$link to="from here"/>',
-	                 {ignored: true, to: "x' y\""});
+	                 {ignored: true, to: "x' y\"", macrodefCanBeDisabled: true});
 	expect(r.fails.length).toEqual(1);
 });
 

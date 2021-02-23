@@ -61,4 +61,11 @@ it('nested widget arguments', function() {
 	expect(getText(wiki, 'nolinks')).toBe('\\rules except prettylink\n<$list filter="" emptyMessage="[[to]]"/>\n[[from]]');
 });
 
+it('does not let local macrodef disabling stop placeholdering', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'test', text: '\\rules only prettylink html\n[[caption|from]]'});
+	wiki.renameTiddler('from', 'to]] \'"');
+	expect(getText(wiki, 'test')).toBe('\\define relink-1() to]] \'"\n\\rules only prettylink html\n<$link to=<<relink-1>>>caption</$link>');
+});
+
 });

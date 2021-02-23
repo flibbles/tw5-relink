@@ -138,7 +138,7 @@ WikiWalker.prototype.amendRules = function(type, names) {
 	} else {
 		return;
 	}
-	if (only !== (names.indexOf("macrodef") >= 0)) {
+	if (only !== (names.indexOf("macrodef") >= 0) && this.options.macrodefCanBeDisabled) {
 		this.options.placeholder = undefined
 	}
 	if (only !== (names.indexOf("html") >= 0)) {

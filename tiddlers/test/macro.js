@@ -160,7 +160,7 @@ it('respects \\rules', function() {
 	testText("\\rules except html\n<<test Btitle:'from here'>>",
 	         {to: to, ignored: true, fails: 1});
 	testText("\\rules except macrodef\n<<test Btitle:'from here'>>",
-	         {to: to, ignored: true, fails: 1});
+	         {to: to, ignored: true, fails: 1, macrodefCanBeDisabled: true});
 });
 
 it('undefined macros', function() {

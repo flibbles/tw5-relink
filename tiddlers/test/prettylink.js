@@ -109,9 +109,9 @@ it('unquotable and unpretty', function() {
 	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test': [[caption]]"]);
 
 	// If rules disable macrodef, then don't placeholder
-	r = testText("\\rules except macrodef\n" + text, {ignored: true, to: to});
+	r = testText("\\rules except macrodef\n" + text, {ignored: true, to: to, macrodefCanBeDisabled: true});
 	expect(r.fails.length).toEqual(1);
-	r = testText("\\rules only prettylink html\n" + text, {ignored: true, to: to});
+	r = testText("\\rules only prettylink html\n" + text, {ignored: true, to: to, macrodefCanBeDisabled: true});
 	expect(r.fails.length).toEqual(1);
 });
 

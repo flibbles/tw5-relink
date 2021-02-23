@@ -32,13 +32,13 @@ it("image respects \\rules", function() {
 	testText("\\rules except image\n[img[from here]]", {ignored: true});
 	testText("\\rules only html macrodef\n[img[from here]]", {ignored: true});
 
-	function testFails(text, to) {
-		var r = testText(text, {ignored: true, to: to});
+	function testFails(text, to, options) {
+		var r = testText(text, Object.assign({ignored: true, to: to}, options));
 		expect(r.fails.length).toEqual(1);
 	};
 	testFails("\\rules except html\n[img[from here]]", "to]there");
 	testFails("\\rules only image macrodef\n[img[from here]]", "to]there");
-	testFails("\\rules except macrodef\n[img[from here]]", '"F]] \'"');
+	testFails("\\rules except macrodef\n[img[from here]]", '"F]] \'"', {macrodefCanBeDisabled: true});
 });
 
 it("indirect attributes", function() {

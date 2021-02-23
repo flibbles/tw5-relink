@@ -112,7 +112,7 @@ it('respects \\rules', function() {
 
 	function fails(to, text, expected) {
 		expected = expected || text;
-		var r = testText(text, expected, {to: to, ignored: true});
+		var r = testText(text, expected, {to: to, ignored: true, macrodefCanBeDisabled: true});
 		expect(r.fails.length).toEqual(1);
 	};
 	fails("curly {}", "\\rules except html\n{{from here}}");

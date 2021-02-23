@@ -74,15 +74,16 @@ it('respects \\rules', function() {
 
 	// link can be pretty, but pretty isn't allowed
 	var prettyOnly =  "to 'there\"";
-	test("\\rules except prettylink macrodef", {to: prettyOnly, ignored: true, fails: 1});
+	test("\\rules except prettylink html", {to: prettyOnly, ignored: true, fails: 1});
 	testText("\\rules except prettylink\nWikiLink",
 	         utils.placeholder(1, prettyOnly)+"\\rules except prettylink\n<$link to=<<relink-1>>/>",
 	         {to: prettyOnly});
 
 	// placeholdering
 	var tricky = "bad' title]]\"";
-	test("\\rules except macrodef", {to: tricky, ignored: true, fails: 1});
-	test("\\rules only wikilink prettylink", {to: tricky, ignored: true, fails: 1});
+	test("\\rules except macrodef", {to: tricky, ignored: true, fails: 1, macrodefCanBeDisabled: true});
+	testText("\\rules only wikilink html\nWikiLink",
+	         utils.placeholder(1, tricky) + "\\rules only wikilink html\n<$link to=<<relink-1>>/>", {to: tricky});
 });
 
 it("reports", async function() {
