@@ -26,6 +26,17 @@ exports.init = function(parser) {
 	this.maxIndent = 3;
 };
 
+exports.report = function(text, callback, options) {
+	var m = this.match,
+		link = decodeURIComponent(m[4]),
+		entry;
+	this.parser.pos = m.index + m[0].length;
+	if (m[1].charAt(0) !== "^"
+	 && (m[3] === "#" || options.wiki.isImageTiddler(link))) {
+		callback('[' + utils.abridge(m[1]) + ']:', link);
+	}
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match,
 		link = m[4],

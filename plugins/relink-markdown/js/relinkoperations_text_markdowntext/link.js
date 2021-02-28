@@ -101,15 +101,37 @@ exports.matchLink = function(text, pos) {
 	return match;
 };
 
+exports.report = function(text, callback, options) {
+	var em = this.endMatch,
+		caption = em[2],
+		prefix = em[1],
+		isImage = (prefix === '!'),
+		link = em[4],
+		hash = '#';
+	if (prefix) {
+		hash = '';
+	}
+	this.parser.pos = em.index + em[1].length + caption.length + em[0].length + 2;
+	if (!isImage) {
+		markdown.report(caption, function(blurb, title) {
+			callback(prefix + '[' + (blurb || '') + '](' + hash + link + ')', title);
+		}, options);
+	}
+	if (isImage !== (em[3].lastIndexOf('#') >= 0)) {
+		var safeCaption = utils.abridge(caption);
+		callback(em[1] + '[' + safeCaption + '](' + hash + ')', decodeURIComponent(link));
+	}
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry = new LinkEntry(),
 		em = this.endMatch,
 		modified = false,
 		caption = em[2],
-		image = (em[1] === '!'),
+		isImage = (em[1] === '!'),
 		link = em[4];
 	this.parser.pos = em.index + em[1].length + caption.length + em[0].length + 2;
-	if (!image) {
+	if (!isImage) {
 		var newCaption = markdown.relink(caption, fromTitle, toTitle, options);
 		if (newCaption) {
 			modified = true;
@@ -125,7 +147,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 	// I don't know why internal images links don't use the '#', but links
 	// do, but that's just how it is.
-	if (image !== (em[3].lastIndexOf('#') >=0)) {
+	if (isImage !== (em[3].lastIndexOf('#') >=0)) {
 		try {
 			if (decodeURIComponent(link) === fromTitle) {
 				modified = true;

@@ -15,6 +15,7 @@ var wikitextHandler = require('$:/plugins/flibbles/relink/js/utils.js').getType(
 exports.name = 'text/vnd.tiddlywiki';
 
 exports.report = function(tiddler, callback, options) {
+	// TODO: I think this is unnecessary. currentTiddler is set higher.
 	var currentOptions = $tw.utils.extend(
 		{ currentTiddler: tiddler.fields.title }, options);
 	wikitextHandler.report(tiddler.fields.text, callback, currentOptions);
@@ -33,4 +34,4 @@ exports.relink = function(tiddler, fromTitle, toTitle, options) {
 		entry.output = preamble + entry.output;
 	}
 	return entry;
-}
+};

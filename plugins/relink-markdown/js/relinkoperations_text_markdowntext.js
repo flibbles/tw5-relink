@@ -15,7 +15,16 @@ whichever markdown plugin you're using.
 var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
 var markdownHandler = require('$:/plugins/flibbles/relink/js/utils.js').getType('markdown');
 
-exports["text/x-markdown"] = function(tiddler, fromTitle, toTitle, options) {
+exports.name = "text/x-markdown";
+
+exports.report = function(tiddler, callback, options) {
+	var currentOptions = Object.create(options);
+	// TODO: I think this is unnecessary. currentTiddler is set higher.
+	currentOptions.currentTiddler = tiddler.fields.title;
+	markdownHandler.report(tiddler.fields.text, callback, currentOptions);
+};
+
+exports.relink = function(tiddler, fromTitle, toTitle, options) {
 	var placeholder = new Placeholder();
 	var extraOptions = $tw.utils.extend(
 		{
@@ -31,4 +40,3 @@ exports["text/x-markdown"] = function(tiddler, fromTitle, toTitle, options) {
 	}
 	return entry;
 };
-

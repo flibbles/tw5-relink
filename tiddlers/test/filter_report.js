@@ -130,35 +130,4 @@ it("filters", function() {
 	testFilter("[tag[from]something[else]]", ["[tag[]]"]);
 });
 
-it("markdown links", function() {
-	function testMD(text, expected, extraTiddlers) {
-		test({type: "text/x-markdown", text: text}, expected, extraTiddlers);
-	};
-	testMD("[cap](#from)", ["[cap](#)"]);
-	testMD("[{{from}} <$link to='from' />](#else)", ["[{{}}](#else)", "[<$link to />](#else)"]);
-	testMD("[{{from}}](#from)", ["[{{}}](#from)", "[{{from}}](#)"]);
-	testMD("[{{from}}](#from 'tooltip')", ["[{{}}](#from)", "[{{from}}](#)"]);
-	// Too long or multiline captions are fixed up (15 char max)
-	testMD("[Long\nmulti\nline\ncaption](#from)", ["[Long multi line...](#)"]);
-	testMD("[Long\r\nmulti\r\nline\r\ncaption](#from)", ["[Long multi line...](#)"]);
-	// Tabs are bad too. They mess up console logging.
-	testMD("[Bad\t\ttabs](#from)", ["[Bad tabs](#)"]);
-	// Whitespace in general is wasteful
-	testMD("[Bad    spaces](#from)", ["[Bad spaces](#)"]);
-	// Tooltip
-	testMD("[cap](#from (tooltip))", ["[cap](#)"]);
-	// Images
-	testMD("![cap](from)", ["![cap]()"]);
-	testMD("![cap](from 'bob\\'s tooltip')", ["![cap]()"]);
-});
-
-it("markdown footnotes", function() {
-	function testMD(text, expected, extraTiddlers) {
-		test({type: "text/x-markdown", text: text}, expected, extraTiddlers);
-	};
-	testMD("Text[1]\n\n[1]: #from\n", ["[1]:"]);
-	testMD("[Long\nmulti\nline\ncaption]: #from", ["[Long multi line...]:"]);
-	testMD("[Long\r\nmulti\r\nline\r\ncaption]: #from", ["[Long multi line...]:"]);
-});
-
 });

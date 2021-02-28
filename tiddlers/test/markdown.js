@@ -394,6 +394,37 @@ it("lists", function() {
 });
 */
 
+it("report links", function() {
+	function testMD(text, expected) {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddlers([
+			{title: 'test', text: text, type: 'text/x-markdown'},
+			utils.attrConf('$link', 'to')]);
+		expect(utils.getReport('test', wiki).from).toEqual(expected);
+	};
+	testMD("[cap](#from)", ["[cap](#)"]);
+	testMD("[{{from}} <$link to='from' />](#else)", ["[{{}}](#else)", "[<$link to />](#else)"]);
+	testMD("[{{from}}](#from)", ["[{{}}](#from)", "[{{from}}](#)"]);
+	testMD("[{{from}}](#from 'tooltip')", ["[{{}}](#from)", "[{{from}}](#)"]);
+	// Too long or multiline captions are fixed up (15 char max)
+	testMD("[Long\nmulti\nline\ncaption](#from)", ["[Long multi line...](#)"]);
+	testMD("[Long\r\nmulti\r\nline\r\ncaption](#from)", ["[Long multi line...](#)"]);
+	// Tabs are bad too. They mess up console logging.
+	testMD("[Bad\t\ttabs](#from)", ["[Bad tabs](#)"]);
+	// Whitespace in general is wasteful
+	testMD("[Bad    spaces](#from)", ["[Bad spaces](#)"]);
+	// Tooltip
+	testMD("[cap](#from (tooltip))", ["[cap](#)"]);
+	// Images
+	testMD("![cap](from)", ["![cap]()"]);
+	testMD("![cap](from 'bob\\'s tooltip')", ["![cap]()"]);
+
+	// Footnotes
+	testMD("Text[1]\n\n[1]: #from\n", ["[1]:"]);
+	testMD("[Long\nmulti\nline\ncaption]: #from", ["[Long multi line...]:"]);
+	testMD("[Long\r\nmulti\r\nline\r\ncaption]: #from", ["[Long multi line...]:"]);
+});
+
 describe("tiddlywiki/markdown plugin", function() {
 
 var mdParser = require("$:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext.js")["text/x-markdown"];
@@ -439,6 +470,7 @@ it("wikitextPragma wikilinks inside markdown links", function() {
 	testPragma("[[[from here]]](#from%20here)", "[[[to there]]](#to%20there)", undefined);
 });
 
+
 it("wikitextPragma with broken 'only's", function() {
 	// if it's an "only" rule, we must be able to tell. So we must support
 	// weird syntax of "only" rules.
@@ -464,8 +496,7 @@ it("wikitextPragma doesn't impact nested wikitext", function() {
 		{title: 'test', text: '<$list emptyMessage="[[from]]" />\n[[from]]\n[caption](#from)', type: 'text/x-markdown'},
 		pragma('\\rules only html'),
 		utils.attrConf('$list', 'emptyMessage', 'wikitext')]);
-	// TODO: Uncomment this as soon as markdown reporting works again
-	//expect(utils.getReport('test', wiki)).toEqual({from: ['<$list emptyMessage="[[from]]" />', '[caption](#)');
+	expect(utils.getReport('test', wiki)).toEqual({from: ['<$list emptyMessage="[[from]]" />', '[caption](#)']});
 	wiki.renameTiddler('from', 'to');
 	expect(utils.getText('test', wiki)).toBe('<$list emptyMessage="[[to]]" />\n[[from]]\n[caption](#to)');
 });
