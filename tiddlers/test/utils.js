@@ -215,3 +215,17 @@ exports.draft = function(fields) {
     newFields["draft.title"] = fields.title;
     return newFields;
 };
+
+/**Gets report on a given tiddler.
+ */
+exports.getReport = function(title, wiki) {
+	wiki = wiki || $tw.wiki;
+	return wiki.getTiddlerRelinkReferences(title);
+};
+
+/** Gets the text of a tiddler.
+ */
+exports.getText = function(title, wiki) {
+	wiki = wiki || $tw.wiki;
+	return wiki.getTiddler(title).fields.text;
+};

@@ -8,6 +8,7 @@ var utils = require("test/utils");
 
 var operators = $tw.modules.getModulesByTypeAsHashmap('relinkoperator');
 
+//TODO: imports in wikitext fields get properly updated when import list changes
 
 describe("import pragma", function() {
 

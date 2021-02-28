@@ -401,6 +401,10 @@ var pragmaTitle = "$:/config/markdown/renderWikiTextPragma";
 var switchTitle = "$:/config/markdown/renderWikiText";
 var defaultPragma = $tw.wiki.getTiddlerText(pragmaTitle);
 
+function pragma(text) {
+	return {title: pragmaTitle, text: text};
+};
+
 function testPragma(text, expected, pragma, switchValue) {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: pragmaTitle, text: pragma});
@@ -451,6 +455,19 @@ it("wikitextPragma with multiple pragma", function() {
 	testPragma(link, both, "\\define macro() \\rules only\n\\rules only prettylink");
 	testPragma(link, both, "\\define macro() \\rules only\n  \\rules only prettylink");
 	testPragma(link, both, "\\rules only prettylink rules\n\\rules only prettylink");
+});
+
+it("wikitextPragma doesn't impact nested wikitext", function() {
+	const wiki = new $tw.Wiki();
+	spyOn(console, 'log');
+	wiki.addTiddlers([
+		{title: 'test', text: '<$list emptyMessage="[[from]]" />\n[[from]]\n[caption](#from)', type: 'text/x-markdown'},
+		pragma('\\rules only html'),
+		utils.attrConf('$list', 'emptyMessage', 'wikitext')]);
+	// TODO: Uncomment this as soon as markdown reporting works again
+	//expect(utils.getReport('test', wiki)).toEqual({from: ['<$list emptyMessage="[[from]]" />', '[caption](#)');
+	wiki.renameTiddler('from', 'to');
+	expect(utils.getText('test', wiki)).toBe('<$list emptyMessage="[[to]]" />\n[[from]]\n[caption](#to)');
 });
 
 /* INCOMPLETE PARSING:
