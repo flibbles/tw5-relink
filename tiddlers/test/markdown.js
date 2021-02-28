@@ -238,41 +238,53 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 });
 
 it("footnotes", function() {
-	var ignore = {from: "from", ignored: true};
-	var process = {from: "from", to: "to"};
+	spyOn(console, 'log');
+	function test(text, ignore, report) {
+		const wiki = new $tw.Wiki();
+		const expected = ignore ? text : text.replace('from', 'to');
+		wiki.addTiddler({title: 'test', text: text, type: 'text/x-markdown'});
+		expect(utils.getReport('test', wiki).from).toEqual(report);
+		wiki.renameTiddler('from', 'to');
+		expect(utils.getText('test', wiki)).toBe(expected);
+	};
+	var ignore = true, process = false;
 	test("[]:from", ignore);
-	test("[]:#from", process);
-	test("[1]:#from", process);
-	test("[1]: #from", process);
+	test("[]:#from", process, ['[]:']);
+	test("[1]:#from", process, ['[1]:']);
+	test("[1]: #from", process, ['[1]:']);
 	test("[1]:# from", ignore);
-	test("[1]:\n#from", process);
-	test("[1]:\n#from   ", process);
+	test("[1]:\n#from", process, ['[1]:']);
+	test("[1]:\n#from   ", process, ['[1]:']);
 	test("[1]:\n\n#from", ignore);
-	test("[1]: #from\n\n", process);
-	test("[1]:\t\t#from\t\t\n", process);
-	test("[1]:#from\r\n", process);
-	test("   [1]:#from", process);
-	test("text\n\n   [1]:#from", process);
+	test("[1]: #from\n\n", process, ['[1]:']);
+	test("[1]:\t\t#from\t\t\n", process, ['[1]:']);
+	test("[1]:#from\r\n", process, ['[1]:']);
+	test("   [1]:#from", process, ['[1]:']);
+	test("text\n\n   [1]:#from", process, ['[1]:']);
+	test("text[1]\n\n[1]: #from\n", process, ['[1]:']);
 
 	test("[^text]:#from", ignore);
 
 	test("[te]xt]:#from", ignore);
-	test("[t\\]ext]:#from", process);
+	test("[t\\]ext]:#from", process, ['[t\\]ext]:']);
 	test("[t\\\\]ext]:#from", ignore);
-	test("[t\\\\\\]ext]:#from", process);
+	test("[t\\\\\\]ext]:#from", process, ['[t\\\\\\]ext]:']);
 	//test("[\\]text]:#from", process);
-	test("[te\nxt]:#from", process);
+	test("[te\nxt]:#from", process, ['[te xt]:']);
 	test("[te\n\nxt]:#from", ignore);
-	test("[te xt]:#from", process);
+	test("[te xt]:#from", process, ['[te xt]:']);
 	test("[te\n \t\nxt]:#from", ignore);
-	test("[te\n d  \nxt]:#from", process);
+	test("[te\n d  \nxt]:#from", process, ['[te d xt]:']);
 	// This one should be true, but I gave up on perfect parsing.
 	//test("text\n[1]:#from", ignore);
 	test("text\nd[1]:#from", ignore);
-	test("Text[1]\n1.\n[1]: #from", process);
+	test("Text[1]\n1.\n[1]: #from", process, ['[1]:']);
 
 	test("[1]: #from%20here", "[1]: #to%20there");
-	test("[1\n\n2]: #else\n\n[3]: #from", process);
+	test("[1\n\n2]: #else\n\n[3]: #from", process, ['[3]:']);
+
+	test("[Long\nmulti\nline\ncaption]: #from", process, ["[Long multi line...]:"]);
+	test("[Long\r\nmulti\r\nline\r\ncaption]: #from", process, ["[Long multi line...]:"]);
 });
 
 it("footnotes for images", function() {
@@ -418,11 +430,6 @@ it("report links", function() {
 	// Images
 	testMD("![cap](from)", ["![cap]()"]);
 	testMD("![cap](from 'bob\\'s tooltip')", ["![cap]()"]);
-
-	// Footnotes
-	testMD("Text[1]\n\n[1]: #from\n", ["[1]:"]);
-	testMD("[Long\nmulti\nline\ncaption]: #from", ["[Long multi line...]:"]);
-	testMD("[Long\r\nmulti\r\nline\r\ncaption]: #from", ["[Long multi line...]:"]);
 });
 
 describe("tiddlywiki/markdown plugin", function() {
