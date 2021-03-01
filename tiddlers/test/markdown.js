@@ -40,17 +40,34 @@ it('markdown links', function() {
 });
 
 it('markdown images', function() {
-	test("Image: ![caption](from.png)", {from: "from.png", to: "to.png"});
-	test("Image: ![caption](#from.png)", {from: "from.png", ignored: true});
-	test("Image: ![caption](from.png 'tooltip')", {from: "from.png", to: "to.png"});
-	test("![c](from%20here 'tooltip')", "![c](to%20there 'tooltip')");
+	var ignore = false, process = true;
+	function test(text, expected, report, options) {
+		options = Object.assign({from: 'from.png', to: 'to.png'}, options);
+		const wiki = new $tw.Wiki();
+		if (expected === true) {
+			expected = text.split(options.from).join(options.to);
+		} else if (expected === false) {
+			expected = text;
+		}
+		wiki.addTiddler({title: 'test', text: text, type: 'text/x-markdown'});
+		expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+		wiki.renameTiddler(options.from, options.to);
+		expect(utils.getText('test', wiki)).toBe(expected);
+	};
+	spyOn(console, 'log');
+	test("Image: ![caption](from.png)", process, ['![caption]()']);
+	test("Image: ![caption](#from.png)", ignore);
+	// tooltips
+	test("Image: ![caption](from.png 'tooltip')", process, ['![caption]()']);
+	test("Image: ![caption](from.png 'bob\\'s tooltip')", process, ['![caption]()']);
+	test("![c](from%20here 'tooltip')", "![c](to%20there 'tooltip')", ['![c]()'], {from: 'from here', to: 'to there'});
 	// whitespace
-	test("Image: ![caption](  from.png  )", {from: "from.png", to: "to.png"});
-	test("Image: ![caption](\nfrom.png\n)", {from: "from.png", to: "to.png"});
-	test("Image: ![caption](\nfrom.png\n)", {from: "from.png", to: "to.png"});
+	test("Image: ![caption](  from.png  )", process, ['![caption]()']);
+	test("Image: ![caption](\nfrom.png\n)", process, ['![caption]()']);
+	test("Image: ![caption](\nfrom.png\n)", process, ['![caption]()']);
 	// can be first and last thing in body
-	test("![caption](from.png)", {from: "from.png", to: "to.png"});
-	test("![c](from.png)![c](from.png)", {from: "from.png", to: "to.png"});
+	test("![caption](from.png)", process, ['![caption]()']);
+	test("![c](from.png)![c](from.png)", process, ['![c]()', '![c]()']);
 });
 
 it('links with tricky characters', function() {
@@ -171,25 +188,42 @@ it("whitespaces and multiline", function() {
 });
 
 it("tricky captions", function() {
+	var ignore = true, process = false;
+	function test(text, ignore, report) {
+		const wiki = new $tw.Wiki();
+		const expected = ignore ? text : text.replace('from', 'to');
+		wiki.addTiddler({title: 'test', text: text, type: 'text/x-markdown'});
+		expect(utils.getReport('test', wiki).from).toEqual(report);
+		wiki.renameTiddler('from', 'to');
+		expect(utils.getText('test', wiki)).toBe(expected);
+	};
+	spyOn(console, 'log');
 	// CONFLICT: empty (this does default on tiddlywiki/markdown,
 	// and is hidden on anstosa/tw5-markdown
-	test("[](#from)", {from: "from", to: "to"});
-	test("[\n](#from)", {from: "from", to: "to"});
-	test("[\n\n](#from)", {from: "from", ignored: true});
+	test("[](#from)", process, ['[](#)']);
+	test("[caption](#from)", process, ['[caption](#)']);
+	test("[\n](#from)", process, ['[ ](#)']);
+	test("[\n\n](#from)", ignore);
 	// brackets
-	test("[mis]matched](#from)", {from: "from", ignored: true});
-	test("[not[mis]matched](#from)", {from: "from", to: "to"});
+	test("[mis]matched](#from)", ignore);
+	test("[not[mis]matched](#from)", process, ['[not[mis]matched](#)']);
 
 	// whitespace
-	test("[a\nb\nc\nd](#from)", {from: "from", to: "to"});
-	test("[a\nb\n\nd](#from)", {from: "from", ignored: true});
-	test("[ab\n    \ncd](#from)", {from: "from", ignored: true});
-	test("[a\nb[\nc]\nd](#from)", {from: "from", to: "to"});
+	test("[a\nb\nc\nd](#from)", process, ['[a b c d](#)']);
+	// Tabs are bad too. They mess up console logging.
+	test("[ab\t\tcd](#from)", process, ['[ab cd](#)']);
+	test("[a\nb\n\nd](#from)", ignore);
+	test("[ab\n    \ncd](#from)", ignore);
+	test("[a\nb[\nc]\nd](#from)", process, ['[a b[ c] d](#)']);
 
 	// fakeout on when link starts
-	test("[a[](# dud)](#from)", {from: "from", to: "to"});
-	test("[[[[[[[ [a](#from)", {from: "from", to: "to"});
-	test("[brackets] [a](#from)", {from: "from", to: "to"});
+	test("[a[](# dud)](#from)", process, ['[a[](# dud)](#)']);
+	test("[[[[[[[ [a](#from)", process, ['[a](#)']);
+	test("[brackets] [a](#from)", process, ['[a](#)']);
+
+	// Too long or multiline captions are fixed up (15 char max)
+	test("[Long\nmulti\nline\ncaption](#from)", process, ["[Long multi line...](#)"]);
+	test("[Long\r\nmulti\r\nline\r\ncaption](#from)", process, ["[Long multi line...](#)"]);
 });
 
 it("changing captions", function() {
@@ -414,22 +448,11 @@ it("report links", function() {
 			utils.attrConf('$link', 'to')]);
 		expect(utils.getReport('test', wiki).from).toEqual(expected);
 	};
-	testMD("[cap](#from)", ["[cap](#)"]);
 	testMD("[{{from}} <$link to='from' />](#else)", ["[{{}}](#else)", "[<$link to />](#else)"]);
 	testMD("[{{from}}](#from)", ["[{{}}](#from)", "[{{from}}](#)"]);
 	testMD("[{{from}}](#from 'tooltip')", ["[{{}}](#from)", "[{{from}}](#)"]);
-	// Too long or multiline captions are fixed up (15 char max)
-	testMD("[Long\nmulti\nline\ncaption](#from)", ["[Long multi line...](#)"]);
-	testMD("[Long\r\nmulti\r\nline\r\ncaption](#from)", ["[Long multi line...](#)"]);
-	// Tabs are bad too. They mess up console logging.
-	testMD("[Bad\t\ttabs](#from)", ["[Bad tabs](#)"]);
-	// Whitespace in general is wasteful
-	testMD("[Bad    spaces](#from)", ["[Bad spaces](#)"]);
 	// Tooltip
 	testMD("[cap](#from (tooltip))", ["[cap](#)"]);
-	// Images
-	testMD("![cap](from)", ["![cap]()"]);
-	testMD("![cap](from 'bob\\'s tooltip')", ["![cap]()"]);
 });
 
 describe("tiddlywiki/markdown plugin", function() {
