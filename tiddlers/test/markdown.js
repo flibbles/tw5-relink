@@ -20,23 +20,40 @@ function test(text, expected, options) {
 describe("markdown text", function() {
 
 it('markdown links', function() {
-	test("click [here](#from) for link", {from: "from", to: "to"});
-	test("click [here](from) for link", {from: "from", ignored: true});
-	test("click [here](# from) for link", {from: "from", ignored: true});
-	test("click [here](#from)\n\nfor link", {from: "from", to: "to"});
-	test("click [here](#from) or [there](#from) for link", {from: "from", to: "to"});
+	var ignore = false, process = true;
+	function test(text, expected, report, options) {
+		options = Object.assign({from: 'from', to: 'to'}, options);
+		const wiki = new $tw.Wiki();
+		if (expected === true) {
+			expected = text.split(options.from).join(options.to);
+		} else if (expected === false) {
+			expected = text;
+		}
+		wiki.addTiddlers([
+			{title: 'test', text: text, type: 'text/x-markdown'},
+			utils.attrConf('$link', 'to')]);
+		expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+		wiki.renameTiddler(options.from, options.to);
+		expect(utils.getText('test', wiki)).toBe(expected);
+	};
+	spyOn(console, 'log');
+	test("click [here](#from) for link", process, ['[here](#)']);
+	test("click [here](from) for link", ignore);
+	test("click [here](# from) for link", ignore);
+	test("click [here](#from)\n\nfor link", process, ['[here](#)']);
+	test("click [here](#from) or [there](#from) for link", process, ['[here](#)', '[there](#)']);
 	// can be only text in string
-	test("[here](#from)", {from: "from", to: "to"});
+	test("[here](#from)", process, ['[here](#)']);
 	// Don't overlook that open paren
-	test("click [here] #from) for link", {from: "from", ignored: true});
+	test("click [here] #from) for link", ignore);
 	// Sets parser pos correctly
-	test("[here](#from)<$text text={{from}} />", {from: "from", to: "to"});
+	test("[here](#from)<$text text={{from}} />", process, ['[here](#)', '<$text text={{}} />']);
 	// Bad pattern doesn't mess up pos
-	test("[here](#from<$link to='from here'/>");
+	test("[here](#from<$link to='from here'/>", process, ['<$link to />'], {from: 'from here'});
 	// later parens don't cause problems
-	test("[here](#from) content)", {from: "from", to: "to"});
+	test("[here](#from) content)", process, ['[here](#)']);
 	// The space inside it flags it as not a markdown link
-	test("[here](#<$link to='from here'/>)");
+	test("[here](#<$link to='from here'/>)", process, ['<$link to />'], {from: 'from here'});
 });
 
 it('markdown images', function() {
@@ -472,7 +489,9 @@ function testPragma(text, expected, pragma, switchValue) {
 	if (switchValue !== undefined) {
 		wiki.addTiddler({title: switchTitle, text: switchValue});
 	}
-	test(text, expected, {wiki: wiki});
+	wiki.addTiddler({title: 'test', text: text, type: 'text/x-markdown'})
+	wiki.renameTiddler('from here', 'to there');
+	expect(utils.getText('test', wiki)).toBe(expected);
 };
 
 var link = "[[from here]] [Caption](#from%20here)";
@@ -480,6 +499,7 @@ var both =  "[[to there]] [Caption](#to%20there)";
 var mdonly =  "[[from here]] [Caption](#to%20there)";
 
 it("wikitextPragma", function() {
+	spyOn(console, 'log');
 	// links are disabled by default in tiddlywiki/markdown
 	testPragma(link, mdonly, defaultPragma);
 	// Without pragma, or with simple pragma
@@ -496,12 +516,14 @@ it("wikitextPragma", function() {
 });
 
 it("wikitextPragma wikilinks inside markdown links", function() {
+	spyOn(console, 'log');
 	// wikitext in caption inherits rules
 	testPragma("[[[from here]]](#from%20here)", "[[[to there]]](#to%20there)", undefined);
 });
 
 
 it("wikitextPragma with broken 'only's", function() {
+	spyOn(console, 'log');
 	// if it's an "only" rule, we must be able to tell. So we must support
 	// weird syntax of "only" rules.
 	testPragma(link, both, "\\rules only prettylink");
@@ -511,6 +533,7 @@ it("wikitextPragma with broken 'only's", function() {
 });
 
 it("wikitextPragma with multiple pragma", function() {
+	spyOn(console, 'log');
 	// If some other pragma is included. We can't choke on that.
 	testPragma(link, both, "\\rules only prettylink macrodef\n\\define macro() stuff");
 	testPragma(link, both, "\\rules only prettylink macrodef\r\n\\define macro() stuff");
@@ -539,6 +562,7 @@ it("wikitextPragma and code blocks", function() {
 */
 
 it("wikitext switch", function() {
+	spyOn(console, 'log');
 	testPragma(link, both, undefined);
 	testPragma(link, both, undefined, "true");
 	testPragma(link, both, undefined, "TRUE");
@@ -549,11 +573,18 @@ it("wikitext switch", function() {
 
 it("won't make placeholders with default markdown settings", function() {
 	// because default markdown settings prohibit macrodefs at all.
-	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: pragmaTitle, text: defaultPragma});
-	test("<$link to='from here' />[C](#from%20here)",
-	     "<$link to='from here' />[C](#to%20'there%22)",
-	     {to: "to 'there\"", wiki: wiki, fails: 1});
+	const wiki = new $tw.Wiki();
+	spyOn(console, 'log');
+	wiki.addTiddlers([
+		{title: pragmaTitle, text: defaultPragma},
+		utils.attrConf('$link', 'to'),
+		{title: 'test', type: 'text/x-markdown',
+		 text: "<$link to='from here' />[C](#from%20here)"}]);
+	var failures = utils.collectFailures(function() {
+		wiki.renameTiddler('from here', "to 'there\"");
+	});
+	expect(utils.getText('test', wiki)).toBe("<$link to='from here' />[C](#to%20'there%22)");
+	expect(failures.length).toBe(1);
 });
 
 });
