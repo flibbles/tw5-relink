@@ -4,6 +4,7 @@ Tests relinking in markdown tiddlers. (text/markdown)
 
 \*/
 
+// TODO: These tests are partway between old and new system. Finish conversion.
 var utils = require("test/utils");
 
 function test(text, expected, options) {
@@ -92,7 +93,8 @@ it('links with tricky characters', function() {
 	// Safe to escape: ^[]
 
 	var theBeast = "!@#$%^&*() {}|:\"<>?-=[]\\;',./`~¡™£¢∞§¶•ªº–≠“‘«…æ≤≥÷œ∑®´´†\¨ˆøπ˙∆˚¬åß∂ƒ©Ω≈ç√∫˜µ";
-	var wiki = new $tw.Wiki();
+	const wiki = new $tw.Wiki();
+	spyOn(console, 'log');
 	var results = utils.relink({text: "[Caption](#from)", type: "text/x-markdown"}, {from: "from", to: theBeast, target: "test", wiki: wiki});
 	// I don't care what the raw text looks like. I want to know that the link points to the right place.
 	var parser = wiki.parseTiddler("test");
@@ -102,7 +104,9 @@ it('links with tricky characters', function() {
 	}
 	expect(node.attributes.to.value).toEqual(theBeast);
 	// Now, can I rename away from that monster link?
-	test(results.tiddler.fields.text, "[Caption](#to)", {wiki: wiki, from: theBeast, to: "to"});
+	expect(utils.getReport('test', wiki)).toEqual({[theBeast]: ['[Caption](#)']});
+	wiki.renameTiddler(theBeast, 'to');
+	expect(utils.getText('test', wiki)).toBe('[Caption](#to)');
 });
 
 it('links with #', function() {

@@ -33,13 +33,15 @@ ReferencesIndexer.prototype.update = function(updateDescriptor) {
 		changedTiddlers[title] = {deleted: true};
 	}
 
-	// If its the same tiddler as old, this overrides the 'deleted' entry
-	title = updateDescriptor['new'].tiddler.fields.title;
-	changedTiddlers[title] = {modified: true};
-	if (this.context.changed(changedTiddlers) || this.context.parent.changed(changedTiddlers)) {
-		this.index = null;
-	} else if (updateDescriptor.old.exists) {
-		delete this.index[updateDescriptor.old.tiddler.fields.title];
+	if (updateDescriptor['new'].exists) {
+		// If its the same tiddler as old, this overrides the 'deleted' entry
+		title = updateDescriptor['new'].tiddler.fields.title;
+		changedTiddlers[title] = {modified: true};
+		if (this.context.changed(changedTiddlers) || this.context.parent.changed(changedTiddlers)) {
+			this.index = null;
+		} else if (updateDescriptor.old.exists) {
+			delete this.index[updateDescriptor.old.tiddler.fields.title];
+		}
 	}
 };
 
