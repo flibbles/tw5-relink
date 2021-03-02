@@ -119,7 +119,12 @@ exports.report = function(text, callback, options) {
 	}
 	if (isImage !== (em[3].lastIndexOf('#') >= 0)) {
 		var safeCaption = utils.abridge(caption);
-		callback(em[1] + '[' + safeCaption + '](' + hash + ')', decodeURIComponent(link));
+		try {
+			callback(em[1] + '[' + safeCaption + '](' + hash + ')', decodeURIComponent(link));
+		} catch (e) {
+			// It must be a malformed link. Not our problem.
+			// Just move on.
+		}
 	}
 };
 

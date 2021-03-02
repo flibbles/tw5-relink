@@ -7,37 +7,32 @@ Tests relinking in markdown tiddlers. (text/markdown)
 // TODO: These tests are partway between old and new system. Finish conversion.
 var utils = require("test/utils");
 
-function test(text, expected, options) {
-	[text, expected, options] = utils.prepArgs(text, expected, options);
-	var type = options.type || "text/x-markdown";
-	options.type = options.fromType; // So we can make from an image
-	var failCount = options.fails || 0;
-	var wiki = options.wiki;
-	var results = utils.relink({text: text, type: type}, options);
-	expect(results.tiddler.fields.text).toEqual(expected);
-	expect(results.fails.length).toEqual(failCount, "Incorrect number of failures");
-};
-
 describe("markdown text", function() {
 
-it('markdown links', function() {
-	var ignore = false, process = true;
-	function test(text, expected, report, options) {
-		options = Object.assign({from: 'from', to: 'to'}, options);
-		const wiki = new $tw.Wiki();
-		if (expected === true) {
-			expected = text.split(options.from).join(options.to);
-		} else if (expected === false) {
-			expected = text;
-		}
-		wiki.addTiddlers([
-			{title: 'test', text: text, type: 'text/x-markdown'},
-			utils.attrConf('$link', 'to')]);
-		expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
-		wiki.renameTiddler(options.from, options.to);
-		expect(utils.getText('test', wiki)).toBe(expected);
-	};
+var ignore = false, process = true;
+
+function test(text, expected, report, options) {
+	options = Object.assign({from: 'from', to: 'to'}, options);
+	const wiki = new $tw.Wiki();
+	if (expected === true) {
+		expected = text.split(options.from).join(options.to);
+	} else if (expected === false) {
+		expected = text;
+	}
+	wiki.addTiddlers([
+		utils.attrConf('$link', 'to'),
+		{title: 'test', text: text, type: options.type || 'text/x-markdown'},
+		{title: options.from, type: options.fromType || 'text/vnd.tiddlywiki'}]);
+	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+	wiki.renameTiddler(options.from, options.to);
+	expect(utils.getText('test', wiki)).toBe(expected);
+};
+
+beforeEach(function() {
 	spyOn(console, 'log');
+});
+
+it('markdown links', function() {
 	test("click [here](#from) for link", process, ['[here](#)']);
 	test("click [here](from) for link", ignore);
 	test("click [here](# from) for link", ignore);
@@ -58,34 +53,20 @@ it('markdown links', function() {
 });
 
 it('markdown images', function() {
-	var ignore = false, process = true;
-	function test(text, expected, report, options) {
-		options = Object.assign({from: 'from.png', to: 'to.png'}, options);
-		const wiki = new $tw.Wiki();
-		if (expected === true) {
-			expected = text.split(options.from).join(options.to);
-		} else if (expected === false) {
-			expected = text;
-		}
-		wiki.addTiddler({title: 'test', text: text, type: 'text/x-markdown'});
-		expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
-		wiki.renameTiddler(options.from, options.to);
-		expect(utils.getText('test', wiki)).toBe(expected);
-	};
-	spyOn(console, 'log');
-	test("Image: ![caption](from.png)", process, ['![caption]()']);
-	test("Image: ![caption](#from.png)", ignore);
+	const options = {from: 'from.png', to: 'to.png'};
+	test("Image: ![caption](from.png)", process, ['![caption]()'], options);
+	test("Image: ![caption](#from.png)", ignore, undefined, options);
 	// tooltips
-	test("Image: ![caption](from.png 'tooltip')", process, ['![caption]()']);
-	test("Image: ![caption](from.png 'bob\\'s tooltip')", process, ['![caption]()']);
+	test("Image: ![caption](from.png 'tooltip')", process, ['![caption]()'], options);
+	test("Image: ![caption](from.png 'bob\\'s tooltip')", process, ['![caption]()'], options);
 	test("![c](from%20here 'tooltip')", "![c](to%20there 'tooltip')", ['![c]()'], {from: 'from here', to: 'to there'});
 	// whitespace
-	test("Image: ![caption](  from.png  )", process, ['![caption]()']);
-	test("Image: ![caption](\nfrom.png\n)", process, ['![caption]()']);
-	test("Image: ![caption](\nfrom.png\n)", process, ['![caption]()']);
+	test("Image: ![caption](  from.png  )", process, ['![caption]()'], options);
+	test("Image: ![caption](\nfrom.png\n)", process, ['![caption]()'], options);
+	test("Image: ![caption](\nfrom.png\n)", process, ['![caption]()'], options);
 	// can be first and last thing in body
-	test("![caption](from.png)", process, ['![caption]()']);
-	test("![c](from.png)![c](from.png)", process, ['![c]()', '![c]()']);
+	test("![caption](from.png)", process, ['![caption]()'], options);
+	test("![c](from.png)![c](from.png)", process, ['![c]()', '![c]()'], options);
 });
 
 it('links with tricky characters', function() {
@@ -94,7 +75,6 @@ it('links with tricky characters', function() {
 
 	var theBeast = "!@#$%^&*() {}|:\"<>?-=[]\\;',./`~¡™£¢∞§¶•ªº–≠“‘«…æ≤≥÷œ∑®´´†\¨ˆøπ˙∆˚¬åß∂ƒ©Ω≈ç√∫˜µ";
 	const wiki = new $tw.Wiki();
-	spyOn(console, 'log');
 	var results = utils.relink({text: "[Caption](#from)", type: "text/x-markdown"}, {from: "from", to: theBeast, target: "test", wiki: wiki});
 	// I don't care what the raw text looks like. I want to know that the link points to the right place.
 	var parser = wiki.parseTiddler("test");
@@ -110,74 +90,75 @@ it('links with tricky characters', function() {
 });
 
 it('links with #', function() {
-	test("[c](#%23pound)", "[c](#to%20there)", {from: "#pound"});
-	test("[c](#pound)", {from: "#pound", ignored: true});
+	test("[c](#%23pound)", "[c](#to%20there)", ['[c](#)'], {from: "#pound", to: 'to there'});
+	test("[c](#pound)", ignore, undefined, {from: "#pound"});
 	// CONFLICT: This is a conflict with ansel's plugin. It needs {#%23pound),
 	// but tiddlywiki/markdown doesn't handle that.
-	test("[c](#from)", "[c](##pound)", {from: "from", to: "#pound"});
+	test("[c](#from)", "[c](##pound)", ['[c](#)'], {from: "from", to: "#pound"});
 });
 
 it('markdown with tooltips', function() {
-	test("click [here](#from 'this tooltip')", {from: "from", to: "to"});
-	test("click [here](#from 'this \\'tooltip\\'')", {from: "from", to: "to"});
-	test("click [here](#from 't(((ooltip')", {from: "from", to: "to"});
-	test("click [here](#from 't)))ooltip')", {from: "from", to: "to"});
-	test("click [here](#from 'tooltip\\\\\\\\')", {from: "from", to: "to"});
-	test("click [here](#from 'tooltip\\\\\\')", {from: "from", ignored: true});
-	test("click [here](#from '')", {from: "from", to: "to"});
+	test("click [here](#from 'this tooltip')", process, ['[here](#)']);
+	test("click [here](#from (this tooltip))", process, ['[here](#)']);
+	test("click [here](#from 'this \\'tooltip\\'')", process, ['[here](#)']);
+	test("click [here](#from 't(((ooltip')", process, ['[here](#)']);
+	test("click [here](#from 't)))ooltip')", process, ['[here](#)']);
+	test("click [here](#from 'tooltip\\\\\\\\')", process, ['[here](#)']);
+	test("click [here](#from 'tooltip\\\\\\')", ignore);
+	test("click [here](#from '')", process, ['[here](#)']);
 
-	test('click [here](#from "this tooltip")', {from: "from", to: "to"});
-	test('click [here](#from "this \\"tooltip\\"")', {from: "from", to: "to"});
-	test('click [here](#from "tooltip\\\\\\\\")', {from: "from", to: "to"});
-	test('click [here](#from "tooltip\\\\\\")', {from: "from", ignored: true});
-	test('click [here](#from "t(((ooltip")', {from: "from", to: "to"});
-	test('click [here](#from "t)))ooltip")', {from: "from", to: "to"});
-	test('click [here](#from "")', {from: "from", to: "to"});
+	test('click [here](#from "this tooltip")', process, ['[here](#)']);
+	test('click [here](#from "this \\"tooltip\\"")', process, ['[here](#)']);
+	test('click [here](#from "tooltip\\\\\\\\")', process, ['[here](#)']);
+	test('click [here](#from "tooltip\\\\\\")', ignore);
+	test('click [here](#from "t(((ooltip")', process, ['[here](#)']);
+	test('click [here](#from "t)))ooltip")', process, ['[here](#)']);
+	test('click [here](#from "")', process, ['[here](#)']);
 
-	test('click [here](#from (this tooltip))', {from: "from", to: "to"});
-	test('click [here](#from ("quotes\'))', {from: "from", to: "to"});
-	test('click [here](#from (this((((tooltip))', {from: "from", to: "to"});
-	test('click [here](#from (this )tooltip))', {from: "from", ignored: true});
-	test('click [here](#from ())', {from: "from", to: "to"});
+	test('click [here](#from (this tooltip))', process, ['[here](#)']);
+	test('click [here](#from ("quotes\'))', process, ['[here](#)']);
+	test('click [here](#from (this((((tooltip))', process, ['[here](#)']);
+	test('click [here](#from (this )tooltip))', ignore);
+	test('click [here](#from ())', process, ['[here](#)']);
 
-	test('click [here](\n#from   \n"this\ntooltip"\n)', {from: "from", to: "to"});
+	test('click [here](\n#from   \n"this\ntooltip"\n)', process, ['[here](#)']);
 });
 
 it('markdown links with spaces', function() {
-	test("click [here](#from%20here).", "click [here](#to%20there).");
-	test("[here](#has%20two%20spaces).", "[here](#to%20there).", {from: "has two spaces"});
-	test("click [here](#from).", "click [here](#to%20there).", {from: "from"});
-	test("click [here](#from%20here).", "click [here](#to).", {to: "to"});
-	test("click [here](#from here).", {ignored: true});
-	test("[here](#from%2520here).", "[here](#to%2520there).", {from: "from%20here", to: "to%20there"});
+	test("click [here](#from%20here).", "click [here](#to%20there).", ['[here](#)'], {from: 'from here', to: 'to there'});
+	test("[here](#has%20two%20spaces).", "[here](#to%20there).", ['[here](#)'], {from: "has two spaces", to: 'to there'});
+	test("click [here](#from).", "click [here](#to%20there).", ['[here](#)'], {to: 'to there'});
+	test("click [here](#from%20here).", "click [here](#to).", ['[here](#)'], {from: 'from here'});
+	test("click [here](#from here).", ignore, undefined, {from: 'from here'});
+	test("[here](#from%2520here).", "[here](#to%2520there).", ['[here](#)'], {from: "from%20here", to: "to%20there"});
 });
 
 it('markdown links with parenthesis', function() {
-	test("[caption](#with(paren))", {from: "with(paren)", to: "there"});
+	test("[caption](#with(paren))", process, ['[caption](#)'], {from: "with(paren)"});
 	// don't miss parens if they're the first character of a link
-	test("[caption](#(paren))", {from: "(paren)", to: "there"});
+	test("[caption](#(paren))", process, ['[caption](#)'], {from: "(paren)"});
 
-	test("[caption](#(from)(here))", {from: "(from)(here)", to: "(to)(there)"});
-	test("[caption](#from)", {from: "from", to: "with(paren)"});
-	test("[c](#from)", "[c](#to(%28there)%29)",{from:"from", to:"to((there))"});
-	test("[c](#from)", "[c](#to(%28th)(ere)%29)",{from:"from", to:"to((th)(ere))"});
+	test("[caption](#(from)(here))", process, ['[caption](#)'], {from: "(from)(here)", to: "(to)(there)"});
+	test("[caption](#from)", process, ['[caption](#)'], {to: "with(paren)"});
+	test("[c](#from)", "[c](#to(%28there)%29)", ['[c](#)'], {to: "to((there))"});
+	test("[c](#from)", "[c](#to(%28th)(ere)%29)", ['[c](#)'], {to: "to((th)(ere))"});
 	// Ansel's supports this, but tw/markdown doesn't
 	//test("[caption](#from(((here))))", {from: "from(((here)))", to: "(((to)))ther"});
 });
 
 it('markdown links with mismatched parenthesis', function() {
-	test("[c](#with(paren)", {from: "with(paren", ignored: true});
-	test("[c](#with%28p)", "[c](#there)", {from: "with(p", to: "there"});
-	test("[c](#from)", "[c](#with%28paren)", {from: "from", to: "with(paren"});
+	test("[c](#with(paren)", ignore, undefined, {from: "with(paren"});
+	test("[c](#with%28p)", "[c](#there)", ['[c](#)'], {from: "with(p", to: "there"});
+	test("[c](#from)", "[c](#with%28paren)", ['[c](#)'], {from: "from", to: "with(paren"});
 	// parens at beginning could be missed if indexing is done wrong.
-	test("[c](#)paren)", {from: ")paren", ignored: true});
-	test("[c](#)paren)", {from: "paren", ignored: true});
-	test("[c](#from)", "[c](#a%29b(c)d%28e)", {from: "from", to: "a)b(c)d(e"});
+	test("[c](#)paren)", ignore, undefined, {from: ")paren"});
+	test("[c](#)paren)", ignore, undefined, {from: "paren"});
+	test("[c](#from)", "[c](#a%29b(c)d%28e)", ['[c](#)'], {to: "a)b(c)d(e"});
 });
 
 it('identifying markdown links with mixed escaping', function() {
 	function finds(title, escaped) {
-		test("[c](#"+escaped+")", "[c](#there)", {from: title, to: "there"});
+		test("[c](#"+escaped+")", "[c](#there)", ['[c](#)'], {from: title, to: "there"});
 	};
 	// unnecessarily escaped parenthesis
 	finds("(from)here", "%28from%29here");
@@ -191,34 +172,24 @@ it('identifying markdown links with mixed escaping', function() {
 });
 
 it('gracefully handles malformed links', function() {
-	test("[caption](#from%)", {from: "from%", ignored: true});
-	test("[<$link to='from here'/>](#bad%)");
+	test("[caption](#from%)", ignore, undefined, {from: "from%"});
+	test("[<$link to='from here'/>](#bad%)", process, ['[<$link to />](#bad%)'], {from: 'from here', to: 'to there'});
 });
 
 it("whitespaces and multiline", function() {
 	// Whitespace
-	test("[here](   #from)", {from: "from", to: "to"});
-	test("[here]( \t\n\t  #from)", {from: "from", to: "to"});
-	test("[here](#from   )", {from: "from", to: "to"});
-	test("[here](#from \t\n\t  )", {from: "from", to: "to"});
-	test("[here](\r\n#from\r\n)", {from: "from", to: "to"});
+	test("[here](   #from)", process, ['[here](#)']);
+	test("[here]( \t\n\t  #from)", process, ['[here](#)']);
+	test("[here](#from   )", process, ['[here](#)']);
+	test("[here](#from \t\n\t  )", process, ['[here](#)']);
+	test("[here](\r\n#from\r\n)", process, ['[here](#)']);
 
 	// None parsing
-	test("[c](#content\n<$link to='from here'/>\n)");
-	test("[c](#{{from}}()\n\n)", {from: "from"});
+	test("[c](#content\n<$link to='from here'/>\n)", process, ['<$link to />'], {from: 'from here', to: 'to there'});
+	test("[c](#{{from}}()\n\n)", process, ['{{}}']);
 });
 
 it("tricky captions", function() {
-	var ignore = true, process = false;
-	function test(text, ignore, report) {
-		const wiki = new $tw.Wiki();
-		const expected = ignore ? text : text.replace('from', 'to');
-		wiki.addTiddler({title: 'test', text: text, type: 'text/x-markdown'});
-		expect(utils.getReport('test', wiki).from).toEqual(report);
-		wiki.renameTiddler('from', 'to');
-		expect(utils.getText('test', wiki)).toBe(expected);
-	};
-	spyOn(console, 'log');
 	// CONFLICT: empty (this does default on tiddlywiki/markdown,
 	// and is hidden on anstosa/tw5-markdown
 	test("[](#from)", process, ['[](#)']);
@@ -248,33 +219,39 @@ it("tricky captions", function() {
 });
 
 it("changing captions", function() {
-	test("[caption[inner](#from)](#from)", {from: "from", to: "to"});
-	test("[<$link to='from' />](#from)", {from: "from", to: "to"});
-	test("[{{from}}](#other)", {from: "from", to: "to[there]"});
-	test("[[]{{from}}](#from)", {from: "from", to: "to"});
+	test("[caption[inner](#from)](#from)", process, ['[[inner](#)](#from)', '[caption[inner](...](#)']);
+	test("[<$link to='from' />](#from 'tooltip')", process, ['[<$link to />](#from)', '[<$link to=\'from...](#)']);
+	test("[{{from}}](#other)", process, ['[{{}}](#other)'], {to: "to[there]"});
+	test("[{{from}}](#other 'tooltip')", process, ['[{{}}](#other)'], {to: "to[there]"});
+	test("[[]{{from}}](#from)", process, ['[{{}}](#from)', '[[]{{from}}](#)']);
 	// encoded link is left alone when caption changes
-	test("[{{from}}](#a%26b%3Bc%3Dd)", {from: "from", to: "to"});
+	test("[{{from}}](#a%26b%3Bc%3Dd)", process, ['[{{}}](#a%26b%3Bc%3Dd)']);
 	// Even if we don't handle this link, we need to handle the caption
-	test("[{{from here}}](nontiddlerlink)");
+	test("[{{from here}}](nontiddlerlink)", process, ['[{{}}](#nontiddlerlink)'], {from: 'from here'});
 	// But never with images for some reason
-	test("![{{from here}}](nontiddlerlink)", {ignored: true});
-	test("![{{from here}}](#otherlink)", {ignored: true});
+	test("![{{from here}}](nontiddlerlink)", ignore);
+	test("![{{from here}}](#otherlink)", ignore);
 });
 
 it("impossible caption changes", function() {
+	function testFails() {
+		var args = arguments;
+		var failures = utils.collectFailures(() => test.apply(this, args));
+		expect(failures.length).toBe(1);
+	};
 	var to = "t}}x";
 	// Fails because inner wikitext can't change on its own
-	test("[<$link to={{from}}/>](#from)", "[<$link to={{from}}/>](#"+encodeURIComponent(to)+")", {from: "from", to: to, fails: 1});
-	test("[<$link to='from' tag={{from}} />](#else)", "[<$link to='"+to+"' tag={{from}} />](#else)", {from: "from", to: to, fails: 1});
+	testFails("[<$link to={{from}}/>](#from)", "[<$link to={{from}}/>](#"+encodeURIComponent(to)+")", ['[<$link to={{}} />](#from)', '[<$link to={{fro...](#)'], {from: "from", to: to});
+	testFails("[<$link to='from' tag={{from}} />](#else)", "[<$link to='"+to+"' tag={{from}} />](#else)", ['[<$link to />](#else)', '[<$link tag={{}} />](#else)'], {from: "from", to: to});
 
 	// Fails because caption would be illegal
-	test("[{{from}}](#from)", "[{{from}}](#brack%5Bet)", {from: "from", to: "brack[et", fails: 1});
-	test("[{{from}}](#from)", "[{{from}}](#brack%5Det)", {from: "from", to: "brack]et", fails: 1});
+	testFails("[{{from}}](#from)", "[{{from}}](#brack%5Bet)", ['[{{}}](#from)', '[{{from}}](#)'], {from: "from", to: "brack[et"});
+	testFails("[{{from}}](#from)", "[{{from}}](#brack%5Det)", ['[{{}}](#from)', '[{{from}}](#)'], {from: "from", to: "brack]et"});
 });
 
 it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
-	function parseAndWiki(input, relinked, wikitext, markdown) {
-		test(input, relinked, {from: "from", type: "text/vnd.tiddlywiki"});
+	function parseAndWiki(input, relinked, report, wikitext, markdown) {
+		test(input, relinked, report, {from: "from", to: 'to there', type: "text/vnd.tiddlywiki"});
 		var output, wiki = new $tw.Wiki();
 		output = wiki.renderText("text/plain", "text/vnd.tiddlywiki", input);
 		expect(output).toEqual(wikitext);
@@ -282,27 +259,20 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 		expect(output).toEqual(markdown);
 	};
 	parseAndWiki("[Caption](#from) [[from]]", "[Caption](#from) [[to there]]",
+	             ['[[from]]'],
 	             "[Caption](#from) from", "Caption [[from]]");
 	// the codeblock rule
 	parseAndWiki("    <$link to='from'>C</$link>",
 	             "    <$link to='to there'>C</$link>",
+	             ['<$link to />'],
 	             "C", "<$link to='from'>C</$link>");
 	parseAndWiki("T\n \n    <$link to='from'>C</$link>",
 	             "T\n \n    <$link to='to there'>C</$link>",
+	             ['<$link to />'],
 	             "T\n \n    C", "T<$link to='from'>C</$link>");
 });
 
 it("footnotes", function() {
-	spyOn(console, 'log');
-	function test(text, ignore, report) {
-		const wiki = new $tw.Wiki();
-		const expected = ignore ? text : text.replace('from', 'to');
-		wiki.addTiddler({title: 'test', text: text, type: 'text/x-markdown'});
-		expect(utils.getReport('test', wiki).from).toEqual(report);
-		wiki.renameTiddler('from', 'to');
-		expect(utils.getText('test', wiki)).toBe(expected);
-	};
-	var ignore = true, process = false;
 	test("[]:from", ignore);
 	test("[]:#from", process, ['[]:']);
 	test("[1]:#from", process, ['[1]:']);
@@ -335,7 +305,7 @@ it("footnotes", function() {
 	test("text\nd[1]:#from", ignore);
 	test("Text[1]\n1.\n[1]: #from", process, ['[1]:']);
 
-	test("[1]: #from%20here", "[1]: #to%20there");
+	test("[1]: #from%20here", "[1]: #to%20there", ['[1]:'], {from: 'from here', to: 'to there'});
 	test("[1\n\n2]: #else\n\n[3]: #from", process, ['[3]:']);
 
 	test("[Long\nmulti\nline\ncaption]: #from", process, ["[Long multi line...]:"]);
@@ -343,16 +313,16 @@ it("footnotes", function() {
 });
 
 it("footnotes for images", function() {
-	test("[1]: from.png", {from: "from.png", to: "to.png", fromType: "image/png"});
+	test("[1]: from.png", process, ['[1]:'], {from: "from.png", to: "to.png", fromType: "image/png"});
 	// Still relinks in case someone wants to just link to an image instead of embed it
-	test("[1]: #from.png", {from: "from.png", to: "to.png", fromType: "image/png"});
-	test("[1]:  from%20here.png", "[1]:  to%20there.png", {from: "from here.png", to: "to there.png", fromType: "image/png"});
+	test("[1]: #from.png", process, ['[1]:'], {from: "from.png", to: "to.png", fromType: "image/png"});
+	test("[1]:  from%20here.png", "[1]:  to%20there.png", ['[1]:'], {from: "from here.png", to: "to there.png", fromType: "image/png"});
 
 	// types
-	test("[1]: from.svg", {from: "from.svg", to: "to.svg", fromType: "image/svg+xml"});
-	test("[1]: from.jpg", {from: "from.jpg", to: "to.jpg", fromType: "image/jpeg"});
-	test("[1]: from.gif", {from: "from.gif", to: "to.gif", fromType: "image/gif"});
-	test("[1]: from.ico", {from: "from.ico", to: "to.ico", fromType: "image/x-icon"});
+	test("[1]: from.svg", process, ['[1]:'], {from: "from.svg", to: "to.svg", fromType: "image/svg+xml"});
+	test("[1]: from.jpg", process, ['[1]:'], {from: "from.jpg", to: "to.jpg", fromType: "image/jpeg"});
+	test("[1]: from.gif", process, ['[1]:'], {from: "from.gif", to: "to.gif", fromType: "image/gif"});
+	test("[1]: from.ico", process, ['[1]:'], {from: "from.ico", to: "to.ico", fromType: "image/x-icon"});
 });
 
 /* INCOMPLETE PARSING: I'm skipping these because updating the captions here
@@ -398,37 +368,33 @@ it("respects indented code", function() {
 */
 
 it("code", function() {
-	var ignore = {from: "from", ignored: true};
-	var process = {from: "from", to: "to"};
 	// Inline code
 	test("`[c](#from%20here)`", ignore);
 	test("``[c](#from%20here)``", ignore);
 	test("```[c](#from%20here)```", ignore);
 	test("```\n[c](#from%20here)\n```", ignore);
 	test("```javascript\n[c](#from%20here)\n```", ignore);
-	test("`[c](#from)``[c](#from)``", "`[c](#to)``[c](#from)``", process);
+	test("`[c](#from)``[c](#from)``", "`[c](#to)``[c](#from)``", ['[c](#)']);
 
-	test("``[c](#from)\n\na``[c](#from)", process);
+	test("``[c](#from)\n\na``[f](#from)", process, ['[c](#)', '[f](#)']);
 	test("``[c](#from)\na\n``\n[c](#from)",
-	     "``[c](#from)\na\n``\n[c](#to)", process);
-	test("T```[c](#from)```[c](#from)", "T```[c](#from)```[c](#to)", process);
-	test("T````[c](#from)````[c](#from)", "T````[c](#from)````[c](#to)", process);
-	test("T````[c](#from)`````[c](#from)", process);
+	     "``[c](#from)\na\n``\n[c](#to)", ['[c](#)']);
+	test("T```[c](#from)```[c](#from)", "T```[c](#from)```[c](#to)", ['[c](#)']);
+	test("T````[c](#from)````[c](#from)", "T````[c](#from)````[c](#to)", ['[c](#)']);
+	test("T````[c](#from)`````[c](#from)", process, ['[c](#)', '[c](#)']);
 	test("``````[c](#from)``````", ignore);
 
 	// Block code
-	var ignore = {from: "from", ignored: true};
-	var process = {from: "from", to: "to"};
-	test("```\n\n[c](#from)\n```\n[c](#from)", "```\n\n[c](#from)\n```\n[c](#to)", process);
-	test("```\n\n[c](#from)\n```[c](#from)", ignore);
-	test("   ```\n\n[c](#from)\n   ```\n[c](#from)",
-	     "   ```\n\n[c](#from)\n   ```\n[c](#to)", process);
+	test("```\n\n[c](#from)\n```\n[c](#from)", "```\n\n[c](#from)\n```\n[c](#to)", ['[c](#)']);
+	test("```\n\n[c](#from)\n```[f](#from)", ignore);
+	test("   ```\n\n[c](#from)\n   ```\n[g](#from)",
+	     "   ```\n\n[c](#from)\n   ```\n[g](#to)", ['[g](#)']);
 	test("```\n[c](#from)", ignore);
-	test("s```\n[c](#from)", process);
+	test("s```\n[c](#from)", process, ['[c](#)']);
 
 	// Both in weird ways
-	test("T```[c](#from)\n```[c](#from)", "T```[c](#to)\n```[c](#from)", process);
-	test("T```[c](#from)\n```\n[c](#from)", "T```[c](#to)\n```\n[c](#from)", process);
+	test("T```[c](#from)\n```[h](#from)", "T```[c](#to)\n```[h](#from)", ['[c](#)']);
+	test("T```[c](#from)\n```\n[h](#from)", "T```[c](#to)\n```\n[h](#from)", ['[c](#)']);
 });
 
 /* INCOMPLETE PARSING:
@@ -461,21 +427,6 @@ it("lists", function() {
 });
 */
 
-it("report links", function() {
-	function testMD(text, expected) {
-		var wiki = new $tw.Wiki();
-		wiki.addTiddlers([
-			{title: 'test', text: text, type: 'text/x-markdown'},
-			utils.attrConf('$link', 'to')]);
-		expect(utils.getReport('test', wiki).from).toEqual(expected);
-	};
-	testMD("[{{from}} <$link to='from' />](#else)", ["[{{}}](#else)", "[<$link to />](#else)"]);
-	testMD("[{{from}}](#from)", ["[{{}}](#from)", "[{{from}}](#)"]);
-	testMD("[{{from}}](#from 'tooltip')", ["[{{}}](#from)", "[{{from}}](#)"]);
-	// Tooltip
-	testMD("[cap](#from (tooltip))", ["[cap](#)"]);
-});
-
 describe("tiddlywiki/markdown plugin", function() {
 
 var mdParser = require("$:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext.js")["text/x-markdown"];
@@ -503,7 +454,6 @@ var both =  "[[to there]] [Caption](#to%20there)";
 var mdonly =  "[[from here]] [Caption](#to%20there)";
 
 it("wikitextPragma", function() {
-	spyOn(console, 'log');
 	// links are disabled by default in tiddlywiki/markdown
 	testPragma(link, mdonly, defaultPragma);
 	// Without pragma, or with simple pragma
@@ -520,14 +470,12 @@ it("wikitextPragma", function() {
 });
 
 it("wikitextPragma wikilinks inside markdown links", function() {
-	spyOn(console, 'log');
 	// wikitext in caption inherits rules
 	testPragma("[[[from here]]](#from%20here)", "[[[to there]]](#to%20there)", undefined);
 });
 
 
 it("wikitextPragma with broken 'only's", function() {
-	spyOn(console, 'log');
 	// if it's an "only" rule, we must be able to tell. So we must support
 	// weird syntax of "only" rules.
 	testPragma(link, both, "\\rules only prettylink");
@@ -537,7 +485,6 @@ it("wikitextPragma with broken 'only's", function() {
 });
 
 it("wikitextPragma with multiple pragma", function() {
-	spyOn(console, 'log');
 	// If some other pragma is included. We can't choke on that.
 	testPragma(link, both, "\\rules only prettylink macrodef\n\\define macro() stuff");
 	testPragma(link, both, "\\rules only prettylink macrodef\r\n\\define macro() stuff");
@@ -548,7 +495,6 @@ it("wikitextPragma with multiple pragma", function() {
 
 it("wikitextPragma doesn't impact nested wikitext", function() {
 	const wiki = new $tw.Wiki();
-	spyOn(console, 'log');
 	wiki.addTiddlers([
 		{title: 'test', text: '<$list emptyMessage="[[from]]" />\n[[from]]\n[caption](#from)', type: 'text/x-markdown'},
 		pragma('\\rules only html'),
@@ -566,7 +512,6 @@ it("wikitextPragma and code blocks", function() {
 */
 
 it("wikitext switch", function() {
-	spyOn(console, 'log');
 	testPragma(link, both, undefined);
 	testPragma(link, both, undefined, "true");
 	testPragma(link, both, undefined, "TRUE");
@@ -578,7 +523,6 @@ it("wikitext switch", function() {
 it("won't make placeholders with default markdown settings", function() {
 	// because default markdown settings prohibit macrodefs at all.
 	const wiki = new $tw.Wiki();
-	spyOn(console, 'log');
 	wiki.addTiddlers([
 		{title: pragmaTitle, text: defaultPragma},
 		utils.attrConf('$link', 'to'),
