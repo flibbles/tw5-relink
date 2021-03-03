@@ -6,6 +6,7 @@ Introduces some utility methods used by Relink.
 \*/
 
 var utils = require("./utils.js");
+var TiddlerContext = utils.getContext('tiddler');
 
 /** Returns a pair like this,
  *  { title: {field: entry, ... }, ... }
@@ -63,7 +64,9 @@ function getIndexer(wiki) {
 		if (!indexer) {
 			indexer = {
 				lookup: function(title) {
-					return utils.getTiddlerRelinkReferences(wiki, title);
+					var wikiContext = utils.getWikiContext(wiki);
+					var context = new TiddlerContext(wiki, wikiContext, title);
+					return utils.getTiddlerRelinkReferences(wiki, title, context);
 				},
 				rebuild: function() {}
 			}

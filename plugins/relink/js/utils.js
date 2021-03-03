@@ -29,13 +29,10 @@ function getRelinkOperators() {
 	return relinkOperators;
 };
 
-exports.getTiddlerRelinkReferences = function(wiki, title, options) {
+exports.getTiddlerRelinkReferences = function(wiki, title, context) {
 	var tiddler = wiki.getTiddler(title),
 		references = Object.create(null),
-		options = options || {},
-		context = options.settings || exports.getWikiContext(wiki);
-	options.settings = new Contexts.tiddler(wiki, context, title);
-	options.wiki = wiki;
+		options = {settings: context, wiki: wiki};
 	if (tiddler) {
 		for (var relinker in getRelinkOperators()) {
 			getRelinkOperators()[relinker].report(tiddler, function(blurb, title) {

@@ -43,8 +43,14 @@ ImportContext.prototype.getVariableWidget = function() {
 	if (!this.widget) {
 		var varWidget = this.parent && this.parent.widget;
 		var parentWidget = this.wiki.makeWidget(null,{parentWidget: varWidget});
+		if (varWidget) {
+			varWidget.children.push(parentWidget);
+		}
+		// TODO: there's no need to set currentTiddler like this anymore.
+		//       it's set at a higher level.
 		parentWidget.setVariable("currentTiddler", this.title);
 		var widget = this.wiki.makeWidget(null, {parentWidget: parentWidget});
+		parentWidget.children.push(widget);
 		this.addWidget(widget);
 	}
 	return this.widget;
@@ -65,6 +71,7 @@ function createImportWidget(filter, wiki, parent) {
 			}
 		}
 	}] }, { parentWidget: parent} );
+	parent.children.push(widget);
 	widget.execute();
 	widget.renderChildren();
 	var importWidget = widget.children[0];

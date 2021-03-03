@@ -10,7 +10,7 @@ var operators = $tw.modules.getModulesByTypeAsHashmap('relinkoperator');
 
 //TODO: imports in wikitext fields get properly updated when import list changes
 
-describe("import pragma", function() {
+describe("indexer", function() {
 
 it("caches report results when indexing", function() {
 	var wiki = new $tw.Wiki();
@@ -50,11 +50,10 @@ it("detects changes to global macro definitions", async function() {
 	expect(wiki.getTiddlerRelinkReferences('test')).toEqual({x: ['<<macro arg>>']});
 });
 
-/*
 it("reports when import tiddler list would change", function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddlers(utils.setupTiddlers());
 	wiki.addTiddlers([
+		utils.operatorConf('tag'),
 		{title: 'test', text: '\\import [tag[local]]\n<<macro from>>'},
 		{title: 'macro', tags: 'local', text: '\\define macro(val) $from$'}]);
 	var refs = wiki.getTiddlerRelinkReferences('test');
@@ -63,6 +62,5 @@ it("reports when import tiddler list would change", function() {
 	refs = wiki.getTiddlerRelinkReferences('test');
 	expect(refs).toEqual({local: ['\\import [tag[]]'], from: ['<<macro val>>']});
 });
-*/
 
 });

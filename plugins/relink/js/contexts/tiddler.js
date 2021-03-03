@@ -19,3 +19,7 @@ function TiddlerContext(wiki, parentContext, title) {
 exports.tiddler = TiddlerContext;
 
 TiddlerContext.prototype = new WidgetContext();
+
+TiddlerContext.prototype.changed = function(changes) {
+	return this.widget && this.widget.refresh(changes);
+};
