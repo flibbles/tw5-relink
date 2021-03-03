@@ -9,27 +9,18 @@ var WidgetContext = require('./widget').widget;
 function ImportContext(wiki, parent, filter) {
 	this.parent = parent;
 	this.wiki = wiki;
-	this.import(filter);
+	var importWidget = createImportWidget(filter, this.wiki, this.parent.widget);
+	this._compileList(importWidget.tiddlerList);
+	// This only works if only one filter is imported
+	this.addWidget(importWidget);
 };
 
 exports.import = ImportContext;
 
 ImportContext.prototype = new WidgetContext();
 
-
-ImportContext.prototype.import = function(filter) {
-	var parentWidget = this.getVariableWidget();
-	var importWidget = createImportWidget(filter, this.wiki, parentWidget);
-	this._compileList(importWidget.tiddlerList);
-	// This only works if only one filter is imported
-	this.addWidget(importWidget);
-};
-
 ImportContext.prototype.changed = function(changes) {
-	if (this.widget && this.widget.refresh(changes)) {
-		return true;
-	}
-	return false;
+	return this.widget && this.widget.refresh(changes)
 };
 
 ImportContext.prototype.addWidget = function(widget) {
@@ -37,28 +28,6 @@ ImportContext.prototype.addWidget = function(widget) {
 	while (this.widget.children.length > 0) {
 		this.widget = this.widget.children[0];
 	}
-};
-
-ImportContext.prototype.getVariableWidget = function() {
-	if (!this.widget) {
-		var varWidget = this.parent && this.parent.widget;
-		var parentWidget = this.wiki.makeWidget(null,{parentWidget: varWidget});
-		if (varWidget) {
-			varWidget.children.push(parentWidget);
-		}
-		// TODO: there's no need to set currentTiddler like this anymore.
-		//       it's set at a higher level.
-		parentWidget.setVariable("currentTiddler", this.title);
-		var widget = this.wiki.makeWidget(null, {parentWidget: parentWidget});
-		parentWidget.children.push(widget);
-		this.addWidget(widget);
-	}
-	return this.widget;
-};
-
-// TODO: I think this can be scrapped
-ImportContext.prototype.getMacroDefinition = function(variableName) {
-	return this.getVariableWidget().variables[variableName] || $tw.macros[variableName];
 };
 
 function createImportWidget(filter, wiki, parent) {
@@ -71,7 +40,9 @@ function createImportWidget(filter, wiki, parent) {
 			}
 		}
 	}] }, { parentWidget: parent} );
-	parent.children.push(widget);
+	if (parent) {
+		parent.children.push(widget);
+	}
 	widget.execute();
 	widget.renderChildren();
 	var importWidget = widget.children[0];
