@@ -11,6 +11,7 @@ function VariableContext(parent, setParseTreeNode) {
 	// Now create a new widget and attach it.
 	var attachPoint = parent.widget;
 	var setWidget = attachPoint.makeChildWidget(setParseTreeNode);
+	attachPoint.children.push(setWidget);
 	setWidget.computeAttributes();
 	setWidget.execute();
 	// point our widget to bottom, where any other contexts would attach to
