@@ -7,6 +7,8 @@ Tests the relink indexer
 var utils = require("test/utils");
 var getReport = utils.getReport;
 var operators = $tw.modules.getModulesByTypeAsHashmap('relinkoperator');
+var contexts = $tw.modules.applyMethods('relinkcontext');
+
 
 //TODO: imports in wikitext fields get properly updated when import list changes
 //TODO: imported tiddlers get renamed or relinked
@@ -43,6 +45,24 @@ it("detects changes to configuration", async function() {
 	wiki.addTiddler(utils.fieldConf('filter', 'filter'));
 	await utils.flush();
 	expect(getReport('test', wiki)).toEqual({x: ['filter: [tag[]]']});
+});
+
+it("only checks tiddler contexts if and when they need checking", function() {
+	var wiki = new $tw.Wiki();
+	spyOn(contexts.tiddler.prototype, 'changed').and.callThrough();
+	wiki.addTiddlers([
+		{title: 'A', text: '\\import [tag[macro]]\n<<M x>>'},
+		{title: 'B', text: '[[link]]'},
+		{title: 'C', text: 'irrelevant text'}]);
+	// We cache each of these
+	// TODO: It'd be easier to use a back references, since that'd auto touch them.
+	getReport('A', wiki);
+	getReport('B', wiki);
+	getReport('C', wiki);
+	wiki.addTiddler({title: 'unrelated', text: 'unrelated'});
+	wiki.addTiddler({title: 'new', tags: 'macro', text: '\\relink M arg\n\\define M(arg) X'});
+	expect(getReport('A', wiki)).toEqual({x: ['<<M arg>>']});
+	expect(contexts.tiddler.prototype.changed).toHaveBeenCalledTimes(1);
 });
 
 it("detects changes to global macro definitions", async function() {

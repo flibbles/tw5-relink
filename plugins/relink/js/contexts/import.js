@@ -13,6 +13,9 @@ function ImportContext(wiki, parent, filter) {
 	this._compileList(importWidget.tiddlerList);
 	// This only works if only one filter is imported
 	this.addWidget(importWidget);
+	// Trickle this up, so that any containing tiddlercontext knows that this
+	// tiddler does some importing, and must be checked regularly.
+	parent.hasImports(true);
 };
 
 exports.import = ImportContext;

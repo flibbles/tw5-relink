@@ -46,3 +46,7 @@ Context.prototype.allowPrettylinks = function() {
 Context.prototype.allowWidgets = function() {
 	return this.parent.allowWidgets();
 };
+
+Context.prototype.hasImports = function(value) {
+	return this.parent.hasImports(value);
+};

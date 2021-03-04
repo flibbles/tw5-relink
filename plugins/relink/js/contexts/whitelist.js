@@ -69,6 +69,11 @@ WhitelistContext.prototype.changed = function(changedTiddlers) {
 	return false;
 };
 
+WhitelistContext.prototype.hasImports = function(value) {
+	// We don't care if imports are used. This is the global level.
+	return false;
+};
+
 /**Factories define methods that create settings given config tiddlers.
  * for factory method 'example', it will be called once for each:
  * "$:/config/flibbles/relink/example/..." tiddler that exists.
