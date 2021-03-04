@@ -6,60 +6,72 @@ Tests the import pragma (\import filter).
 
 var utils = require("test/utils");
 
-function testText(text, expected, options) {
-	[text, expected, options] = utils.prepArgs(text, expected, options);
-	options.wiki.addTiddler(utils.operatorConf("title"));
-	var failCount = options.fails || 0;
-	var results = utils.relink({text: text}, options);
-	expect(results.tiddler.fields.text).toEqual(expected);
-	expect(results.fails.length).toEqual(failCount, "Incorrect number of failures");
-	return results;
+function testText(text, expected, report, options) {
+	options = Object.assign({from: 'from here', to: 'to there'}, options);
+	const wiki = options.wiki || new $tw.Wiki();
+	if (expected === true) {
+		expected = text.split(options.from).join(options.to);
+	} else if (expected === false) {
+		expected = text;
+	}
+	wiki.addTiddlers([
+		{title: 'test', text: text},
+		utils.operatorConf("title")]);
+	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+	wiki.renameTiddler(options.from, options.to);
+	expect(utils.getText('test', wiki)).toEqual(expected);
 };
 
 describe("import pragma", function() {
 
+beforeEach(function() {
+	spyOn(console, 'log');
+});
+
 it('import pragma', function() {
-	var r = testText("\\import [title[from here]]\nstuff.");
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': \\import [title[]]"]);
-	testText("\\rules except prettylink\n\\import [[from here]]\nnot prettylink.");
-	testText("\\import [[from|here]]\ndon't parse as prettylink.",
+	var r = testText("\\import [title[from here]]\nstuff.", true, ['\\import [title[]]']);
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test': \\import [title[]]");
+	testText("\\rules except prettylink\n\\import [[from here]]\nnot prettylink.", true, ['\\import']);
+	testText("\\import [[from|here]]\ndon't parse as prettylink.", true, ['\\import'],
 	         {from: "from|here"});
-	testText("\\import [title[from here]]\n\n\nnewlines.");
-	testText("\\import   [title[from here]]  \nwhitespace.");
-	testText("\\import [[from here]]\r\nwindows return.");
+	testText("\\import [title[from here]]\n\n\nnewlines.", true, ['\\import [title[]]']);
+	testText("\\import   [title[from here]]  \nwhitespace.", true, ['\\import [title[]]']);
+	testText("\\import [[from here]]\r\nwindows return.", true, ['\\import']);
 	testText("\\import from\nsingle to double.",
 	         "\\import [[to there]]\nsingle to double.",
+	         ['\\import'],
 	         {from: "from"});
+});
 
+it('handles no newline', function() {
+	// Technically, Tiddlywiki core is mishandling it, but it doesn't matter
+	// for core, because an import with new newline means an import for no
+	// reason at all.
+	testText('\\import [[from here]]', true, ['\\import']);
 });
 
 it('tricky downgrade', function() {
-	var to = "bad\"\"\'\'[]name";
-	var r = testText("\\import [[from here]]\nstuff",
+	const to = "bad\"\"\'\'[]name";
+	testText("\\import [[from here]]\nstuff",
 	         utils.placeholder(1,to)+"\\import [<relink-1>]\nstuff",
+	         ['\\import'],
 	         {to: to});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test': \\import"]);
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test': \\import");
 });
 
 it('handles failures', function() {
-	var r = testText("\\import [tag{from here}]\nstuff",
-	                 {ignored: true, to: "to}there", fails: 1});
+	var failures = utils.collectFailures(function() {
+		testText("\\import [tag{from here}]\nstuff", false, ['\\import [tag{}]'], {to: "to}there"});
+	});
+	expect(failures.length).toBe(1);
 });
 
-it("reports", function() {
+it("handles tricky importing using just-imported variables", function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddlers(utils.setupTiddlers());
-	function test(tiddler, expected) {
-		wiki.addTiddler(tiddler);
-		var refs = wiki.getTiddlerRelinkReferences(tiddler.title);
-		expect(refs).toEqual(expected);
-	};
-	test({title: 'A', text: "\\import [tag[from]]\n"}, {from: ["\\import [tag[]]"]});
-	test({title: 'B', text:  "\\import from\n[[link]]"}, {from: ["\\import"], link: ['[[link]]']});
 	wiki.addTiddlers([
 		{title: 'localA', tags: 'imports', text: '\\define second() localB\n'},
 		{title: 'localB', text: '\\relink third var\n\\define third(var) t\n'}]);
-	test({title: 'C', text: "\\import [tag[imports]]\n\\import [<second>]\n<<third mytitle>>\n"}, {imports: ["\\import [tag[]]"], mytitle: ["<<third var>>"]});
+	testText("\\import [tag[imports]]\n\\import [<second>]\n<<third 'from here'>>\n", true, ["<<third var>>"], {wiki: wiki});
 });
 
 });

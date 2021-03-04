@@ -30,7 +30,7 @@ ImportEntry.prototype.report = function() {
 exports.report = function(text, callback, options) {
 	// This moves the pos for us
 	var parseTree = this.parse();
-	var filter = parseTree[0].attributes.filter.value;
+	var filter = parseTree[0].attributes.filter.value || '';
 	filterRelinker.report(filter, function(blurb, title) {
 		if (blurb) {
 			blurb = '\\import ' + blurb;
@@ -49,7 +49,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	// the ptr.
 	var start = this.matchRegExp.lastIndex;
 	var parseTree = this.parse();
-	var filter = parseTree[0].attributes.filter.value;
+	var filter = parseTree[0].attributes.filter.value || '';
 	var entry = undefined;
 	var filterEntry = filterRelinker.relink(filter, fromTitle, toTitle, options);
 	if (filterEntry !== undefined) {

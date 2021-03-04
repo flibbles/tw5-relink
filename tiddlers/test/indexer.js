@@ -116,4 +116,16 @@ it('updates when relevant $importvariables exists', function() {
 	expect(getReport('test', wiki)).toEqual({B: ['<<M Barg>>']});
 });
 
+it("does not goof and give wrong report if changes cached", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'A', text: '\\import anything'});
+	// Cache this tiddler (which requires its context to be remembered
+	getReport('A', wiki);
+	// Add another
+	wiki.addTiddler({title: 'B', text: '[[expected]]'});
+	// When we get B, indexer used to return A, because it goofed its variables
+	// when checking A's context with changes involving B.
+	expect(getReport('B', wiki)).toEqual({expected: ['[[expected]]']});
+});
+
 });

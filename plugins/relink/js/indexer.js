@@ -62,11 +62,11 @@ ReferencesIndexer.prototype.lookup = function(title) {
 		this.context = utils.getWikiContext(this.wiki);
 	} else if (this.changedTiddlers) {
 		// If there are cached changes, we apply them now.
-		for (title in this.contexts) {
-			var tiddlerContext = this.contexts[title];
+		for (var contextTitle in this.contexts) {
+			var tiddlerContext = this.contexts[contextTitle];
 			if (tiddlerContext.changed(this.changedTiddlers)) {
-				delete this.index[title];
-				delete this.contexts[title];
+				delete this.index[contextTitle];
+				delete this.contexts[contextTitle];
 			}
 		}
 		this.changedTiddlers = undefined;
