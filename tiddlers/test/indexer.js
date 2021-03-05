@@ -9,10 +9,6 @@ var getReport = utils.getReport;
 var operators = $tw.modules.getModulesByTypeAsHashmap('relinkoperator');
 var contexts = $tw.modules.applyMethods('relinkcontext');
 
-
-//TODO: imports in wikitext fields get properly updated when import list changes
-//TODO: imported tiddlers get renamed or relinked
-
 describe("indexer", function() {
 
 it("caches report results when indexing", function() {
@@ -106,6 +102,35 @@ it("updates when tiddler in import list changes", function() {
 	expect(getReport('test', wiki)).toEqual({B: ['<<M Barg>>']});
 });
 
+it("updates when tiddler in import list renames", function() {
+	var wiki = new $tw.Wiki();
+	spyOn(console, 'log');
+	wiki.addTiddlers([
+		{title: 'test', text: '\\import macro\n<<M arg:A>>'},
+		{title: 'macro', text: '\\relink M arg'}]);
+	expect(getReport('test', wiki)).toEqual({macro: ['\\import'], A: ['<<M arg>>']});
+	wiki.renameTiddler('macro', 'newmacro');
+	expect(getReport('test', wiki)).toEqual({newmacro: ['\\import'], A: ['<<M arg>>']});
+});
+
+it("removes old reports when target tiddler renamed", function() {
+	var wiki = new $tw.Wiki();
+	spyOn(console, 'log');
+	wiki.addTiddler({title: 'test', text: '[[link]]'});
+	expect(getReport('test', wiki)).toEqual({link: ['[[link]]']});
+	wiki.renameTiddler('test', 'newtest');
+	expect(getReport('test', wiki)).toEqual({});
+	expect(getReport('newtest', wiki)).toEqual({link: ['[[link]]']});
+});
+
+it("removes old reports when target tiddler deleted", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'test', text: '[[link]]'});
+	expect(getReport('test', wiki)).toEqual({link: ['[[link]]']});
+	wiki.deleteTiddler('test');
+	expect(getReport('test', wiki)).toEqual({});
+});
+
 it('updates when relevant $importvariables exists', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
@@ -116,9 +141,33 @@ it('updates when relevant $importvariables exists', function() {
 	expect(getReport('test', wiki)).toEqual({B: ['<<M Barg>>']});
 });
 
+it('updates when relevant $importvariables in fields exist', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.fieldConf('wikitext', 'wikitext'),
+		{title: 'test', wikitext: '<$importvariables filter="[tag[local]]"><<M Aarg:A Barg:B>></$importvariables>'},
+		{title: 'macro', tags: 'local', text: '\\relink M Aarg'}]);
+	expect(getReport('test', wiki)).toEqual({A: ['wikitext: <<M Aarg>>']});
+	wiki.addTiddler({title: 'macro', tags: 'local', text: '\\relink M Barg'});
+	expect(getReport('test', wiki)).toEqual({B: ['wikitext: <<M Barg>>']});
+});
+
+it('updates for relevant $importvariables in nested context', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.attrConf('$list', 'emptyMessage', 'wikitext'),
+		utils.macroConf('wikiwrapper', 'text', 'wikitext'),
+		utils.operatorConf('wikiop', 'wikitext'),
+		{title: 'test', text: '<$list filter="" emptyMessage="""<<wikiwrapper text:\'{{{ [wikiop[<$importvariables filter="macro"><<M Aarg:A Barg:B>></$importvariables>]] }}}\' >>""" />'},
+		{title: 'macro', tags: 'local', text: '\\relink M Aarg'}]);
+	expect(getReport('test', wiki)).toEqual({A: ['<$list emptyMessage="<<wikiwrapper text: "{{{[wikiop[<<M Aarg>>]]}}}">>" />']});
+	wiki.addTiddler({title: 'macro', tags: 'local', text: '\\relink M Barg'});
+	expect(getReport('test', wiki)).toEqual({B: ['<$list emptyMessage="<<wikiwrapper text: "{{{[wikiop[<<M Barg>>]]}}}">>" />']});
+});
+
 it("does not goof and give wrong report if changes cached", function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: 'A', text: '\\import anything'});
+	wiki.addTiddler({title: 'A', text: '\\import anything\n'});
 	// Cache this tiddler (which requires its context to be remembered
 	getReport('A', wiki);
 	// Add another
