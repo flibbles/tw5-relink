@@ -21,6 +21,7 @@ ReferencesIndexer.prototype.init = function() {
 
 ReferencesIndexer.prototype.rebuild = function() {
 	this.index = null;
+	this.backIndex = null;
 	this.contexts = Object.create(null);
 	this.changedTiddlers = undefined;
 };
@@ -37,49 +38,78 @@ ReferencesIndexer.prototype.update = function(updateDescriptor) {
 		title = updateDescriptor.old.tiddler.fields.title;
 		this.changedTiddlers[title] = {deleted: true};
 	}
-
 	if (updateDescriptor['new'].exists) {
 		// If its the same tiddler as old, this overrides the 'deleted' entry
 		title = updateDescriptor['new'].tiddler.fields.title;
 		this.changedTiddlers[title] = {modified: true};
 	}
-	if (this.context.changed(this.changedTiddlers) || this.context.parent.changed(this.changedTiddlers)) {
-		// If global macro context or whitelist context changed, wipe all
-		this.rebuild();
-	} else {
-		if (updateDescriptor.old.exists) {
-			title = updateDescriptor.old.tiddler.fields.title;
-			delete this.index[title];
-			delete this.contexts[title];
-		}
-	}
 };
 
 ReferencesIndexer.prototype.lookup = function(title) {
+	this._upkeep();
+	return this.index[title];
+};
+
+ReferencesIndexer.prototype.reverseLookup = function(title) {
+	this._upkeep();
+	return this.backIndex[title];
+};
+
+ReferencesIndexer.prototype._upkeep = function() {
+	var title;
+	if (this.changedTiddlers && (this.context.changed(this.changedTiddlers) || this.context.parent.changed(this.changedTiddlers))) {
+		// If global macro context or whitelist context changed, wipe all
+		this.rebuild();
+	}
 	if (!this.index) {
-		// If there is no index at all, let's start it up.
 		this.index = Object.create(null);
+		this.backIndex = Object.create(null);
 		this.context = utils.getWikiContext(this.wiki);
+		var titles = this.wiki.getRelinkableTitles();
+		for (var i = 0; i < titles.length; i++) {
+			this._populate(titles[i]);
+		};
 	} else if (this.changedTiddlers) {
+		for (title in this.changedTiddlers) {
+			this._purge(title);
+			if (this.changedTiddlers[title].modified) {
+				this._populate(title);
+			}
+		}
 		// If there are cached changes, we apply them now.
-		for (var contextTitle in this.contexts) {
-			var tiddlerContext = this.contexts[contextTitle];
+		for (title in this.contexts) {
+			var tiddlerContext = this.contexts[title];
 			if (tiddlerContext.changed(this.changedTiddlers)) {
-				delete this.index[contextTitle];
-				delete this.contexts[contextTitle];
+				this._purge(title);
+				this._populate(title);
 			}
 		}
 		this.changedTiddlers = undefined;
 	}
+};
+
+ReferencesIndexer.prototype._purge = function(title) {
+	for (var entry in this.index[title]) {
+		delete this.backIndex[entry][title];
+	}
+	delete this.contexts[title];
+	delete this.index[title];
+};
+
+ReferencesIndexer.prototype._populate = function(title) {
 	// Now we try to fetch the report for this given tiddlers
 	if (!this.index[title]) {
 		var tiddlerContext = new TiddlerContext(this.wiki, this.context, title);
-		this.index[title] = utils.getTiddlerRelinkReferences(this.wiki, title, tiddlerContext);
+		var references = utils.getTiddlerRelinkReferences(this.wiki, title, tiddlerContext);
+		this.index[title] = references;
 		if (tiddlerContext.hasImports()) {
 			this.contexts[title] = tiddlerContext;
 		}
+		for (var ref in references) {
+			this.backIndex[ref] = this.backIndex[ref] || Object.create(null);
+			this.backIndex[ref][title] = references[ref];
+		}
 	}
-	return this.index[title];
 };
 
 exports.RelinkReferencesIndexer = ReferencesIndexer;

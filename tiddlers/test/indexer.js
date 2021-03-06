@@ -9,6 +9,9 @@ var getReport = utils.getReport;
 var operators = $tw.modules.getModulesByTypeAsHashmap('relinkoperator');
 var contexts = $tw.modules.applyMethods('relinkcontext');
 
+// TODO: Test changing a tiddler which points to a tiddler which was changed will only repopulate once.
+// TODO: References to non-existent tiddlers are okay, even if tiddler suddenly exists.
+
 describe("indexer", function() {
 
 it("caches report results when indexing", function() {
@@ -19,6 +22,9 @@ it("caches report results when indexing", function() {
 		// We have it import macros, but those macros don't change
 		{title: 'macros', text: '\\relink M arg\n\\define M(arg) X'}]);
 	expect(getReport('test', wiki)).toEqual({macros: ['\\import'], x: ['<<M arg>>']});
+	// called two times, because every tiddler gets indexed.
+	expect(operators.text.report).toHaveBeenCalledTimes(2);
+	operators.text.report.calls.reset();
 	wiki.addTiddler({title: 'unrelated', text: 'unrelated'});
 	expect(getReport('test', wiki)).toEqual({macros: ['\\import'], x: ['<<M arg>>']});
 	expect(operators.text.report).toHaveBeenCalledTimes(1);
@@ -119,7 +125,7 @@ it("removes old reports when target tiddler renamed", function() {
 	wiki.addTiddler({title: 'test', text: '[[link]]'});
 	expect(getReport('test', wiki)).toEqual({link: ['[[link]]']});
 	wiki.renameTiddler('test', 'newtest');
-	expect(getReport('test', wiki)).toEqual({});
+	expect(getReport('test', wiki)).toEqual(undefined);
 	expect(getReport('newtest', wiki)).toEqual({link: ['[[link]]']});
 });
 
@@ -128,7 +134,7 @@ it("removes old reports when target tiddler deleted", function() {
 	wiki.addTiddler({title: 'test', text: '[[link]]'});
 	expect(getReport('test', wiki)).toEqual({link: ['[[link]]']});
 	wiki.deleteTiddler('test');
-	expect(getReport('test', wiki)).toEqual({});
+	expect(getReport('test', wiki)).toEqual(undefined);
 });
 
 it('updates when relevant $importvariables exists', function() {
