@@ -37,6 +37,7 @@ ReferencesIndexer.prototype.update = function(updateDescriptor) {
 	if (updateDescriptor.old.exists) {
 		title = updateDescriptor.old.tiddler.fields.title;
 		this.changedTiddlers[title] = {deleted: true};
+		this._purge(title);
 	}
 	if (updateDescriptor['new'].exists) {
 		// If its the same tiddler as old, this overrides the 'deleted' entry
@@ -70,16 +71,19 @@ ReferencesIndexer.prototype._upkeep = function() {
 			this._populate(titles[i]);
 		};
 	} else if (this.changedTiddlers) {
-		for (title in this.changedTiddlers) {
-			this._purge(title);
-			if (this.changedTiddlers[title].modified) {
-				this._populate(title);
-			}
-		}
 		// If there are cached changes, we apply them now.
 		for (title in this.contexts) {
 			var tiddlerContext = this.contexts[title];
 			if (tiddlerContext.changed(this.changedTiddlers)) {
+				this._purge(title);
+				this._populate(title);
+				// Wipe this change, so we don't risk updating it twice.
+				this.changedTiddlers[title] = undefined;
+			}
+		}
+		for (title in this.changedTiddlers) {
+			var change = this.changedTiddlers[title];
+			if (change && change.modified) {
 				this._purge(title);
 				this._populate(title);
 			}

@@ -9,7 +9,6 @@ var getReport = utils.getReport;
 var operators = $tw.modules.getModulesByTypeAsHashmap('relinkoperator');
 var contexts = $tw.modules.applyMethods('relinkcontext');
 
-// TODO: Test changing a tiddler which points to a tiddler which was changed will only repopulate once.
 // TODO: References to non-existent tiddlers are okay, even if tiddler suddenly exists.
 
 describe("indexer", function() {
@@ -65,6 +64,47 @@ it("only checks tiddler contexts if and when they need checking", function() {
 	wiki.addTiddler({title: 'new', tags: 'macro', text: '\\relink M arg\n\\define M(arg) X'});
 	expect(getReport('A', wiki)).toEqual({x: ['<<M arg>>']});
 	expect(contexts.tiddler.prototype.changed).toHaveBeenCalledTimes(1);
+});
+
+it("doesn't update changed & importing tiddlers multiple times", function () {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'A', text: 'stuff'},
+		{title: 'B', text: '\\import A\n[[c|link1]]'}]);
+	expect(getReport('B', wiki)).toEqual({A: ['\\import'], link1: ['[[c]]']});
+	spyOn(operators.text, 'report').and.callThrough();
+	wiki.addTiddlers([
+		{title: 'A', text: 'other stuff'},
+		{title: 'B', text: '\\import A\n[[c|link2]]'}]);
+	expect(getReport('B', wiki)).toEqual({A: ['\\import'], link2: ['[[c]]']});
+	// Once for A and B. B should not be refreshed twice.
+	expect(operators.text.report).toHaveBeenCalledTimes(2);
+});
+
+it("doesn't update deleted & importing tiddlers", function () {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'A', text: 'stuff'},
+		{title: 'B', text: '\\import A\n[[c|link1]]'}]);
+	expect(getReport('B', wiki)).toEqual({A: ['\\import'], link1: ['[[c]]']});
+	spyOn(operators.text, 'report').and.callThrough();
+	wiki.addTiddler({title: 'A', text: 'other stuff'});
+	wiki.deleteTiddler('B');
+	expect(getReport('A', wiki)).toEqual({});
+	expect(getReport('B', wiki)).toEqual(undefined);
+	// Once for A and B. B should not be refreshed twice.
+	expect(operators.text.report).toHaveBeenCalledTimes(1);
+});
+
+it("doesn't choke when a tiddler is deleted twice", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'A', text: '[[c|link]]'},
+		{title: 'B', text: '[[d|link]]'}]);
+	expect(getReport('A', wiki)).toEqual({link: ['[[c]]']});
+	wiki.deleteTiddler('A');
+	wiki.deleteTiddler('A');
+	expect(getReport('B', wiki)).toEqual({link: ['[[d]]']});
 });
 
 it("detects changes to global macro definitions", async function() {
