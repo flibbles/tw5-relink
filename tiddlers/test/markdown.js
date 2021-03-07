@@ -4,7 +4,6 @@ Tests relinking in markdown tiddlers. (text/markdown)
 
 \*/
 
-// TODO: These tests are partway between old and new system. Finish conversion.
 var utils = require("test/utils");
 
 describe("markdown text", function() {

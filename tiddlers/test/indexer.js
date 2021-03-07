@@ -8,8 +8,6 @@ var utils = require("test/utils");
 var operators = $tw.modules.getModulesByTypeAsHashmap('relinkoperator');
 var contexts = $tw.modules.applyMethods('relinkcontext');
 
-// TODO: References to non-existent tiddlers are okay, even if tiddler suddenly exists.
-
 describe("indexer", function() {
 
 describe("references", function() {
@@ -63,7 +61,6 @@ it("only checks tiddler contexts if and when they need checking", function() {
 		{title: 'B', text: '[[link]]'},
 		{title: 'C', text: 'irrelevant text'}]);
 	// We cache each of these
-	// TODO: It'd be easier to use a back references, since that'd auto touch them.
 	getReport('A', wiki);
 	getReport('B', wiki);
 	getReport('C', wiki);
