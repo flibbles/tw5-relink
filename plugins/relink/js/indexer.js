@@ -53,7 +53,7 @@ ReferencesIndexer.prototype.lookup = function(title) {
 
 ReferencesIndexer.prototype.reverseLookup = function(title) {
 	this._upkeep();
-	return this.backIndex[title];
+	return this.backIndex[title] || Object.create(null);
 };
 
 ReferencesIndexer.prototype._upkeep = function() {
@@ -101,18 +101,16 @@ ReferencesIndexer.prototype._purge = function(title) {
 };
 
 ReferencesIndexer.prototype._populate = function(title) {
-	// Now we try to fetch the report for this given tiddlers
-	if (!this.index[title]) {
-		var tiddlerContext = new TiddlerContext(this.wiki, this.context, title);
-		var references = utils.getTiddlerRelinkReferences(this.wiki, title, tiddlerContext);
-		this.index[title] = references;
-		if (tiddlerContext.hasImports()) {
-			this.contexts[title] = tiddlerContext;
-		}
-		for (var ref in references) {
-			this.backIndex[ref] = this.backIndex[ref] || Object.create(null);
-			this.backIndex[ref][title] = references[ref];
-		}
+	// Fetch the report for a title, and populate the indexes with result
+	var tiddlerContext = new TiddlerContext(this.wiki, this.context, title);
+	var references = utils.getTiddlerRelinkReferences(this.wiki, title, tiddlerContext);
+	this.index[title] = references;
+	if (tiddlerContext.hasImports()) {
+		this.contexts[title] = tiddlerContext;
+	}
+	for (var ref in references) {
+		this.backIndex[ref] = this.backIndex[ref] || Object.create(null);
+		this.backIndex[ref][title] = references[ref];
 	}
 };
 

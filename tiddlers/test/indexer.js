@@ -5,13 +5,16 @@ Tests the relink indexer
 \*/
 
 var utils = require("test/utils");
-var getReport = utils.getReport;
 var operators = $tw.modules.getModulesByTypeAsHashmap('relinkoperator');
 var contexts = $tw.modules.applyMethods('relinkcontext');
 
 // TODO: References to non-existent tiddlers are okay, even if tiddler suddenly exists.
 
 describe("indexer", function() {
+
+describe("references", function() {
+
+var getReport = utils.getReport;
 
 it("caches report results when indexing", function() {
 	var wiki = new $tw.Wiki();
@@ -29,11 +32,15 @@ it("caches report results when indexing", function() {
 	expect(operators.text.report).toHaveBeenCalledTimes(1);
 });
 
-it("doesn't cache report results when not indexing", function() {
+it("globally caches report results when not indexing", function() {
 	var wiki = new $tw.Wiki({enableIndexers: []});
 	spyOn(operators.text, 'report').and.callThrough();
 	wiki.addTiddler({title: 'test', text: '[[x]]'});
 	expect(getReport('test', wiki)).toEqual({x: ['[[x]]']});
+	expect(getReport('test', wiki)).toEqual({x: ['[[x]]']});
+	expect(operators.text.report).toHaveBeenCalledTimes(1);
+	operators.text.report.calls.reset();
+	wiki.addTiddler({title: 'other', text: 'text'});
 	expect(getReport('test', wiki)).toEqual({x: ['[[x]]']});
 	expect(operators.text.report).toHaveBeenCalledTimes(2);
 });
@@ -221,6 +228,58 @@ it("does not goof and give wrong report if changes cached", function() {
 	// When we get B, indexer used to return A, because it goofed its variables
 	// when checking A's context with changes involving B.
 	expect(getReport('B', wiki)).toEqual({expected: ['[[expected]]']});
+});
+
+});
+
+// BACK REFERENCES
+describe("back references", function() {
+
+function getBackrefs(title, wiki) {
+	wiki = wiki || $tw.wiki;
+	return wiki.getTiddlerRelinkBackreferences(title);
+};
+
+it("handles references to non-existent tiddlers", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'A', text: '[[ghost]]'});
+	expect(getBackrefs('ghost', wiki)).toEqual({A: ['[[ghost]]']});
+	wiki.addTiddler({title: 'ghost', text: '{{ghost}}'});
+	expect(getBackrefs('ghost', wiki)).toEqual({A: ['[[ghost]]'], ghost: ['{{}}']});
+	wiki.deleteTiddler('ghost');
+	expect(getBackrefs('ghost', wiki)).toEqual({A: ['[[ghost]]']});
+});
+
+it("still works without indexer", function() {
+	var wiki = new $tw.Wiki({enableIndexers: []});
+	spyOn(operators.text, 'report').and.callThrough();
+	wiki.addTiddlers([
+		{title: 'x', text: 'stuff'},
+		{title: 'A', text: '[[x]]'},
+		{title: 'B', text: '{{x}}'}]);
+	expect(getBackrefs('x', wiki)).toEqual({A: ['[[x]]'], B: ['{{}}']});
+	// It calls each tiddler for indexing
+	expect(operators.text.report).toHaveBeenCalledTimes(3);
+	operators.text.report.calls.reset();
+
+	// If we spy and call again, results will still be cached.
+	expect(getBackrefs('x', wiki)).toEqual({A: ['[[x]]'], B: ['{{}}']});
+	expect(operators.text.report).not.toHaveBeenCalled();
+
+	// If we remove something, the update properly propagates, but everything
+	// is indexed again.
+	wiki.deleteTiddler('A');
+	expect(getBackrefs('x', wiki)).toEqual({B: ['{{}}']});
+	expect(operators.text.report).toHaveBeenCalledTimes(2);
+});
+
+it("returns empty object for unreferenced tiddlers", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'A', text: 'stuff'});
+	expect(getBackrefs('A', wiki)).toEqual({});
+	expect(getBackrefs('B', wiki)).toEqual({});
+});
+
 });
 
 });

@@ -94,13 +94,10 @@ exports.getContext = function(name) {
 };
 
 exports.getWikiContext = function(wiki) {
-	// TODO: do I have any potential name conflicts with my use of cache keys?
-	// This refreshes with every change, which is still too often. The indexer
-	// is better. It may keep its version even if the global cache clears.
-	return wiki.getGlobalCache('relink-context', function() {
-		var whitelist = new Contexts.whitelist(wiki);
-		return new Contexts.import(wiki, whitelist, macroFilter);
-	});
+	// This gives a fresh context every time. It is up to the indexer or
+	// the cache to preserve those contexts for as long as needed.
+	var whitelist = new Contexts.whitelist(wiki);
+	return new Contexts.import(wiki, whitelist, macroFilter);
 };
 
 /**Returns a specific relinker.
