@@ -52,26 +52,6 @@ it("images", function() {
 	test({text: "[img height={{from}} [from]]"},["[img height={{}}]","[img[]]"]);
 });
 
-it("fields", function() {
-	test({"list-after": "from"}, ["list-after"]);
-	test({"tags": "A from B"}, ["tags"]);
-	test({"list": "A from B"}, ["list"]);
-
-	// Multiple instances within a field are reported only once, this is
-	// because Tiddlywiki removes duplicates itself, so we can't even
-	// tell with the "list" field. Just got to make sure we're consistent
-	// with custom list fields.
-	test({"list": "A from B from"}, ["list"]);
-	test({"customlist": "A from B from"}, ["customlist"],
-		[utils.fieldConf("customlist", "list")]);
-	test({"customwiki": "A [[from]] B"}, ["customwiki: [[from]]"],
-		[utils.fieldConf("customwiki", "wikitext")]);
-	// multiples in one field
-	test({"customwiki": "A [[from]] {{from!!field}}"},
-	     ["customwiki: [[from]]", "customwiki: {{!!field}}"],
-	     [utils.fieldConf("customwiki", "wikitext")]);
-});
-
 it("filter fields", function() {
 	test({"filter": "A from"}, ["filter"]);
 	test({"filter": "A [tag[from]]"}, ["filter: [tag[]]"]);
