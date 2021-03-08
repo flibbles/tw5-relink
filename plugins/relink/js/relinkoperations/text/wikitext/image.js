@@ -42,6 +42,33 @@ ImageEntry.prototype.forEachChildReport = function(report, attribute, type) {
 	return value;
 };
 
+exports.report = function(text, callback, options) {
+	var ptr = this.nextImage.start + 4; //[img
+	var inSource = false;
+	for (var attributeName in this.nextImage.attributes) {
+		var attr = this.nextImage.attributes[attributeName];
+		if (attributeName === "source" || attributeName === "tooltip") {
+			if (inSource) {
+				ptr = text.indexOf('|', ptr);
+			} else {
+				ptr = text.indexOf('[', ptr);
+				inSource = true;
+			}
+			ptr += 1;
+		}
+		if (attributeName === "source") {
+			var tooltip = this.nextImage.attributes.tooltip;
+			var blurb = '[img[' + (tooltip ? tooltip.value : '') + ']]';
+			callback(blurb, attr.value);
+			ptr = text.indexOf(attr.value, ptr);
+			ptr = text.indexOf(']]', ptr) + 2;
+		} else if (attributeName !== "tooltip") {
+			ptr = reportAttribute(this.parser, attr, callback, options);
+		}
+	}
+	this.parser.pos = ptr;
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var ptr = this.nextImage.start;
 	var builder = new Rebuilder(text, ptr);
@@ -122,6 +149,41 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		return imageEntry;
 	}
 	return undefined;
+};
+
+function reportAttribute(parser, attribute, callback, options) {
+	var text = parser.source;
+	var ptr = text.indexOf(attribute.name, attribute.start);
+	var end;
+	ptr += attribute.name.length;
+	ptr = text.indexOf('=', ptr);
+	if (attribute.type === "string") {
+		ptr = text.indexOf(attribute.value, ptr)
+		var quote = utils.determineQuote(text, attribute);
+		// ignore first quote. We already passed it
+		end = ptr + quote.length + attribute.value.length;
+	} else if (attribute.type === "indirect") {
+		ptr = text.indexOf('{{', ptr);
+		var end = ptr + attribute.textReference.length + 4;
+		refHandler.report(attribute.textReference, function(blurb, title) {
+			callback('[img ' + attribute.name + '={{' + blurb + '}}]', title);
+		}, options);
+	} else if (attribute.type === "filtered") {
+		ptr = text.indexOf('{{{', ptr);
+		var end = ptr + attribute.filter.length + 6;
+		filterHandler.report(attribute.filter, function(blurb, title) {
+			callback('[img ' + attribute.name + '={{{' + blurb + '}}}]', title);
+		}, options);
+	} else if (attribute.type === "macro") {
+		ptr = text.indexOf("<<", ptr);
+		var end = attribute.value.end;
+		var macro = attribute.value;
+		oldValue = attribute.value;
+		macrocall.reportAttribute(parser, macro, function(blurb, title) {
+			callback('[img ' + attribute.name + '=' + blurb + ']', title);
+		}, options);
+	}
+	return end;
 };
 
 function relinkAttribute(parser, attribute, builder, fromTitle, toTitle, entry, options) {
