@@ -243,6 +243,7 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 		// Empty operator means: title
 		else if(operator.operator === "") {
 			operator.operator = "title";
+			operator.default = true;
 		}
 
 		var entry = undefined, type;
@@ -346,11 +347,9 @@ function parseFilterOperation(relinker, fromTitle, toTitle, logger, filterString
 }
 
 function operatorBlurb(operator, enquotedOperand) {
-	var suffix = '';
-	if (operator.suffix) {
-		suffix = ':' + operator.suffix;
-	}
-	return '[' + (operator.prefix || '') + operator.operator + suffix + enquotedOperand + ']';
+	var suffix = operator.suffix ? (':' + operator.suffix) : '';
+	var op = operator.default ? '' : operator.operator;
+	return '[' + (operator.prefix || '') + op + suffix + enquotedOperand + ']';
 };
 
 // Returns the relinker needed for a given operator, or returns undefined.

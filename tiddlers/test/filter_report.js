@@ -46,44 +46,4 @@ it("filter tiddlers", function() {
 	test({title: "$:/DefaultTiddlers", text: "[tag[from]]"}, ["[tag[]]"]);
 });
 
-it("filters", function() {
-	function testFilter(text, expected, extraTiddlers) {
-		test({type: "text/x-tiddler-filter", text: text}, expected, extraTiddlers);
-	};
-	// Variations of title
-	testFilter("[[from]]", [""]);
-	testFilter("[{from}]", ["[title{}]"]);
-	testFilter("from", [""]);
-	testFilter("'from'", [""]);
-	testFilter('"from"', [""]);
-	testFilter("[title[from]]", ["[title[]]"]);
-	testFilter("[field:title[from]]", ["[field:title[]]"]);
-	testFilter("[[from]tag[something]]", ["[title[]]"]);
-
-	// Suffixes and Prefixes
-	testFilter("[!tag[from]]", ["[!tag[]]"]);
-	testFilter("[tag:suffix[from]]", ["[tag:suffix[]]"]);
-
-	//Indirect parameters
-	testFilter("[something{from}]", ["[something{}]"]);
-	testFilter("[something{from!!f}]", ["[something{!!f}]"]);
-	testFilter("[something{from##i}]", ["[something{##i}]"]);
-
-	// Different operand types
-	testFilter("[list[from]]", ["[list[]]"]);
-	testFilter("[list[from##i]]", ["[list[##i]]"]);
-	testFilter("[enlist[A from B]]", ["[enlist[]]"],
-	           [utils.operatorConf("enlist", "list")]);
-	testFilter("[filt[from]]", ["[filt[]]"],
-	           [utils.operatorConf("filt", "filter")]);
-	testFilter("[wiki[{{from!!field}}]]", ["[wiki[{{!!field}}]]"],
-	           [utils.operatorConf("wiki", "wikitext")]);
-
-	// Multiples
-	testFilter("from [tag[from]oper{from}]", ["", "[tag[]]", "[oper{}]"]);
-
-	// BUG: Doesn't report for any operators later in a run
-	testFilter("[tag[from]something[else]]", ["[tag[]]"]);
-});
-
 });

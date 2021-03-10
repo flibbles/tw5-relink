@@ -59,6 +59,38 @@ it('tricky downgrade', function() {
 	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test': \\import");
 });
 
+it('resorts to placeholders when possible', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.operatorConf('tag'),
+		utils.operatorConf('list', 'reference'),
+		utils.operatorConf('wiki', 'wikitext')]);
+	var ph = utils.placeholder;
+	var to = "bad[]name";
+	testText("\\import [tag[from here]prefix[A]]\n",
+	         ph(1,to)+"\\import [tag<relink-1>prefix[A]]\n",
+	         ['\\import [tag[]]'], {to: to, wiki: wiki});
+	to = "worse[]\"\"\'\'name";
+	testText("\\import [[from here]]\n",
+	         ph(1,to)+"\\import [<relink-1>]\n",
+	         ['\\import'], {to: to, wiki: wiki});
+	testText("\\import from\n",
+	         ph(1,to)+"\\import [<relink-1>]\n",
+	         ['\\import'], {to: to, from: "from", wiki: wiki});
+	testText("\\import +'from here'\n",
+	         ph(1,to)+"\\import +[<relink-1>]\n",
+	         ['\\import'], {to: to, wiki: wiki});
+	testText("\\import [![from here]]\n",
+	         ph(1,to)+"\\import [!<relink-1>]\n",
+	         ['\\import [![]]'], {to: to, wiki: wiki});
+	testText("\\import [list[from here!!field]]\n",
+	         ph("reference-1", "A]]B!!field")+"\\import [list<relink-reference-1>]\n",
+	         ['\\import [list[!!field]]'], {to: "A]]B", wiki: wiki});
+	testText("\\import [wiki[X {{from here}}]]\n",
+	         ph("wikitext-1","X {{"+to+"}}")+"\\import [wiki<relink-wikitext-1>]\n",
+	         ['\\import [wiki[{{}}]]'], {to: to, wiki: wiki});
+});
+
 it('handles failures', function() {
 	var failures = utils.collectFailures(function() {
 		testText("\\import [tag{from here}]\nstuff", false, ['\\import [tag{}]'], {to: "to}there"});
