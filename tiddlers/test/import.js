@@ -79,7 +79,7 @@ it('resorts to placeholders when possible', function() {
 	         ['\\import'], {to: to, from: "from", wiki: wiki});
 	testText("\\import +'from here'\n",
 	         ph(1,to)+"\\import +[<relink-1>]\n",
-	         ['\\import'], {to: to, wiki: wiki});
+	         ['\\import +'], {to: to, wiki: wiki});
 	testText("\\import [![from here]]\n",
 	         ph(1,to)+"\\import [!<relink-1>]\n",
 	         ['\\import [![]]'], {to: to, wiki: wiki});

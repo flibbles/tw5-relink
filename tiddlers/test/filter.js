@@ -3,6 +3,7 @@
 Tests the new relinking wiki methods.
 
 // TODO: filter operators that take two or more operands.
+// TODO: better filter run prefix support and reporting.
 \*/
 
 var utils = require("test/utils");
@@ -106,15 +107,21 @@ it('tricky titles', function() {
 	testFilter("A 'from here' B", 'A [[a\' \"b]] B', ['filt'], {to: 'a\' "b'});
 });
 
-// TODO: These reports shouldn't be so simple
 it('supports expression prefixes', function() {
-	testFilter("A +[[from here]] B", true, ['filt']);
-	testFilter("A -from B", true, ['filt'], {from: "from", to: "to"});
-	testFilter("[tag[A]] -from C", "[tag[A]] -'X[\"]Y' C", ['filt'], {from: "from", to: "X[\"]Y"});
-	testFilter("A ~from B", "A ~[[to there]] B", ['filt'], {from: "from"});
-	testFilter("A =[[from here]] B", "A =to B", ['filt'], {to: "to"});
-	testFilter("A [[B]]+from", true, ['filt'], {from: "from", to: "to"});
+	testFilter("A +[[from here]] B", true, ['filt: +']);
+	testFilter("A -from B", true, ['filt: -'], {from: "from", to: "to"});
+	testFilter("[tag[A]] -from C", "[tag[A]] -'X[\"]Y' C", ['filt: -'], {from: "from", to: "X[\"]Y"});
+	testFilter("A ~from B", "A ~[[to there]] B", ['filt: ~'], {from: "from"});
+	testFilter("A =[[from here]] B", "A =to B", ['filt: ='], {to: "to"});
+	testFilter("A [[B]]+from", true, ['filt: +'], {from: "from", to: "to"});
 	testFilter("A [[from here]]+B", "A to +B", ['filt'], {to: "to"});
+	testFilter("A [[from here]]+B", "A to +B", ['filt'], {to: "to"});
+
+	// named prefixes
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.operatorConf('tag'));
+	testFilter("A +[tag[from here]]", true, ['filt: +[tag[]]'], {wiki: wiki});
+	testFilter("A +[be{from here}]", true, ['filt: +[be{}]'], {wiki: wiki});
 });
 
 it('supports operator negator on titles', function() {
@@ -261,9 +268,10 @@ it("field failures don't prevent from continuing", function() {
 it('handles named filter run prefixes', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('tag'));
-	testFilter("[tag[from here]] :reduce[add<accumulator>add{from here!!value}]", true, ['filt: [tag[]]', 'filt: [add{!!value}]'], {wiki: wiki});
+	testFilter("[tag[from here]] :reduce[add<accumulator>add{from here!!value}]", true, ['filt: [tag[]]', 'filt: :reduce[add{!!value}]'], {wiki: wiki});
+	testFilter(":reduce[[from here]]", true, ['filt: :reduce'], {wiki: wiki});
 	// Bad prefixes don't technically make illegal filters, just filters that return errors.
-	testFilter("[tag[from here]] :badprefix[add<accumulator>add{from here!!value}]", true, ['filt: [tag[]]', 'filt: [add{!!value}]'], {wiki: wiki});
+	testFilter("[tag[from here]] :badprefix[add<accumulator>add{from here!!value}]", true, ['filt: [tag[]]', 'filt: :badprefix[add{!!value}]'], {wiki: wiki});
 });
 
 /** This is legacy support. Originally, the value of the configuration tiddlers
