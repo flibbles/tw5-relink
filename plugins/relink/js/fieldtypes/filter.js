@@ -62,7 +62,8 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 		match, noPrecedingWordBarrier,
 		wordBarrierRequired=false;
 	var whitespaceRegExp = /\s+/mg,
-		operandRegExp = /((?:\+|\-|~|=|\:\w+)?)(?:(\[)|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+))/mg;
+		operandRegExp = /((?:\+|\-|~|=|\:\w+)?)(?:(\[)|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+))/mg,
+		blurbs = [];
 	while(p < filter.length) {
 		// Skip any whitespace
 		whitespaceRegExp.lastIndex = p;
@@ -102,9 +103,9 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 						// toTitle is a callback method in this case.
 						p =reportFilterOperation(relinker,function(blurb, title) {
 							if (match[1]) {
-								toTitle(match[1] + (blurb || ''), title);
+								blurbs.push([match[1] + (blurb || ''), title]);
 							} else {
-								toTitle(blurb, title);
+								blurbs.push([blurb, title]);
 							}
 						},filterEntry,filter,p,whitelist,options);
 					} else {
@@ -139,7 +140,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 			}
 			if (fromTitle === undefined) {
 				// Report it
-				toTitle(match[1], val);
+				blurbs.push([match[1], val]);
 			} else if (val === fromTitle) {
 				// Relink it
 				var entry = {name: "title"};
@@ -170,6 +171,14 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 				relinker.add(newVal,p,operandRegExp.lastIndex);
 			}
 			p = operandRegExp.lastIndex;
+		}
+	}
+	if (fromTitle === undefined) {
+		// We delay the blurb calls until now in case it's a malformed
+		// filter string. We don't want to report some, only to find out
+		// it's bad.
+		for (var i = 0; i < blurbs.length; i++) {
+			toTitle(blurbs[i][0], blurbs[i][1]);
 		}
 	}
 	if (filterEntry.children.length > 0) {

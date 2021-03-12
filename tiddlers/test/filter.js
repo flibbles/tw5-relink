@@ -94,6 +94,13 @@ it('title operator', function() {
 	testFilter("A [title[from]] B", true, ['filt: [title[]]'], {from: 'from', wiki: wiki});
 });
 
+it('malformed', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.operatorConf('tag'));
+	testFilter("[tag[from here]", false, undefined, {wiki: wiki});
+	testFilter("[tag[from here]] [and[else]", false, undefined, {wiki: wiki});
+});
+
 it('tricky titles', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('title'));
