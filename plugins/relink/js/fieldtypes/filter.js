@@ -338,7 +338,7 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterStrin
 
 		if(nextBracketPos === -1) {
 			// Missing closing bracket in filter expression
-			// return undefined;
+			return undefined;
 		}
 		p = nextBracketPos + 1;
 
@@ -436,7 +436,7 @@ function reportFilterOperation(relinker, callback, logger, filterString, p, whit
 
 		if(nextBracketPos === -1) {
 			// Missing closing bracket in filter expression
-			// return undefined;
+			return undefined;
 		}
 		p = nextBracketPos + 1;
 
@@ -444,7 +444,6 @@ function reportFilterOperation(relinker, callback, logger, filterString, p, whit
 	// Skip the ending square bracket
 	if(filterString.charAt(p++) !== "]") {
 		// Missing ] in filter expression
-		// TODO: There should be other handling here, because it will have failed if it gets here.
 		return undefined;
 	}
 	// Return the parsing position

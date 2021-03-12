@@ -98,6 +98,7 @@ it('malformed', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('tag'));
 	testFilter("[tag[from here]", false, undefined, {wiki: wiki});
+	testFilter("[is[system]] +[tag[from here", false, undefined, {wiki: wiki});
 	testFilter("[tag[from here]] [and[else]", false, undefined, {wiki: wiki});
 });
 
