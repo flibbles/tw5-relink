@@ -101,13 +101,13 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 				if (!alone || alone.index != p) {
 					if (fromTitle === undefined) {
 						// toTitle is a callback method in this case.
-						p =reportFilterOperation(relinker,function(blurb, title) {
+						p =reportFilterOperation(filter, function(blurb, title){
 							if (match[1]) {
 								blurbs.push([match[1] + (blurb || ''), title]);
 							} else {
 								blurbs.push([blurb, title]);
 							}
-						},filterEntry,filter,p,whitelist,options);
+						},p,whitelist,options);
 					} else {
 						p =relinkFilterOperation(relinker,fromTitle,toTitle,filterEntry,filter,p,whitelist,options);
 					}
@@ -238,38 +238,13 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterStrin
 	}
 	// Process each operator in turn
 	do {
-		operator = {};
-		// Check for an operator prefix
-		if(filterString.charAt(p) === "!") {
-			operator.prefix = "!";
-			p++;
-		}
-		// Get the operator name
-		nextBracketPos = filterString.substring(p).search(/[\[\{<\/]/);
-		if(nextBracketPos === -1) {
-			// Missing [ in filter expression
+		var entry = undefined, type;
+		operator = parseOperator(filterString, p);
+		if (operator === undefined) {
 			return undefined;
 		}
-		nextBracketPos += p;
-		var bracket = filterString.charAt(nextBracketPos);
-		operator.operator = filterString.substring(p,nextBracketPos);
-
-		// Any suffix?
-		var colon = operator.operator.indexOf(':');
-		if(colon > -1) {
-			operator.suffix = operator.operator.substring(colon + 1);
-			operator.operator = operator.operator.substring(0,colon) || "field";
-		}
-		// Empty operator means: title
-		else if(operator.operator === "") {
-			operator.operator = "title";
-			operator.default = true;
-		}
-
-		var entry = undefined, type;
-
-		p = nextBracketPos + 1;
-		switch (bracket) {
+		p = operator.end;
+		switch (operator.bracket) {
 			case "{": // Curly brackets
 				type = "indirect";
 				nextBracketPos = filterString.indexOf("}",p);
@@ -293,11 +268,8 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterStrin
 					break;
 				}
 				entry = handler.relink(operand, fromTitle, toTitle, options);
-				if (!entry) {
+				if (!entry || !entry.output) {
 					// The fromTitle wasn't in the operand.
-					break;
-				}
-				if (!entry.output) {
 					break;
 				}
 				var wrapped;
@@ -352,7 +324,7 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterStrin
 	return p;
 }
 
-function reportFilterOperation(relinker, callback, logger, filterString, p, whitelist, options) {
+function reportFilterOperation(filterString, callback, p, whitelist, options) {
 	var nextBracketPos, operator;
 	// Skip the starting square bracket
 	if(filterString.charAt(p++) !== "[") {
@@ -361,38 +333,13 @@ function reportFilterOperation(relinker, callback, logger, filterString, p, whit
 	}
 	// Process each operator in turn
 	do {
-		operator = {};
-		// Check for an operator prefix
-		if(filterString.charAt(p) === "!") {
-			operator.prefix = "!";
-			p++;
-		}
-		// Get the operator name
-		nextBracketPos = filterString.substring(p).search(/[\[\{<\/]/);
-		if(nextBracketPos === -1) {
-			// Missing [ in filter expression
+		var entry = undefined, type;
+		operator = parseOperator(filterString, p);
+		if (operator === undefined) {
 			return undefined;
 		}
-		nextBracketPos += p;
-		var bracket = filterString.charAt(nextBracketPos);
-		operator.operator = filterString.substring(p,nextBracketPos);
-
-		// Any suffix?
-		var colon = operator.operator.indexOf(':');
-		if(colon > -1) {
-			operator.suffix = operator.operator.substring(colon + 1);
-			operator.operator = operator.operator.substring(0,colon) || "field";
-		}
-		// Empty operator means: title
-		else if(operator.operator === "") {
-			operator.operator = "title";
-			operator.default = true;
-		}
-
-		var entry = undefined, type;
-
-		p = nextBracketPos + 1;
-		switch (bracket) {
+		p = operator.end;
+		switch (operator.bracket) {
 			case "{": // Curly brackets
 				type = "indirect";
 				nextBracketPos = filterString.indexOf("}",p);
@@ -449,6 +396,38 @@ function reportFilterOperation(relinker, callback, logger, filterString, p, whit
 	// Return the parsing position
 	return p;
 }
+
+function parseOperator(filterString, p) {
+	var nextBracketPos, operator = {};
+	// Check for an operator prefix
+	if(filterString.charAt(p) === "!") {
+		operator.prefix = "!";
+		p++;
+	}
+	// Get the operator name
+	nextBracketPos = filterString.substring(p).search(/[\[\{<\/]/);
+	if(nextBracketPos === -1) {
+		// Missing [ in filter expression
+		return undefined;
+	}
+	nextBracketPos += p;
+	operator.bracket = filterString.charAt(nextBracketPos);
+	operator.operator = filterString.substring(p,nextBracketPos);
+
+	// Any suffix?
+	var colon = operator.operator.indexOf(':');
+	if(colon > -1) {
+		operator.suffix = operator.operator.substring(colon + 1);
+		operator.operator = operator.operator.substring(0,colon) || "field";
+	}
+	// Empty operator means: title
+	else if(operator.operator === "") {
+		operator.operator = "title";
+		operator.default = true;
+	}
+	operator.end = nextBracketPos + 1;
+	return operator;
+};
 
 function operatorBlurb(operator, enquotedOperand) {
 	var suffix = operator.suffix ? (':' + operator.suffix) : '';
