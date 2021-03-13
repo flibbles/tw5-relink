@@ -208,7 +208,25 @@ it('manages reference types as operands', function() {
 	testFilter("A [list[from here##index]] B", true, ['filt: [list[##index]]'], {wiki: wiki});
 });
 
-// TODO: test that bracket types don't mix up
+it('manages multiple operands with mixed types', function() {
+	const wiki = new $tw.Wiki();
+	const options = {wiki: wiki, from: 'from', to: 'to'};
+	wiki.addTiddler(utils.operatorConf('test', 'reference', 3));
+	testFilter('A [test[from],{from},[from]]', 'A [test[from],{to},[to]]',
+	           ['filt: [test,{}]', 'filt: [test,,[]]'], options);
+});
+
+it('handles malformed multi-operand filters', function() {
+	const wiki = new $tw.Wiki();
+	const options = {wiki: wiki, from: 'from', to: 'to'};
+	wiki.addTiddler(utils.operatorConf('test', 'title', 2));
+	testFilter('[test[from]!,[from]]', false, undefined, options);
+	testFilter('[test[from],d[from]]', false, undefined, options);
+	testFilter('[test[from],[from}]', false, undefined, options);
+	testFilter('[test[from],[from]', false, undefined, options);
+	testFilter('[test[from],[from', false, undefined, options);
+});
+
 it('manages multiple operands with different suffix settings', function() {
 	const wiki = new $tw.Wiki();
 	const options = {wiki: wiki, from: 'from', to: 'to'};
