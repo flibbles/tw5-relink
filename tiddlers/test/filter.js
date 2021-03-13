@@ -208,6 +208,21 @@ it('manages reference types as operands', function() {
 	testFilter("A [list[from here##index]] B", true, ['filt: [list[##index]]'], {wiki: wiki});
 });
 
+// TODO: test that bracket types don't mix up
+it('manages multiple operands with different suffix settings', function() {
+	const wiki = new $tw.Wiki();
+	const options = {wiki: wiki, from: 'from', to: 'to'};
+	wiki.addTiddler(utils.operatorConf('main', 'title', 1));
+	wiki.addTiddler(utils.operatorConf('main:sub', 'title', 2));
+	wiki.addTiddler(utils.operatorConf('alt', 'title', 2));
+	wiki.addTiddler(utils.operatorConf('alt:sub', 'title', 1));
+	testFilter('A [main[from],[from]prefix[from]]', 'A [main[to],[from]prefix[from]]', ['filt: [main[]]'], options);
+	testFilter('A [main:sub[from],[from]prefix[from]]', 'A [main:sub[to],[to]prefix[from]]', ['filt: [main:sub[]]', 'filt: [main:sub,[]]'], options);
+
+	testFilter('A [alt[from],[from]prefix[from]]', 'A [alt[from],[to]prefix[from]]', ['filt: [alt,[]]'], options);
+	testFilter('A [alt:sub[from],[from]prefix[from]]', 'A [alt:sub[to],[to]prefix[from]]', ['filt: [alt:sub[]]', 'filt: [alt:sub,[]]'], options);
+});
+
 it('ignores blank tag configurations', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf("empty", ""));

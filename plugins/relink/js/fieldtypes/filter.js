@@ -237,13 +237,13 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterStrin
 		return undefined;
 	}
 	// Process each operator in turn
+	operator = parseOperator(filterString, p);
 	do {
 		var entry = undefined, type;
-		operator = parseOperator(filterString, p);
 		if (operator === undefined) {
 			return undefined;
 		}
-		p = operator.end;
+		p = operator.opStart;
 		switch (operator.bracket) {
 			case "{": // Curly brackets
 				type = "indirect";
@@ -313,8 +313,25 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterStrin
 			return undefined;
 		}
 		p = nextBracketPos + 1;
-
-	} while(filterString.charAt(p) !== "]");
+		// Check for multiple operands
+		switch (filterString.charAt(p)) {
+		case ',':
+			p++;
+			if(/^[\[\{<\/]/.test(filterString.substring(p))) {
+				operator.bracket = filterString.charAt(p);
+				operator.opStart = p + 1;
+				operator.index++;
+			} else {
+				return undefined;
+			}
+			continue;
+		default:
+			operator = parseOperator(filterString, p);
+			continue;
+		case ']':
+		}
+		break;
+	} while(true);
 	// Skip the ending square bracket
 	if(filterString.charAt(p++) !== "]") {
 		// Missing ] in filter expression
@@ -331,17 +348,15 @@ function reportFilterOperation(filterString, callback, p, whitelist, options) {
 		// Missing [ in filter expression
 		return undefined;
 	}
+	operator = parseOperator(filterString, p);
 	// Process each operator in turn
 	do {
-		var entry = undefined, type;
-		operator = parseOperator(filterString, p);
 		if (operator === undefined) {
 			return undefined;
 		}
-		p = operator.end;
+		p = operator.opStart;
 		switch (operator.bracket) {
 			case "{": // Curly brackets
-				type = "indirect";
 				nextBracketPos = filterString.indexOf("}",p);
 				var operand = filterString.substring(p,nextBracketPos);
 				// Just report it
@@ -350,7 +365,6 @@ function reportFilterOperation(filterString, callback, p, whitelist, options) {
 				}, options);
 				break;
 			case "[": // Square brackets
-				type = "string";
 				nextBracketPos = filterString.indexOf("]",p);
 				var operand = filterString.substring(p,nextBracketPos);
 				// Check if this is a relevant operator
@@ -386,8 +400,25 @@ function reportFilterOperation(filterString, callback, p, whitelist, options) {
 			return undefined;
 		}
 		p = nextBracketPos + 1;
-
-	} while(filterString.charAt(p) !== "]");
+		// Check for multiple operands
+		switch (filterString.charAt(p)) {
+		case ',':
+			p++;
+			if(/^[\[\{<\/]/.test(filterString.substring(p))) {
+				operator.bracket = filterString.charAt(p);
+				operator.opStart = p + 1;
+				operator.index++;
+			} else {
+				return undefined;
+			}
+			continue;
+		default:
+			operator = parseOperator(filterString, p);
+			continue;
+		case ']':
+		}
+		break;
+	} while(true);
 	// Skip the ending square bracket
 	if(filterString.charAt(p++) !== "]") {
 		// Missing ] in filter expression
@@ -398,7 +429,7 @@ function reportFilterOperation(filterString, callback, p, whitelist, options) {
 }
 
 function parseOperator(filterString, p) {
-	var nextBracketPos, operator = {};
+	var nextBracketPos, operator = {index: 1};
 	// Check for an operator prefix
 	if(filterString.charAt(p) === "!") {
 		operator.prefix = "!";
@@ -425,25 +456,27 @@ function parseOperator(filterString, p) {
 		operator.operator = "title";
 		operator.default = true;
 	}
-	operator.end = nextBracketPos + 1;
+	operator.opStart = nextBracketPos + 1;
 	return operator;
 };
 
 function operatorBlurb(operator, enquotedOperand) {
 	var suffix = operator.suffix ? (':' + operator.suffix) : '';
+	// commas to indicate which number operand
+	suffix += (new Array(operator.index)).join(',');
 	var op = operator.default ? '' : operator.operator;
 	return '[' + (operator.prefix || '') + op + suffix + enquotedOperand + ']';
 };
 
 // Returns the relinker needed for a given operator, or returns undefined.
-function fieldType(whitelist, operator, argNumber) {
+function fieldType(whitelist, operator) {
 	// TODO: This isn't perfect. If a suffixed version is defined, and a default
 	//       one may stop the other from being found. But I want tests to
 	//       expose this.
-	argNumber = '/' + (argNumber || 1);
+	var argSuffix = '/' + operator.index;
 	return (operator.suffix &&
-	        whitelist[operator.operator + ":" + operator.suffix + argNumber]) ||
-	        whitelist[operator.operator + argNumber];
+	        whitelist[operator.operator + ":" + operator.suffix + argSuffix]) ||
+	        whitelist[operator.operator + argSuffix];
 };
 
 function canBePrettyOperand(value) {

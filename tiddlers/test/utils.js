@@ -196,12 +196,16 @@ exports.macroConf = function(macro, argument, type) {
 
 /**Returns a configuration tiddler for a filter operator.
  */
-exports.operatorConf = function(operator, type) {
+exports.operatorConf = function(operator, type, argNumber) {
 	if (type === undefined) {
 		type = "title";
 	}
+	var argSuffix = '';
+	if (argNumber !== undefined) {
+		argSuffix = '/' + argNumber;
+	}
 	var prefix = "$:/config/flibbles/relink/operators/";
-	return {title: prefix + operator, text: type};
+	return {title: prefix + operator + argSuffix, text: type};
 };
 
 exports.toUpdateConf = function(filter) {
