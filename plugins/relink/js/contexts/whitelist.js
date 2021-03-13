@@ -49,7 +49,7 @@ WhitelistContext.prototype.getFields = function() {
 };
 
 WhitelistContext.prototype.getOperators = function() {
-	return this.operators;
+	return flatten(this.operators);
 };
 
 WhitelistContext.prototype.getMacro = function(macroName) {
@@ -105,8 +105,13 @@ var factories = {
 		macros[name] = macros[name] || Object.create(null);
 		macros[name][arg] = data;
 	},
-	operators: function(operators, data, name) {
-		operators[name] = data;
+	operators: function(operators, data, key) {
+		// We take the last index, not the first, because the operator
+		// may have a slash to indicate parameter number
+		var pair = key.split('/');
+		var name = pair[0];
+		operators[name] = operators[name] || Object.create(null);
+		operators[name][pair[1] || 1] = data;
 	}
 };
 

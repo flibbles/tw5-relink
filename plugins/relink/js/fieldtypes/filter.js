@@ -436,10 +436,14 @@ function operatorBlurb(operator, enquotedOperand) {
 };
 
 // Returns the relinker needed for a given operator, or returns undefined.
-function fieldType(whitelist, operator) {
+function fieldType(whitelist, operator, argNumber) {
+	// TODO: This isn't perfect. If a suffixed version is defined, and a default
+	//       one may stop the other from being found. But I want tests to
+	//       expose this.
+	argNumber = '/' + (argNumber || 1);
 	return (operator.suffix &&
-	        whitelist[operator.operator + ":" + operator.suffix]) ||
-	        whitelist[operator.operator];
+	        whitelist[operator.operator + ":" + operator.suffix + argNumber]) ||
+	        whitelist[operator.operator + argNumber];
 };
 
 function canBePrettyOperand(value) {

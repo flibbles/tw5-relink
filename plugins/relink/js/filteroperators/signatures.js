@@ -60,6 +60,8 @@ exports.source = function(source,operator,options) {
 };
 
 function getSet(options) {
+	// TODO: WTF are signatures? And do they need to change for multi-arg
+	//       filter operators.
 	return options.wiki.getGlobalCache("relink-signatures", function() {
 		var config = utils.getWikiContext(options.wiki);
 		var set = Object.create(null);

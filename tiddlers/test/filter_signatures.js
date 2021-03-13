@@ -46,9 +46,9 @@ it("works for operators", function() {
 	var wiki = new $tw.Wiki();
 	var conf = utils.operatorConf("test", "reference");
 	wiki.addTiddler(conf);
-	test(wiki, ["operators/test"]);
-	source(wiki, "operators/test", conf.title);
-	type(wiki, "operators/test", "reference");
+	test(wiki, ["operators/test/1"]);
+	source(wiki, "operators/test/1", conf.title);
+	type(wiki, "operators/test/1", "reference");
 });
 
 it("works for macros", function() {
