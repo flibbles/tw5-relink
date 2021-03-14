@@ -2,6 +2,7 @@
 
 Tests relinking titles of other tiddlers.
 
+//TODO: I don't think the disabling is working right now
 \*/
 
 var utils = require('test/utils');

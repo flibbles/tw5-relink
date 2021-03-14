@@ -3,13 +3,12 @@ tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink-titles/configuration
 
 \define lingo-base() $:/plugins/flibbles/relink-titles/language/
-\define customTiddler() $:/config/flibbles/relink-titles/custom
 
 <<lingo Help>>
 
 <table>
 <tbody>
-<$list filter="[[$:/tags/flibbles/relink-titles/Filter]tagging[]]">
+<$list filter="[[relinktitlesrule]modules[]]">
 <tr>
 <td>
 <$checkbox
@@ -20,25 +19,7 @@ title: $:/plugins/flibbles/relink-titles/configuration
 	default="enabled"
 > ''{{!!caption}}''</$checkbox></td><td>
 
-<$transclude />
+<$transclude field='description' />
 
 </td></tr></$list>
 </tbody></table>
-
-!!! <<lingo Custom/Caption>>
-
-<<lingo Hint>>
-<$edit tag="textarea" tiddler=<<customTiddler>> class="tc-edit-texteditor"/>
-
-<!-- We want to sanity check the custom tiddler, but we can only do it on
-     Tiddlywiki versions that support "subfilter". So first two filter steps
-     confirm that subfilter isn't just a field:subfilter[] operator. -->
-<$vars
-	fromTiddler="testTiddler"
-	toTiddler="testTiddler">
-<$list
-	variable="erroneousTiddler"
-	filter="[subfilter<customTiddler>field:title<customTiddler>subfilter{$:/config/flibbles/relink-titles/custom}]" >
-
-{{$:/core/images/warning}} <<lingo Warning>>
-</$list></$vars>

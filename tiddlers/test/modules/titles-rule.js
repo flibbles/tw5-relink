@@ -1,4 +1,6 @@
 /*\
+caption: Test rule
+description: Whenever `$:/relink-title` is renamed, all tiddlers that start with `$:/relink-title-test/` will be renamed to `$:/relink-title-test/[toTitle]`.
 module-type: relinktitlesrule
 title: test/modules/titles-rule.js
 type: application/javascript
@@ -6,8 +8,6 @@ type: application/javascript
 This works with relink-titles both to show that 3rd party rules can be
 installed, and that relink-titles handles naming collision.
 
-Whenever $:/relink-title is renamed to something, all tiddlers that start
-with $:/relink-title-test/ will be renamed to $:/relink-title-test/[toTitle].
 \*/
 
 exports.name = 'test';
