@@ -57,7 +57,6 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 	}
 	var filterEntry = new FilterEntry();
 	var relinker = new Rebuilder(filter);
-	var whitelist = options.settings.getOperators();
 	var p = 0, // Current position in the filter string
 		match, noPrecedingWordBarrier,
 		wordBarrierRequired=false;
@@ -107,9 +106,9 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 							} else {
 								blurbs.push([blurb, title]);
 							}
-						},p,whitelist,options);
+						},p,options.settings,options);
 					} else {
-						p =relinkFilterOperation(relinker,fromTitle,toTitle,filterEntry,filter,p,whitelist,options);
+						p =relinkFilterOperation(relinker,fromTitle,toTitle,filterEntry,filter,p,options.settings,options);
 					}
 					// It's a legit run
 					if (p === undefined) {
@@ -229,7 +228,7 @@ function wrapTitle(value, preference) {
 	return undefined;
 }
 
-function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterString, p, whitelist, options) {
+function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterString, p, context, options) {
 	var nextBracketPos, operator;
 	// Skip the starting square bracket
 	if(filterString.charAt(p++) !== "[") {
@@ -252,7 +251,7 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterStrin
 				// We've got a live reference. relink or report
 				entry = refHandler.relinkInBraces(operand, fromTitle, toTitle, options);
 				if (entry && entry.output) {
-					// We don't check the whitelist.
+					// We don't check the context.
 					// All indirect operands convert.
 					relinker.add(entry.output,p,nextBracketPos);
 				}
@@ -262,7 +261,7 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterStrin
 				nextBracketPos = filterString.indexOf("]",p);
 				var operand = filterString.substring(p,nextBracketPos);
 				// Check if this is a relevant operator
-				var handler = fieldType(whitelist, operator);
+				var handler = fieldType(context, operator);
 				if (!handler) {
 					// This operator isn't managed. Bye.
 					break;
@@ -341,7 +340,7 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterStrin
 	return p;
 }
 
-function reportFilterOperation(filterString, callback, p, whitelist, options) {
+function reportFilterOperation(filterString, callback, p, context, options) {
 	var nextBracketPos, operator;
 	// Skip the starting square bracket
 	if(filterString.charAt(p++) !== "[") {
@@ -368,7 +367,7 @@ function reportFilterOperation(filterString, callback, p, whitelist, options) {
 				nextBracketPos = filterString.indexOf("]",p);
 				var operand = filterString.substring(p,nextBracketPos);
 				// Check if this is a relevant operator
-				var handler = fieldType(whitelist, operator);
+				var handler = fieldType(context, operator);
 				if (!handler) {
 					// This operator isn't managed. Bye.
 					break;
@@ -469,14 +468,13 @@ function operatorBlurb(operator, enquotedOperand) {
 };
 
 // Returns the relinker needed for a given operator, or returns undefined.
-function fieldType(whitelist, operator) {
+function fieldType(context, operator) {
 	// TODO: This isn't perfect. If a suffixed version is defined, and a default
 	//       one may stop the other from being found. But I want tests to
 	//       expose this.
-	var argSuffix = '/' + operator.index;
 	return (operator.suffix &&
-	        whitelist[operator.operator + ":" + operator.suffix + argSuffix]) ||
-	        whitelist[operator.operator + argSuffix];
+	        context.getOperator(operator.operator + ':' + operator.suffix, operator.index)) ||
+	        context.getOperator(operator.operator, operator.index);
 };
 
 function canBePrettyOperand(value) {

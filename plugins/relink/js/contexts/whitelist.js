@@ -48,8 +48,21 @@ WhitelistContext.prototype.getFields = function() {
 	return this.fields;
 };
 
+WhitelistContext.prototype.getOperator = function(operatorName, operandIndex) {
+	var op = this.operators[operatorName];
+	return op && op[operandIndex || 1];
+};
+
 WhitelistContext.prototype.getOperators = function() {
-	return flatten(this.operators);
+	var signatures = Object.create(null);
+	for (var op in this.operators) {
+		var operandSet = this.operators[op];
+		for (var index in operandSet) {
+			var entry = operandSet[index];
+			signatures[entry.key] = entry;
+		}
+	}
+	return signatures;
 };
 
 WhitelistContext.prototype.getMacro = function(macroName) {
@@ -110,6 +123,7 @@ var factories = {
 		// may have a slash to indicate parameter number
 		var pair = key.split('/');
 		var name = pair[0];
+		data.key = key;
 		operators[name] = operators[name] || Object.create(null);
 		operators[name][pair[1] || 1] = data;
 	}

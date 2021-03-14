@@ -34,8 +34,8 @@ it("works for attributes", function() {
 });
 
 it("works for fields", function() {
-	var wiki = new $tw.Wiki();
-	var conf = utils.fieldConf("test", "reference");
+	const wiki = new $tw.Wiki();
+	const conf = utils.fieldConf("test", "reference");
 	wiki.addTiddler(conf);
 	test(wiki, ["fields/test"]);
 	source(wiki, "fields/test", conf.title);
@@ -43,12 +43,15 @@ it("works for fields", function() {
 });
 
 it("works for operators", function() {
-	var wiki = new $tw.Wiki();
-	var conf = utils.operatorConf("test", "reference");
-	wiki.addTiddler(conf);
-	test(wiki, ["operators/test/1"]);
-	source(wiki, "operators/test/1", conf.title);
-	type(wiki, "operators/test/1", "reference");
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.operatorConf("test", "reference"),
+		utils.operatorConf("test", "wikitext", "2")]);
+	test(wiki, ["operators/test", "operators/test/2"]);
+	source(wiki, "operators/test", '$:/config/flibbles/relink/operators/test');
+	type(wiki, "operators/test", "reference");
+	source(wiki, "operators/test/2", '$:/config/flibbles/relink/operators/test/2');
+	type(wiki, "operators/test/2", "wikitext");
 });
 
 it("works for macros", function() {

@@ -15,6 +15,10 @@ Context.prototype.getFields = function() {
 	return this.parent.getFields();
 };
 
+Context.prototype.getOperator = function(name, index) {
+	return this.parent.getOperator(name, index);
+};
+
 Context.prototype.getOperators = function() {
 	return this.parent.getOperators();
 };
