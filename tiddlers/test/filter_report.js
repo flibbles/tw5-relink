@@ -23,17 +23,4 @@ it("works on empty reports", function() {
 	test({text: "This text has no links"}, []);
 });
 
-it("syslinks", function() {
-	test({text: "Text $:/sys/link stuff", from: "$:/sys/link"},
-	     ["~$:/sys/link"]);
-});
-
-it("filter fields", function() {
-	test({"filter": "A from"}, ["filter"]);
-	test({"filter": "A [tag[from]]"}, ["filter: [tag[]]"]);
-	// Duplicates are allowed
-	test({"filter": "A from B from"}, ["filter", "filter"]);
-	test({"filter": "from [tag[from]]"}, ["filter","filter: [tag[]]"]);
-});
-
 });

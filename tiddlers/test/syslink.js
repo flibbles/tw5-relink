@@ -8,38 +8,55 @@ Tests syslinks, like
 
 var utils = require("test/utils");
 
-function testText(text, expected, options) {
-	[text, expected, options] = utils.prepArgs(text, expected, options);
-	options = Object.assign({from: "$:/sys/link"}, options);
-	var failCount = options.fails || 0;
-	var results = utils.relink({text: text}, options);
-	expect(results.tiddler.fields.text).toEqual(expected);
-	expect(results.fails.length).toEqual(failCount, "Incorrect number of failures");
-	return results;
+function testText(text, expected, report, options) {
+	options = Object.assign({from: 'from here', to: 'to there'}, options);
+	const wiki = options.wiki || new $tw.Wiki();
+	if (expected === true) {
+		expected = text.split(options.from).join(options.to);
+	} else if (expected === false) {
+		expected = text;
+	}
+	wiki.addTiddlers([
+		{title: 'test', text: text},
+		utils.operatorConf("title")]);
+	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+	wiki.renameTiddler(options.from, options.to, options);
+	expect(utils.getText('test', wiki)).toEqual(expected);
 };
 
 describe("syslink", function() {
 
+beforeEach(function() {
+	spyOn(console, 'log');
+});
+
 it('syslink', function() {
-	var r;
-	r = testText("A $:/sys/link please", {from: "$:/sys/link", to: "$:/to/there"});
-	expect(r.log).toEqual(["Renaming '$:/sys/link' to '$:/to/there' in 'test': ~$:/sys/link"]);
-	testText("A ~$:/sys/link please", {ignored: true});
-	testText("A ~$:/sys/link please", {from: "~WikiLink", ignored: true});
-	testText("A $:/sys/link please", "A [[to there]] please");
-	testText("A $:/sys/link please", "A [[$:/to'there]] please", {to: "$:/to'there"});
-	testText("A $:/sys/link please", "A [[content/$:/to/there]] please", {to: "content/$:/to/there"});
-	testText("A $:/sys/link please", "A [[~$:/to/there]] please", {to: "~$:/to/there"});
+	const report = ['~$:/sys/link'];
+	testText("A $:/sys/link please", true, report, {from: "$:/sys/link", to: "$:/to/there"});
+	expect(console.log).toHaveBeenCalledWith("Renaming '$:/sys/link' to '$:/to/there' in 'test': ~$:/sys/link");
+
+	testText("A $:/sys/link please", "A [[to there]] please", report, {from: '$:/sys/link', to: 'to there'});
+	testText("A $:/sys/link please", "A [[$:/to'there]] please", report, {from: '$:/sys/link', to: "$:/to'there"});
+	testText("A $:/sys/link please", "A [[content/$:/to/there]] please", report, {from: '$:/sys/link', to: "content/$:/to/there"});
+	testText("A $:/sys/link please", "A [[~$:/to/there]] please", report, {from: '$:/sys/link', to: "~$:/to/there"});
+});
+
+it('ignored cases', function() {
+	testText("A ~$:/sys/link please", false, undefined, {from: '$:/sys/link'});
+	testText("A $:/sys/link please", false, undefined, {from: "~$:/sys/link"});
+	testText("A ~$:/sys/link please", false, undefined, {from: "~$:/sys/link"});
+	testText("A ~$:/sys/link please", false, undefined, {from: "~WikiLink"});
 });
 
 it('rules pragma', function() {
-	testText("\\rules except syslink\nA $:/sys/link please", {ignored: true});
+	testText("\\rules except syslink\nA $:/sys/link please", false, undefined, {from: '$:/sys/link'});
 });
 
 it('tricky cases', function() {
 	var tricky = "bad' title]]\"";
-	var macro = utils.placeholder;
-	var r = testText("A $:/sys/link please", macro(1,tricky)+"A <$link to=<<relink-1>>/> please", {to: tricky});
+	testText("A $:/sys/link please",
+	         utils.placeholder(1,tricky)+"A <$link to=<<relink-1>>/> please",
+	         ['~$:/sys/link'], {from: '$:/sys/link', to: tricky});
 });
 
 });

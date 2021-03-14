@@ -22,6 +22,14 @@ SyslinkEntry.prototype.report = function() {
 	return ["~" + this.link];
 };
 
+exports.report = function(text, callback, options) {
+	var title = this.match[0];
+	this.parser.pos = this.matchRegExp.lastIndex;
+	if (title[0] !== "~") {
+		callback('~' + title, title);
+	}
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var entry = undefined;
 	this.parser.pos = this.matchRegExp.lastIndex;
