@@ -23,7 +23,10 @@ exports.backreferences = function(source,operator,options) {
 exports.references = function(source,operator,options) {
 	var results = new $tw.utils.LinkedList();
 	source(function(tiddler,title) {
-		results.pushTop(Object.keys(options.wiki.getTiddlerRelinkReferences(title,options)));
+		var refs = options.wiki.getTiddlerRelinkReferences(title,options);
+		if (refs) {
+			results.pushTop(Object.keys(refs));
+		}
 	});
 	return results.toArray();
 };

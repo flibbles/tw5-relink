@@ -50,7 +50,6 @@ HtmlEntry.prototype.eachChild = function(method) {
 	}
 };
 
-// TODO: Needs to work with new modular parsing like the relink method does
 exports.report = function(text, callback, options) {
 	var managedElement = this.parser.context.getAttribute(this.nextTag.tag);
 	var importFilterAttr;
