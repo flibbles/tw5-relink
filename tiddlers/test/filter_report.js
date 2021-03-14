@@ -36,14 +36,4 @@ it("filter fields", function() {
 	test({"filter": "from [tag[from]]"}, ["filter","filter: [tag[]]"]);
 });
 
-it("filter tiddlers", function() {
-	test({type: "text/x-tiddler-filter", text: "[tag[from]]"}, ["[tag[]]"]);
-	// This is the only case where a report string may be empty
-	test({type: "text/x-tiddler-filter", text: "from"}, [""]);
-	// Multiples
-	test({type: "text/x-tiddler-filter", text: "from [tag[from]]"}, ["", "[tag[]]"]);
-	// Also, make sure $:/DefaultTiddlers works.
-	test({title: "$:/DefaultTiddlers", text: "[tag[from]]"}, ["[tag[]]"]);
-});
-
 });
