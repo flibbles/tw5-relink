@@ -3,6 +3,7 @@ title: $:/
 config/markdown/renderWikiTextPragma: \rules only html image macrocallinline syslink transcludeinline wikilink filteredtranscludeblock macrocallblock transcludeblock superscript
 config/RelinkOnRename: yes
 config/TiddlerInfo/Default: $:/plugins/flibbles/relink/ui/TiddlerInfo/References
+config/TiddlerInfo/Mode: sticky
 DefaultTiddlers: Relink Demo Frodo
 SiteTitle: Relink
 SiteSubtitle: flexibility when relinking renamed tiddlers

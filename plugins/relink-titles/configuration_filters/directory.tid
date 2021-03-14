@@ -1,6 +1,0 @@
-caption: {{$:/plugins/flibbles/relink-titles/language/Directory/Caption}}
-filter: [removeprefix<fromTiddler>prefix[/]addprefix<toTiddler>]
-tags: $:/tags/flibbles/relink-titles/Filter
-title: $:/plugins/flibbles/relink-titles/configuration/filters/directory
-
-{{$:/plugins/flibbles/relink-titles/language/Directory/Description}}
