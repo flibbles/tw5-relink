@@ -3,6 +3,8 @@
 Tests relinking titles of other tiddlers.
 
 //TODO: I don't think the disabling is working right now
+//TODO: Also, I don't think the indexer plays well with enabling and disabling
+        rules
 \*/
 
 var utils = require('test/utils');

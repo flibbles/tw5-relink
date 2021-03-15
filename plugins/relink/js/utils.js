@@ -56,7 +56,7 @@ exports.getRelinkResults = function(wiki, fromTitle, toTitle, options) {
 		for (var i = 0; i < tiddlerList.length; i++) {
 			var title = tiddlerList[i];
 			var tiddler = wiki.getTiddler(title);
-			// Don't touch plugins or JavaScript modules
+			// TODO: Why aren't we touching plugins or JavaScript modules
 			if(tiddler
 			&& !tiddler.fields["plugin-type"]
 			&& tiddler.fields.type !== "application/javascript") {
