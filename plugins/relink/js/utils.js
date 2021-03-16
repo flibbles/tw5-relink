@@ -53,12 +53,12 @@ exports.getRelinkReport = function(wiki, fromTitle, toTitle, options) {
 		return Object.create(null);
 	});
 	if (!cache[toTitle]) {
-		cache[toTitle] = exports.getRelinkResults(wiki, fromTitle, toTitle, options);
+		cache[toTitle] = getRelinkResults(wiki, fromTitle, toTitle, options);
 	}
 	return cache[toTitle];
 };
 
-exports.getRelinkResults = function(wiki, fromTitle, toTitle, options) {
+function getRelinkResults(wiki, fromTitle, toTitle, options) {
 	options = options || {};
 	options.wiki = options.wiki || wiki;
 	fromTitle = (fromTitle || "").trim();
