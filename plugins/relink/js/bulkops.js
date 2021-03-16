@@ -14,6 +14,7 @@ way to ensure this runs after the old relinkTiddler method is applied.
 "use strict";
 
 var language = require('$:/plugins/flibbles/relink/js/language.js');
+var utils = require("$:/plugins/flibbles/relink/js/utils.js");
 
 exports.name = "redefine-relinkTiddler";
 exports.synchronous = true;
@@ -31,7 +32,7 @@ exports.startup = function() {
 function relinkTiddler(fromTitle, toTitle, options) {
 	options = options || {};
 	var failures = [];
-	var records = this.getRelinkReport(fromTitle, toTitle, options);
+	var records = utils.getRelinkReport(this, fromTitle, toTitle, options);
 	for (var title in records) {
 		var entries = records[title];
 		var changes = Object.create(null);

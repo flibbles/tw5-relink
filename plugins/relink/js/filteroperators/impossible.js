@@ -13,14 +13,14 @@ cases.
 \*/
 
 var language = require("$:/plugins/flibbles/relink/js/language.js");
+var utils = require("$:/plugins/flibbles/relink/js/utils.js");
 
 exports.impossible = function(source,operator,options) {
 	var from = options.widget && options.widget.getVariable("currentTiddler");
 	var to = operator.operand,
 		results = [];
 	if (from) {
-		var records = options.wiki.getRelinkReport(
-			from, to, options);
+		var records = utils.getRelinkReport(options.wiki, from, to, options);
 		source(function(tiddler, title) {
 			var fields = records[title];
 			if (fields) {

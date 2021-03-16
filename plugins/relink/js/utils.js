@@ -44,6 +44,20 @@ exports.getTiddlerRelinkReferences = function(wiki, title, context) {
 	return references;
 };
 
+/** Returns a pair like this,
+ *  { title: {field: entry, ... }, ... }
+ */
+exports.getRelinkReport = function(wiki, fromTitle, toTitle, options) {
+	// TODO: this method's days are numbered
+	var cache = wiki.getGlobalCache("relink-report-"+fromTitle, function() {
+		return Object.create(null);
+	});
+	if (!cache[toTitle]) {
+		cache[toTitle] = exports.getRelinkResults(wiki, fromTitle, toTitle, options);
+	}
+	return cache[toTitle];
+};
+
 exports.getRelinkResults = function(wiki, fromTitle, toTitle, options) {
 	options = options || {};
 	options.wiki = options.wiki || wiki;

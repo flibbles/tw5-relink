@@ -8,20 +8,6 @@ Introduces some utility methods used by Relink.
 var utils = require("./utils.js");
 var TiddlerContext = utils.getContext('tiddler');
 
-/** Returns a pair like this,
- *  { title: {field: entry, ... }, ... }
- */
-exports.getRelinkReport = function(fromTitle, toTitle, options) {
-	// TODO: this method's days are numbered
-	var cache = this.getGlobalCache("relink-report-"+fromTitle, function() {
-		return Object.create(null);
-	});
-	if (!cache[toTitle]) {
-		cache[toTitle] = utils.getRelinkResults(this, fromTitle, toTitle, options);
-	}
-	return cache[toTitle];
-};
-
 exports.getTiddlerRelinkReferences = function(title) {
 	return getIndexer(this).lookup(title);
 };
