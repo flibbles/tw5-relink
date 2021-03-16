@@ -13,11 +13,17 @@ sure that those tiddlers are properly relinked too.
 "use strict";
 
 var configPrefix = "$:/config/flibbles/relink-titles/disabled/";
+var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+utils.getContext('whitelist').hotDirectories.push(configPrefix);
+
+var titleRules = Object.create(null);
+$tw.modules.forEachModuleOfType('relinktitlesrule', function(title, module) {
+	titleRules[title] = module;
+});
+
 var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
-
-var titleRules = $tw.modules.getModulesByTypeAsHashmap('relinktitlesrule');
-
 var TitleEntry = EntryNode.newType("title");
+
 
 TitleEntry.prototype.report = function() {
 	return ["title: " + this.title];

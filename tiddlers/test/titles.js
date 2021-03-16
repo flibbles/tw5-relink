@@ -2,9 +2,6 @@
 
 Tests relinking titles of other tiddlers.
 
-//TODO: I don't think the disabling is working right now
-//TODO: Also, I don't think the indexer plays well with enabling and disabling
-        rules
 \*/
 
 var utils = require('test/utils');
@@ -19,12 +16,16 @@ function test(title, expected, report, options) {
 	expect(utils.getText(expected, wiki)).toEqual(title);
 };
 
-function disabler(name, value) {
+function disabler(title, value) {
 	if (value === undefined) {
 		value = 'disabled';
 	}
-	return {title: '$:/config/flibbles/relink-titles/disabled/' + name,
+	return {title: '$:/config/flibbles/relink-titles/disabled/' + title,
 	        text: value};
+};
+
+function dirDisabler(value) {
+	return disabler('$:/plugins/flibbles/relink-titles/rules/directory', value);
 };
 
 describe('titles', function() {
@@ -48,16 +49,16 @@ it("can install 3rd party filters", function() {
 
 it("can disable installed filters", function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler(disabler('directory'));
+	wiki.addTiddler(dirDisabler());
 	test('from here/subdir', 'from here/subdir', undefined, {wiki: wiki});
 	// but it can also be reenabled
-	wiki.addTiddler(disabler('directory', 'enabled'));
+	wiki.addTiddler(dirDisabler('enabled'));
 	test('from here/subdir', 'to there/subdir', ['title: ./subdir'], {wiki: wiki});
 });
 
 it('can have blank disable setting', function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler(disabler('directory', ''));
+	wiki.addTiddler(dirDisabler(''));
 	test('from here/subdir', 'to there/subdir', ['title: ./subdir'], {wiki: wiki});
 });
 
@@ -133,7 +134,7 @@ it("doesn't make same-name changes during live relinking", function() {
 	expect(console.log).not.toHaveBeenCalled();
 });
 
-it("handles the indexer and non-existent tiddlers", function() {
+it("handles indexer and non-existent tiddlers", function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'dir/file'});
 	utils.getReport('dir', wiki);
@@ -141,6 +142,17 @@ it("handles the indexer and non-existent tiddlers", function() {
 	// in the references report.
 	wiki.addTiddler({title: 'dir'});
 	expect(utils.getReport('dir/file', wiki)).toEqual({dir: ['title: ./file']});
+});
+
+it("handles indexer and rule settings changes", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([{title: 'dir/file'}, {title: 'dir'}]);
+	expect(utils.getReport('dir/file', wiki)).toEqual({dir: ['title: ./file']})
+	wiki.addTiddler(dirDisabler());
+	expect(utils.getReport('dir/file', wiki)).toEqual({})
+	// And then it can be reenabled
+	wiki.addTiddler(dirDisabler('enabled'));
+	expect(utils.getReport('dir/file', wiki)).toEqual({dir: ['title: ./file']})
 });
 
 });

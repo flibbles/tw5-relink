@@ -1,4 +1,9 @@
 /*\
+caption: {{$:/plugins/flibbles/relink-titles/language/Directory/Caption}}
+description: {{$:/plugins/flibbles/relink-titles/language/Directory/Description}}
+module-type: relinktitlesrule
+title: $:/plugins/flibbles/relink-titles/rules/directory
+type: application/javascript
 
 Handles subdirectory renaming.
 

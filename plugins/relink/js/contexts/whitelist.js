@@ -25,6 +25,16 @@ exports.whitelist = WhitelistContext;
 
 WhitelistContext.prototype = new Context();
 
+/**Hot directories are directories for which if anything changes inside them,
+ * then Relink must completely rebuild its index.
+ * By default, this includes the whitelist settings, but relink-titles also
+ * includes its rules disabling directory.
+ * This is the FIRST solution I came up with to this problem. If you're
+ * looking at this, please make a github issue so I have a chance to understand
+ * your needs. This is currently a HACK solution.
+ */
+WhitelistContext.hotDirectories = [prefix];
+
 WhitelistContext.prototype.survey = function(text, fromTitle, options) {
 	if (text) {
 		for (var i = 0; i < surveyors.length; i++) {
@@ -74,9 +84,12 @@ WhitelistContext.prototype.getMacros = function() {
 };
 
 WhitelistContext.prototype.changed = function(changedTiddlers) {
-	for (var title in changedTiddlers) {
-		if (title.substr(0, prefix.length) === prefix) {
-			return true;
+	for (var i = 0; i < WhitelistContext.hotDirectories.length; i++) {
+		var dir = WhitelistContext.hotDirectories[i];
+		for (var title in changedTiddlers) {
+			if (title.substr(0, dir.length) === dir) {
+				return true;
+			}
 		}
 	}
 	return false;
