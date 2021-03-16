@@ -2,8 +2,6 @@
 
 Tests the new relinking wiki methods.
 
-// TODO: filter operators that take two or more operands.
-// TODO: better filter run prefix support and reporting.
 \*/
 
 var utils = require("test/utils");

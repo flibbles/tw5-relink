@@ -1,0 +1,15 @@
+tags: Feature
+title: Wikimethods
+
+//Relink// includes a few defined wikimethods which you can take advantage of.
+
+<$list filter="[[Wikimethods]tagging[]]">
+
+!! {{!!title}}
+
+<blockquote><pre><code>{{!!title}}({{!!arguments}}) -> {{!!return}}
+</code></pre></blockquote>
+
+<$transclude />
+
+</$list>

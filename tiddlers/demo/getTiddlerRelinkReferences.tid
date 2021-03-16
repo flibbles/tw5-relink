@@ -1,0 +1,8 @@
+arguments: title
+return: {'tiddlerTitle': ['blurb', ...], ...}
+tags: Wikimethods
+title: getTiddlerRelinkReferences
+
+Given a tiddler title, `getTiddlerRelinkReferences` returns an object for which each key is a tiddler title which the given tiddler refers to, and the value is an array of blurbs which each briefly describe the type of reference. This object will include all references, including ones to tiddlers which do not exist.
+
+If the given title does not exist, this returns `undefined`.

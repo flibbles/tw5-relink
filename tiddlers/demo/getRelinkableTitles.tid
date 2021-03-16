@@ -1,0 +1,5 @@
+return: ['title', ...]
+tags: Wikimethods
+title: getRelinkableTitles
+
+This returns a list of all titles which //Relink// will evaluate for relinking. Unless you've customized which [[Tiddlers to relink]], this is equivalent to `wiki.allTitles`.
