@@ -12,10 +12,7 @@ var utils = require('test/utils');
 function test(title, expected, report, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);
 	const wiki = options.wiki || new $tw.Wiki();
-	wiki.addTiddlers([
-		{title: title, text: title},
-		// TODO: remove this bit here later
-		{title: options.from, text: 'anything'}]);
+	wiki.addTiddler({title: title, text: title});
 	expect(utils.getReport(title, wiki)[options.from]).toEqual(report);
 	wiki.renameTiddler(options.from, options.to, options);
 	expect(wiki.getTiddler(expected)).not.toBeUndefined();
@@ -30,8 +27,6 @@ function disabler(name, value) {
 	        text: value};
 };
 
-// TODO: Indexer may prevent some parent directories from being relinked if they
-//       didn't exist before, but do now, and they're renamed.
 describe('titles', function() {
 
 beforeEach(function() {
@@ -79,7 +74,6 @@ it("doesn't wipe the content of changed tiddler", function() {
 	var wiki = new $tw.Wiki(),
 		options = {};
 	wiki.addTiddlers([
-		// TODO: remove this. It shouldn't be needed.
 		{title: 'from here'},
 		{title: 'from here/path'},
 		{title: 'from here/path/end', text: 'Not clobbered'}]);
@@ -137,6 +131,16 @@ it("doesn't rename two tiddlers to the same thing", function() {
 it("doesn't make same-name changes during live relinking", function() {
 	test('relink-title-test/same', 'relink-title-test/same', ['title'], {from: '$:/relink-title', to: 'same'});
 	expect(console.log).not.toHaveBeenCalled();
+});
+
+it("handles the indexer and non-existent tiddlers", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'dir/file'});
+	utils.getReport('dir', wiki);
+	// If dir didn't exist before, we may have cached with it not included
+	// in the references report.
+	wiki.addTiddler({title: 'dir'});
+	expect(utils.getReport('dir/file', wiki)).toEqual({dir: ['title: ./file']});
 });
 
 });
