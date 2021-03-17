@@ -15,7 +15,7 @@ whichever markdown plugin you're using.
 var Placeholder = require("$:/plugins/flibbles/relink/js/utils/placeholder.js");
 var markdownHandler = require('$:/plugins/flibbles/relink/js/utils.js').getType('markdown');
 
-exports.name = "text/x-markdown";
+exports.type = "text/x-markdown";
 
 exports.report = function(tiddler, callback, options) {
 	var currentOptions = Object.create(options);

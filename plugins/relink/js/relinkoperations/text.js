@@ -13,11 +13,10 @@ var defaultOperator = "text/vnd.tiddlywiki";
 
 exports.name = 'text';
 
-// TODO: Maybe use a field other than 'name', since they're mimetypes?
 var textOperators = Object.create(null);
 $tw.modules.forEachModuleOfType('relinktextoperator', function(title, module) {
-	if (module.name !== undefined) {
-		textOperators[module.name] = module;
+	if (module.type !== undefined) {
+		textOperators[module.type] = module;
 	} else {
 		// Legacy support. It has a relinker, but not a reporter
 		for (var entry in module) {
