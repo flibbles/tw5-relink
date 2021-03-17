@@ -12,7 +12,7 @@ function ImportContext(wiki, parent, filter) {
 	var importWidget = createImportWidget(filter, this.wiki, this.parent.widget);
 	this._compileList(importWidget.tiddlerList);
 	// This only works if only one filter is imported
-	this.addWidget(importWidget);
+	this.widget = this.getBottom(importWidget);
 	// Trickle this up, so that any containing tiddlercontext knows that this
 	// tiddler does some importing, and must be checked regularly.
 	parent.hasImports(true);
@@ -24,13 +24,6 @@ ImportContext.prototype = new WidgetContext();
 
 ImportContext.prototype.changed = function(changes) {
 	return this.widget && this.widget.refresh(changes)
-};
-
-ImportContext.prototype.addWidget = function(widget) {
-	this.widget = widget;
-	while (this.widget.children.length > 0) {
-		this.widget = this.widget.children[0];
-	}
 };
 
 function createImportWidget(filter, wiki, parent) {

@@ -15,11 +15,7 @@ function VariableContext(parent, setParseTreeNode) {
 	setWidget.computeAttributes();
 	setWidget.execute();
 	// point our widget to bottom, where any other contexts would attach to
-	//TODO: Maybe this part can be moved into widgetContext.
-	this.widget = setWidget;
-	while (this.widget.children.length > 0) {
-		this.widget = this.widget.children[0];
-	}
+	this.widget = this.getBottom(setWidget);
 };
 
 exports.variable = VariableContext;

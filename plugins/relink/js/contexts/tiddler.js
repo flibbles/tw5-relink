@@ -5,7 +5,6 @@ a tiddler must be refreshed.
 
 \*/
 
-// TODO: Maybe these contexts should use the same module layout as everything else?
 var WidgetContext = require('./widget.js').widget;
 
 function TiddlerContext(wiki, parentContext, title) {

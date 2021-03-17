@@ -71,3 +71,11 @@ WidgetContext.prototype.getMacro = function(macroName) {
 	return theseSettings || parentSettings;
 };
 
+/**Returns the deepest descendant of the given widget.
+ */
+WidgetContext.prototype.getBottom = function(widget) {
+	while (widget.children.length > 0) {
+		widget = widget.children[0];
+	}
+	return widget;
+};
