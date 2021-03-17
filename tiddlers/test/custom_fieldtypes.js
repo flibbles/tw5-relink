@@ -47,6 +47,16 @@ it("has access to fields of locally defined macro", function() {
 	expect(r.tiddler.fields.text).toEqual("\\relink dummy f:dummy-type\n\n<<dummy f: 'YYY: to there'>>");
 });
 
+it("handles types with newline characters", function() {
+	const wiki = new $tw.Wiki();
+	spyOn(console, 'log');
+	wiki.addTiddlers([
+		utils.fieldConf('newline', 'reference\n'),
+		{title: 'test', newline: 'from here!!field'}]);
+	wiki.renameTiddler('from here', 'to there');
+	expect(wiki.getTiddler('test').fields.newline).toBe('to there!!field');
+});
+
 });
 
 describe("custom: surveyors", function() {

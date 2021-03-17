@@ -153,8 +153,7 @@ function build(settings, wiki) {
 			var factory = factories[category];
 			if (factory) {
 				var name = remainder.substr(category.length+1);
-				//TODO: This doesn't handle newline characters
-				var data = utils.getType(tiddler.fields.text);
+				var data = utils.getType(tiddler.fields.text.trim());
 				if (data) {
 					data.source = title;
 					// Secret feature. You can access a config tiddler's
