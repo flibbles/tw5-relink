@@ -107,11 +107,19 @@ it('has dangerous caption content', function() {
 	         ['[[D<!--]]'], {to: "to]]there"});
 });
 
-// TODO: Does this actually work okay?
 it('has dangerous and unquotable caption content', function() {
-	var caption = 'Misty\'s "{{crabshack}}"';
-	testText("[["+caption+"|from here]]",
-	         utils.placeholder("caption-1", caption)+"<$link to=to]]there><$text text=<<relink-caption-1>>/></$link>", ['[['+caption+']]'], {to: "to]]there"});
+	const caption = 'Misty\'s "{{crabshack}}"';
+	const wiki = new $tw.Wiki();
+	const expected = utils.placeholder("caption-1", caption)+"<$link to=to]]there><$text text=<<relink-caption-1>>/></$link>";
+	wiki.addTiddler({title: 'test', text: "[["+caption+"|from here]]"});
+	wiki.renameTiddler('from here', 'to]]there');
+	expect(utils.getText('test', wiki)).toBe(expected);
+	// That caption is plaintext. It shouldn't be alterable.
+	wiki.renameTiddler(caption, 'something else');
+	expect(utils.getText('test', wiki)).toBe(expected);
+	// It's also not treated as wikitext
+	wiki.renameTiddler('crabshack', 'clambake');
+	expect(utils.getText('test', wiki)).toBe(expected);
 });
 
 it('unquotable and unpretty', function() {
