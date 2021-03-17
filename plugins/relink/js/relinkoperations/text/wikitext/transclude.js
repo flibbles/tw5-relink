@@ -18,33 +18,13 @@ exports.name = ['transcludeinline', 'transcludeblock'];
 var TranscludeEntry = function() {};
 TranscludeEntry.prototype.name = "transclude";
 TranscludeEntry.prototype.report = function() {
-	var ref = this.reference || {};
-	var output = [];
-	if (this.referenceChanged) {
-		var suffix = "";
-		if (ref.field) {
-			suffix = "!!" + ref.field;
-		}
-		if (ref.index) {
-			suffix = "##" + ref.index;
-		}
-		if (this.template) {
-			suffix = suffix + "||" + this.template;
-		}
-		output.push("{{" + suffix + "}}");
-	}
-	if (this.templateChanged) {
-		// Must be template
-		var refString = refHandler.toString(ref);
-		output.push("{{" + refString + "||}}");
-	}
-	return output;
+	return [];
 };
 
 exports.report = function(text, callback, options) {
 	var m = this.match,
 		refString = $tw.utils.trim(m[1]),
-		ref = $tw.utils.parseTextReference(refString);
+		ref = parseTextReference(refString);
 		template = $tw.utils.trim(m[2]);
 	if (ref.title) {
 		var suffix = '';
@@ -66,7 +46,7 @@ exports.report = function(text, callback, options) {
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match,
-		reference = $tw.utils.parseTextReference(m[1]),
+		reference = parseTextReference(m[1]),
 		template = m[2],
 		entry = new TranscludeEntry(),
 		modified = false;
@@ -75,29 +55,42 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		// preserve user's whitespace
 		reference.title = reference.title.replace(fromTitle, toTitle);
 		modified = true;
-		entry.referenceChanged = true;
 	}
 	if ($tw.utils.trim(template) === fromTitle) {
 		template = template.replace(fromTitle, toTitle);
 		modified = true;
-		entry.templateChanged = true;
 	}
 	if (modified) {
-		entry.reference = reference;
-		entry.template = template;
 		var output = this.makeTransclude(this.parser.context, reference, template, options);
 		if (output) {
 			// Adding any newline that might have existed is
 			// what allows this relink method to work for both
 			// the block and inline filter wikitext rule.
-			output = output + utils.getEndingNewline(m[0]);
-			entry.output = output;
+			entry.output = output + utils.getEndingNewline(m[0]);
 		} else {
 			entry.impossible = true;
 		}
 		return entry;
 	}
 	return undefined;
+};
+
+// I have my own because the core one is deficient for my needs.
+function parseTextReference(textRef) {
+	// Separate out the title, field name and/or JSON indices
+	var reTextRef = /^([\w\W]*?)(?:!!(\S[\w\W]*)|##(\S[\w\W]*))?$/g;
+		match = reTextRef.exec(textRef),
+		result = {};
+	if(match) {
+		// Return the parts
+		result.title = match[1];
+		result.field = match[2];
+		result.index = match[3];
+	} else {
+		// If we couldn't parse it
+		result.title = textRef
+	}
+	return result;
 };
 
 /** This converts a reference and a template into a string representation
