@@ -2,60 +2,75 @@
 
 Tests prettylinks.
 
-TODO: migrate
 \*/
 
 var utils = require("test/utils");
 var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js');
 
-function testText(text, expected, options) {
-	[text, expected, options] = utils.prepArgs(text, expected, options);
-	var results = utils.relink({text: text}, options);
-	expect(results.tiddler.fields.text).toEqual(expected);
-	return results;
+function testText(text, expected, report, options) {
+	options = Object.assign({from: 'from here', to: 'to there'}, options);
+	const wiki = options.wiki || new $tw.Wiki();
+	if (expected === true) {
+		expected = text.split(options.from).join(options.to);
+	} else if (expected === false) {
+		expected = text;
+	}
+	wiki.addTiddlers([
+		{title: 'test', text: text},
+		utils.operatorConf("title")]);
+	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+	wiki.renameTiddler(options.from, options.to, options);
+	expect(utils.getText('test', wiki)).toEqual(expected);
 };
 
 describe("prettylink", function() {
 
+beforeEach(function() {
+	spyOn(console, 'log');
+});
+
 it('prettylinks', function() {
-	var r = testText("Link to [[from here]].");
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test'"]);
-	testText("Link to [[description|from here]].");
-	testText("Link to [[description|from here]].", {to: "to|there"});
-	testText("Link to [[weird]desc|from here]].");
-	testText("Link to [[it is from here|from here]].", "Link to [[it is from here|to there]].");
-	testText("Link [[new\nline|from here]].", "Link [[new\nline|from here]].");
-	testText("Link to [[elsewhere]].");
-	testText("Link to [[desc|elsewhere]].");
-	testText("Multiple [[from here]] links [[description|from here]].");
-	testText("Link to [[from here]].", {to: "to [bracket] there"});
+	var r = testText("Link to [[from here]].", true, ['[[from here]]']);
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
+	testText("Link to [[description|from here]].", true, ['[[description]]']);
+	testText("Link to [[description |from here]].", true, ['[[description ]]']);
+	testText("Link to [[|from here]].", true, ['[[]]']);
+	testText("Link to [[|from|here]].", true, ['[[]]'], {from: 'from|here', to: 'to|there'});
+	testText("Link to [[description|from here]].", true, ['[[description]]'], {to: "to|there"});
+	testText("Link to [[weird]desc|from here]].", true, ['[[weird]desc]]']);
+	testText("Link to [[it is from here|from here]].", "Link to [[it is from here|to there]].", ['[[it is from here]]']);
+	testText("Link [[new\nline|from here]].", false, undefined);
+	testText("Link to [[elsewhere]].", false, undefined);
+	testText("Link to [[desc|elsewhere]].", false, undefined);
+	testText("Multiple [[from here]] links [[description|from here]].", true, ['[[from here]]', '[[description]]']);
+	testText("Link to [[from here]].", true, ['[[from here]]'], {to: "to [bracket] there"});
 });
 
 it('unpretty with caption', function() {
 	// single bracket on the end can disqualify prettylinks
-	var r = testText("Link to [[caption|from here]].",
-	                 "Link to <$link to='to [bracks]'>caption</$link>.",
-	                 {to: "to [bracks]"});
-	expect(r.log).toEqual(["Renaming 'from here' to 'to [bracks]' in 'test'"]);
+	testText("Link to [[caption|from here]].",
+	         "Link to <$link to='to [bracks]'>caption</$link>.",
+	         ['[[caption]]'], {to: "to [bracks]"});
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to [bracks]' in 'test'");
 	// double brackets in middle can also disqualify prettylinks
 	testText("Link to [[caption|from here]].",
 	         "Link to <$link to='bracks [[in]] middle'>caption</$link>.",
-	         {to: "bracks [[in]] middle"});
+	         ['[[caption]]'], {to: "bracks [[in]] middle"});
 });
 
 it('unpretty and without caption', function() {
-	testText("Link to [[from here]].", "Link to <$link to=A]]B/>.",
-	         {to: "A]]B"});
-	testText("Link to [[from here]].", "Link to <$link to=A|B/>.",
-	         {to: "A|B"});
 	var unquotable =  "very' bad]]title\"";
 	// without a caption, we have to go straight to placeholders weird,
 	// or we might desync the link with its caption with later name changes.
-	var r = testText("Link to [[from here]].",
-	                 utils.placeholder(1,unquotable) +
-	                 "Link to <$link to=<<relink-1>>/>.",
-	                 {to: unquotable});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+unquotable+"' in 'test'"]);
+	testText("Link to [[from here]].",
+	         utils.placeholder(1,unquotable) +
+	         "Link to <$link to=<<relink-1>>/>.",
+	         ['[[from here]]'], {to: unquotable});
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+unquotable+"' in 'test'");
+	testText("Link to [[from here]].", "Link to <$link to=A]]B/>.",
+	         ['[[from here]]'], {to: "A]]B"});
+	testText("Link to [[from here]].", "Link to <$link to=A|B/>.",
+	         ['[[from here]]'], {to: "A|B"});
 });
 
 it('unpretty, without caption, and pre 5.1.20', function() {
@@ -67,14 +82,14 @@ it('unpretty, without caption, and pre 5.1.20', function() {
 	testText("Link [[from here]].",
 			 utils.placeholder(1, "to [bracks]") +
 			 "Link <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link>.",
-			 {to: "to [bracks]"});
+			 ['[[from here]]'], {to: "to [bracks]"});
 });
 
 it('has dangerous caption content', function() {
 	function wraps(caption, expected) {
 		testText("[["+caption+"|from here]]",
 	         "<$link to=to]]there>"+expected+"</$link>",
-	         {to: "to]]there"});
+	         ['[['+caption+']]'], {to: "to]]there"});
 	}
 	// doesn't require <$text />
 	wraps("Unsafe</$list>", "Unsafe</$list>");
@@ -89,13 +104,14 @@ it('has dangerous caption content', function() {
 	// Another possibly tricky one. the <!-- might be inactive without -->
 	testText("[[D<!--|from here]] --> C",
 	         "<$link to=to]]there><$text text='D<!--'/></$link> --> C",
-	         {to: "to]]there"});
+	         ['[[D<!--]]'], {to: "to]]there"});
 });
 
+// TODO: Does this actually work okay?
 it('has dangerous and unquotable caption content', function() {
 	var caption = 'Misty\'s "{{crabshack}}"';
 	testText("[["+caption+"|from here]]",
-	         utils.placeholder("caption-1", caption)+"<$link to=to]]there><$text text=<<relink-caption-1>>/></$link>", {to: "to]]there"});
+	         utils.placeholder("caption-1", caption)+"<$link to=to]]there><$text text=<<relink-caption-1>>/></$link>", ['[['+caption+']]'], {to: "to]]there"});
 });
 
 it('unquotable and unpretty', function() {
@@ -103,53 +119,58 @@ it('unquotable and unpretty', function() {
 	// prettylinks or widgets.
 	var text = "Link to [[caption|from here]].";
 	var to = 'Has apost\' [[bracks]] and "quotes"';
-	var r =testText(text,
-	                utils.placeholder(1, to) +
-	                "Link to <$link to=<<relink-1>>>caption</$link>.",
-	                {to: to});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test'"]);
+	testText(text,
+	         utils.placeholder(1, to) +
+	         "Link to <$link to=<<relink-1>>>caption</$link>.",
+	         ['[[caption]]'], {to: to});
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test'");
 
 	// If rules disable macrodef, then don't placeholder
-	r = testText("\\rules except macrodef\n" + text, {ignored: true, to: to, macrodefCanBeDisabled: true});
-	expect(r.fails.length).toEqual(1);
-	r = testText("\\rules only prettylink html\n" + text, {ignored: true, to: to, macrodefCanBeDisabled: true});
-	expect(r.fails.length).toEqual(1);
+	var fails = utils.collectFailures(function() {
+		testText("\\rules except macrodef\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true});
+	});
+	expect(fails.length).toEqual(1);
+	fails = utils.collectFailures(function() {
+		testText("\\rules only prettylink html\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true});
+	});
+	expect(fails.length).toEqual(1);
 });
 
 it('respects rules', function() {
 	testText("\\rules except prettylink\nLink to [[from here]].",
-	         {ignored: true});
-	testText("\\rules only prettylink\nLink to [[from here]].");
+	         false, undefined);
+	testText("\\rules only prettylink\nLink to [[from here]].",
+	         true, ['[[from here]]']);
 
 	testText("\\rules only prettylink html\n[[from here]]",
 	         "\\rules only prettylink html\n<$link to='to]] there'/>",
-	         {to: "to]] there"});
+	         ['[[from here]]'], {to: "to]] there"});
 	testText("\\rules except macrodef\n[[from here]]",
 	         "\\rules except macrodef\n<$link to='to]] there'/>",
-	         {to: "to]] there"});
+	         ['[[from here]]'], {to: "to]] there"});
 
-	var r;
-	r = testText("\\rules only prettylink\n[[from here]]",
-	             {to: "to]] there", ignored: true});
-	expect(r.fails.length).toEqual(1);
-	r = testText("\\rules except html\n[[from here]]",
-	             {to: "to]] there", ignored: true});
-	expect(r.fails.length).toEqual(1);
+	var fails;
+	fails = utils.collectFailures(function() {
+		testText("\\rules only prettylink\n[[from here]]",
+		         false, ['[[from here]]'], {to: "to]] there"});
+	});
+	expect(fails.length).toEqual(1);
+	fails = utils.collectFailures(function() {
+		testText("\\rules except html\n[[from here]]",
+		         false, ['[[from here]]'], {to: "to]] there"});
+	});
+	expect(fails.length).toEqual(1);
 });
 
-it("reports", function() {
+it("tricky report situations", function() {
 	function test(text, expected) {
-		var wiki = new $tw.Wiki();
+		const wiki = new $tw.Wiki();
 		wiki.addTiddler({title: 'test', text: text});
-		var refs = wiki.getTiddlerRelinkReferences('test');
-		expect(refs).toEqual(expected);
+		expect(utils.getReport('test', wiki)).toEqual(expected);
 	};
-	test("Text [[from]] stuff", {from: ["[[from]]"]});
+	test("[[|from]]", {from: ['[[]]']});
+	// external links are not tiddlers. They shouldn't be reported.
 	test("[[https://www.google.com]] stuff", {});
-	test("[[Caption|from]]", {from: ["[[Caption]]"]});
-	// Preserve whitespace. Newlines are illegal, so don't worry about them.
-	test("[[Caption |from]]", {from: ["[[Caption ]]"]});
-	test("[[|from]]", {from: ["[[]]"]});
 	// Not a valid tiddler, but also not a valid prettylink
 	test("[[ from ]]", {' from ': ["[[ from ]]"]});
 });

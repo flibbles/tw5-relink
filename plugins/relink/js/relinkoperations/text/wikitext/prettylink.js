@@ -50,7 +50,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 
 exports.makeLink = function(context, tiddler, caption, options) {
 	var output, quoted;
-	if (context.allowPrettylinks() && this.canBePretty(tiddler, !!caption)) {
+	if (context.allowPrettylinks() && this.canBePretty(tiddler, caption)) {
 		output = prettyLink(tiddler, caption);
 	} else if (!context.allowWidgets()) {
 		// We aren't allowed to make widgets. Gotta fail.
@@ -93,7 +93,7 @@ exports.makeLink = function(context, tiddler, caption, options) {
 /**Return true if value can be used inside a prettylink.
  */
 exports.canBePretty = function(value, customCaption) {
-	return value.indexOf("]]") < 0 && value[value.length-1] !== ']' && (customCaption || value.indexOf('|') < 0);
+	return value.indexOf("]]") < 0 && value[value.length-1] !== ']' && (customCaption !== undefined || value.indexOf('|') < 0);
 };
 
 /**In version 5.1.20, Tiddlywiki made it so <$link to"something" /> would
@@ -128,7 +128,7 @@ function sanitizeCaption(caption, options) {
 };
 
 function prettyLink(title, caption) {
-	if (caption) {
+	if (caption !== undefined) {
 		return "[[" + caption + "|" + title + "]]";
 	} else {
 		return "[[" + title + "]]";
