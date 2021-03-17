@@ -157,6 +157,21 @@ it('Detects imported placeholder macros', function() {
 	         {wiki: wiki, to: to});
 });
 
+it('tracks different placeholder categories separately', function() {
+	const wiki = new $tw.Wiki();
+	spyOn(console, 'log');
+	wiki.addTiddlers([
+		utils.attrConf('$list', 'emptyMessage', 'wikitext'),
+		utils.attrConf('$list', 'filter', 'filter'),
+		{title: 'test', text: '<$list filter="A [[from here]]" emptyMessage="A [[from here]]" />'}]);
+	// This is super tricky, but this used to trick Relink into using a
+	// filter placeholder for both, when it should be using a wikitext
+	// placeholder for the second.
+	wiki.renameTiddler('from here', '\'\"\"\" middle');
+	wiki.renameTiddler('\'\"\"\" middle', 'to ]] there');
+	expect(utils.getText('test', wiki)).toBe("\\define relink-filter-1() A 'to ]] there'\n\\define relink-wikitext-1() A <$link to='to ]] there'/>\n<$list filter=<<relink-filter-1>> emptyMessage=<<relink-wikitext-1>> />");
+});
+
 it("reports", function() {
 	function test(text, expected) {
 		var wiki = new $tw.Wiki();

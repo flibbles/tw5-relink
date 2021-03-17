@@ -9,16 +9,15 @@ var utils = require('../utils');
 
 function Placeholder() {
 	this.placeholders = Object.create(null);
-	this.reverseMap = Object.create(null);
+	this.reverseMap = {};
 	this.used = Object.create(null);
 };
 
 module.exports = Placeholder;
 
 Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
-	var placeholder = this.reverseMap[value];
-	// TODO: This needs to distinguish reverseMaps for each category type, or
-	//       there might be a nasty conflict.
+	this.reverseMap[category] = this.reverseMap[category] || Object.create(null);
+	var placeholder = this.reverseMap[category][value];
 	if (placeholder) {
 		return placeholder;
 	}
@@ -35,7 +34,7 @@ Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
 		placeholder = prefix + number;
 	} while (config.getMacroDefinition(placeholder) || this.used[placeholder]);
 	this.placeholders[placeholder] = value;
-	this.reverseMap[value] = placeholder;
+	this.reverseMap[category][value] = placeholder;
 	this.used[placeholder] = true;
 	return placeholder;
 };
