@@ -79,8 +79,8 @@ it("doesn't wipe the content of changed tiddler", function() {
 		{title: 'from here/path'},
 		{title: 'from here/path/end', text: 'Not clobbered'}]);
 	wiki.relinkTiddler('from here', 'to there', options);
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path': title: from here/path");
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path/end': title: from here/path/end");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path'");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path/end'");
 	console.log.calls.reset();
 
 	// Now we do it again, but manually calling relink without options, because
@@ -92,8 +92,8 @@ it("doesn't wipe the content of changed tiddler", function() {
 		{title: 'from here/path/end', text: 'Not clobbered'}]);
 	wiki.relinkTiddler('from here', 'to there');
 	expect(utils.getText('to there/path/end', wiki)).toBe('Not clobbered');
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path': title: from here/path");
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path/end': title: from here/path/end");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path'");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path/end'");
 });
 
 it("doesn't clobber existing tiddlers", function() {

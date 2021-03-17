@@ -2,6 +2,7 @@
 
 Tests transcludes.
 
+TODO: migrate
 \*/
 
 var utils = require("test/utils");
@@ -13,9 +14,8 @@ function testText(text, expected, options) {
 	return results;
 };
 
-function logMessage(toThere, innerBracketStuff) {
-	innerBracketStuff = innerBracketStuff || '';
-	return "Renaming 'from here' to '"+toThere+"' in 'test': {{{"+innerBracketStuff+"}}}";
+function logMessage(toThere) {
+	return "Renaming 'from here' to '"+toThere+"' in 'test'";
 };
 
 describe("filtered transcludes", function() {

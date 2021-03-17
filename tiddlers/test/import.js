@@ -30,7 +30,7 @@ beforeEach(function() {
 
 it('import pragma', function() {
 	var r = testText("\\import [title[from here]]\nstuff.", true, ['\\import [title[]]']);
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test': \\import [title[]]");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 	testText("\\rules except prettylink\n\\import [[from here]]\nnot prettylink.", true, ['\\import']);
 	testText("\\import [[from|here]]\ndon't parse as prettylink.", true, ['\\import'],
 	         {from: "from|here"});
@@ -56,7 +56,7 @@ it('tricky downgrade', function() {
 	         utils.placeholder(1,to)+"\\import [<relink-1>]\nstuff",
 	         ['\\import'],
 	         {to: to});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test': \\import");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test'");
 });
 
 it('resorts to placeholders when possible', function() {

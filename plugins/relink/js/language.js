@@ -16,11 +16,8 @@ exports.eachImpossible = function(rootEntry, method) {
 	}
 };
 
-exports.logAll = function(entry, title, from, to) {
-	var report = entry.report();
-	for (var i = 0; i < report.length; i++) {
-		console.log(logRelink(report[i], title, from, to));
-	}
+exports.log = function(title, from, to) {
+	console.log("Renaming '"+from+"' to '"+to+"' in '" + title + "'");
 };
 
 exports.getString = function(title, options) {
@@ -50,8 +47,4 @@ exports.reportFailures = function(failureList, options) {
 		}
 	});
 	logger.alert(alertString + "\n" + reportList.join(""));
-};
-
-function logRelink(raw, title, from, to) {
-	return "Renaming '"+from+"' to '"+to+"' in '" + title + "': "+raw;
 };

@@ -42,7 +42,6 @@ function relinkTiddler(fromTitle, toTitle, options) {
 			language.eachImpossible(entry, function() {
 				failures.push(title);
 			});
-			language.logAll(entry, title, fromTitle, toTitle, options);
 			if (entry && entry.output) {
 				changes[field] = entry.output;
 				update = true;
@@ -50,6 +49,7 @@ function relinkTiddler(fromTitle, toTitle, options) {
 		}
 		// If any fields changed, update tiddler
 		if (update) {
+			language.log(title, fromTitle, toTitle, options);
 			var tiddler = this.getTiddler(title);
 			var newTiddler = new $tw.Tiddler(tiddler,changes,this.getModificationFields())
 			newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);

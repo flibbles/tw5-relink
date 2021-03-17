@@ -17,7 +17,7 @@ function testText(text, expected, options) {
 
 it('field attributes', function() {
 	var r = testText('<$link to="from here">caption</$link>');
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': <$link to />"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test'"]);
 	testText('<$link to="from here">\n\ncaption</$link>\n\n');
 	testText(`<$link to='from here'>caption</$link>`);
 	testText(`<$link to='from here' />`);
@@ -183,7 +183,7 @@ it('uses macros for literally unquotable titles', function() {
 	var to2 = 'Another\'"quotes"';
 	var expectedLink = '<$link to=<<relink-1>>/>';
 	var r = testText("<$link to='from here'/>", macro(1,to)+link(1), {to: to});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test': <$link to />"]);
+	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test'"]);
 	testText("Before <$link to='from here'/> After",
 	         macro(1,to)+"Before "+link(1)+" After", {to: to});
 	// It'll prefer triple-quotes, but it should still resort to macros.
@@ -223,7 +223,7 @@ it('detects when internal list uses macros', function() {
 	var r = testText("<$list filter='[tag[from here]]'/>",
 	                 utils.placeholder(1,to)+"<$list filter='[tag<relink-1>]'/>",
 	                 {to: to});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test': <$list filter=\"[tag[]]\" />"]);
+	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test'"]); //<$list filter=\"[tag[]]\" />
 });
 
 it('ignores blank attribute configurations', function() {

@@ -33,7 +33,7 @@ beforeEach(function() {
 
 it('relinks and logs', function() {
 	var r = testFilter("A [[from here]] B", true, ['filt']);
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test': filt");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 });
 
 it('quotes', function() {

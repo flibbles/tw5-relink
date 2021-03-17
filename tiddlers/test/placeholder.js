@@ -6,6 +6,7 @@ E.G.
 \define relink-1() ...
 \define relink-filter-3() ...
 
+TODO: migrate
 \*/
 
 var utils = require("test/utils");
@@ -29,7 +30,7 @@ it('executes and logs', function() {
 	var content = "Anything goes here";
 	// placeholders get replaced too
 	var r = testText(macro(1,from)+content, {from: from, to: to});
-	expect(r.log).toEqual([`Renaming '${from}' to '${to}' in 'test': \\define relink-1()`]);
+	expect(r.log).toEqual([`Renaming '${from}' to '${to}' in 'test'`]);
 });
 
 it('increment to next available number', function() {
@@ -47,7 +48,7 @@ it('filter', function() {
 		macro("filter-1","[title[from here]]")+"Tiddler body",
 		macro(1,"to[]this")+macro("filter-1","[title<relink-1>]")+"Tiddler body",
 		{to: "to[]this"});
-	expect(r.log).toEqual(["Renaming 'from here' to 'to[]this' in 'test': \\define relink-filter-1() [title[]]"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to[]this' in 'test'"]);
 });
 
 it('list', function() {

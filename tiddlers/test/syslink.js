@@ -33,7 +33,7 @@ beforeEach(function() {
 it('syslink', function() {
 	const report = ['~$:/sys/link'];
 	testText("A $:/sys/link please", true, report, {from: "$:/sys/link", to: "$:/to/there"});
-	expect(console.log).toHaveBeenCalledWith("Renaming '$:/sys/link' to '$:/to/there' in 'test': ~$:/sys/link");
+	expect(console.log).toHaveBeenCalledWith("Renaming '$:/sys/link' to '$:/to/there' in 'test'");
 
 	testText("A $:/sys/link please", "A [[to there]] please", report, {from: '$:/sys/link', to: 'to there'});
 	testText("A $:/sys/link please", "A [[$:/to'there]] please", report, {from: '$:/sys/link', to: "$:/to'there"});

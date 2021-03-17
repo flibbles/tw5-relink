@@ -57,12 +57,12 @@ it("touches eligible tiddlers", function() {
 
 it('still relinks tags', function() {
 	testTags("[[from here]] another", ['to there', 'another'], ['tags']);
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test': tags");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 });
 
 it('still relinks lists', function() {
 	var r = testList("[[from here]] other", ['to there', 'other'], ['list']);
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test': list");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 });
 
 // I can't actually prevent Tiddlywiki from doing this. I can't even tell
@@ -79,7 +79,7 @@ it('relinks filter field', function() {
 	testField("[title[from here]] stuff", "[title[to there]] stuff",
 	          ['filter: [title[]]'],
 	          {field: "filter", type: "filter", wiki: wiki});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test': filter: [title[]]");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 });
 
 it('lists work with strange titles', function() {
@@ -145,19 +145,19 @@ it('still respects dontRenameInLists', function() {
 
 it('relinks custom field', function() {
 	testField("from here", true, ['test'], {type: 'title'});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test': test");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 });
 
 it('relinks custom list', function() {
 	testField("A [[from here]] B", true, ['test'], {type: "list"});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test': test");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 });
 
 it('relinks custom wikitext', function() {
 	testField("from here [[from here]] {{from here}}",
 	          'from here [[to there]] {{to there}}',
 	          ['test: [[from here]]', 'test: {{}}'], {type: "wikitext"});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test': test: {{}}");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 });
 
 it('ignores blank custom field settings', function() {

@@ -31,7 +31,7 @@ beforeEach(function() {
 
 it("image", function() {
 	testText("Image to [img[from here]].", true, ['[img[]]']);
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test': [img[]]");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 	testText("to [img[from here]][[from here]]", true, ['[img[]]', '[[from here]]']);
 	// quotes can make us scan too early for the source
 	testText("[img class='a' [']].",
@@ -151,7 +151,7 @@ it("unpretty source", function() {
 	         "Image <$image source=to]there/> end",
 	         ['[img[]]'],
 	         {to: "to]there"});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to]there' in 'test': [img[]]");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to]there' in 'test'");
 	testText("Image [img[Description|from here]] end",
 	         "Image <$image tooltip=Description source=to]there/> end",
 	         ['[img[Description]]'],
@@ -181,7 +181,7 @@ it("unpretty source and bad widget", function() {
 	         "\\define relink-1() "+title+"\nImage <$image tooltip=Description source=<<relink-1>>/> end",
 	         ['[img[Description]]'],
 	         {to: title});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+title+"' in 'test': [img[Description]]");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+title+"' in 'test'");
 
 });
 

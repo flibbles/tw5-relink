@@ -2,6 +2,7 @@
 
 Tests prettylinks.
 
+TODO: migrate
 \*/
 
 var utils = require("test/utils");
@@ -18,7 +19,7 @@ describe("prettylink", function() {
 
 it('prettylinks', function() {
 	var r = testText("Link to [[from here]].");
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test': [[from here]]"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test'"]);
 	testText("Link to [[description|from here]].");
 	testText("Link to [[description|from here]].", {to: "to|there"});
 	testText("Link to [[weird]desc|from here]].");
@@ -35,7 +36,7 @@ it('unpretty with caption', function() {
 	var r = testText("Link to [[caption|from here]].",
 	                 "Link to <$link to='to [bracks]'>caption</$link>.",
 	                 {to: "to [bracks]"});
-	expect(r.log).toEqual(["Renaming 'from here' to 'to [bracks]' in 'test': [[caption]]"]);
+	expect(r.log).toEqual(["Renaming 'from here' to 'to [bracks]' in 'test'"]);
 	// double brackets in middle can also disqualify prettylinks
 	testText("Link to [[caption|from here]].",
 	         "Link to <$link to='bracks [[in]] middle'>caption</$link>.",
@@ -54,7 +55,7 @@ it('unpretty and without caption', function() {
 	                 utils.placeholder(1,unquotable) +
 	                 "Link to <$link to=<<relink-1>>/>.",
 	                 {to: unquotable});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+unquotable+"' in 'test': [[from here]]"]);
+	expect(r.log).toEqual(["Renaming 'from here' to '"+unquotable+"' in 'test'"]);
 });
 
 it('unpretty, without caption, and pre 5.1.20', function() {
@@ -106,7 +107,7 @@ it('unquotable and unpretty', function() {
 	                utils.placeholder(1, to) +
 	                "Link to <$link to=<<relink-1>>>caption</$link>.",
 	                {to: to});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test': [[caption]]"]);
+	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test'"]);
 
 	// If rules disable macrodef, then don't placeholder
 	r = testText("\\rules except macrodef\n" + text, {ignored: true, to: to, macrodefCanBeDisabled: true});
