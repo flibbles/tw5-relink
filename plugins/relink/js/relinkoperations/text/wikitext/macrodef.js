@@ -115,8 +115,7 @@ function getBodyMatch(text, pos, isMultiline) {
 };
 
 function getActiveType(macroName, parameters) {
-	// TODO: Don't need to group that number
-	var placeholder = /^relink-(?:(\w+)-)?(\d+)$/.exec(macroName);
+	var placeholder = /^relink-(?:(\w+)-)?\d+$/.exec(macroName);
 	// normal macro or special placeholder?
 	if (placeholder && parameters === '') {
 		return placeholder[1] || 'title';

@@ -69,9 +69,10 @@ exports.parse = function() {
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var parser = this.parser;
+	var currentTiddler = parser.context.widget.variables.currentTiddler.value;
 	parser.pos = this.matchRegExp.lastIndex;
 	this.interpretSettings(function(macro, parameter, type) {
-		options.settings.addSetting(parser.wiki, macro, parameter, type, options.currentTiddler);
+		options.settings.addSetting(parser.wiki, macro, parameter, type, currentTiddler);
 	});
 	// Return nothing, because this rule is ignored by the parser
 	return undefined;
