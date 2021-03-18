@@ -18,17 +18,13 @@ var markdownHandler = require('$:/plugins/flibbles/relink/js/utils.js').getType(
 exports.type = "text/x-markdown";
 
 exports.report = function(tiddler, callback, options) {
-	var currentOptions = Object.create(options);
-	// TODO: I think this is unnecessary. currentTiddler is set higher.
-	currentOptions.currentTiddler = tiddler.fields.title;
-	markdownHandler.report(tiddler.fields.text, callback, currentOptions);
+	markdownHandler.report(tiddler.fields.text, callback, options);
 };
 
 exports.relink = function(tiddler, fromTitle, toTitle, options) {
 	var placeholder = new Placeholder();
 	var extraOptions = $tw.utils.extend(
 		{
-			currentTiddler: tiddler.fields.title,
 			placeholder: placeholder
 		}, options);
 	var entry = markdownHandler.relink(tiddler.fields.text, fromTitle, toTitle, extraOptions);
