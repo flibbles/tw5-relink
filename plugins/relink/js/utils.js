@@ -10,23 +10,29 @@ var relinkOperators;
 
 function getRelinkOperators() {
 	if (!relinkOperators) {
-		relinkOperators = Object.create(null);
-		$tw.modules.forEachModuleOfType('relinkoperator', function(title, module) {
-			if (module.name !== undefined) {
-				relinkOperators[module.name] = module;
-			} else {
-				// TODO: Maybe put some kind of warning message here that
-				// this module needs to be updated?
-				// Legacy support. It has a relinker, but not a reporter
-				for (var entry in module) {
-					relinkOperators[entry] = {
-						relink: module[entry],
-						report: function() {}};
-				}
-			}
-		});
+		relinkOperators = exports.getModulesByTypeAsHashmap('relinkoperator', 'name');
 	}
 	return relinkOperators;
+};
+
+/**This works nearly identically to $tw.modules.getModulesByTypeAsHashmap
+ * except that this also takes care of migrating V1 relink modules.
+ */
+exports.getModulesByTypeAsHashmap = function(moduleType, nameField) {
+	var results = Object.create(null);
+	$tw.modules.forEachModuleOfType(moduleType, function(title, module) {
+		var key = module[nameField];
+		if (key !== undefined) {
+			results[key] = module;
+		} else {
+			for (var entry in module) {
+				results[entry] = {
+					relink: module[entry],
+					report: function() {}};
+			}
+		}
+	});
+	return results;
 };
 
 exports.getTiddlerRelinkReferences = function(wiki, title, context) {

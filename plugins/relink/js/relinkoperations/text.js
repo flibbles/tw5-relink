@@ -10,22 +10,11 @@ relink titles within the body.
 "use strict";
 
 var defaultOperator = "text/vnd.tiddlywiki";
+var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 
 exports.name = 'text';
 
-var textOperators = Object.create(null);
-$tw.modules.forEachModuleOfType('relinktextoperator', function(title, module) {
-	if (module.type !== undefined) {
-		textOperators[module.type] = module;
-	} else {
-		// Legacy support. It has a relinker, but not a reporter
-		for (var entry in module) {
-			textOperators[entry] = {
-				relink: module[entry],
-				report: function() {}};
-		}
-	}
-});
+var textOperators = utils.getModulesByTypeAsHashmap('relinktextoperator', 'type');
 
 // $:/DefaultTiddlers is a tiddler which has type "text/vnd.tiddlywiki",
 // but it lies. It doesn't contain wikitext. It contains a filter, so
