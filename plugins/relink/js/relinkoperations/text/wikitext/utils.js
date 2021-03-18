@@ -9,16 +9,19 @@ Utility methods for the wikitext relink rules.
 exports.makeWidget = function(tag, attributes, body, options) {
 	var string = '<' + tag;
 	for (var attr in attributes) {
-		var quoted = exports.wrapAttributeValue(attributes[attr]);
-		if (!quoted) {
-			if (!options.placeholder) {
-				// It's not possible to make this widget
-				return undefined;
+		var value = attributes[attr];
+		if (value !== undefined) {
+			var quoted = exports.wrapAttributeValue(value);
+			if (!quoted) {
+				if (!options.placeholder) {
+					// It's not possible to make this widget
+					return undefined;
+				}
+				var category = getPlaceholderCategory(tag, attr, options);
+				quoted = '<<' + options.placeholder.getPlaceholderFor(value, category, options) + '>>';
 			}
-			var category = getPlaceholderCategory(tag, attr, options);
-			quoted = '<<' + options.placeholder.getPlaceholderFor(attributes[attr], category, options) + '>>';
+			string += ' ' + attr + '=' + quoted;
 		}
-		string += ' ' + attr + '=' + quoted;
 	}
 	if (body !== undefined) {
 		string += '>' + body + '</' + tag + '>';

@@ -116,11 +116,8 @@ exports.makeTransclude = function(context, reference, template, options) {
 	} else if (!canBePrettyTitle(reference.title)) {
 		if (context.allowWidgets()) {
 			// This block and the next account for the 1%...
-			var resultTitle = wrap(reference.title, options);
-			if (resultTitle !== undefined) {
-				var reducedRef = {field: reference.field, index: reference.index};
-				rtn = "<$tiddler tiddler="+resultTitle+">"+prettyTransclude(reducedRef, template)+"</$tiddler>";
-			}
+			var reducedRef = {field: reference.field, index: reference.index};
+			rtn = utils.makeWidget('$tiddler', {tiddler: $tw.utils.trim(reference.title)}, prettyTransclude(reducedRef, template), options);
 		}
 	} else {
 		// This block takes care of 99% of all cases

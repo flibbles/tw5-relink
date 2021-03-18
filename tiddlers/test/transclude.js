@@ -110,7 +110,11 @@ it('rightly judges unpretty', function() {
 
 it('unpretty (degrades to widget)', function() {
 	const to = "curly {}";
-	const options = {to: to};
+	const wiki = new $tw.Wiki();
+	const options = {to: to, wiki: wiki};
+	wiki.addTiddlers([
+		utils.attrConf('$tiddler', 'tiddler'),
+		utils.attrConf('$transclude', 'template')]);
 	testText("{{from here}}.", "<$tiddler tiddler='"+to+"'>{{}}</$tiddler>.", ['{{}}'], options);
 	testText("{{||from here}}.", "<$transclude tiddler='"+to+"'/>.", ['{{||}}'], options);
 	testText("{{other title||from here}}.", "<$tiddler tiddler='other title'><$transclude tiddler='"+to+"'/></$tiddler>.", ['{{other title||}}'], options);
@@ -161,7 +165,9 @@ it('unpretty, but the title is unquotable', function() {
 
 it('unpretty and unquotable', function() {
 	var to = "has {curly} 'apos' \"quotes\"";
-	const options = {to: to};
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$tiddler', 'tiddler'));
+	const options = {to: to, wiki: wiki};
 	testText("{{from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{}}</$tiddler>.", ['{{}}'], options);
 	testText("{{||from here}}.", utils.placeholder(1,to)+"<$transclude tiddler=<<relink-1>>/>.", ['{{||}}'], options);
 	testText("{{from here||Template}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{||Template}}</$tiddler>.", ['{{||Template}}'], options);
