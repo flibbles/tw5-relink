@@ -34,13 +34,13 @@ MacrocallEntry.prototype.forEachChildReport = function(report, parameter, type) 
 };
 
 exports.report = function(text, callback, options) {
-	var macroInfo = getInfoFromRule(this, text);
+	var macroInfo = getInfoFromRule(this);
 	this.parser.pos = macroInfo.end;
 	this.reportAttribute(this.parser, macroInfo, callback, options);
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var macroInfo = getInfoFromRule(this, text);
+	var macroInfo = getInfoFromRule(this);
 	var managedMacro = this.parser.context.getMacro(macroInfo.name);
 	this.parser.pos = macroInfo.end;
 	if (!managedMacro) {
@@ -183,19 +183,15 @@ function relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, mayBeWid
 	return undefined;
 };
 
-function getInfoFromRule(rule, text) {
+function getInfoFromRule(rule) {
 	// Get all the details of the match
 	var macroInfo = rule.nextCall;
-	if (macroInfo) {
-		// rule.nextCall is used >=v5.1.24
-		macroInfo.text = text.substring(macroInfo.start, macroInfo.end);
-	} else {
+	if (!macroInfo) {
 		//  rule.match is used <v5.1.24
 		var match = rule.match,
 			offset = $tw.utils.skipWhiteSpace(match[0], match[1].length+2);
 		macroInfo = {
 			name: match[1],
-			text: match[0], //TODO: Temporary, remove text usage
 			start: rule.matchRegExp.lastIndex - match[0].length,
 			end: rule.matchRegExp.lastIndex,
 		};
