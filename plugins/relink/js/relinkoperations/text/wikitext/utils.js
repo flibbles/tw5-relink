@@ -55,13 +55,12 @@ function getPlaceholderCategory(tag, attribute, options) {
  * There exist titles that simply can't be quoted.
  * If it can stick with the preference, it will.
  *
- //TODO: empty values
  * return: Returns the wrapped value, or undefined if it's impossible to wrap
  */
 exports.wrapAttributeValue = function(value, preference) {
 	var whitelist = ["", "'", '"', '"""'];
 	var choices = {
-		"": function(v) {return !/([\/\s<>"'=])/.test(v); },
+		"": function(v) {return !/([\/\s<>"'=])/.test(v) && v.length > 0; },
 		"'": function(v) {return v.indexOf("'") < 0; },
 		'"': function(v) {return v.indexOf('"') < 0; },
 		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';}

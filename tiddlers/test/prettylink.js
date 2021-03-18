@@ -54,6 +54,10 @@ it('unpretty with caption', function() {
 	testText("Link to [[caption|from here]].",
 	         "Link to <$link to='bracks [[in]] middle'>caption</$link>.",
 	         ['[[caption]]'], {to: "bracks [[in]] middle"});
+	// empty caption
+	testText("Link to [[|from here]].",
+	         "Link to <$link to='bracks [[in]] middle'></$link>.",
+	         ['[[]]'], {to: "bracks [[in]] middle"});
 });
 
 it('unpretty and without caption', function() {

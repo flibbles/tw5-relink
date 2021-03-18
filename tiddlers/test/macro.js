@@ -132,6 +132,11 @@ it('unquotable titles', function() {
 	testText('X<<test Clist: \'[[from here]] C"\'>>Y',
 	         ph("list-1",apos+' C"')+'X<$macrocall $name=test Clist=<<relink-list-1>>/>Y',
 	         {to: apos});
+
+	// Empty attributes shouldn't get placeholdered, but should be quoted
+	testText('<<test Clist: "" Btitle:"from here">>',
+	         ph(1, to) + "<$macrocall $name=test Clist='' Btitle=<<relink-1>>/>",
+	         {to: to});
 });
 
 it('unquotable wikitext', function() {
