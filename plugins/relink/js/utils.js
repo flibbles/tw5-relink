@@ -117,6 +117,15 @@ exports.getWikiContext = function(wiki) {
 	return new Contexts.import(wiki, whitelist, macroFilter);
 };
 
+/** Returns the Relink indexer, or a dummy object which pretends to be one.
+ */
+exports.getIndexer = function(wiki) {
+	if (!wiki._relink_indexer) {
+		wiki._relink_indexer = (wiki.getIndexer && wiki.getIndexer("RelinkReferencesIndexer")) || new (require('$:/plugins/flibbles/relink/js/utils/backupIndexer.js'))(wiki);
+	}
+	return wiki._relink_indexer;
+};
+
 /**Returns a specific relinker.
  * This is useful for wikitext rules which need to parse a filter or a list
  */
