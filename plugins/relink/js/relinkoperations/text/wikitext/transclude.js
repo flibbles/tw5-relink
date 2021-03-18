@@ -100,20 +100,14 @@ exports.makeTransclude = function(context, reference, template, options) {
 	var rtn;
 	if (!canBePrettyTemplate(template)) {
 		if (context.allowWidgets()) {
-			var resultTemplate = wrap(template, options);
-			if (resultTemplate !== undefined) {
-				if (reference.title) {
-					var resultTitle = wrap(reference.title, options);
-					var widg = utils.makeWidget('$transclude', {
-						tiddler: $tw.utils.trim(template),
-						field: reference.field,
-						index: reference.index}, undefined, options);
-					if (resultTitle !== undefined && widg !== undefined) {
-						rtn = "<$tiddler tiddler="+resultTitle+">"+widg+"</$tiddler>";
-					}
-				} else {
-					rtn = utils.makeWidget('$transclude', {tiddler: $tw.utils.trim(template)}, undefined, options);
-				}
+			var widget = utils.makeWidget('$transclude', {
+				tiddler: $tw.utils.trim(template),
+				field: reference.field,
+				index: reference.index}, undefined, options);
+			if (reference.title && widget !== undefined) {
+				rtn = utils.makeWidget('$tiddler', {tiddler: $tw.utils.trim(reference.title)}, widget, options);
+			} else {
+				rtn = widget;
 			}
 		}
 	} else if (!canBePrettyTitle(reference.title)) {
@@ -127,17 +121,6 @@ exports.makeTransclude = function(context, reference, template, options) {
 		rtn = prettyTransclude(reference, template);
 	}
 	return rtn;
-};
-
-function wrap(tiddler, options) {
-	tiddler = $tw.utils.trim(tiddler);
-	var result = utils.wrapAttributeValue(tiddler);
-	if (result === undefined) {
-		if (options.placeholder) {
-			result = "<<" + options.placeholder.getPlaceholderFor(tiddler, undefined, options) + ">>";
-		}
-	}
-	return result;
 };
 
 function canBePrettyTitle(value) {

@@ -158,9 +158,11 @@ it('respects \\rules', function() {
 });
 
 it('unpretty, but the title is unquotable', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$tiddler', 'tiddler'));
 	var to = "curly {}";
 	var other = "a'\"";
-	testText("{{"+other+"||from here}}.", utils.placeholder(1,other)+"<$tiddler tiddler=<<relink-1>>><$transclude tiddler='"+to+"'/></$tiddler>.", ['{{'+other+'||}}'], {to: to});
+	testText("{{"+other+"||from here}}.", utils.placeholder(1,other)+"<$tiddler tiddler=<<relink-1>>><$transclude tiddler='"+to+"'/></$tiddler>.", ['{{'+other+'||}}'], {to: to, wiki: wiki});
 });
 
 it('unpretty and unquotable', function() {

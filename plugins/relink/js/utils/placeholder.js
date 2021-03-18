@@ -47,9 +47,14 @@ Placeholder.prototype.registerExisting = function(key, value) {
 
 Placeholder.prototype.getPreamble = function() {
 	var results = [];
-	for (var name in this.placeholders) {
-		var val = this.placeholders[name];
-		results.push("\\define "+name+"() "+val+"\n");
+	var keys = Object.keys(this.placeholders);
+	if (keys.length > 0) {
+		keys.sort();
+		for (var i = 0; i < keys.length; i++) {
+			var name = keys[i];
+			var val = this.placeholders[name];
+			results.push("\\define "+name+"() "+val+"\n");
+		}
 	}
 	return results.join('');
 };
