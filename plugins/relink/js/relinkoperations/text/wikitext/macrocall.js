@@ -47,9 +47,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		// We don't manage this macro. Bye.
 		return undefined;
 	}
-	if (!this.parser.context.survey(macroInfo.text, fromTitle, options)) {
-		return undefined;
-	}
 	var mayBeWidget = this.parser.context.allowWidgets();
 	var names = getParamNames(this.parser, macroInfo.name, macroInfo.params, options);
 	if (names === undefined) {

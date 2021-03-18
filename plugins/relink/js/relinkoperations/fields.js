@@ -54,13 +54,15 @@ exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = options.settings.getFields();
 	$tw.utils.each(fields, function(handler, field) {
 		var input = tiddler.fields[field];
-		var entry = handler.relink(input, fromTitle, toTitle, options);
-		if (entry !== undefined) {
-			var fieldEntry = new FieldEntry();
-			fieldEntry.field = field;
-			fieldEntry.output = entry.output;
-			fieldEntry.add(entry);
-			changes[field] = fieldEntry;
+		if (input) {
+			var entry = handler.relink(input, fromTitle, toTitle, options);
+			if (entry !== undefined) {
+				var fieldEntry = new FieldEntry();
+				fieldEntry.field = field;
+				fieldEntry.output = entry.output;
+				fieldEntry.add(entry);
+				changes[field] = fieldEntry;
+			}
 		}
 	});
 };

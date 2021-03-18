@@ -174,7 +174,9 @@ it('undefined macros', function() {
 	// chance it's not relinking when it should.
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("undef", "param", "title"));
-	testText("<<undef something>> [[from here]]", {wiki: wiki});
+	// This in theory doesn't have to fail if it's willing to experiment
+	// with the anonymous parameters to see if any WOULD be altered.
+	testText("<<undef something>> [[from here]]", {wiki: wiki, fails: 1});
 	testText("<<undef param:'from here'>>", {wiki: wiki});
 	testText("<<undef A B C D param:'from here'>>", {wiki: wiki});
 	testText("<<undef 'from here'>>", {wiki: wiki,ignored: true,fails: 1});

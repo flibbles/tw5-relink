@@ -76,19 +76,6 @@
 			}
 		},
 		{
-			"path": "./surveyors",
-			"filesRegExp": "^.*\\.js$",
-			"isTiddlerFile": true,
-			"fields": {
-				"module-type": "relinksurveyor",
-				"title": {
-					"source": "filename",
-					"prefix": "$:/plugins/flibbles/relink/js/surveyors/"
-				},
-				"type": "application/javascript"
-			}
-		},
-		{
 			"path": "./contexts",
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,

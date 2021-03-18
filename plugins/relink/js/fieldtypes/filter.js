@@ -52,9 +52,6 @@ exports.report = function(filter, callback, options) {
 /**Returns undefined if no change was made.
  */
 exports.relink = function(filter, fromTitle, toTitle, options) {
-	if (fromTitle && !options.settings.survey(filter, fromTitle, options)) {
-		return undefined;
-	}
 	var filterEntry = new FilterEntry();
 	var relinker = new Rebuilder(filter);
 	var p = 0, // Current position in the filter string
@@ -469,9 +466,6 @@ function operatorBlurb(operator, enquotedOperand) {
 
 // Returns the relinker needed for a given operator, or returns undefined.
 function fieldType(context, operator) {
-	// TODO: This isn't perfect. If a suffixed version is defined, and a default
-	//       one may stop the other from being found. But I want tests to
-	//       expose this.
 	return (operator.suffix &&
 	        context.getOperator(operator.operator + ':' + operator.suffix, operator.index)) ||
 	        context.getOperator(operator.operator, operator.index);

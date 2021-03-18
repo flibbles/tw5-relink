@@ -39,10 +39,6 @@ Context.prototype.getMacros = function() {
 	return this.parent.getMacros();
 };
 
-Context.prototype.survey = function(text, fromTitle, options) {
-	return this.parent.survey(text, fromTitle, options);
-};
-
 Context.prototype.allowPrettylinks = function() {
 	return this.parent.allowPrettylinks();
 };

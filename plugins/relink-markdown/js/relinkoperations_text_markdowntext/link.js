@@ -51,10 +51,6 @@ exports.findNextMatch = function(startPos) {
 	return this.endMatch ? this.endMatch.index : undefined;
 };
 
-exports.survey = function(text) {
-	return this.matchLink(text, 0);
-};
-
 /**A zero side-effect method which returns a regexp which pretended to match
  * the whole link, caption and all. I do this instead of just using a
  * regexp to begin with, because markdown links require context-free grammar

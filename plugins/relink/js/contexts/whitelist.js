@@ -8,14 +8,7 @@ a parent.
 var utils = require('../utils');
 var Context = require('./context').context;
 
-var surveyors = [];
 var prefix = "$:/config/flibbles/relink/";
-
-$tw.modules.forEachModuleOfType("relinksurveyor", function(title, exports) {
-	if (exports.survey) {
-		surveyors.push(exports);
-	}
-});
 
 function WhitelistContext(wiki) {
 	build(this, wiki);
@@ -34,17 +27,6 @@ WhitelistContext.prototype = new Context();
  * your needs. This is currently a HACK solution.
  */
 WhitelistContext.hotDirectories = [prefix];
-
-WhitelistContext.prototype.survey = function(text, fromTitle, options) {
-	if (text) {
-		for (var i = 0; i < surveyors.length; i++) {
-			if (surveyors[i].survey(text, fromTitle, options)) {
-				return true;
-			}
-		}
-	}
-	return false;
-};
 
 WhitelistContext.prototype.getAttribute = function(elementName) {
 	return this.attributes[elementName];

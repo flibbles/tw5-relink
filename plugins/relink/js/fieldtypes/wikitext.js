@@ -217,10 +217,6 @@ WikiRelinker.prototype.handleRule = function(ruleInfo) {
 };
 
 exports.relink = function(wikitext, fromTitle, toTitle, options) {
-	// fromTitle doesn't even show up plaintext. No relinking to do.
-	if (!options.settings.survey(wikitext, fromTitle, options)) {
-		return undefined;
-	}
 	var parser = new WikiRelinker(options.type, wikitext, fromTitle, toTitle, options),
 		wikiEntry = undefined;
 	// Now that we have an array of entries, let's produce the wikiText entry
