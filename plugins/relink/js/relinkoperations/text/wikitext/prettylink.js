@@ -49,7 +49,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 };
 
 exports.makeLink = function(context, tiddler, caption, options) {
-	var output, quoted;
+	var output;
 	if (context.allowPrettylinks() && this.canBePretty(tiddler, caption)) {
 		output = prettyLink(tiddler, caption);
 	} else if (!context.allowWidgets()) {
@@ -57,14 +57,7 @@ exports.makeLink = function(context, tiddler, caption, options) {
 		output = undefined;
 	} else if (caption === undefined) {
 		if (exports.shorthandSupported(options)) {
-			quoted = utils.wrapAttributeValue(tiddler);
-			if (!quoted) {
-				if (!options.placeholder) {
-					return undefined;
-				}
-				quoted = "<<" + options.placeholder.getPlaceholderFor(tiddler,undefined,options) + ">>";
-			}
-			output = "<$link to="+quoted+"/>";
+			output = utils.makeWidget('$link', {to: tiddler}, undefined, options);
 		} else {
 			// If we don't have a caption, we must resort to
 			// placeholders anyway to prevent link/caption desync
@@ -75,17 +68,11 @@ exports.makeLink = function(context, tiddler, caption, options) {
 				output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 			}
 		}
-	} else if (quoted = utils.wrapAttributeValue(tiddler)) {
+	} else {
 		var safeCaption = sanitizeCaption(caption, options);
 		if (safeCaption !== undefined) {
-			output = "<$link to="+quoted+">"+safeCaption+"</$link>";
+			output = utils.makeWidget('$link', {to: tiddler}, safeCaption, options);
 		}
-	} else if (options.placeholder) {
-		var ph = options.placeholder.getPlaceholderFor(tiddler, undefined, options);
-		// We don't test if caption is undefined here, because it
-		// never will be. options.placeholder exists.
-		var safeCaption = sanitizeCaption(caption, options);
-		output = "<$link to=<<"+ph+">>>"+safeCaption+"</$link>";
 	}
 	return output;
 };
@@ -115,15 +102,7 @@ function sanitizeCaption(caption, options) {
 	if (plaintext === caption && caption.indexOf("</$link>") <= 0) {
 		return caption;
 	} else {
-		var wrapped = utils.wrapAttributeValue(caption);
-		if (wrapped) {
-			return "<$text text="+wrapped+"/>";
-		} else if (options.placeholder) {
-			var ph = options.placeholder.getPlaceholderFor(caption, "plaintext", options);
-			return "<$text text=<<"+ph+">>/>";
-		} else {
-			return undefined;
-		}
+		return utils.makeWidget('$text', {text: caption}, undefined, options);
 	}
 };
 

@@ -5,6 +5,46 @@ Utility methods for the wikitext relink rules.
 
 \*/
 
+// TODO: Maybe this can check if widgeting is allowed too?
+exports.makeWidget = function(tag, attributes, body, options) {
+	var string = '<' + tag;
+	for (var attr in attributes) {
+		var quoted = exports.wrapAttributeValue(attributes[attr]);
+		if (!quoted) {
+			if (!options.placeholder) {
+				// It's not possible to make this widget
+				return undefined;
+			}
+			var category = getPlaceholderCategory(tag, attr, options);
+			quoted = '<<' + options.placeholder.getPlaceholderFor(attributes[attr], category, options) + '>>';
+		}
+		string += ' ' + attr + '=' + quoted;
+	}
+	if (body !== undefined) {
+		string += '>' + body + '</' + tag + '>';
+	} else {
+		string += '/>';
+	}
+	return string;
+};
+
+function getPlaceholderCategory(tag, attribute, options) {
+	var element = options.settings.getAttribute(tag);
+	var rule = element && element[attribute];
+	// titles go to relink-\d
+	// plaintext goes to relink-plaintext-\d
+	// because titles are way more common, also legacy
+	if (rule === undefined) {
+		return 'plaintext';
+	} else {
+		rule = rule.fields.text;
+		if (rule === 'title') {
+			rule = undefined;
+		}
+		return rule;
+	}
+};
+
 /**Finds an appropriate quote mark for a given value.
  *
  *Tiddlywiki doesn't have escape characters for attribute values. Instead,

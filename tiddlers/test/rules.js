@@ -131,7 +131,9 @@ it('doesn\'t impact filter operator wikitext', function() {
 
 it('does not let local macrodef disabling stop placeholdering', function() {
 	const wiki = new $tw.Wiki();
-	wiki.addTiddler({title: 'test', text: '\\rules only prettylink html\n[[caption|from]]'});
+	wiki.addTiddlers([
+		{title: 'test', text: '\\rules only prettylink html\n[[caption|from]]'},
+		utils.attrConf('$link', 'to')]);
 	wiki.renameTiddler('from', 'to]] \'"');
 	expect(getText(wiki, 'test')).toBe('\\define relink-1() to]] \'"\n\\rules only prettylink html\n<$link to=<<relink-1>>>caption</$link>');
 });
@@ -141,6 +143,7 @@ it('uses the toplevel wikitext for placeholdering', function() {
 	wiki.addTiddlers([
 		{title: 'test', text: '<$list emptyMessage="[[from]]"/>\n<<macro text:"[[from]]">>'},
 		utils.attrConf('$list', 'emptyMessage', 'wikitext'),
+		utils.attrConf('$link', 'to'),
 		utils.macroConf('macro', 'text', 'wikitext')]);
 	wiki.renameTiddler('from', 'to\' ]] there"');
 	expect(getText(wiki, 'test')).toBe('\\define relink-1() to\' ]] there"\n<$list emptyMessage="<$link to=<<relink-1>>/>"/>\n<<macro text:"<$link to=<<relink-1>>/>">>');

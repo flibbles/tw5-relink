@@ -18,7 +18,7 @@ function testText(text, expected, report, options) {
 	}
 	wiki.addTiddlers([
 		{title: 'test', text: text},
-		utils.operatorConf("title")]);
+		utils.attrConf('$link', 'to')]);
 	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
 	wiki.renameTiddler(options.from, options.to, options);
 	expect(utils.getText('test', wiki)).toEqual(expected);

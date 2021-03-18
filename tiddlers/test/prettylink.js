@@ -9,7 +9,7 @@ var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wi
 
 function testText(text, expected, report, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);
-	const wiki = new $tw.Wiki();
+	const wiki = options.wiki || new $tw.Wiki();
 	if (expected === true) {
 		expected = text.split(options.from).join(options.to);
 	} else if (expected === false) {
@@ -57,18 +57,20 @@ it('unpretty with caption', function() {
 });
 
 it('unpretty and without caption', function() {
-	var unquotable =  "very' bad]]title\"";
+	const unquotable =  "very' bad]]title\"";
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	// without a caption, we have to go straight to placeholders weird,
 	// or we might desync the link with its caption with later name changes.
 	testText("Link to [[from here]].",
 	         utils.placeholder(1,unquotable) +
 	         "Link to <$link to=<<relink-1>>/>.",
-	         ['[[from here]]'], {to: unquotable});
+	         ['[[from here]]'], {to: unquotable, wiki: wiki});
 	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+unquotable+"' in 'test'");
 	testText("Link to [[from here]].", "Link to <$link to=A]]B/>.",
-	         ['[[from here]]'], {to: "A]]B"});
+	         ['[[from here]]'], {to: "A]]B", wiki: wiki});
 	testText("Link to [[from here]].", "Link to <$link to=A|B/>.",
-	         ['[[from here]]'], {to: "A|B"});
+	         ['[[from here]]'], {to: "A|B", wiki: wiki});
 });
 
 it('unpretty, without caption, and pre 5.1.20', function() {
@@ -125,21 +127,41 @@ it('unquotable and unpretty', function() {
 	// prettylinks or widgets.
 	var text = "Link to [[caption|from here]].";
 	var to = 'Has apost\' [[bracks]] and "quotes"';
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	testText(text,
 	         utils.placeholder(1, to) +
 	         "Link to <$link to=<<relink-1>>>caption</$link>.",
-	         ['[[caption]]'], {to: to});
+	         ['[[caption]]'], {to: to, wiki: wiki});
 	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test'");
 
 	// If rules disable macrodef, then don't placeholder
 	var fails = utils.collectFailures(function() {
-		testText("\\rules except macrodef\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true});
+		testText("\\rules except macrodef\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true, wiki: wiki});
 	});
 	expect(fails.length).toEqual(1);
 	fails = utils.collectFailures(function() {
-		testText("\\rules only prettylink html\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true});
+		testText("\\rules only prettylink html\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true, wiki: wiki});
 	});
 	expect(fails.length).toEqual(1);
+});
+
+it('unquotable when $link is customized', function() {
+	const wiki = new $tw.Wiki();
+	const to = 'Has apost\' [[bracks]] and "quotes"';
+	wiki.addTiddler(utils.attrConf('$link', 'to', 'reference'));
+	testText('[[caption|from here]]',
+	         utils.placeholder('reference-1', to) +
+	         "<$link to=<<relink-reference-1>>>caption</$link>",
+	         ['[[caption]]'], {to: to, wiki: wiki});
+});
+
+it('unquotable when $link is not set', function() {
+	const to = 'Has apost\' [[bracks]] and "quotes"';
+	testText('[[caption|from here]]',
+	         utils.placeholder('plaintext-1', to) +
+	         "<$link to=<<relink-plaintext-1>>>caption</$link>",
+	         ['[[caption]]'], {to: to});
 });
 
 it('respects rules', function() {
