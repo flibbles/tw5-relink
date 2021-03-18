@@ -104,12 +104,15 @@ exports.makeTransclude = function(context, reference, template, options) {
 			if (resultTemplate !== undefined) {
 				if (reference.title) {
 					var resultTitle = wrap(reference.title, options);
-					var attrs = transcludeAttributes(reference.field, reference.index, options);
-					if (resultTitle !== undefined && attrs !== undefined) {
-						rtn = "<$tiddler tiddler="+resultTitle+"><$transclude tiddler="+resultTemplate+attrs+"/></$tiddler>";
+					var widg = utils.makeWidget('$transclude', {
+						tiddler: $tw.utils.trim(template),
+						field: reference.field,
+						index: reference.index}, undefined, options);
+					if (resultTitle !== undefined && widg !== undefined) {
+						rtn = "<$tiddler tiddler="+resultTitle+">"+widg+"</$tiddler>";
 					}
 				} else {
-					rtn = "<$transclude tiddler="+resultTemplate+"/>";
+					rtn = utils.makeWidget('$transclude', {tiddler: $tw.utils.trim(template)}, undefined, options);
 				}
 			}
 		}
@@ -143,37 +146,6 @@ function canBePrettyTitle(value) {
 
 function canBePrettyTemplate(value) {
 	return !value || (value.indexOf('}') < 0 && value.indexOf('{') < 0 && value.indexOf('|') < 0);
-};
-
-/**Returns attributes for a transclude widget.
- * only field or index should be used, not both, but both will return
- * the intuitive (albeit useless) result.
- */
-function transcludeAttributes(field, index, options) {
-	var rtn = [
-		wrapAttribute("field", field, options),
-		wrapAttribute("index", index, options)
-	];
-	if (rtn[0] === undefined || rtn[1] === undefined) {
-		// This can only happen if the transclude is using an
-		// illegal key.
-		return undefined;
-	}
-	return rtn.join('');
-};
-
-function wrapAttribute(name, value, options) {
-	if (value) {
-		var wrappedValue = utils.wrapAttributeValue(value);
-		if (wrappedValue === undefined) {
-			if (!options.placeholder) {
-				return undefined;
-			}
-			wrappedValue = "<<"+options.placeholder.getPlaceholderFor(value, name, options)+">>";
-		}
-		return " "+name+"="+wrappedValue;
-	}
-	return '';
 };
 
 function prettyTransclude(textReference, template) {

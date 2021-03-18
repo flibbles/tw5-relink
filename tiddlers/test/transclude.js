@@ -166,7 +166,9 @@ it('unpretty, but the title is unquotable', function() {
 it('unpretty and unquotable', function() {
 	var to = "has {curly} 'apos' \"quotes\"";
 	const wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.attrConf('$tiddler', 'tiddler'));
+	wiki.addTiddlers([
+		utils.attrConf('$tiddler', 'tiddler'),
+		utils.attrConf('$transclude', 'tiddler')]);
 	const options = {to: to, wiki: wiki};
 	testText("{{from here}}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{}}</$tiddler>.", ['{{}}'], options);
 	testText("{{||from here}}.", utils.placeholder(1,to)+"<$transclude tiddler=<<relink-1>>/>.", ['{{||}}'], options);
@@ -186,7 +188,7 @@ it('unpretty and unquotable', function() {
 	testText("{{  a'\"  ||  from here  }}.", utils.placeholder(1,to)+utils.placeholder(2,other)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>>/></$tiddler>.", ['{{'+other+'||}}'], options);
 	testText("{{from here|| a'\"  }}.", utils.placeholder(1,to)+"<$tiddler tiddler=<<relink-1>>>{{|| a'\"  }}</$tiddler>.", ['{{||'+other+'}}'], options);
 	// This case is so preposterous, I'm not sure I even want to cover it.
-	testText("{{  "+other+"##"+index+"||from here  }}.", utils.placeholder(1,to)+utils.placeholder(2,other)+utils.placeholder("index-1",index)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>> index=<<relink-index-1>>/></$tiddler>.", ['{{'+other+'##'+index+'||}}'], options);
+	testText("{{  "+other+"##"+index+"||from here  }}.", utils.placeholder(1,to)+utils.placeholder(2,other)+utils.placeholder("plaintext-1",index)+"<$tiddler tiddler=<<relink-2>>><$transclude tiddler=<<relink-1>> index=<<relink-plaintext-1>>/></$tiddler>.", ['{{'+other+'##'+index+'||}}'], options);
 });
 
 it('transclude differentiates between inline and block', function() {
