@@ -99,23 +99,19 @@ function parseTextReference(textRef) {
 exports.makeTransclude = function(context, reference, template, options) {
 	var rtn;
 	if (!canBePrettyTemplate(template)) {
-		if (context.allowWidgets()) {
-			var widget = utils.makeWidget('$transclude', {
-				tiddler: $tw.utils.trim(template),
-				field: reference.field,
-				index: reference.index}, undefined, options);
-			if (reference.title && widget !== undefined) {
-				rtn = utils.makeWidget('$tiddler', {tiddler: $tw.utils.trim(reference.title)}, widget, options);
-			} else {
-				rtn = widget;
-			}
+		var widget = utils.makeWidget(context, '$transclude', {
+			tiddler: $tw.utils.trim(template),
+			field: reference.field,
+			index: reference.index}, undefined, options);
+		if (reference.title && widget !== undefined) {
+			rtn = utils.makeWidget(context, '$tiddler', {tiddler: $tw.utils.trim(reference.title)}, widget, options);
+		} else {
+			rtn = widget;
 		}
 	} else if (!canBePrettyTitle(reference.title)) {
-		if (context.allowWidgets()) {
-			// This block and the next account for the 1%...
-			var reducedRef = {field: reference.field, index: reference.index};
-			rtn = utils.makeWidget('$tiddler', {tiddler: $tw.utils.trim(reference.title)}, prettyTransclude(reducedRef, template), options);
-		}
+		// This block and the next account for the 1%...
+		var reducedRef = {field: reference.field, index: reference.index};
+		rtn = utils.makeWidget(context, '$tiddler', {tiddler: $tw.utils.trim(reference.title)}, prettyTransclude(reducedRef, template), options);
 	} else {
 		// This block takes care of 99% of all cases
 		rtn = prettyTransclude(reference, template);

@@ -105,18 +105,16 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 exports.makeFilteredtransclude = function(context, filter, tooltip, template, style, classes, options) {
 	if (canBePretty(filter) && canBePrettyTemplate(template)) {
 		return prettyList(filter, tooltip, template, style, classes);
-	} else if (context.allowWidgets()) {
-		if (classes !== undefined) {
-			classes = classes.split('.').join(' ');
-		}
-		return utils.makeWidget('$list', {
-			filter: filter,
-			tooltip: tooltip,
-			template: template,
-			style: style || undefined,
-			itemClass: classes}, undefined, options);
 	}
-	return undefined;
+	if (classes !== undefined) {
+		classes = classes.split('.').join(' ');
+	}
+	return utils.makeWidget(context, '$list', {
+		filter: filter,
+		tooltip: tooltip,
+		template: template,
+		style: style || undefined,
+		itemClass: classes}, undefined, options);
 };
 
 function prettyList(filter, tooltip, template, style, classes) {

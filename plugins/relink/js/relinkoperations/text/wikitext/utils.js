@@ -5,8 +5,10 @@ Utility methods for the wikitext relink rules.
 
 \*/
 
-// TODO: Maybe this can check if widgeting is allowed too?
-exports.makeWidget = function(tag, attributes, body, options) {
+exports.makeWidget = function(context, tag, attributes, body, options) {
+	if (!context.allowWidgets()) {
+		return undefined;
+	}
 	var string = '<' + tag;
 	for (var attr in attributes) {
 		var value = attributes[attr];
@@ -17,7 +19,7 @@ exports.makeWidget = function(tag, attributes, body, options) {
 					// It's not possible to make this widget
 					return undefined;
 				}
-				var category = getPlaceholderCategory(tag, attr, options);
+				var category = getPlaceholderCategory(context, tag, attr);
 				quoted = '<<' + options.placeholder.getPlaceholderFor(value, category, options) + '>>';
 			}
 			string += ' ' + attr + '=' + quoted;
@@ -31,8 +33,8 @@ exports.makeWidget = function(tag, attributes, body, options) {
 	return string;
 };
 
-function getPlaceholderCategory(tag, attribute, options) {
-	var element = options.settings.getAttribute(tag);
+function getPlaceholderCategory(context, tag, attribute) {
+	var element = context.getAttribute(tag);
 	var rule = element && element[attribute];
 	// titles go to relink-\d
 	// plaintext goes to relink-plaintext-\d

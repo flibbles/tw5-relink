@@ -52,27 +52,20 @@ exports.makeLink = function(context, tiddler, caption, options) {
 	var output;
 	if (context.allowPrettylinks() && this.canBePretty(tiddler, caption)) {
 		output = prettyLink(tiddler, caption);
-	} else if (!context.allowWidgets()) {
-		// We aren't allowed to make widgets. Gotta fail.
-		output = undefined;
-	} else if (caption === undefined) {
-		if (exports.shorthandSupported(options)) {
-			output = utils.makeWidget('$link', {to: tiddler}, undefined, options);
-		} else {
-			// If we don't have a caption, we must resort to
-			// placeholders anyway to prevent link/caption desync
-			// from later relinks.
-			// It doesn't matter whether the tiddler is quotable.
-			if (options.placeholder) {
-				var ph = options.placeholder.getPlaceholderFor(tiddler, undefined, options);
-				output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
-			}
-		}
-	} else {
-		var safeCaption = sanitizeCaption(caption, options);
+	} else if (caption !== undefined) {
+		var safeCaption = sanitizeCaption(context, caption, options);
 		if (safeCaption !== undefined) {
-			output = utils.makeWidget('$link', {to: tiddler}, safeCaption, options);
+			output = utils.makeWidget(context, '$link', {to: tiddler}, safeCaption, options);
 		}
+	} else if (exports.shorthandSupported(options)) {
+		output = utils.makeWidget(context, '$link', {to: tiddler}, undefined, options);
+	} else if (context.allowWidgets() && options.placeholder) {
+		// If we don't have a caption, we must resort to
+		// placeholders anyway to prevent link/caption desync
+		// from later relinks.
+		// It doesn't matter whether the tiddler is quotable.
+		var ph = options.placeholder.getPlaceholderFor(tiddler, undefined, options);
+		output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 	}
 	return output;
 };
@@ -97,12 +90,12 @@ exports.shorthandSupported = function(options) {
 	return _supported;
 };
 
-function sanitizeCaption(caption, options) {
+function sanitizeCaption(context, caption, options) {
 	var plaintext = options.wiki.renderText("text/plain", "text/vnd.tiddlywiki", caption);
 	if (plaintext === caption && caption.indexOf("</$link>") <= 0) {
 		return caption;
 	} else {
-		return utils.makeWidget('$text', {text: caption}, undefined, options);
+		return utils.makeWidget(context, '$text', {text: caption}, undefined, options);
 	}
 };
 
