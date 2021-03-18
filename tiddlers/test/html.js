@@ -21,6 +21,7 @@ it('field attributes', function() {
 	testText('<$link to="from here">\n\ncaption</$link>\n\n');
 	testText(`<$link to='from here'>caption</$link>`);
 	testText(`<$link to='from here' />`);
+	testText('<$link to="from here" tooltip="" />');
 	testText('Before <$link to="from here">caption</$link> After');
 	testText(`<$link tag="div" to="from here">caption</$link>`);
 	testText(`<$link aria-label="true" to="from here">caption</$link>`);

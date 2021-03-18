@@ -106,7 +106,15 @@ exports.makeFilteredtransclude = function(context, filter, tooltip, template, st
 	if (canBePretty(filter) && canBePrettyTemplate(template)) {
 		return prettyList(filter, tooltip, template, style, classes);
 	} else if (context.allowWidgets()) {
-		return widget(filter, tooltip, template, style, classes, options);
+		if (classes !== undefined) {
+			classes = classes.split('.').join(' ');
+		}
+		return utils.makeWidget('$list', {
+			filter: filter,
+			tooltip: tooltip,
+			template: template,
+			style: style || undefined,
+			itemClass: classes}, undefined, options);
 	}
 	return undefined;
 };
@@ -129,43 +137,6 @@ function prettyList(filter, tooltip, template, style, classes) {
 	}
 	style = style || '';
 	return "{{{"+filter+tooltip+template+"}}"+style+"}"+classes;
-};
-
-/** Returns a filtered transclude as a string of a widget.
- */
-function widget(filter, tooltip, template, style, classes, options) {
-	var cannotDo = false;
-	if (classes !== undefined) {
-		classes = classes.split('.').join(' ');
-	}
-	function wrap(name, value, treatAsTitle) {
-		if (!value) {
-			return '';
-		}
-		var wrappedValue = utils.wrapAttributeValue(value);
-		if (wrappedValue === undefined) {
-			if (!options.placeholder) {
-				cannotDo = true;
-				return undefined;
-			}
-			var category = treatAsTitle ? undefined : name;
-			wrappedValue = "<<"+options.placeholder.getPlaceholderFor(value,category,options)+">>";
-		}
-		return " "+name+"="+wrappedValue;
-	};
-	var widget = [
-		"<$list",
-		wrap("filter", filter),
-		wrap("tooltip", tooltip),
-		wrap("template", template, true),
-		wrap("style", style),
-		wrap("itemClass", classes),
-		"/>"
-	];
-	if (cannotDo) {
-		return undefined;
-	}
-	return widget.join('');
 };
 
 function canBePretty(filter) {
