@@ -24,6 +24,7 @@ ReferencesIndexer.prototype.rebuild = function() {
 	this.backIndex = null;
 	this.contexts = Object.create(null);
 	this.changedTiddlers = undefined;
+	this.resultCache = Object.create(null);
 };
 
 ReferencesIndexer.prototype.update = function(updateDescriptor) {
@@ -58,7 +59,20 @@ ReferencesIndexer.prototype.reverseLookup = function(title) {
 
 ReferencesIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 	this._upkeep();
-	return utils.getRelinkReport(this.wiki, fromTitle, toTitle, this.context, options);
+	var shortlist = undefined;
+	var cache = this.resultCache[fromTitle];
+	if (cache) {
+		if (cache.to === toTitle) {
+			return cache.results;
+		}
+		shortlist = Object.keys(cache.results);
+	} else {
+		cache = {};
+	}
+	cache.results = utils.getRelinkResults(this.wiki, fromTitle, toTitle, this.context, shortlist, options);
+	cache.to = toTitle;
+	this.resultCache[fromTitle] = cache;
+	return cache.results;
 };
 
 ReferencesIndexer.prototype._upkeep = function() {
@@ -94,6 +108,8 @@ ReferencesIndexer.prototype._upkeep = function() {
 			}
 		}
 		this.changedTiddlers = undefined;
+		// Also, clear the relink results cache
+		this.resultCache = Object.create(null);
 	}
 };
 

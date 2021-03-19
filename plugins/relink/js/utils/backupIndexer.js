@@ -41,7 +41,7 @@ BackupIndexer.prototype.reverseLookup = function(title) {
  */
 BackupIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 	var cache = getCache(this.wiki);
-	return utils.getRelinkReport(this.wiki, fromTitle, toTitle, cache.context, options);
+	return utils.getRelinkResults(this.wiki, fromTitle, toTitle, cache.context, undefined, options);
 };
 
 function getCache(wiki) {

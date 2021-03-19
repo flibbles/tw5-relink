@@ -3,6 +3,7 @@ module-type: library
 
 Utility methods for relink.
 
+// TODO: Switch around all the (blurb, title) report callbacks
 \*/
 
 var macroFilter =  "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]";
@@ -52,14 +53,16 @@ exports.getTiddlerRelinkReferences = function(wiki, title, context) {
 /** Returns a pair like this,
  *  { title: {field: entry, ... }, ... }
  */
-exports.getRelinkReport = function(wiki, fromTitle, toTitle, context, options) {
+exports.getRelinkResults = function(wiki, fromTitle, toTitle, context, tiddlerList, options) {
 	options = options || {};
 	options.wiki = options.wiki || wiki;
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var changeList = Object.create(null);
 	if(fromTitle && toTitle) {
-		var tiddlerList = wiki.getRelinkableTitles();
+		if (tiddlerList === undefined) {
+			tiddlerList = wiki.getRelinkableTitles();
+		}
 		for (var i = 0; i < tiddlerList.length; i++) {
 			var title = tiddlerList[i];
 			var tiddler = wiki.getTiddler(title);

@@ -279,4 +279,46 @@ it("returns empty object for unreferenced tiddlers", function() {
 
 });
 
+// RELINK REFERENCES
+describe("relink results", function() {
+
+function impossible(wiki, from, to) {
+	var parent = wiki.makeWidget(null, {});
+	var widget = wiki.makeWidget(null, {parentWidget: parent});
+	parent.setVariable('currentTiddler', from);
+	parent.setVariable('to', to);
+	return wiki.filterTiddlers('[relink:impossible<to>]', widget);
+};
+
+// TODO: Test when draft changes, also confirm behavior in Tiddlywiki
+// TODO: Test when non-draft changes
+// TODO: Test wen draft changes which references target.
+// TODO: Test when indexing is disabled
+// TODO: Also, test that the results are correct. Like that it detects changes
+it('calls getRelinkResults no more than necessary', function() {
+	var wiki = new $tw.Wiki();
+	spyOn(operators.text, 'relink').and.callThrough();
+	wiki.addTiddlers([
+		{title: 'A', text: '[[from]]'},
+		{title: 'B', text: 'not linking to from'},
+		{title: 'from', text: 'text'}]);
+	impossible(wiki, 'from', 't');
+	expect(operators.text.relink).toHaveBeenCalledTimes(3);
+	operators.text.relink.calls.reset();
+
+	impossible(wiki, 'from', 't');
+	expect(operators.text.relink).toHaveBeenCalledTimes(0);
+	operators.text.relink.calls.reset();
+
+	impossible(wiki, 'from', 'to');
+	expect(operators.text.relink).toHaveBeenCalledTimes(1);
+	operators.text.relink.calls.reset();
+
+	impossible(wiki, 'from', 'to');
+	expect(operators.text.relink).toHaveBeenCalledTimes(0);
+	operators.text.relink.calls.reset();
+});
+
+});
+
 });
