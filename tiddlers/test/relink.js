@@ -72,25 +72,18 @@ it("does touch shadow tiddlers when configured to", function() {
 
 it("handles errors with at least some grace", function() {
 	function thrower(exception, expected) {
-		var oldParseStringArray = $tw.utils.parseStringArray;
-		var wiki = new $tw.Wiki();
-		var e;
+		const wiki = new $tw.Wiki();
 		wiki.addTiddlers([
 			{title: "tiddlertest", test: "A"},
 			utils.fieldConf("test", "list")
 		]);
+		spyOn($tw.utils, 'parseStringArray').and.throwError(exception);
 		try {
-			$tw.utils.parseStringArray = function() {
-				throw new Error(exception);
-			};
 			wiki.renameTiddler("anything","something",{wiki: wiki});
+			expect(0).withContext('parseStringArray was not called').toBe(1);
 		} catch (thrown) {
-			e = thrown;
-		} finally {
-			$tw.utils.parseStringArray = oldParseStringArray;
+			expect(thrown.message).toEqual(expected);
 		}
-		expect(e).toBeDefined();
-		expect(e.message).toEqual(expected);
 	};
 	//thrower("Ping", "Ping\nError relinking 'tiddlertest'");
 	thrower('Boom', "Boom\nWhen relinking 'tiddlertest'");
