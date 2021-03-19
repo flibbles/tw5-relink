@@ -6,14 +6,6 @@ Utility methods for relink.
 \*/
 
 var macroFilter =  "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]";
-var relinkOperators;
-
-function getRelinkOperators() {
-	if (!relinkOperators) {
-		relinkOperators = exports.getModulesByTypeAsHashmap('relinkoperator', 'name');
-	}
-	return relinkOperators;
-};
 
 /**This works nearly identically to $tw.modules.getModulesByTypeAsHashmap
  * except that this also takes care of migrating V1 relink modules.
@@ -40,11 +32,18 @@ exports.getTiddlerRelinkReferences = function(wiki, title, context) {
 		references = Object.create(null),
 		options = {settings: context, wiki: wiki};
 	if (tiddler) {
-		for (var relinker in getRelinkOperators()) {
-			getRelinkOperators()[relinker].report(tiddler, function(blurb, title) {
-				references[title] = references[title] || [];
-				references[title].push(blurb);
-			}, options);
+		try {
+			for (var relinker in getRelinkOperators()) {
+				getRelinkOperators()[relinker].report(tiddler, function(blurb, title) {
+					references[title] = references[title] || [];
+					references[title].push(blurb);
+				}, options);
+			}
+		} catch (e) {
+			if (e.message) {
+				e.message = e.message + "\nWhen reporting '" + title + "' Relink references";
+			}
+			throw e;
 		}
 	}
 	return references;
@@ -53,24 +52,12 @@ exports.getTiddlerRelinkReferences = function(wiki, title, context) {
 /** Returns a pair like this,
  *  { title: {field: entry, ... }, ... }
  */
-exports.getRelinkReport = function(wiki, fromTitle, toTitle, options) {
-	// TODO: this method's days are numbered
-	var cache = wiki.getGlobalCache("relink-report-"+fromTitle, function() {
-		return Object.create(null);
-	});
-	if (!cache[toTitle]) {
-		cache[toTitle] = getRelinkResults(wiki, fromTitle, toTitle, options);
-	}
-	return cache[toTitle];
-};
-
-function getRelinkResults(wiki, fromTitle, toTitle, options) {
+exports.getRelinkReport = function(wiki, fromTitle, toTitle, context, options) {
 	options = options || {};
 	options.wiki = options.wiki || wiki;
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var changeList = Object.create(null);
-	var context = options.settings || exports.getWikiContext(wiki);
 	if(fromTitle && toTitle) {
 		var tiddlerList = wiki.getRelinkableTitles();
 		for (var i = 0; i < tiddlerList.length; i++) {
@@ -177,3 +164,11 @@ function getFieldTypes() {
 	return fieldTypes;
 }
 
+var relinkOperators;
+
+function getRelinkOperators() {
+	if (!relinkOperators) {
+		relinkOperators = exports.getModulesByTypeAsHashmap('relinkoperator', 'name');
+	}
+	return relinkOperators;
+};

@@ -70,23 +70,27 @@ it("does touch shadow tiddlers when configured to", function() {
 	expect(tiddler.fields.text).toEqual("Shadow [[to there]]");
 });
 
-it("handles errors with at least some grace", function() {
-	function thrower(exception, expected) {
-		const wiki = new $tw.Wiki();
-		wiki.addTiddlers([
-			{title: "tiddlertest", test: "A"},
-			utils.fieldConf("test", "list")
-		]);
-		spyOn($tw.utils, 'parseStringArray').and.throwError(exception);
-		try {
-			wiki.renameTiddler("anything","something",{wiki: wiki});
-			expect(0).withContext('parseStringArray was not called').toBe(1);
-		} catch (thrown) {
-			expect(thrown.message).toEqual(expected);
-		}
-	};
-	//thrower("Ping", "Ping\nError relinking 'tiddlertest'");
-	thrower('Boom', "Boom\nWhen relinking 'tiddlertest'");
+it("handles reporting errors with at least some grace", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: "tiddlertest", test: "A"},
+		utils.fieldConf("test", "list")
+	]);
+	spyOn($tw.utils, 'parseStringArray').and.throwError('Boom');
+	expect(() => utils.getReport('tiddlertest', wiki))
+		.toThrowError("Boom\nWhen reporting 'tiddlertest' Relink references");
+});
+
+it("handles relinking errors with at least some grace", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: "tiddlertest", test: "A"},
+		utils.fieldConf("test", "list")
+	]);
+	utils.getReport('tiddlertest', wiki);
+	spyOn($tw.utils, 'parseStringArray').and.throwError('Boom');
+	expect(() => wiki.renameTiddler("anything", "something"))
+		.toThrowError("Boom\nWhen relinking 'tiddlertest'");
 });
 
 it("doesn't relink if from and to are the same", function() {

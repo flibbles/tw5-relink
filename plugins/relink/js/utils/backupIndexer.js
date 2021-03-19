@@ -36,6 +36,14 @@ BackupIndexer.prototype.reverseLookup = function(title) {
 	return index.reverse[title];
 };
 
+/* The backup indexer doesn't bother caching relink reports. It would always
+ * be called after a draft tiddler had changed, which would defeat the point.
+ */
+BackupIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
+	var cache = getCache(this.wiki);
+	return utils.getRelinkReport(this.wiki, fromTitle, toTitle, cache.context, options);
+};
+
 function getCache(wiki) {
 	// TODO: do I have any potential name conflicts with my use of cache keys?
 	return wiki.getGlobalCache('relink', function() {
@@ -50,6 +58,10 @@ function getCache(wiki) {
 				index[title] = utils.getTiddlerRelinkReferences(wiki, title, context);
 			}
 		}
-		return {lookup: index, reverse: Object.create(null)};
+		return {
+			lookup: index,
+			reverse: Object.create(null),
+			toRelink: Object.create(null),
+			context: wikiContext};
 	});
 };

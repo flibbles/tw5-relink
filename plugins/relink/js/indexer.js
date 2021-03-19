@@ -56,6 +56,11 @@ ReferencesIndexer.prototype.reverseLookup = function(title) {
 	return this.backIndex[title] || Object.create(null);
 };
 
+ReferencesIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
+	this._upkeep();
+	return utils.getRelinkReport(this.wiki, fromTitle, toTitle, this.context, options);
+};
+
 ReferencesIndexer.prototype._upkeep = function() {
 	var title;
 	if (this.changedTiddlers && (this.context.changed(this.changedTiddlers) || this.context.parent.changed(this.changedTiddlers))) {

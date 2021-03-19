@@ -20,7 +20,8 @@ exports.impossible = function(source,operator,options) {
 	var to = operator.operand,
 		results = [];
 	if (from) {
-		var records = utils.getRelinkReport(options.wiki, from, to, options);
+		var indexer = utils.getIndexer(options.wiki);
+		var records = indexer.relinkLookup(from, to, options);
 		source(function(tiddler, title) {
 			var fields = records[title];
 			if (fields) {

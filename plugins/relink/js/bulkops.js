@@ -32,7 +32,8 @@ exports.startup = function() {
 function relinkTiddler(fromTitle, toTitle, options) {
 	options = options || {};
 	var failures = [];
-	var records = utils.getRelinkReport(this, fromTitle, toTitle, options);
+	var indexer = utils.getIndexer(this);
+	var records = indexer.relinkLookup(fromTitle, toTitle, options);
 	for (var title in records) {
 		var entries = records[title];
 		var changes = Object.create(null);
