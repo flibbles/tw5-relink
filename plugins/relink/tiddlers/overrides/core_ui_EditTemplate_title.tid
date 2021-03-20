@@ -35,7 +35,7 @@ title: $:/core/ui/EditTemplate/title
 
 <$checkbox tiddler="$:/config/RelinkOnRename" field="text" checked="yes" unchecked="no" default="no"> {{$:/language/EditTemplate/Title/Relink/Prompt}}</$checkbox>
 
-<$list filter="[all[relinkable]relink:references<fromTitle>limit[1]]" variable="listItem">
+<$list filter="[relink:wouldchange<fromTitle>limit[1]]" variable="listItem">
 
 <$vars stateTiddler=<<qualify "$:/state/edit/references">> >
 
@@ -43,7 +43,7 @@ title: $:/core/ui/EditTemplate/title
 
 <$set
 	name="prompt"
-	filter="[all[relinkable]relink:impossible<toTitle>]"
+	filter="[relink:wouldchange<toTitle>relink:wouldchange:fail<toTitle>]"
 	value="EditTemplate/Title/Impossibles/Prompt"
 	emptyValue="EditTemplate/Title/References/Prompt" >
 <$reveal type="nomatch" state=<<stateTiddler>> text="show">
@@ -59,7 +59,7 @@ title: $:/core/ui/EditTemplate/title
 </$set>
 
 <$reveal type="match" state=<<stateTiddler>> text="show">
-<$list variable="listItem" filter="[all[relinkable]!title[$:/StoryList]relink:references<fromTitle>sort[title]]" template="$:/plugins/flibbles/relink/ui/ListItemTemplate">
+<$list variable="listItem" filter="[relink:wouldchange<toTitle>!title[$:/StoryList]sort[title]]" template="$:/plugins/flibbles/relink/ui/ListItemTemplate">
 </$list>
 </$reveal>
 </$tiddler>

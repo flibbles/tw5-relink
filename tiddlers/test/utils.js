@@ -213,11 +213,11 @@ exports.toUpdateConf = function(filter) {
 };
 
 exports.draft = function(fields) {
-    const newFields = $tw.utils.extend(Object.create(null), fields);
-    newFields.title = "Draft of '" + fields.title + "'";
-    newFields["draft.of"] = fields.title;
-    newFields["draft.title"] = fields.title;
-    return newFields;
+	const newFields = $tw.utils.extend({
+		'draft.of': fields.title,
+		'draft.title': fields.title}, Object.create(null), fields);
+	newFields.title = "Draft of '" + fields.title + "'";
+	return newFields;
 };
 
 /**Gets report on a given tiddler.

@@ -287,7 +287,7 @@ function impossible(wiki, from, to) {
 	var widget = wiki.makeWidget(null, {parentWidget: parent});
 	parent.setVariable('currentTiddler', from);
 	parent.setVariable('to', to);
-	return wiki.filterTiddlers('[relink:impossible<to>]', widget);
+	return wiki.filterTiddlers('[relink:wouldchange<to>]', widget);
 };
 
 // TODO: Test when draft changes, also confirm behavior in Tiddlywiki
@@ -301,20 +301,23 @@ it('calls getRelinkResults no more than necessary', function() {
 	wiki.addTiddlers([
 		{title: 'A', text: '[[from]]'},
 		{title: 'B', text: 'not linking to from'},
-		{title: 'from', text: 'text'}]);
-	impossible(wiki, 'from', 't');
-	expect(operators.text.relink).toHaveBeenCalledTimes(3);
+		{title: 'from', text: 'text'},
+		utils.draft({title: 'from', text: 'text', 'draft.title': 'to'})]);
+	impossible(wiki, 'from', 'to');
+	expect(operators.text.relink).toHaveBeenCalledTimes(4);
 	operators.text.relink.calls.reset();
 
-	impossible(wiki, 'from', 't');
+	impossible(wiki, 'from', 'to');
 	expect(operators.text.relink).toHaveBeenCalledTimes(0);
 	operators.text.relink.calls.reset();
 
-	impossible(wiki, 'from', 'to');
+	// Now we change the draft of what we're looking at.
+	wiki.addTiddler(utils.draft({title: 'from', text: 'text', 'draft.title': 'too'}));
+	impossible(wiki, 'from', 'too');
 	expect(operators.text.relink).toHaveBeenCalledTimes(1);
 	operators.text.relink.calls.reset();
 
-	impossible(wiki, 'from', 'to');
+	impossible(wiki, 'from', 'too');
 	expect(operators.text.relink).toHaveBeenCalledTimes(0);
 	operators.text.relink.calls.reset();
 });
