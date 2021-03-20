@@ -292,9 +292,10 @@ function wouldChange(wiki, from, to) {
 
 // TODO: Test when draft changes, also confirm behavior in Tiddlywiki
 // TODO: Test when non-draft changes
-// TODO: Test wen draft changes which references target.
+// TODO: Test when draft changes which references target.
 // TODO: Test when indexing is disabled
 // TODO: Also, test that the results are correct. Like that it detects changes
+// TODO: Test when draft of current fromTiddler changes after result caching
 it('calls getRelinkResults no more than necessary', function() {
 	var wiki = new $tw.Wiki();
 	spyOn(operators.text, 'relink').and.callThrough();
@@ -373,6 +374,37 @@ it('keeps the relink shortlist as short as possible', function() {
 		{title: 'B', text: '<element>inner content</element>'}, //shouldn't
 		{title: 'C', text: '<element><child /></element>'}]); //shouldn't
 	expect(wouldChange(wiki, 'from here', 'anything')).toEqual(['A']);
+});
+
+it("won't ignore current draft if changed after result caching", function() {
+	const wiki = new $tw.Wiki();
+	spyOn(console, 'log');
+	wiki.addTiddler(utils.draft({title: 'from', text: 'boring text'}));
+	// This caches the results
+	expect(wouldChange(wiki, 'from', 'to')).toEqual([]);
+	wiki.addTiddler(utils.draft({title: 'from', text: 'now links [[from]]'}));
+	// Renaming it should touch the draft, even if it wasn't in the shortlist
+	wiki.renameTiddler('from', 'to');
+	expect(utils.getText("Draft of 'from'", wiki)).toBe('now links [[to]]');
+});
+
+it("won't ignore current draft changes if referenced by other", function() {
+	// This is an incredibly esoteric case, but if the edited tiddler should
+	// be changed after the title is tentatively altered, AND that draft
+	// changes \\relink parameters, cause another tiddler not to update.
+	const wiki = new $tw.Wiki();
+	const def = '\\define macro(title) This links to $title$';
+	spyOn(console, 'log');
+	wiki.addTiddlers([
+		{title: 'from', tags: 'tag', text: def},
+		utils.draft({title: 'from', tags: 'tag', text: def}),
+		{title: 'A', text: '\\import [tag[tag]]\n<<macro from>>'}]);
+	// This caches the results
+	expect(wouldChange(wiki, 'from', 'to')).toEqual([]);
+	wiki.addTiddler(utils.draft({title: 'from', tags: 'tag', text: '\\relink macro title\n' + def}));
+	// Renaming it should touch the draft, even if it wasn't in the shortlist
+	wiki.renameTiddler('from', 'to');
+	expect(utils.getText('A', wiki)).toBe('\\import [tag[tag]]\n<<macro to>>');
 });
 
 });

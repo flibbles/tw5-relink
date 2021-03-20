@@ -94,6 +94,7 @@ ReferencesIndexer.prototype._upkeep = function() {
 			if (tiddlerContext.changed(this.changedTiddlers)) {
 				this._purge(title);
 				this._populate(title);
+				this._dropResults(title);
 				// Wipe this change, so we don't risk updating it twice.
 				this.changedTiddlers[title] = undefined;
 			}
@@ -103,6 +104,7 @@ ReferencesIndexer.prototype._upkeep = function() {
 			if (change && change.modified) {
 				this._purge(title);
 				this._populate(title);
+				this._dropResults(title);
 			}
 		}
 		this.changedTiddlers = undefined;
@@ -115,15 +117,25 @@ ReferencesIndexer.prototype._purge = function(title) {
 	}
 	delete this.contexts[title];
 	delete this.index[title];
+};
+
+// This drops the cached relink results if unsanctioned tiddlers were changed
+ReferencesIndexer.prototype._dropResults = function(title) {
 	var tiddler = this.wiki.getTiddler(title);
-	if (title !== this.lastRelinkFrom && title !== this.lastRelinkTo
+	if (title !== this.lastRelinkFrom
+	&& title !== this.lastRelinkTo
 	&& (!tiddler
-		|| !$tw.utils.hop(tiddler.fields, 'draft.of')
-		|| tiddler.fields['draft.of'] !== this.lastRelinkFrom)) {
+		|| !$tw.utils.hop(tiddler.fields, 'draft.of') // is a draft
+		|| tiddler.fields['draft.of'] !== this.lastRelinkFrom // draft of target
+		|| references(this.index[title], this.lastRelinkFrom))) { // draft references target
 		// This is not the draft of the last relinked title,
 		// so our cached results should be wiped.
 		this.lastRelinkFrom = undefined;
 	}
+};
+
+function references(list, item) {
+	return list !== undefined && list[item];
 };
 
 ReferencesIndexer.prototype._populate = function(title) {
