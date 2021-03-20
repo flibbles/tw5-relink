@@ -41,7 +41,13 @@ BackupIndexer.prototype.reverseLookup = function(title) {
  */
 BackupIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 	var cache = getCache(this.wiki);
-	return utils.getRelinkResults(this.wiki, fromTitle, toTitle, cache.context, undefined, options);
+	if (cache.lastRelinkFrom === fromTitle && cache.lastRelinkTo === toTitle) {
+		return cache.lastRelink;
+	}
+	cache.lastRelink = utils.getRelinkResults(this.wiki, fromTitle, toTitle, cache.context, undefined, options);
+	cache.lastRelinkFrom = fromTitle;
+	cache.lastRelinkTo = toTitle;
+	return cache.lastRelink;
 };
 
 function getCache(wiki) {
@@ -61,7 +67,6 @@ function getCache(wiki) {
 		return {
 			lookup: index,
 			reverse: Object.create(null),
-			toRelink: Object.create(null),
 			context: wikiContext};
 	});
 };

@@ -35,11 +35,11 @@ title: $:/core/ui/EditTemplate/title
 
 <$checkbox tiddler="$:/config/RelinkOnRename" field="text" checked="yes" unchecked="no" default="no"> {{$:/language/EditTemplate/Title/Relink/Prompt}}</$checkbox>
 
-<$list filter="[relink:wouldchange<fromTitle>limit[1]]" variable="listItem">
+<$tiddler tiddler=<<fromTitle>> >
+
+<$list filter="[relink:wouldchange<toTitle>limit[1]]" variable="listItem">
 
 <$vars stateTiddler=<<qualify "$:/state/edit/references">> >
-
-<$tiddler tiddler=<<fromTitle>> >
 
 <$set
 	name="prompt"
@@ -62,11 +62,12 @@ title: $:/core/ui/EditTemplate/title
 <$list variable="listItem" filter="[relink:wouldchange<toTitle>!title[$:/StoryList]sort[title]]" template="$:/plugins/flibbles/relink/ui/ListItemTemplate">
 </$list>
 </$reveal>
-</$tiddler>
 
 </$vars>
 
 </$list>
+
+</$tiddler>
 
 </$vars>
 

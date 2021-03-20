@@ -322,6 +322,48 @@ it('calls getRelinkResults no more than necessary', function() {
 	operators.text.relink.calls.reset();
 });
 
+it("calls getRelinkResults rarely, even with indexers disabled", function() {
+	const wiki = new $tw.Wiki({enableIndexers: []});
+	spyOn(operators.text, 'relink').and.callThrough();
+	wiki.addTiddlers([
+		{title: 'A', text: '[[from]]'},
+		{title: 'B', text: 'not linking to from'},
+		{title: 'from', text: 'text'},
+		utils.draft({title: 'from', text: 'text', 'draft.title': 'to'})]);
+	wouldChange(wiki, 'from', 'to');
+	expect(operators.text.relink).toHaveBeenCalledTimes(4);
+	operators.text.relink.calls.reset();
+
+	wouldChange(wiki, 'from', 'to');
+	expect(operators.text.relink).toHaveBeenCalledTimes(0);
+	operators.text.relink.calls.reset();
+
+	// Now we change the draft of what we're looking at.
+	wiki.addTiddler(utils.draft({title: 'from', text: 'text', 'draft.title': 'too'}));
+	wouldChange(wiki, 'from', 'too');
+	expect(operators.text.relink).toHaveBeenCalledTimes(4);
+	operators.text.relink.calls.reset();
+
+	wouldChange(wiki, 'from', 'too');
+	expect(operators.text.relink).toHaveBeenCalledTimes(0);
+	operators.text.relink.calls.reset();
+});
+
+it('does not call getRelinkResults on rename after scanning', function() {
+	spyOn(console, 'log');
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'A', text: '[[from]]'},
+		{title: 'B', text: 'not linking to from'},
+		{title: 'from', text: 'text'}]);
+	// We check the number of changes, like the editTemplate does
+	wouldChange(wiki, 'from', 'to');
+	spyOn(operators.text, 'relink').and.callThrough();
+	// Then we rename the file, and hopefully used the cached results
+	wiki.renameTiddler('from', 'to');
+	expect(operators.text.relink).toHaveBeenCalledTimes(0);
+});
+
 it('keeps the relink shortlist as short as possible', function() {
 	const wiki = new $tw.Wiki();
 	// This make sure various text patterns don't accidentally get cached

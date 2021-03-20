@@ -4,6 +4,7 @@ module-type: indexer
 Indexes results from tiddler reference reports so we don't have to call them
 so much.
 
+TODO: The indexer should just be called the RelinkIndexer
 \*/
 
 "use strict";
@@ -115,9 +116,10 @@ ReferencesIndexer.prototype._purge = function(title) {
 	delete this.contexts[title];
 	delete this.index[title];
 	var tiddler = this.wiki.getTiddler(title);
-	if (!tiddler
-	|| !$tw.utils.hop(tiddler.fields, 'draft.of')
-	|| tiddler.fields['draft.of'] !== this.lastRelinkFrom) {
+	if (title !== this.lastRelinkFrom && title !== this.lastRelinkTo
+	&& (!tiddler
+		|| !$tw.utils.hop(tiddler.fields, 'draft.of')
+		|| tiddler.fields['draft.of'] !== this.lastRelinkFrom)) {
 		// This is not the draft of the last relinked title,
 		// so our cached results should be wiped.
 		this.lastRelinkFrom = undefined;
