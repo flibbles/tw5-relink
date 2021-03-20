@@ -43,7 +43,7 @@ title: $:/core/ui/EditTemplate/title
 
 <$set
 	name="prompt"
-	filter="[relink:wouldchange<toTitle>relink:wouldchange:fail<toTitle>]"
+	filter="[relink:wouldchange<toTitle>relink:impossible<toTitle>]"
 	value="EditTemplate/Title/Impossibles/Prompt"
 	emptyValue="EditTemplate/Title/References/Prompt" >
 <$reveal type="nomatch" state=<<stateTiddler>> text="show">

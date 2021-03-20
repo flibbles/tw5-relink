@@ -1,14 +1,13 @@
 /*\
 module-type: relinkfilteroperator
 
-Generator operator.
+wouldchange: Generator.
 
 Given each input title, it returns all the tiddlers that would be changed if the currentTiddler were to be renamed to the operand.
 
-If it has the suffix 'fail', then it instead filters all source titles to only
-ones that would encounter an error on failure.
+impossible: filters all source titles for ones that encounter errors on failure.
 
-THIS IS AN INTERNAL FILTER OPERATOR AND IS NOT INTENDED TO BE USED BY USERS.
+THESE ARE INTERNAL FILTER OPERATOR AND ARE NOT INTENDED TO BE USED BY USERS.
 
 \*/
 
@@ -18,12 +17,17 @@ var utils = require("$:/plugins/flibbles/relink/js/utils.js");
 exports.wouldchange = function(source,operator,options) {
 	var from = options.widget && options.widget.getVariable("currentTiddler"),
 		to = operator.operand,
-		results = [];
-	var indexer = utils.getIndexer(options.wiki);
-	var records = indexer.relinkLookup(from, to, options);
-	if (operator.suffix !== 'fail') {
-		return Object.keys(records);
-	}
+		indexer = utils.getIndexer(options.wiki),
+		records = indexer.relinkLookup(from, to, options);
+	return Object.keys(records);
+};
+
+exports.impossible = function(kource,operator,options) {
+	var from = options.widget && options.widget.getVariable("currentTiddler"),
+		to = operator.operand,
+		results = [],
+		indexer = utils.getIndexer(options.wiki),
+		records = indexer.relinkLookup(from, to, options);
 	source(function(tiddler, title) {
 		var fields = records[title];
 		if (fields) {
@@ -40,4 +44,3 @@ exports.wouldchange = function(source,operator,options) {
 	});
 	return results;
 };
-
