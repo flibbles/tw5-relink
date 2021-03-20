@@ -290,12 +290,6 @@ function wouldChange(wiki, from, to) {
 	return wiki.filterTiddlers('[relink:wouldchange<to>]', widget);
 };
 
-// TODO: Test when draft changes, also confirm behavior in Tiddlywiki
-// TODO: Test when non-draft changes
-// TODO: Test when draft changes which references target.
-// TODO: Test when indexing is disabled
-// TODO: Also, test that the results are correct. Like that it detects changes
-// TODO: Test when draft of current fromTiddler changes after result caching
 it('calls getRelinkResults no more than necessary', function() {
 	var wiki = new $tw.Wiki();
 	spyOn(operators.text, 'relink').and.callThrough();
@@ -374,6 +368,18 @@ it('keeps the relink shortlist as short as possible', function() {
 		{title: 'B', text: '<element>inner content</element>'}, //shouldn't
 		{title: 'C', text: '<element><child /></element>'}]); //shouldn't
 	expect(wouldChange(wiki, 'from here', 'anything')).toEqual(['A']);
+});
+
+it("won't ignore changes to other tiddlers during title rename", function() {
+	const wiki = new $tw.Wiki();
+	spyOn(console, 'log');
+	wiki.addTiddler(utils.draft({title: 'from', text: 'boring text'}));
+	// This caches the results
+	expect(wouldChange(wiki, 'from', 'to')).toEqual([]);
+	wiki.addTiddler({title: 'A', text: 'links to [[from]]'});
+	// Renaming it should touch the draft, even if it wasn't in the shortlist
+	wiki.renameTiddler('from', 'to');
+	expect(utils.getText('A', wiki)).toBe('links to [[to]]');
 });
 
 it("won't ignore current draft if changed after result caching", function() {
