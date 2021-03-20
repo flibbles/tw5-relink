@@ -24,7 +24,7 @@ ReferencesIndexer.prototype.rebuild = function() {
 	this.backIndex = null;
 	this.contexts = Object.create(null);
 	this.changedTiddlers = undefined;
-	this.resultCache = Object.create(null);
+	this.lastRelinkFrom = undefined;
 };
 
 ReferencesIndexer.prototype.update = function(updateDescriptor) {
@@ -60,19 +60,16 @@ ReferencesIndexer.prototype.reverseLookup = function(title) {
 ReferencesIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 	this._upkeep();
 	var shortlist = undefined;
-	var cache = this.resultCache[fromTitle];
-	if (cache) {
-		if (cache.to === toTitle) {
-			return cache.results;
+	if (this.lastRelinkFrom === fromTitle) {
+		if (this.lastRelinkTo === toTitle) {
+			return this.lastRelinkResult;
 		}
-		shortlist = Object.keys(cache.results);
-	} else {
-		cache = {};
+		shortlist = Object.keys(this.lastRelinkResult);
 	}
-	cache.results = utils.getRelinkResults(this.wiki, fromTitle, toTitle, this.context, shortlist, options);
-	cache.to = toTitle;
-	this.resultCache[fromTitle] = cache;
-	return cache.results;
+	this.lastRelinkResult = utils.getRelinkResults(this.wiki, fromTitle, toTitle, this.context, shortlist, options);
+	this.lastRelinkTo = toTitle;
+	this.lastRelinkFrom = fromTitle;
+	return this.lastRelinkResult;
 };
 
 ReferencesIndexer.prototype._upkeep = function() {
@@ -108,8 +105,6 @@ ReferencesIndexer.prototype._upkeep = function() {
 			}
 		}
 		this.changedTiddlers = undefined;
-		// Also, clear the relink results cache
-		this.resultCache = Object.create(null);
 	}
 };
 
@@ -119,6 +114,14 @@ ReferencesIndexer.prototype._purge = function(title) {
 	}
 	delete this.contexts[title];
 	delete this.index[title];
+	var tiddler = this.wiki.getTiddler(title);
+	if (!tiddler
+	|| !$tw.utils.hop(tiddler.fields, 'draft.of')
+	|| tiddler.fields['draft.of'] !== this.lastRelinkFrom) {
+		// This is not the draft of the last relinked title,
+		// so our cached results should be wiped.
+		this.lastRelinkFrom = undefined;
+	}
 };
 
 ReferencesIndexer.prototype._populate = function(title) {

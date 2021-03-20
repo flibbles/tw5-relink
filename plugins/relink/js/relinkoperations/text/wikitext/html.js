@@ -221,7 +221,9 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 	if (widgetEntry.hasChildren() || widgetEntry.innerText) {
 		widgetEntry.output = builder.results(this.parser.pos);
-		return widgetEntry;
+		if (widgetEntry.output !== undefined || widgetEntry.hasChildren()) {
+			return widgetEntry;
+		}
 	}
 	return undefined;
 };

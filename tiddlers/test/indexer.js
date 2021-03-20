@@ -282,7 +282,7 @@ it("returns empty object for unreferenced tiddlers", function() {
 // RELINK REFERENCES
 describe("relink results", function() {
 
-function impossible(wiki, from, to) {
+function wouldChange(wiki, from, to) {
 	var parent = wiki.makeWidget(null, {});
 	var widget = wiki.makeWidget(null, {parentWidget: parent});
 	parent.setVariable('currentTiddler', from);
@@ -303,23 +303,34 @@ it('calls getRelinkResults no more than necessary', function() {
 		{title: 'B', text: 'not linking to from'},
 		{title: 'from', text: 'text'},
 		utils.draft({title: 'from', text: 'text', 'draft.title': 'to'})]);
-	impossible(wiki, 'from', 'to');
+	wouldChange(wiki, 'from', 'to');
 	expect(operators.text.relink).toHaveBeenCalledTimes(4);
 	operators.text.relink.calls.reset();
 
-	impossible(wiki, 'from', 'to');
+	wouldChange(wiki, 'from', 'to');
 	expect(operators.text.relink).toHaveBeenCalledTimes(0);
 	operators.text.relink.calls.reset();
 
 	// Now we change the draft of what we're looking at.
 	wiki.addTiddler(utils.draft({title: 'from', text: 'text', 'draft.title': 'too'}));
-	impossible(wiki, 'from', 'too');
+	wouldChange(wiki, 'from', 'too');
 	expect(operators.text.relink).toHaveBeenCalledTimes(1);
 	operators.text.relink.calls.reset();
 
-	impossible(wiki, 'from', 'too');
+	wouldChange(wiki, 'from', 'too');
 	expect(operators.text.relink).toHaveBeenCalledTimes(0);
 	operators.text.relink.calls.reset();
+});
+
+it('keeps the relink shortlist as short as possible', function() {
+	const wiki = new $tw.Wiki();
+	// This make sure various text patterns don't accidentally get cached
+	// for future relink shortlists
+	wiki.addTiddlers([
+		{title: 'A', text: '[[from here]]'}, //This would change
+		{title: 'B', text: '<element>inner content</element>'}, //shouldn't
+		{title: 'C', text: '<element><child /></element>'}]); //shouldn't
+	expect(wouldChange(wiki, 'from here', 'anything')).toEqual(['A']);
 });
 
 });
