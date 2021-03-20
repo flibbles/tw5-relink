@@ -219,11 +219,9 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 		}
 	}
-	if (widgetEntry.hasChildren() || widgetEntry.innerText) {
+	if (widgetEntry.hasChildren() || (widgetEntry.innerText && widgetEntry.innerText.length > 0)) {
 		widgetEntry.output = builder.results(this.parser.pos);
-		if (widgetEntry.output !== undefined || widgetEntry.hasChildren()) {
-			return widgetEntry;
-		}
+		return widgetEntry;
 	}
 	return undefined;
 };

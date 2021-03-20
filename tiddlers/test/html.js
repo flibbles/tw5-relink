@@ -142,6 +142,14 @@ it("handles failure on special operands that fail internally", function() {
 	expect(r.fails.length).toEqual(1);
 });
 
+it("handles failure in innerText", function() {
+	// without anything to report for itself, it may drop inner failures.
+	const text = "<$link>This fails <t t={{from here}} /></$link>";
+	var r = testText(text, text, {to: 'to }}\'"" there'});
+	expect(r.fails.length).toBe(1);
+	testText(text);
+});
+
 it("failure doesn't prevent other relinks", function() {
 	var r = testText("<$link tooltip={{from here}} to='from here' />",
 	                 "<$link tooltip={{from here}} to='to}there' />",
