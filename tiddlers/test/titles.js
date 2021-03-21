@@ -28,6 +28,16 @@ function dirDisabler(value) {
 	return disabler('$:/plugins/flibbles/relink-titles/rules/directory', value);
 };
 
+// This returns a list of titles that would change given a certain name change
+// More importantly, this caches the results in the indexer.
+function wouldChange(wiki, from, to) {
+	var parent = wiki.makeWidget(null, {});
+	var widget = wiki.makeWidget(null, {parentWidget: parent});
+	parent.setVariable('currentTiddler', from);
+	parent.setVariable('to', to);
+	return wiki.filterTiddlers('[relink:wouldchange<to>]', widget);
+};
+
 describe('titles', function() {
 
 beforeEach(function() {
@@ -72,28 +82,29 @@ it("doesn't infinitely loop over tiddlers", function() {
 });
 
 it("doesn't wipe the content of changed tiddler", function() {
-	var wiki = new $tw.Wiki(),
-		options = {};
-	wiki.addTiddlers([
-		{title: 'from here'},
-		{title: 'from here/path'},
-		{title: 'from here/path/end', text: 'Not clobbered'}]);
-	wiki.relinkTiddler('from here', 'to there', options);
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path'");
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path/end'");
-	console.log.calls.reset();
-
+	function test(wiki, relinkCall) {
+		var wiki = new $tw.Wiki(),
+			options = {};
+		wiki.addTiddlers([
+			{title: 'from here'},
+			{title: 'from here/path'},
+			{title: 'from here/path/end', text: 'Not clobbered'}]);
+		// Pre-cache the results of the rename
+		wouldChange(wiki, 'from here', 'to there');
+		relinkCall(wiki);
+		wiki.relinkTiddler('from here', 'to there', options);
+		expect(console.log).toHaveBeenCalledTimes(2);
+		expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path'");
+		expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path/end'");
+		console.log.calls.reset();
+	};
+	test(new $tw.Wiki(), (wiki) => wiki.relinkTiddler('from here', 'to there', {}));
 	// Now we do it again, but manually calling relink without options, because
 	// it's the options field where we cache the info to not clobber tiddlers.
-	wiki = new $tw.Wiki();
-	wiki.addTiddlers([
-		{title: 'from here'},
-		{title: 'from here/path'},
-		{title: 'from here/path/end', text: 'Not clobbered'}]);
-	wiki.relinkTiddler('from here', 'to there');
-	expect(utils.getText('to there/path/end', wiki)).toBe('Not clobbered');
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path'");
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'from here/path/end'");
+	test(new $tw.Wiki(), (wiki) => wiki.relinkTiddler('from here', 'to there'));
+	// Now we do it all over again, but without indexers
+	test(new $tw.Wiki({enableIndexers: []}), (wiki) => wiki.relinkTiddler('from here', 'to there', {}));
+	test(new $tw.Wiki({enableIndexers: []}), (wiki) => wiki.relinkTiddler('from here', 'to there'));
 });
 
 it("doesn't clobber existing tiddlers", function() {

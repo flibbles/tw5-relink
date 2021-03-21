@@ -42,11 +42,13 @@ BackupIndexer.prototype.reverseLookup = function(title) {
 BackupIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 	var cache = getCache(this.wiki);
 	if (cache.lastRelinkFrom === fromTitle && cache.lastRelinkTo === toTitle) {
+		options.cache = cache.lastRelinkCache;
 		return cache.lastRelink;
 	}
 	cache.lastRelink = utils.getRelinkResults(this.wiki, fromTitle, toTitle, cache.context, undefined, options);
 	cache.lastRelinkFrom = fromTitle;
 	cache.lastRelinkTo = toTitle;
+	cache.lastRelinkCache = options.cache;
 	return cache.lastRelink;
 };
 

@@ -70,22 +70,18 @@ exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 };
 
 function getCache(options) {
-	if (!options.__titlesCache) {
-		// we cache the dummy widget, the filters, and the touch list
-		// in the options, so we only need to do this all once for
-		// for an entire relink operation
-		options.__titlesCache = {
-			rules: getRules(options),
+	return utils.getCacheForRun(options, 'titles', function() {
+		return {
+			rules: getRules(options.wiki),
 			touched: Object.create(null)
 		};
-	}
-	return options.__titlesCache;
+	});
 };
 
-function getRules(options) {
+function getRules(wiki) {
 	var activeRules = [];
 	for (var rule in titleRules) {
-		var configTiddler = options.wiki.getTiddler(configPrefix + rule);
+		var configTiddler = wiki.getTiddler(configPrefix + rule);
 		if (!configTiddler || configTiddler.fields.text !== "disabled") {
 			activeRules.push(titleRules[rule]);
 		}

@@ -63,6 +63,9 @@ ReferencesIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options)
 	var shortlist = undefined;
 	if (this.lastRelinkFrom === fromTitle) {
 		if (this.lastRelinkTo === toTitle) {
+			// We need to reintroduce the relink cache, where temporary info
+			// was stored.
+			options.cache = this.lastRelinkCache;
 			return this.lastRelinkResult;
 		}
 		shortlist = Object.keys(this.lastRelinkResult);
@@ -70,6 +73,7 @@ ReferencesIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options)
 	this.lastRelinkResult = utils.getRelinkResults(this.wiki, fromTitle, toTitle, this.context, shortlist, options);
 	this.lastRelinkTo = toTitle;
 	this.lastRelinkFrom = fromTitle;
+	this.lastRelinkCache = options.cache;
 	return this.lastRelinkResult;
 };
 

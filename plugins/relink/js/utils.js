@@ -116,6 +116,18 @@ exports.getIndexer = function(wiki) {
 	return wiki._relink_indexer;
 };
 
+/**Relinking supports a cache that persists throughout a whole relink op.
+ * This is because the Tiddlywiki caches may get wiped multiple times
+ * throughout the course of a relink.
+ */
+exports.getCacheForRun = function(options, cacheName, initializer) {
+	options.cache = options.cache || Object.create(null);
+	if (!$tw.utils.hop(options.cache, cacheName)) {
+		options.cache[cacheName] = initializer();
+	}
+	return options.cache[cacheName];
+};
+
 /**Returns a specific relinker.
  * This is useful for wikitext rules which need to parse a filter or a list
  */
