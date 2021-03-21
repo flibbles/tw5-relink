@@ -39,7 +39,7 @@ exports.report = function(title, callback, options) {
 	// If this title doesn't start with the prefix,
 	// then it's irrelevant for this rule.
 	if (title.startsWith('$:/TitlesExample/')) {
-		var referencedTitle = title.subStr('$:/TitlesExample/'.length);
+		var referencedTitle = title.substr('$:/TitlesExample/'.length);
 		// First param is the other tiddler that this title references.
 		// Second param is optional. It's a blurb describing the relationship.
 		callback(referencedTitle, 'Example titles rule');
