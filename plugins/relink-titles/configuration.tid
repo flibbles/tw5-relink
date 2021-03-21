@@ -3,6 +3,7 @@ tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink-titles/configuration
 
 \define lingo-base() $:/plugins/flibbles/relink-titles/language/
+\define prefix() $:/config/flibbles/relink-titles/relink/
 
 <<lingo Help>>
 
@@ -12,7 +13,7 @@ title: $:/plugins/flibbles/relink-titles/configuration
 <tr>
 <td>
 <$checkbox
-	tiddler={{{ [all[current]addprefix[$:/config/flibbles/relink-titles/disabled/]] }}}
+	tiddler={{{ [all[current]addprefix<prefix>] }}}
 	field="text"
 	checked="enabled"
 	unchecked="disabled"

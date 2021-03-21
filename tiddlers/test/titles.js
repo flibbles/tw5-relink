@@ -20,7 +20,7 @@ function disabler(title, value) {
 	if (value === undefined) {
 		value = 'disabled';
 	}
-	return {title: '$:/config/flibbles/relink-titles/disabled/' + title,
+	return {title: '$:/config/flibbles/relink-titles/relink/' + title,
 	        text: value};
 };
 

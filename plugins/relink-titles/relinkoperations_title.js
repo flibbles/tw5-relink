@@ -12,7 +12,7 @@ sure that those tiddlers are properly relinked too.
 /*global $tw: false */
 "use strict";
 
-var configPrefix = "$:/config/flibbles/relink-titles/disabled/";
+var configPrefix = "$:/config/flibbles/relink-titles/relink/";
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 utils.getContext('whitelist').hotDirectories.push(configPrefix);
 
