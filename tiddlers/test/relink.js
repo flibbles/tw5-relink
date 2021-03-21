@@ -141,7 +141,7 @@ it('can filter for all impossible tiddlers', function() {
 		expect(warn).toEqual([]);
 		expect(result).toEqual(expected);
 	};
-	test("[relink:wouldchange:fail[to}this]]", ["A"]);
+	test("[relink:impossible[to}this]]", ["A"]);
 	test("[[from]relink:backreferences[]]", ["A", "C"]);
 	test("[relink:nonexistent[]]", ["This text is pulled"]);
 });

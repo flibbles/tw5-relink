@@ -21,33 +21,25 @@ There are a number of preset rules you can use (...//*cough*// one). Or you can 
 
 </$list>
 
-!!! Custom rules
-
-If you wish, you can add a custom filter rule used to determine what tiddlers are renamed, and how. During a relink of a target tiddler, every tiddler will be passed to this filter one at a time (assuming they've passed through all other rules unchanged). If the filter produces any output, the first result will be used to rename the given tiddler.
-
-These variables are accessable to the filter:
-
-* `fromTiddler`: This is the title that the target tiddler is being renamed from.
-* `toTiddler`: This is what the target tiddler is being renamed to.
-
-''Note:'' //Relink-titles// will attempt to recognize erroneous filters, such as any that would actually change the very system tiddler the filter is stored in. It will provide a warning message and likely throw the filter out during relinking, but this safeguard is not perfect. If you're adding a custom rename rule, I recommend backing up your project and then testing it. Bad rules can cause real damage.
-
 !!! Third Party Integration
 
-If you have a plugin of your own, you can integrate with //Relink-titles// so it will relink titles related to each other in ways specific to your plugin. All you need to do is create a tiddler in your plugin with the following fields:
+If you have a plugin of your own, you can integrate with //Relink-titles// so it will relink titles related to each other in ways specific to your plugin. All you need to do is create a `relinktitlesrule` module in your plugin with the following fields:
 
 * ''caption'': This will show up next to the checkbox in the //Relink-titles// configuration page.
-* ''filter'': A filter that follows the same rules as the "Custom" textbox below. This is the rule that your extension intruduces.
-* ''tags'': Must contain <<tag $:/tags/flibbles/relink-titles/Filter>>
-* ''text'': The tiddler's body should contain a //brief// description of what your rule is for.
+* ''description'': This should contain a //brief// wikitext description of what your rule is for.
 
-By default, your rules will automatically be enabled, but the user can disable them from the //Relink// or //Relink-titles// configuration menu. There's an [[example rule in this demo|Plugins/Titles/example]] that you can check out. 
+By default, your rules will automatically be enabled, but the user can disable them from the //Relink// or //Relink-titles// configuration menu. There's an [[example rule in this demo|Plugins/Titles/example.js]] that you can check out. 
 
-If you want your rule to be disabled by default, simply create a tiddler in your plugin called `$:/config/flibbles/relink-titles/disabled/<<yourRulesTiddler>>` with its text set to ''disabled''.
+If you want your rule to be disabled by default, simply create a tiddler in your plugin called `$:/config/flibbles/relink-titles/relink/<<yourRulesTiddler>>` with its text set to ''disabled''.
+
+!!! Migration
+
+Version 2 of //Relink-titles// had to be overhauled due to underlying changes in Relink V2. If you did not create any custom filters or have any plugin integration, all you need to do is update and check your settings. [[Otherwise, see here for migration details.|Relink-titles Migration]].
+
 
 !!! Install
 
-To install //Relink-titles//, first install //Relink// (''make sure you're using <<link-to-tab Versions Versions/1.10.0 "version 1.10.2 or greater">>''!), then drag the following pill button onto your project:
+To install //Relink-titles//, first install //Relink// (''make sure you're using <<link-to-tab Versions Versions/2.0.0 "version 2.0.0 or greater">>''!), then drag the following pill button onto your project:
 
 @@text-align:center;
 <$link to={{!!plugin}} class="relink-dragger relink-titles">Titles support!</$link>

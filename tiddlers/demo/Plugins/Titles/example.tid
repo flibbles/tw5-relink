@@ -1,6 +1,0 @@
-caption: <$link>Example Option</$link>
-filter: [first[This filter always returns nothing]nth[2]]
-tags: $:/tags/flibbles/relink-titles/Filter
-title: Plugins/Titles/example
-
-This option doesn't do anything. It's a 3rd party option which didn't come with //Relink-titles// that shows how other plugins can add rename rules of their own. See <<link-to-tab Plugins Plugins/Titles "the //Relink-titles// documentation page">> for more information.

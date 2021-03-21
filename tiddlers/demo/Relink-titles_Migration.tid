@@ -1,0 +1,7 @@
+title: Relink-titles Migration
+
+//Relink-titles// V1 relied on filters in order to update tiddler titles. However, filters were no longer appropriate due to changes in Relink-V2. If you created a custom rule filter for //Relink-titles//, first of all, I'm sorry I'm making you have to update, but filters really don't work for the newer, better systems under Relink's hood.
+
+You'll need to create a `relinktitlesrule` module instead of a filter. Fortunately, they are very simple modules, and should give you much more flexibility than the filters did.
+
+[[Here is an example module|Plugins/Titles/example.js]] with plenty of documentation. You need a `report` method for the [[TiddlerInfo Tab]], and a `relink` method for the actual updating of titles.

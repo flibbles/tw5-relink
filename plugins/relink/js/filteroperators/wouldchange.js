@@ -22,7 +22,7 @@ exports.wouldchange = function(source,operator,options) {
 	return Object.keys(records);
 };
 
-exports.impossible = function(kource,operator,options) {
+exports.impossible = function(source,operator,options) {
 	var from = options.widget && options.widget.getVariable("currentTiddler"),
 		to = operator.operand,
 		results = [],
