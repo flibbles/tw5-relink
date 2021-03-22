@@ -1,0 +1,8 @@
+title: Migration to V2
+
+For V2, //Relink// needed to create the `report` method to scan tiddlers for references to all other titles, not just the one being relinked at the time. This impacts the following modules and plugins
+
+<$macrocall $name="tabs"
+	tabsList="[[Migration to V2]tagging[]]"
+	default="Migration to V2/relinkoperator"
+/>

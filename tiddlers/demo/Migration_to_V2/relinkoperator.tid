@@ -1,0 +1,29 @@
+caption: relinkoperator module
+tags: [[Migration to V2]]
+title: Migration to V2/relinkoperator
+
+The old signature used to be this:
+
+```javascript
+exports.[[unique name]] = function(tiddler, fromTitle, toTitle, changes, options) {
+	// code to relink references of fromTitle to toTitle inside tiddler.
+};
+```
+
+It is now:
+
+```javascript
+exports.name = "[[unique name]]";
+
+exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
+	// same code for relinking as before
+};
+
+exports.report = function(tiddler, callback, options) {
+	// calls `callback(title, blurb)` for each reference to any other
+	// tiddler inside of `tiddler`. Blurb is an optional  SHORT string
+	// to describe what kind of reference it is.
+};
+```
+
+The old signature will still successfully relink in Relink V2, so you don't have to migrate these modules immediately. ''Unfortunately,'' once you do, new signature won't work correctly if your users don't upgrade Relink to V2.

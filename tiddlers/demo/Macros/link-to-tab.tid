@@ -1,6 +1,6 @@
 tags: $:/tags/Macro
 title: Macros/link-to-tab
-qualifiers: Demo 1577183281 Types 2094947537 Plugins -1909702749 Versions 1626946465
+qualifiers: Demo 1577183281 Types 2094947537 Plugins -1909702749 Versions 1626946465 [[Migration to V2]] 1061141861
 
 \relink link-to-tab tiddler tab caption:wikitext
 \define link-to-tab(tiddler, tab, caption)

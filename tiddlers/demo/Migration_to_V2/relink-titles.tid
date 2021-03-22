@@ -1,0 +1,30 @@
+caption: //Relink-titles// plugin
+list-after: 
+tags: [[Migration to V2]]
+title: Migration to V2/relink-titles
+
+Unfortunately, if you made custom filters for Relink-titles, you're going to have to change those into modules. There is no forward or backward compatibility.
+
+First of all, I'm sorry I'm making you have to update, but filters really don't work for the newer, better systems under Relink's hood. But a module should give you much more flexibility.
+
+You'll need to create a `relinktitlesrule` module to replace your filter. Fortunately, it's a very simple module:
+
+```javascript
+
+// technically this isn't used, but I recommend making this anyway.
+exports.name = "[[Unique name for filter]]";
+
+exports.report = function(targetTitle, callback, options) {
+	// calls `callback(title, blurb)` for each possible title for which
+	// "targetTitle" would have to be renamed if that title were changed.
+	// tiddler inside of `tiddler`. Blurb is an optional SHORT string
+	// to describe what kind of reference this is.
+};
+
+exports.relink = function(title, fromTitle, toTitle, options) {
+	// code that returns a new version of "title" whenever fromTitle
+	// is renamed into toTitle.
+};
+```
+
+[[Here is an example module|Plugins/Titles/example.js]] with plenty of documentation. You need a `report` method for the [[TiddlerInfo Tab]], and a `relink` method for the actual updating of titles.

@@ -21,6 +21,15 @@ becomes
 
 `[title[New Tiddler]] [tag[New Tiddler]!field:title[New Tiddler]]`
 
-''Title'' is special. If it's whitelisted, then it includes all shorthands for title. All runs of the filter: `[title[MyTiddler]] [[MyTiddler]] MyTiddler "MyTiddler" 'MyTiddler'` would all be changed on a rename of //MyTiddler//.
+''Multi-operand operators'' are supported in Tiddlywiki >=V5.1.23. Currently, there are only a couple core operators that utilize that, and //none// of them are relevant to relinking.
+
+However, if you want to create relinkable operators, you can. Say you have an operator `myop` which takes tiddler titles for its first operand, and a reference for its second. You would put the following entries into the whitelist:
+
+* `myop/1` => `title`
+* `myop/2` => `reference`
+
+Thus, the filter `[myop[myTitle],[myTitle!!field]]` will update both operands if "myTitle" is renamed.
+
+`myop/1` => `title` is equivalent to `myop` => `title` since the first operand is the default operand. However, defining both `myop` and `myop/1` is unsupported and results in undefined behavior.
 
 <<link-to-tab Demo Demo/Filters Demo>>

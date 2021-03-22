@@ -1,0 +1,33 @@
+caption: relinktextoperator module
+tags: [[Migration to V2]]
+title: Migration to V2/relinktextoperator
+
+The old signature used to be this:
+
+```javascript
+exports.[[Tiddler MIME type]] = function(tiddler, fromTitle, toTitle, options) {
+	// code to relink references of fromTitle to toTitle inside tiddler.
+};
+```
+
+It is now:
+
+```javascript
+exports.type = "[[tiddler MIME type]]";
+
+exports.relink = function(tiddler, fromTitle, toTitle, options) {
+	// same code for relinking as before
+};
+
+exports.report = function(tiddler, callback, options) {
+	// calls `callback(title, blurb)` for each reference to any other
+	// tiddler inside of `tiddler`. Blurb is an optional  SHORT string
+	// to describe what kind of reference it is.
+};
+```
+
+The old signature will still successfully relink in Relink V2 (although it won't report in the [[TiddlerInfo Tab]]. If you want your module to still be compatible with Relink V1, include the following at the end:
+
+```javascript
+exports.[[Tiddler MIME type]] = exports.relink;
+```

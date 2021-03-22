@@ -1,0 +1,16 @@
+This version overhauls the internal design in order to integrate with ~TiddlyWiki's indexer system. This version is ''considerably faster'' than V1 when it comes to the Relink info panel and general performance when doing non-Relink things.
+
+Unfortunately, this release required non-backward compatible changes. This will only affect anyone who has created or uses modules that integrate with Relink. [[See here for more details.|Migration to V2]] (Note: Your modules will still work for relinking! They just won't work with the [[TiddlerInfo Tab]].)
+
+''Other changes''
+
+* Fixed infinite loop that occurs when relinking tiddlers with certain malformed filters. This was a bad one. The loop used to require closing the browser tab.
+* Relink-titles had to be completely changed. <<link-to-tab [[Migration to V2]] [[Migration to V2/relink-titles]] "See here for more info.">>
+* Support for filterrunprefixes and [[multi-operand filter operators|Operators]]!
+* Relink better conforms to Tiddlywiki rendering with regards to nested wikitext and \rules pragma.
+* Several [[wikimethods|Wikimethods]] have been defined and documented.
+* Changed the way the //Relink// ~TiddlyInfo reports filters in some cases to be more useful.
+* Relink would not relink fields of javascript tiddlers. Fixed.
+* Fixed minor issue where Relink would erase falsy prettylink captions.
+* Placeholdering for non-managed attributes is less error-prone.
+* Fixed issue with downgrading macrocalls would corrupt empty-string parameters.

@@ -34,7 +34,7 @@ If you want your rule to be disabled by default, simply create a tiddler in your
 
 !!! Migration
 
-Version 2 of //Relink-titles// had to be overhauled due to underlying changes in Relink V2. If you did not create any custom filters or have any plugin integration, all you need to do is update and check your settings. [[Otherwise, see here for migration details.|Relink-titles Migration]].
+Version 2 of //Relink-titles// had to be overhauled due to underlying changes in Relink V2. If you did not create any custom filters or have any plugin integration, all you need to do is update and check your settings. <<link-to-tab [[Migration to V2]] [[Migration to V2/relink-titles]] "Otherwise, see here for migraiton details.">>
 
 
 !!! Install

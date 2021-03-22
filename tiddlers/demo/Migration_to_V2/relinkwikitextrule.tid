@@ -1,0 +1,31 @@
+caption: relinkwikitextrule module
+tags: [[Migration to V2]]
+title: Migration to V2/relinkwikitextrule
+
+The old signature used to be this:
+
+```javascript
+exports.name = "[[Name of corresponding wikitext rule]]";
+
+exports.relink = function(text, fromTitle, toTitle, options) {
+	// code to relink references of fromTitle to toTitle inside tiddler.
+};
+```
+
+It is now:
+
+```javascript
+exports.name = "[[Name of corresponding wikitext rule]]";
+
+exports.relink = function(tiddler, fromTitle, toTitle, options) {
+	// can be EXACTLY the same
+};
+
+exports.report = function(text, callback, options) {
+	// calls `callback(title, blurb)` for each reference to any other
+	// tiddler inside of `text`. Blurb is an optional  SHORT string
+	// to describe what kind of reference it is.
+};
+```
+
+You just need to add a `report` method. The old signature will still successfully relink in Relink V2 (even if it doesn't report in the [[TiddlerInfo Tab]]), and your new version will still work just fine with V1 after you migrate.
