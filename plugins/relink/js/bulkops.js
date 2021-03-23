@@ -37,18 +37,17 @@ function relinkTiddler(fromTitle, toTitle, options) {
 	for (var title in records) {
 		var entries = records[title];
 		var changes = Object.create(null);
-		var update = false;
+		var update = false, fails = false;
 		for (var field in entries) {
 			var entry = entries[field];
-			if (entry.impossible) {
-				// TODO: doesn't this mean multiple failures could be pushed
-				//       as long as they occur in different fields?
-				failures.push(title);
-			}
+			fails = fails || entry.impossible;
 			if (entry.output) {
 				changes[field] = entry.output;
 				update = true;
 			}
+		}
+		if (fails) {
+			failures.push(title);
 		}
 		// If any fields changed, update tiddler
 		if (update) {

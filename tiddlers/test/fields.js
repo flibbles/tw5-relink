@@ -127,6 +127,24 @@ it("lists don't fail when fromTitle not in list", function() {
 	expect(fails.length).toEqual(0);
 });
 
+// TODO: Improve the failure testing
+it('handles failures across multiple fields', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.fieldConf('A', 'list'),
+		utils.fieldConf('B', 'list'),
+		utils.fieldConf('C'),
+		{title: 'test', A: 'from', B: 'from', C: 'from'}]);
+	const fails = utils.collectFailures(function() {
+		wiki.renameTiddler('from', 'to]] here');
+	});
+	expect(fails.length).toBe(1);
+	var fields = wiki.getTiddler('test').fields;
+	expect(fields.A).toBe('from');
+	expect(fields.B).toBe('from');
+	expect(fields.C).toBe('to]] here');
+});
+
 /** I have chosen not to respect dontRenameInTags and dontRenameInLists
  *  because they are literally never used anywhere. Now you can just use
  *  the configuration.

@@ -6,6 +6,7 @@ type: application/javascript
 Renames tiddlers which have titles derived from fromTitle. Then it makes
 sure that those tiddlers are properly relinked too.
 
+TODO: Do I want support for report disabling?
 \*/
 
 /*jslint node: false, browser: true */
