@@ -297,7 +297,7 @@ it("field failures don't prevent from continuing", function() {
 
 	// properly counts failures
 	fail("[tag[from]title[from]tag{from}]", "1]2",
-	     "[tag[from]title[from]tag{1]2}]", ['filt: [tag[]]', 'filt: [title[]]', 'filt: [tag{}]'], 2);
+	     "[tag[from]title[from]tag{1]2}]", ['filt: [tag[]]', 'filt: [title[]]', 'filt: [tag{}]'], 1);
 
 	// Reference operand properly fails
 	fail("[list[from]tag[from]]", "t!!f",

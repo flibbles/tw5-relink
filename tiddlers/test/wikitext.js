@@ -193,7 +193,7 @@ it('field failures without placeholdering', function() {
 	fails("[img height={{from here!!height}} [from here]]",
 	      "[img height={{']] \"!!height}} [from here]]",
 	      {ignored: true, to: "']] \""});
-	fails("[img height={{from here!!height}} [from here]]", {ignored: true, to: "']]}} \"", fails: 2});
+	fails("[img height={{from here!!height}} [from here]]", {ignored: true, to: "']]}} \"", fails: 1});
 	// Macrodefs
 	fails("\\define macro()\n[[from here]]", {fails: 0});
 	fails("\\define relink-filter-1() [tag[from here]]\nBody", {ignored: true, to: "A]]R"});

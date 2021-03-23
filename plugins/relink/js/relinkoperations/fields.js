@@ -15,25 +15,6 @@ var FieldEntry = EntryNode.newType("field");
 
 exports.name = 'fields';
 
-FieldEntry.prototype.report = function() {
-	var self = this;
-	var output = [];
-	$tw.utils.each(this.children, function(child) {
-		if (child.report) {
-			$tw.utils.each(child.report(), function(report) {
-				if (report) {
-					output.push(self.field + ": " + report);
-				} else {
-					output.push(self.field);
-				}
-			});
-		} else {
-			output.push(self.field);
-		}
-	});
-	return output;
-};
-
 exports.report = function(tiddler, callback, options) {
 	var fields = options.settings.getFields();
 	$tw.utils.each(fields, function(handler, field) {
@@ -58,9 +39,10 @@ exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 			var entry = handler.relink(input, fromTitle, toTitle, options);
 			if (entry !== undefined) {
 				var fieldEntry = new FieldEntry();
-				fieldEntry.field = field;
 				fieldEntry.output = entry.output;
-				fieldEntry.add(entry);
+				if (fieldEntry.isImpossible(entry)) {
+					fieldEntry.impossible = true;
+				}
 				changes[field] = fieldEntry;
 			}
 		}

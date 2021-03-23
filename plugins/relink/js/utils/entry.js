@@ -26,6 +26,21 @@ EntryNode.newType = function(name) {
 	return NewEntry;
 };
 
+// TODO: very temporary
+EntryNode.prototype.isImpossible = function(rootEntry) {
+	if (rootEntry.impossible) {
+		return true;
+	}
+	var imp = false;
+	var self = this;
+	if (rootEntry.eachChild) {
+		rootEntry.eachChild(function(child) {
+			imp = imp || self.isImpossible(child);
+		});
+	}
+	return imp;
+};
+
 EntryNode.prototype.eachChild = function(method) {
 	if (this.children) {
 		for (var i = 0; i < this.children.length; i++) {
