@@ -40,6 +40,6 @@ exports.makeSyslink = function(title, options) {
 	if (match && match[0] === title && title[0] !== "~") {
 		return title;
 	} else {
-		return utils.makeLink(this.parser.context, title, undefined, options);
+		return utils.makePrettylink(this.parser, title, undefined, options);
 	}
 };

@@ -41,6 +41,6 @@ exports.makeWikilink = function(title, options) {
 	if (title.match(this.matchRegExp) && title[0] !== $tw.config.textPrimitives.unWikiLink) {
 		return title;
 	} else {
-		return utils.makeLink(this.parser.context, title, undefined, options);
+		return utils.makePrettylink(this.parser, title, undefined, options);
 	}
 };

@@ -50,18 +50,18 @@ function getPlaceholderCategory(context, tag, attribute) {
 	}
 };
 
-exports.makeLink = function(context, tiddler, caption, options) {
+exports.makePrettylink = function(parser, tiddler, caption, options) {
 	var output;
-	if (context.allowPrettylinks() && this.canBePrettylink(tiddler, caption)) {
+	if (parser.context.allowPrettylinks() && this.canBePrettylink(tiddler, caption)) {
 		output = prettyLink(tiddler, caption);
 	} else if (caption !== undefined) {
-		var safeCaption = sanitizeCaption(context, caption, options);
+		var safeCaption = sanitizeCaption(parser.context, caption, options);
 		if (safeCaption !== undefined) {
-			output = exports.makeWidget(context, '$link', {to: tiddler}, safeCaption, options);
+			output = exports.makeWidget(parser.context, '$link', {to: tiddler}, safeCaption, options);
 		}
-	} else if (exports.shorthandPrettylinksSupported(options)) {
-		output = exports.makeWidget(context, '$link', {to: tiddler}, undefined, options);
-	} else if (context.allowWidgets() && options.placeholder) {
+	} else if (exports.shorthandPrettylinksSupported(parser.wiki)) {
+		output = exports.makeWidget(parser.context, '$link', {to: tiddler}, undefined, options);
+	} else if (parser.context.allowWidgets() && options.placeholder) {
 		// If we don't have a caption, we must resort to
 		// placeholders anyway to prevent link/caption desync
 		// from later relinks.
@@ -92,9 +92,9 @@ exports.canBePrettylink = function(value, customCaption) {
  * cases.
  */
 var _supported;
-exports.shorthandPrettylinksSupported = function(options) {
+exports.shorthandPrettylinksSupported = function(wiki) {
 	if (_supported === undefined) {
-		var test = options.wiki.renderText("text/plain", "text/vnd.tiddlywiki", "<$link to=test/>");
+		var test = wiki.renderText("text/plain", "text/vnd.tiddlywiki", "<$link to=test/>");
 		_supported = (test === "test");
 	}
 	return _supported;

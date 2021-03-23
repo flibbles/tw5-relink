@@ -32,7 +32,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		// format is [[MyTiddler]], and it doesn't match
 		return undefined;
 	}
-	var entry = { output: utils.makeLink(this.parser.context, toTitle, caption, options) };
+	var entry = { output: utils.makePrettylink(this.parser, toTitle, caption, options) };
 	if (entry.output === undefined) {
 		entry.impossible = true;
 	}
