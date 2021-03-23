@@ -40,9 +40,9 @@ function relinkTiddler(fromTitle, toTitle, options) {
 		var update = false;
 		for (var field in entries) {
 			var entry = entries[field];
-			language.eachImpossible(entry, function() {
+			if (language.eachImpossible(entry)) {
 				failures.push(title);
-			});
+			}
 			if (entry && entry.output) {
 				changes[field] = entry.output;
 				update = true;

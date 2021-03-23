@@ -96,9 +96,7 @@ it('widgets nested as widget arguments', function() {
 	expect(getText(wiki, 'noLinks')).toBe('\\rules except html\n<$list emptyMessage="[[from]]"/>\n[[from]]');
 	// Two failures because the nested [[from]] gets parsed as wikitext,
 	// and not as an attribute, so it still tries (and fails) to relink.
-	expect(failures.length).toEqual(2);
-	expect(failures[0]).toContain('noLinks');
-	expect(failures[1]).toContain('noLinks');
+	expect(failures).toEqual(['noLinks']);
 });
 
 it('doesn\'t impact macrodef blocks', function() {

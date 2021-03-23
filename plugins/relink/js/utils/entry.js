@@ -35,7 +35,9 @@ EntryNode.prototype.isImpossible = function(rootEntry) {
 	var self = this;
 	if (rootEntry.eachChild) {
 		rootEntry.eachChild(function(child) {
-			imp = imp || self.isImpossible(child);
+			if (child) {
+				imp = imp || self.isImpossible(child);
+			}
 		});
 	}
 	return imp;

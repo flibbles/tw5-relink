@@ -212,7 +212,7 @@ it("undefined macros, multiple active parameters", function() {
 	// resolved.
 	testText("<<undef 'from here' param:'from here'>>",
 	         "<<undef 'from here' param:'from here'>>",
-	         {wiki: wiki, fails: 2, to: to});
+	         {wiki: wiki, fails: 1, to: to});
 
 	// Super tricky. Both parameters can relink, but 'param' requires a
 	// downgrade. But there's an unresolved anonymous param, so no

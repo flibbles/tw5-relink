@@ -5,15 +5,17 @@ This handles all logging and alerts Relink emits.
 
 \*/
 
-exports.eachImpossible = function(rootEntry, method) {
+exports.eachImpossible = function(rootEntry) {
+	if (rootEntry.impossible) {
+		return true;
+	}
+	var imp = false;
 	if (rootEntry.eachChild) {
 		rootEntry.eachChild(function(child) {
-			exports.eachImpossible.call(this, child, method);
+			imp = imp || exports.eachImpossible.call(this, child);
 		});
 	}
-	if (rootEntry.impossible) {
-		method(rootEntry);
-	}
+	return imp;
 };
 
 exports.log = function(title, from, to) {

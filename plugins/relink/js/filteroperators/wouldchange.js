@@ -33,9 +33,7 @@ exports.impossible = function(source,operator,options) {
 		if (fields) {
 			var impossible = false;
 			for (var field in fields) {
-				language.eachImpossible(fields[field], function() {
-					impossible = true;
-				});
+				impossible = impossible || language.eachImpossible(fields[field]);
 			}
 			if (impossible) {
 				results.push(title);
