@@ -13,16 +13,8 @@ var VariableContext = utils.getContext('variable');
 
 exports.name = "macrodef";
 
-function MacrodefEntry(macroName, bodyEntry) {
-	this.macro = macroName;
-	this.body = bodyEntry;
-};
-MacrodefEntry.prototype.name = "macrodef";
-MacrodefEntry.prototype.eachChild = function(block) { return block(this.body);};
-
 exports.report = function(text, callback, options) {
 	var setParseTreeNode = this.parse(),
-		macroEntry,
 		m = this.match,
 		name = m[1];
 	this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
@@ -47,7 +39,7 @@ exports.report = function(text, callback, options) {
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var setParseTreeNode = this.parse(),
-		macroEntry,
+		entry,
 		m = this.match,
 		name = m[1],
 		params = m[2],
@@ -66,17 +58,14 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				options.placeholder.registerExisting(name, value);
 			}
 			// Relink the contents
-			var entry = handler.relink(value, fromTitle, toTitle, options);
-		}
-		if (entry !== undefined) {
-			macroEntry = new MacrodefEntry(name, entry);
-			if (entry.output) {
-				macroEntry.output = m[0] + endMatch[1] + entry.output + endMatch[0];
+			entry = handler.relink(value, fromTitle, toTitle, options);
+			if (entry && entry.output) {
+				entry.output = m[0] + endMatch[1] + entry.output + endMatch[0];
 			}
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
-	return macroEntry;
+	return entry;
 };
 
 // Return another match for the body, but tooled uniquely
