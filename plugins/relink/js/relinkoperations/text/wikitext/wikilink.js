@@ -27,7 +27,7 @@ exports.report = function(text, callback, options) {
 		unlink = $tw.config.textPrimitives.unWikiLink;
 	this.parser.pos = this.matchRegExp.lastIndex;
 	if (title[0] !== unlink) {
-		callback(unlink + title, title);
+		callback(title, unlink + title);
 	}
 };
 

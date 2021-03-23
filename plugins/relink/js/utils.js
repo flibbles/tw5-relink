@@ -3,7 +3,6 @@ module-type: library
 
 Utility methods for relink.
 
-// TODO: Switch around all the (blurb, title) report callbacks
 \*/
 
 var macroFilter =  "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]";
@@ -35,7 +34,7 @@ exports.getTiddlerRelinkReferences = function(wiki, title, context) {
 	if (tiddler) {
 		try {
 			for (var relinker in getRelinkOperators()) {
-				getRelinkOperators()[relinker].report(tiddler, function(blurb, title) {
+				getRelinkOperators()[relinker].report(tiddler, function(title, blurb) {
 					references[title] = references[title] || [];
 					references[title].push(blurb);
 				}, options);

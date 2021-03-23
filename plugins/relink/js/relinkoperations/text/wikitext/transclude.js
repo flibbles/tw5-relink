@@ -36,10 +36,10 @@ exports.report = function(text, callback, options) {
 		if (template) {
 			suffix = suffix + '||' + template;
 		}
-		callback('{{' + suffix + '}}', ref.title)
+		callback(ref.title, '{{' + suffix + '}}')
 	}
 	if (template) {
-		callback('{{' + refString + '||}}', template);
+		callback(template, '{{' + refString + '||}}');
 	}
 	this.parser.pos = this.matchRegExp.lastIndex;
 };

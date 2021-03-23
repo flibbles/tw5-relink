@@ -43,12 +43,12 @@ exports.report = function(text, callback, options) {
 		var value = endMatch[2],
 			handler = utils.getType(getActiveType(name, m[2]) || 'wikitext');
 		if (handler) {
-			var entry = handler.report(value, function(blurb, title) {
+			var entry = handler.report(value, function(title, blurb) {
 				var macroStr = '\\define ' + name + '()';
 				if (blurb) {
 					macroStr += ' ' + blurb;
 				}
-				callback(macroStr, title);
+				callback(title, macroStr);
 			}, options);
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;

@@ -97,11 +97,11 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 				if (!alone || alone.index != p) {
 					if (fromTitle === undefined) {
 						// toTitle is a callback method in this case.
-						p =reportFilterOperation(filter, function(blurb, title){
+						p =reportFilterOperation(filter, function(title, blurb){
 							if (match[1]) {
-								blurbs.push([match[1] + (blurb || ''), title]);
+								blurbs.push([title, match[1] + (blurb || '')]);
 							} else {
-								blurbs.push([blurb, title]);
+								blurbs.push([title, blurb]);
 							}
 						},p,options.settings,options);
 					} else {
@@ -136,7 +136,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 			}
 			if (fromTitle === undefined) {
 				// Report it
-				blurbs.push([match[1], val]);
+				blurbs.push([val, match[1]]);
 			} else if (val === fromTitle) {
 				// Relink it
 				var entry = {name: "title"};
@@ -356,8 +356,8 @@ function reportFilterOperation(filterString, callback, p, context, options) {
 				nextBracketPos = filterString.indexOf("}",p);
 				var operand = filterString.substring(p,nextBracketPos);
 				// Just report it
-				refHandler.report(operand, function(blurb, title) {
-					callback(operatorBlurb(operator, '{' + blurb + '}'), title);
+				refHandler.report(operand, function(title, blurb) {
+					callback(title, operatorBlurb(operator, '{' + blurb + '}'));
 				}, options);
 				break;
 			case "[": // Square brackets
@@ -370,8 +370,8 @@ function reportFilterOperation(filterString, callback, p, context, options) {
 					break;
 				}
 				// We just have to report it. Nothing more.
-				handler.report(operand, function(blurb, title) {
-					callback(operatorBlurb(operator, '[' + blurb + ']'), title);
+				handler.report(operand, function(title, blurb) {
+					callback(title, operatorBlurb(operator, '[' + blurb + ']'));
 				}, options);
 				break;
 

@@ -109,14 +109,14 @@ exports.report = function(text, callback, options) {
 	}
 	this.parser.pos = em.index + em[1].length + caption.length + em[0].length + 2;
 	if (!isImage) {
-		markdown.report(caption, function(blurb, title) {
-			callback(prefix + '[' + (blurb || '') + '](' + hash + link + ')', title);
+		markdown.report(caption, function(title, blurb) {
+			callback(title, prefix + '[' + (blurb || '') + '](' + hash + link + ')');
 		}, options);
 	}
 	if (isImage !== (em[3].lastIndexOf('#') >= 0)) {
 		var safeCaption = utils.abridge(caption);
 		try {
-			callback(em[1] + '[' + safeCaption + '](' + hash + ')', decodeURIComponent(link));
+			callback(decodeURIComponent(link), em[1] + '[' + safeCaption + '](' + hash + ')');
 		} catch (e) {
 			// It must be a malformed link. Not our problem.
 			// Just move on.

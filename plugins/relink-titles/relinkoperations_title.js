@@ -36,7 +36,7 @@ exports.report = function(tiddler, callback, options) {
 		rules = cache.rules;
 	for (var i = 0; i < rules.length; i++) {
 		rules[i].report(tiddler.fields.title, function(title, blurb) {
-			callback(blurb ? ('title: ' + blurb) : 'title', title);
+			callback(title, blurb ? ('title: ' + blurb) : 'title');
 		}, options);
 	}
 };

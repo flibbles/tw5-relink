@@ -23,7 +23,7 @@ exports.report = function(text, callback, options) {
 	var text = this.match[1],
 		link = this.match[2] || text;
 	if (!$tw.utils.isLinkExternal(link)) {
-		callback('[[' + text + ']]', link);
+		callback(link, '[[' + text + ']]');
 	}
 	this.parser.pos = this.matchRegExp.lastIndex;
 };

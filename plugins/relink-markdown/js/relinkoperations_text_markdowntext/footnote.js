@@ -33,7 +33,7 @@ exports.report = function(text, callback, options) {
 	this.parser.pos = m.index + m[0].length;
 	if (m[1].charAt(0) !== "^"
 	 && (m[3] === "#" || options.wiki.isImageTiddler(link))) {
-		callback('[' + utils.abridge(m[1]) + ']:', link);
+		callback(link, '[' + utils.abridge(m[1]) + ']:');
 	}
 };
 

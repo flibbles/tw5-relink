@@ -59,7 +59,7 @@ exports.report = function(text, callback, options) {
 		if (attributeName === "source") {
 			var tooltip = this.nextImage.attributes.tooltip;
 			var blurb = '[img[' + (tooltip ? tooltip.value : '') + ']]';
-			callback(blurb, attr.value);
+			callback(attr.value, blurb);
 			ptr = text.indexOf(attr.value, ptr);
 			ptr = text.indexOf(']]', ptr) + 2;
 		} else if (attributeName !== "tooltip") {
@@ -165,22 +165,22 @@ function reportAttribute(parser, attribute, callback, options) {
 	} else if (attribute.type === "indirect") {
 		ptr = text.indexOf('{{', ptr);
 		var end = ptr + attribute.textReference.length + 4;
-		refHandler.report(attribute.textReference, function(blurb, title) {
-			callback('[img ' + attribute.name + '={{' + blurb + '}}]', title);
+		refHandler.report(attribute.textReference, function(title, blurb) {
+			callback(title, '[img ' + attribute.name + '={{' + blurb + '}}]');
 		}, options);
 	} else if (attribute.type === "filtered") {
 		ptr = text.indexOf('{{{', ptr);
 		var end = ptr + attribute.filter.length + 6;
-		filterHandler.report(attribute.filter, function(blurb, title) {
-			callback('[img ' + attribute.name + '={{{' + blurb + '}}}]', title);
+		filterHandler.report(attribute.filter, function(title, blurb) {
+			callback(title, '[img ' + attribute.name + '={{{' + blurb + '}}}]');
 		}, options);
 	} else if (attribute.type === "macro") {
 		ptr = text.indexOf("<<", ptr);
 		var end = attribute.value.end;
 		var macro = attribute.value;
 		oldValue = attribute.value;
-		macrocall.reportAttribute(parser, macro, function(blurb, title) {
-			callback('[img ' + attribute.name + '=' + blurb + ']', title);
+		macrocall.reportAttribute(parser, macro, function(title, blurb) {
+			callback(title, '[img ' + attribute.name + '=' + blurb + ']');
 		}, options);
 	}
 	return end;

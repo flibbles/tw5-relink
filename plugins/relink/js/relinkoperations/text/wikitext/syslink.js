@@ -26,7 +26,7 @@ exports.report = function(text, callback, options) {
 	var title = this.match[0];
 	this.parser.pos = this.matchRegExp.lastIndex;
 	if (title[0] !== "~") {
-		callback('~' + title, title);
+		callback(title, '~' + title);
 	}
 };
 

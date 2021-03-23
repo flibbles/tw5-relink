@@ -73,25 +73,25 @@ exports.report = function(text, callback, options) {
 				// We don't manage this attribute. Bye.
 				continue;
 			}
-			handler.report(attr.value, function(blurb, title) {
+			handler.report(attr.value, function(title, blurb) {
 				if (blurb) {
-					callback('<' + element + ' ' + attributeName + '="' + blurb + '" />', title);
+					callback(title, '<' + element + ' ' + attributeName + '="' + blurb + '" />');
 				} else {
-					callback('<' + element + ' ' + attributeName + ' />', title);
+					callback(title, '<' + element + ' ' + attributeName + ' />');
 				}
 			}, options);
 		} else if (attr.type === "indirect") {
-			entry = refHandler.report(attr.textReference, function(blurb, title) {
-				callback('<' + element + ' ' + attributeName + '={{' + blurb + '}} />', title);
+			entry = refHandler.report(attr.textReference, function(title, blurb) {
+				callback(title, '<' + element + ' ' + attributeName + '={{' + blurb + '}} />');
 			}, options);
 		} else if (attr.type === "filtered") {
-			entry = filterHandler.report(attr.filter, function(blurb, title) {
-				callback('<' + element + ' ' + attributeName + '={{{' + blurb + '}}} />', title);
+			entry = filterHandler.report(attr.filter, function(title, blurb) {
+				callback(title, '<' + element + ' ' + attributeName + '={{{' + blurb + '}}} />');
 			}, options);
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
-			entry = macrocall.reportAttribute(this.parser, macro, function(blurb, title) {
-				callback('<' + element + ' ' + attributeName + '=' + blurb + ' />', title);
+			entry = macrocall.reportAttribute(this.parser, macro, function(title, blurb) {
+				callback(title, '<' + element + ' ' + attributeName + '=' + blurb + ' />');
 			}, options);
 		}
 		if (quotedValue === undefined) {

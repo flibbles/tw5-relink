@@ -46,11 +46,11 @@ exports.report = function(text, callback, options) {
 		filter = m[1],
 		template = $tw.utils.trim(m[3]),
 		append = template ? '||' + template + '}}}' : '}}}';
-	filterHandler.report(filter, function(blurb, title) {
-		callback('{{{' + blurb + append, title);
+	filterHandler.report(filter, function(title, blurb) {
+		callback(title, '{{{' + blurb + append);
 	}, options);
 	if (template) {
-		callback('{{{' + $tw.utils.trim(filter).replace(/\r?\n/mg, ' ') + '||}}}', template);
+		callback(template, '{{{' + $tw.utils.trim(filter).replace(/\r?\n/mg, ' ') + '||}}}');
 	}
 	this.parser.pos = this.matchRegExp.lastIndex;
 };

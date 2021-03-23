@@ -39,11 +39,11 @@ exports.report = function(tiddler, callback, options) {
 	$tw.utils.each(fields, function(handler, field) {
 		var input = tiddler.fields[field];
 		if (input) {
-			handler.report(input, function(blurb, title) {
+			handler.report(input, function(title, blurb) {
 				if (blurb) {
-					callback(field + ': ' + blurb, title);
+					callback(title, field + ': ' + blurb);
 				} else {
-					callback(field, title);
+					callback(title, field);
 				}
 			}, options);
 		}

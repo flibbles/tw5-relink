@@ -31,13 +31,13 @@ exports.report = function(text, callback, options) {
 	// This moves the pos for us
 	var parseTree = this.parse();
 	var filter = parseTree[0].attributes.filter.value || '';
-	filterRelinker.report(filter, function(blurb, title) {
+	filterRelinker.report(filter, function(title, blurb) {
 		if (blurb) {
 			blurb = '\\import ' + blurb;
 		} else {
 			blurb = '\\import';
 		}
-		callback(blurb, title);
+		callback(title, blurb);
 	}, options);
 	// Before we go, we need to actually import the variables
 	// it's calling for, and any /relink pragma

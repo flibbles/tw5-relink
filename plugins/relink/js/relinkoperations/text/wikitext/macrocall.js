@@ -95,12 +95,12 @@ exports.reportAttribute = function(parser, macro, callback, options) {
 		var handler = managedMacro[managedArg];
 		var nestedOptions = Object.create(options);
 		nestedOptions.settings = parser.context;
-		var entry = handler.report(param.value, function(blurb, title) {
+		var entry = handler.report(param.value, function(title, blurb) {
 			var rtn = managedArg;
 			if (blurb) {
 				rtn += ': "' + blurb + '"';
 			}
-			callback('<<' + macro.name + ' ' + rtn + '>>', title);
+			callback(title, '<<' + macro.name + ' ' + rtn + '>>');
 		}, nestedOptions);
 	}
 };

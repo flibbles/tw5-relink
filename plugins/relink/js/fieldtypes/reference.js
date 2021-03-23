@@ -24,7 +24,6 @@ ReferenceEntry.prototype.report = function() {
 	return [""];
 };
 
-// TODO: Test {{}} case, so it doesn't return empty string.
 exports.report = function(value, callback, options) {
 	if (value) {
 		var reference = $tw.utils.parseTextReference(value),
@@ -36,7 +35,7 @@ exports.report = function(value, callback, options) {
 			} else if (reference.index) {
 				blurb = '##' + reference.index;
 			}
-			callback(blurb, title);
+			callback(title, blurb);
 		}
 	}
 };
