@@ -15,12 +15,6 @@ var utils = require("./utils.js");
 
 exports.name = ['transcludeinline', 'transcludeblock'];
 
-var TranscludeEntry = function() {};
-TranscludeEntry.prototype.name = "transclude";
-TranscludeEntry.prototype.report = function() {
-	return [];
-};
-
 exports.report = function(text, callback, options) {
 	var m = this.match,
 		refString = $tw.utils.trim(m[1]),
@@ -48,7 +42,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match,
 		reference = parseTextReference(m[1]),
 		template = m[2],
-		entry = new TranscludeEntry(),
+		entry = undefined,
 		modified = false;
 	this.parser.pos = this.matchRegExp.lastIndex;
 	if ($tw.utils.trim(reference.title) === fromTitle) {
@@ -66,13 +60,12 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			// Adding any newline that might have existed is
 			// what allows this relink method to work for both
 			// the block and inline filter wikitext rule.
-			entry.output = output + utils.getEndingNewline(m[0]);
+			entry = {output: output + utils.getEndingNewline(m[0])};
 		} else {
-			entry.impossible = true;
+			entry = {impossible: true}
 		}
-		return entry;
 	}
-	return undefined;
+	return entry;
 };
 
 // I have my own because the core one is deficient for my needs.
