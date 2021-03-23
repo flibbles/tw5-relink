@@ -12,33 +12,6 @@ Handles markdown links
 var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
 var markdown = require("$:/plugins/flibbles/relink/js/utils").getType('markdown');
 
-function LinkEntry() {};
-LinkEntry.prototype.name = "markdownlink";
-LinkEntry.prototype.report = function() {
-	var output = [];
-	var hash = '#';
-	if (this.prefix) {
-		hash = '';
-	}
-	if (this.captionEntry) {
-		var self = this;
-		$tw.utils.each(this.captionEntry.report(), function(report) {
-			output.push(self.prefix+"[" + (report || '') + "](" + hash + self.link + ")");
-		});
-	};
-	if (this.linkChanged) {
-		var safeCaption = utils.abridge(this.caption);
-		output.push(this.prefix+"[" + safeCaption + "](" + hash + ")");
-	}
-	return output;
-};
-
-LinkEntry.prototype.eachChild = function(method) {
-	if (this.captionEntry) {
-		method(this.captionEntry);
-	}
-};
-
 exports.name = "markdownlink";
 exports.types = {inline: true};
 
@@ -125,7 +98,7 @@ exports.report = function(text, callback, options) {
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var entry = new LinkEntry(),
+	var entry = {},
 		em = this.endMatch,
 		modified = false,
 		caption = em[2],
@@ -135,14 +108,16 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	if (!isImage) {
 		var newCaption = markdown.relink(caption, fromTitle, toTitle, options);
 		if (newCaption) {
-			modified = true;
-			entry.captionEntry = newCaption;
 			if (newCaption.output) {
 				if (this.canBeCaption(newCaption.output)) {
 					caption = newCaption.output;
+					modified = true;
 				} else {
-					newCaption.impossible = true;
+					entry.impossible = true;
 				}
+			}
+			if (newCaption.impossible) {
+				entry.impossible = true;
 			}
 		}
 	}
@@ -151,9 +126,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	if (isImage !== (em[3].lastIndexOf('#') >=0)) {
 		try {
 			if (decodeURIComponent(link) === fromTitle) {
-				modified = true;
-				entry.linkChanged = true;
 				link = utils.encodeLink(toTitle);
+				modified = true;
 			}
 		} catch (e) {
 			// It must be a malformed link. Not our problem.
@@ -161,11 +135,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		}
 	}
 	if (modified) {
-		entry.link = link;
-		entry.caption = caption;
-		entry.prefix = em[1];
 		// This way preserves whitespace
 		entry.output = em[1]+"["+caption+"]("+em[3]+link+em[5]+")";
+	}
+	if (modified || entry.impossible) {
 		return entry;
 	}
 	return undefined;

@@ -8,17 +8,14 @@ whichever markdown plugin you're using.
 
 \*/
 
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 var wikitextHandler = require("$:/plugins/flibbles/relink/js/utils.js").getType('wikitext');
 var utils = require("$:/plugins/flibbles/relink/js/utils/markdown.js");
+var language = require("$:/plugins/flibbles/relink/js/language.js");
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")['text/vnd.tiddlywiki'];
-
-var MarkdownEntry = EntryNode.newType("markdown");
 
 function MarkdownWalker(text, options) {
 	this.wiki = options.wiki;
-	this.entry = new MarkdownEntry();
 	this.options = Object.create(options);
 	this.options.macrodefCanBeDisabled = true;
 	if(!this.mdInlineRuleClasses) {
@@ -156,7 +153,9 @@ MarkdownRelinker.prototype = Object.create(MarkdownWalker.prototype);
 MarkdownRelinker.prototype.handleRule = function(ruleInfo) {
 	var newEntry = ruleInfo.rule.relink(this.source, this.fromTitle, this.toTitle, this.options);
 	if (newEntry !== undefined) {
-		this.entry.add(newEntry);
+		if (language.eachImpossible(newEntry)) {
+			this.impossible = true;
+		}
 		if (newEntry.output) {
 			this.builder.add(newEntry.output, ruleInfo.matchIndex, this.pos);
 		}
@@ -172,7 +171,9 @@ MarkdownRelinker.prototype.handleWikitext = function(startPos, end) {
 			var pragma = config.wikitextPragma;
 			var wikiEntry = wikitextHandler.relink(pragma + substr, this.fromTitle, this.toTitle, this.options);
 			if (wikiEntry != undefined) {
-				this.entry.add(wikiEntry);
+				if (language.eachImpossible(wikiEntry)) {
+					this.impossible = true;
+				}
 				if (wikiEntry.output) {
 					this.builder.add(wikiEntry.output.slice(pragma.length), startPos, end);
 				}
@@ -185,11 +186,12 @@ MarkdownRelinker.prototype.handleWikitext = function(startPos, end) {
 exports.name = "markdown";
 
 exports.relink = function(markdowntext, fromTitle, toTitle, options) {
-	var relinker = new MarkdownRelinker(markdowntext, fromTitle, toTitle, options);
-	var entry = relinker.entry;
-	if (entry.children.length > 0) {
-		entry.output = relinker.builder.results();
-		return entry;
+	var relinker = new MarkdownRelinker(markdowntext, fromTitle, toTitle, options),
+		entry;
+	if (relinker.builder.changed() || relinker.impossible) {
+		entry = {
+			output: relinker.builder.results(),
+			impossible: relinker.impossible };
 	}
-	return undefined;
+	return entry;
 };
