@@ -5,10 +5,6 @@ This handles all logging and alerts Relink emits.
 
 \*/
 
-exports.log = function(title, from, to) {
-	console.log("Renaming '"+from+"' to '"+to+"' in '" + title + "'");
-};
-
 exports.getString = function(title, options) {
 	title = "$:/plugins/flibbles/relink/language/" + title;
 	return options.wiki.renderTiddler("text/plain", title, options);

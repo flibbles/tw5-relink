@@ -6,75 +6,108 @@ Tests widget and HTML element attributes.
 
 var utils = require("test/utils");
 
-describe("html", function() {
-
-function testText(text, expected, options) {
-	[text, expected, options] = utils.prepArgs(text, expected, options);
-	var results = utils.relink({text: text}, options);
-	expect(results.tiddler.fields.text).toEqual(expected);
-	return results;
+function testText(text, expected, report, options) {
+	options = Object.assign({from: 'from here', to: 'to there'}, options);
+	const wiki = options.wiki || new $tw.Wiki();
+	if (expected === true) {
+		expected = text.split(options.from).join(options.to);
+	} else if (expected === false) {
+		expected = text;
+	}
+	wiki.addTiddlers([
+		{title: 'test', text: text},
+		utils.operatorConf("title")]);
+	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+	wiki.renameTiddler(options.from, options.to, options);
+	expect(utils.getText('test', wiki)).toEqual(expected);
 };
 
+describe("html", function() {
+
+beforeEach(function() {
+	spyOn(console, 'log');
+});
+
 it('field attributes', function() {
-	var r = testText('<$link to="from here">caption</$link>');
-	expect(r.log).toEqual(["Renaming 'from here' to 'to there' in 'test'"]);
-	testText('<$link to="from here">\n\ncaption</$link>\n\n');
-	testText(`<$link to='from here'>caption</$link>`);
-	testText(`<$link to='from here' />`);
-	testText('<$link to="from here" tooltip="" />');
-	testText('Before <$link to="from here">caption</$link> After');
-	testText(`<$link tag="div" to="from here">caption</$link>`);
-	testText(`<$link aria-label="true" to="from here">caption</$link>`);
-	testText(`<$link to='from here'>caption</$link><$link to="from here">another</$link>`);
-	testText(`<$link to='from here'>caption</$link>In between content<$link to="from here">another</$link>`);
-	testText(`<$link to    =   "from here">caption</$link>`);
-	testText("<$link\nto='from here'>caption</$link>");
-	testText("<$link to='from here'\n/>");
-	testText("<$link\ntag='div'\nto='from here'>caption</$link>");
-	testText("<$link\n\ttag='div'\n\tto='from here'>caption</$link>");
-	testText(`Begin text <$link to="from here">caption</$link> ending`);
+	const wiki = new $tw.Wiki();
+	const options = {wiki: wiki};
+	const link = ['<$link to />'];
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	testText('<$link to="from here">caption</$link>', true, link, options);
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
+	testText('<$link to="from here">\n\ncaption</$link>\n\n', true, link, options);
+	testText(`<$link to='from here'>caption</$link>`, true, link, options);
+	testText(`<$link to='from here' />`, true, link, options);
+	testText('<$link to="from here" tooltip="" />', true, link, options);
+	testText('Before <$link to="from here">caption</$link> After', true, link, options);
+	testText(`<$link tag="div" to="from here">caption</$link>`, true, link, options);
+	testText(`<$link aria-label="true" to="from here">caption</$link>`, true, link, options);
+	testText(`<$link to='from here'>caption</$link><$link to="from here">another</$link>`, true, ['<$link to />', '<$link to />'], options);
+	testText(`<$link to='from here'>caption</$link>In between content<$link to="from here">another</$link>`, true, ['<$link to />', '<$link to />'], options);
+	testText(`<$link to    =   "from here">caption</$link>`, true, link, options);
+	testText("<$link\nto='from here'>caption</$link>", true, link, options);
+	testText("<$link to='from here'\n/>", true, link, options);
+	testText("<$link\ntag='div'\nto='from here'>caption</$link>", true, link, options);
+	testText("<$link\n\ttag='div'\n\tto='from here'>caption</$link>", true, link, options);
+	testText(`Begin text <$link to="from here">caption</$link> ending`, true, link, options);
 	// Ensure slashes are enclosed in quotes. Important, because macros
 	// don't do this.
-	testText("<$link to=from />", "<$link to='to/there' />", {from: "from", to: "to/there"});
+	testText("<$link to=from />", "<$link to='to/there' />", link, {from: "from", to: "to/there", wiki: wiki});
 	// extra tricky
-	testText(`<$link tooltip="link -> dest" to="from here" />`);
+	testText(`<$link tooltip="link -> dest" to="from here" />`, true, link, options);
+
 	// ignores
-	testText(`<$link >to="from here"</$link>`, {ignored: true});
-	testText(`<$link to="from here"`, {ignored: true});
-	testText(`<$LINK to="from here" />`, {ignored: true});
-	testText(`<$link TO="from here" />`, {ignored: true});
-	testText(`<$link to=<<from>> />`, {from: "from", ignored: true});
+	testText(`<$link >to="from here"</$link>`, false, undefined, options);
+	testText(`<$link to="from here"`, false, undefined, options);
+	testText(`<$LINK to="from here" />`, false, undefined, options);
+	testText(`<$link TO="from here" />`, false, undefined, options);
+	testText(`<$link to=<<from>> />`, false, undefined, {from: "from", wiki: wiki});
 });
 
 it('respects \\rules', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	// allowed
-	testText("\\rules except macrodef\n<$link to='from here'/>");
-	testText("\\rules only html\n<$link to='from here'/>");
+	testText("\\rules except macrodef\n<$link to='from here'/>", true, ['<$link to />'], {wiki: wiki});
+	testText("\\rules only html\n<$link to='from here'/>", true, ['<$link to />'], {wiki, wiki});
 	// forbidden
-	testText("\\rules except html\n<$link to='from here'/>", {ignored: true});
-	testText("\\rules only macrodef\n<$link to='from here'/>", {ignored: true});
+	testText("\\rules except html\n<$link to='from here'/>", false, undefined, {wiki: wiki});
+	testText("\\rules only macrodef\n<$link to='from here'/>", false, undefined, {wiki: wiki});
 });
 
-
 it('properly ignored when not to be relinked', function() {
-	testText(`<$link to="from here XXX" />`, {ignored: true});
-	testText(`<$link to={{index!!from here}} />`, {ignored: true});
-	testText(`<$link to={{{[get[from here]]}}} />`, {ignored: true});
-	testText(`<$link to=<<from here>> />`, {ignored: true});
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	testText(`<$link to="from here XXX" />`, false, undefined, {wiki: wiki});
+	testText(`<$link to={{index!!from here}} />`, false, undefined, {wiki: wiki});
+	testText(`<$link to={{{[get[from here]]}}} />`, false, undefined, {wiki: wiki});
+	testText(`<$link to=<<from here>> />`, false, undefined, {wiki: wiki});
 });
 
 it('field attributes with true', function() {
-	testText(`<$link trueAttr to="from here">caption</$link>`);
-	testText(`<$link to />`);
-	testText(`<$link to />`, {from: "true"});
-	testText(`<$link to/> <$link to=true/>`, `<$link to/> <$link to='to there'/>`, {from: "true"});
-	testText(`<$link to /> <$link to=true />`, `<$link to /> <$link to='to there' />`, {from: "true"});
-	testText(`<$link to       /> <$link to=true />`, `<$link to       /> <$link to='to there' />`, {from: "true"});
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	testText(`<$link trueAttr to="from here">caption</$link>`, true, ['<$link to />'], {wiki: wiki});
+	testText(`<$link to />`, false, undefined, {wiki: wiki});
+	testText(`<$link to />`, false, undefined, {wiki: wiki, from: "true"});
+	testText(`<$link to/> <$link to=true/>`,
+	         `<$link to/> <$link to='to there'/>`,
+	         ['<$link to />'], {wiki: wiki, from: "true"});
+	testText(`<$link to /> <$link to=true />`,
+	         `<$link to /> <$link to='to there' />`,
+	         ['<$link to />'], {wiki: wiki, from: "true"});
+	testText(`<$link to       /> <$link to=true />`,
+	         `<$link to       /> <$link to='to there' />`,
+	         ['<$link to />'], {wiki: wiki, from: "true"});
 });
 
 it('field attributes fun with quotes', function() {
 	function testQuote(from, to, options) {
-		testText(`<$link to=${from}/>`, `<$link to=${to}/>`, options);
+		const wiki = new $tw.Wiki();
+		wiki.addTiddler(utils.attrConf('$link', 'to'));
+		options = Object.assign({wiki: wiki}, options);
+		const report = $tw.utils.hop(options, 'report') ? options.report : ['<$link to />']
+		testText(`<$link to=${from}/>`, `<$link to=${to}/>`, report, options);
 	};
 	testQuote(`"""from here"""`, `"""to there"""`);
 	testQuote(`from`, `'to there'`, {from: "from"});
@@ -94,96 +127,132 @@ it('field attributes fun with quotes', function() {
 	// The brackets here should be considered part of the title
 	// This differs from how macro parameters behave
 	testQuote("[[from]]", "to", {from: "[[from]]", to: "to"});
-	testQuote("[[from]]", "[[from]]", {from: "from", to: "to"});
+	testQuote("[[from]]", "[[from]]", {from: "from", to: "to", report: undefined});
 });
 
 it('supports indirect attribute values', function() {
-	testText("<$link to={{from here}}/>");
-	testText("<$link to={{from here!!field}}/>");
-	testText("<$link to={{from here##index}}/>");
-	testText("<$link to   =   {{from here!!field}} />");
 	// Works on otherwise unmanaged attributes too
-	var r = testText("<$text text={{from here!!field}} />");
-	var to = "title}withBracket";
-	var options = {to: to, ignored: true};
-	var results = testText("<$link to={{from here}} />", options);
-	expect(results.fails.length).toEqual(1);
+	testText("<$link to={{from here}}/>", true, ['<$link to={{}} />']);
+	testText("<$link to={{from here!!field}}/>", true, ['<$link to={{!!field}} />']);
+	testText("<$link to={{from here##index}}/>", true, ['<$link to={{##index}} />']);
+	testText("<$link to   =   {{from here!!field}} />", true, ['<$link to={{!!field}} />']);
+	const fails = utils.collectFailures(function() {
+		testText("<$link to={{from here}} />", false,
+		         ['<$link to={{}} />'],{to:  "title}withBracket"});
+	});
+	expect(fails.length).toEqual(1);
 });
 
 it('allows redirect with bad toTitle if not applicable', function() {
-	var to = "title}withBracket";
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	// Relink used to fail processing {{thing}} because of an illegal
 	// toTitle for references, but it shouldn't fail since no replacement
 	// will actually occur.
-	var r = testText("<$link tag={{thing}} to='from here' />", {to: to});
-	expect(r.fails.length).toEqual(0);
+	const fails = utils.collectFailures(function() {
+		testText("<$link tag={{thing}} to='from here' />", true,
+		         ['<$link to />'], {wiki: wiki, to: "title}withBracket"});
+	});
+	expect(fails.length).toEqual(0);
 });
 
 it('fails on bad indirect attributes', function() {
-	var r;
-	r = testText("<$link tooltip={{from here}} to='from here'/>",
-	             "<$link tooltip={{from here}} to='E!!E'/>", {to: "E!!E"});
-	expect(r.fails.length).toEqual(1);
-	r = testText("<$link tooltip={{from here}} to='from here'/>",
-	             "<$link tooltip={{from here}} to='T##T'/>", {to: "T##T"});
-	expect(r.fails.length).toEqual(1);
+	var fails
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	fails = utils.collectFailures(function() {
+		testText("<$link tooltip={{from here}} to='from here'/>",
+		         "<$link tooltip={{from here}} to='E!!E'/>",
+		         ['<$link tooltip={{}} />', '<$link to />'],
+		         {to: "E!!E", wiki: wiki});
+	});
+	expect(fails.length).toEqual(1);
+	fails = utils.collectFailures(function() {
+		testText("<$link tooltip={{from here}} to='from here'/>",
+		         "<$link tooltip={{from here}} to='T##T'/>",
+		         ['<$link tooltip={{}} />', '<$link to />'],
+		         {to: "T##T", wiki: wiki});
+	});
+	expect(fails.length).toEqual(1);
 });
 
 it("handles failure on special operands that fail internally", function() {
 	// This was returning {{{undefined}}} in v1.10.0
-	var r;
-	r = testText("<$a b={{{[c{from here}]}}} />",
-	             "<$a b={{{[c{from here}]}}} />", {to: "E}}E"});
-	expect(r.fails.length).toEqual(1);
-	var wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.macroConf("t", "arg", "reference"));
-	r = testText("<$a b=<<t arg:'from here'>> />",
-	             "<$a b=<<t arg:'from here'>> />", {to: "E!!E", wiki:wiki});
-	expect(r.fails.length).toEqual(1);
+	var fails;
+	fails = utils.collectFailures(function() {
+		testText("<$a b={{{[c{from here}]}}} />", false,
+		         ['<$a b={{{[c{}]}}} />'], {to: "E}}E"});
+	});
+	expect(fails.length).toEqual(1);
+	fails = utils.collectFailures(function() {
+		var wiki = new $tw.Wiki();
+		wiki.addTiddler(utils.macroConf("t", "arg", "reference"));
+		testText("<$a b=<<t arg:'from here'>> />", false,
+		         ['<$a b=<<t arg>> />'], {to: "E!!E", wiki: wiki});
+	});
+	expect(fails.length).toEqual(1);
 });
 
 it("handles failure in innerText", function() {
 	// without anything to report for itself, it may drop inner failures.
 	const text = "<$link>This fails <t t={{from here}} /></$link>";
-	var r = testText(text, text, {to: 'to }}\'"" there'});
-	expect(r.fails.length).toBe(1);
-	testText(text);
+	const fails = utils.collectFailures(function() {
+		testText(text, false, ['<t t={{}} />'], {to: 'to }}\'"" there'});
+	});
+	expect(fails.length).toBe(1);
+	testText(text, true, ['<t t={{}} />']);
 });
 
 it("failure doesn't prevent other relinks", function() {
-	var r = testText("<$link tooltip={{from here}} to='from here' />",
-	                 "<$link tooltip={{from here}} to='to}there' />",
-	                 {to: "to}there"});
-	expect(r.fails.length).toEqual(1);
-	var r = testText("<$link tooltip={{{[r{from here}]}}} to='from here' />",
-	                 "<$link tooltip={{{[r{from here}]}}} to='A}}}B' />",
-	                 {to: "A}}}B"});
-	expect(r.fails.length).toEqual(1);
-	var wiki = new $tw.Wiki();
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	var fails;
+	fails = utils.collectFailures(function() {
+		testText("<$link tooltip={{from here}} to='from here' />",
+		         "<$link tooltip={{from here}} to='to}there' />",
+		         ['<$link tooltip={{}} />', '<$link to />'],
+		         {to: "to}there", wiki: wiki});
+	});
+	expect(fails.length).toEqual(1);
+	fails = utils.collectFailures(function() {
+		testText("<$link tooltip={{{[r{from here}]}}} to='from here' />",
+		         "<$link tooltip={{{[r{from here}]}}} to='A}}}B' />",
+		         ['<$link tooltip={{{[r{}]}}} />', '<$link to />'],
+		         {to: "A}}}B", wiki: wiki});
+	});
+	expect(fails.length).toEqual(1);
 	wiki.addTiddlers([utils.macroConf("t", "arg"),
 		{title: "m", tags: "$:/tags/Macro", text: "\\define t(arg)"}]);
-	var r = testText("<$link to=<<t 'from here'>>/> [[from here]]",
-	                 "<$link to=<<t 'from here'>>/> [[A' B]\"]]",
-	                 {to: "A' B]\"", wiki: wiki});
-	expect(r.fails.length).toEqual(1);
+	fails = utils.collectFailures(function() {
+		testText("<$link to=<<t 'from here'>>/> [[from here]]",
+		         "<$link to=<<t 'from here'>>/> [[A' B]\"]]",
+		         ['<$link to=<<t arg>> />', '[[from here]]'],
+		         {to: "A' B]\"", wiki: wiki});
+	});
+	expect(fails.length).toEqual(1);
 });
 
 it('supports filter attribute values', function() {
-	testText("<$link to={{{[[from here]]}}}/>");
-	testText("<$link to=   {{{[[from here]]}}}    />");
-	testText("<$link to={{{[[from here]]}}}/>", {to: "to {}there"});
+	testText("<$link to={{{[[from here]]}}}/>", true, ['<$link to={{{}}} />']);
+	testText("<$link to=   {{{[[from here]]}}}    />", true, ['<$link to={{{}}} />']);
+	testText("<$link to={{{[[from here]]}}}/>", true, ['<$link to={{{}}} />'], {to: "to {}there"});
 });
 
 it('placeholders bad names in filtered attribute values', function() {
 	var ph = utils.placeholder;
 	var to = "brack}}}s";
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.operatorConf('tag'));
 	testText("<$w a={{{from}}}/>", ph(1,to) + "<$w a={{{[<relink-1>]}}}/>",
-	         {from: "from", to: to});
-	testText("<$w a={{{[tag[from]]}}}/>", ph(1,to) + "<$w a={{{[tag<relink-1>]}}}/>",
-	         {from: "from", to: to});
+	         ['<$w a={{{}}} />'], {from: "from", to: to});
+	testText("<$w a={{{[tag[from]]}}}/>",
+	         ph(1,to) + "<$w a={{{[tag<relink-1>]}}}/>",
+	         ['<$w a={{{[tag[]]}}} />'], {from: "from", to: to, wiki: wiki});
 });
 
 it('uses macros for literally unquotable titles', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	var macro = utils.placeholder;
 	function link(number) {
 		return `<$link to=<<relink-${number||1}>>/>`;
@@ -191,147 +260,136 @@ it('uses macros for literally unquotable titles', function() {
 	var to = 'End\'s with "quotes"';
 	var to2 = 'Another\'"quotes"';
 	var expectedLink = '<$link to=<<relink-1>>/>';
-	var r = testText("<$link to='from here'/>", macro(1,to)+link(1), {to: to});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test'"]);
+	testText("<$link to='from here'/>", macro(1,to)+link(1),
+	         ['<$link to />'], {to: to, wiki: wiki});
 	testText("Before <$link to='from here'/> After",
-	         macro(1,to)+"Before "+link(1)+" After", {to: to});
+	         macro(1,to)+"Before "+link(1)+" After",
+	         ['<$link to />'], {to: to, wiki: wiki});
 	// It'll prefer triple-quotes, but it should still resort to macros.
-	testText('<$link to="""from here"""/>', macro(1,to)+link(1), {to: to});
+	testText('<$link to="""from here"""/>', macro(1,to)+link(1),
+	         ['<$link to />'], {to: to, wiki: wiki});
 	// Only one macro is made, even when multiple instances occur
 	testText("<$link to='from here'/><$link to='from here'/>",
-		 macro(1,to)+link(1)+link(1), {to: to});
+	         macro(1,to)+link(1)+link(1),
+	         ['<$link to />', '<$link to />'], {to: to, wiki: wiki});
 	// If the first placeholder is taken, take the next
 	testText(macro(1,to)+link(1)+"<$link to='from here'/>",
-	         macro(2,to2)+macro(1,to)+link(1)+link(2), {to: to2});
+	         macro(2,to2)+macro(1,to)+link(1)+link(2),
+	         ['<$link to />'], {to: to2, wiki: wiki});
 });
 
 it("doesn't use macros if forbidden by \\rules", function() {
-	var r = testText('\\rules except macrodef\n<$link to="from here"/>',
-	                 {ignored: true, to: "x' y\"", macrodefCanBeDisabled: true});
-	expect(r.fails.length).toEqual(1);
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	const fails = utils.collectFailures(function() {
+	testText('\\rules except macrodef\n<$link to="from here"/>', false,
+	         ['<$link to />'], {to: "x' y\"", macrodefCanBeDisabled: true, wiki: wiki});
+	});
+	expect(fails.length).toEqual(1);
 });
 
 it('uses macros for unquotable wikitext', function() {
-	var wiki = new $tw.Wiki();
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	wiki.addTiddler(utils.attrConf("$test", "wiki", "wikitext"));
 	var ph = utils.placeholder;
 
 	var to = "' ]]\"\"\"";
 	testText("B <$test wiki='X{{from here}}Y' />",
 	         ph("wikitext-1", "X{{"+to+"}}Y")+"B <$test wiki=<<relink-wikitext-1>> />",
+	         ['<$test wiki="{{}}" />'],
 	         {to: to, wiki: wiki});
 
 	to = "' ]]\"";
 	testText('A <$test wiki="""<$link to="from here" />""" /> B',
 	         ph(1, to)+'A <$test wiki="""<$link to=<<relink-1>> />""" /> B',
+	         ['<$test wiki="<$link to />" />'],
 	         {to: to, wiki: wiki});
 });
 
 it('detects when internal list uses macros', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$list', 'filter', 'filter'));
+	wiki.addTiddler(utils.operatorConf('tag'));
 	var to = "bad[]name";
 	var r = testText("<$list filter='[tag[from here]]'/>",
 	                 utils.placeholder(1,to)+"<$list filter='[tag<relink-1>]'/>",
-	                 {to: to});
-	expect(r.log).toEqual(["Renaming 'from here' to '"+to+"' in 'test'"]); //<$list filter=\"[tag[]]\" />
+	                 ['<$list filter="[tag[]]" />'],
+	                 {to: to, wiki: wiki});
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test'");
 });
 
 it('ignores blank attribute configurations', function() {
-	var wiki = new $tw.Wiki();
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	wiki.addTiddlers(utils.attrConf("$transclude", "tiddler", ""));
 	testText(`<$link to="A" /><$transclude tiddler="A" />`,
 	         `<$link to="to there" /><$transclude tiddler="A" />`,
-	         {wiki: wiki, from: "A"});
+	         ['<$link to />'], {wiki: wiki, from: "A"});
 });
 
 it('ignores unrecognized attribute configurations', function() {
-	var wiki = new $tw.Wiki();
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	wiki.addTiddler(utils.attrConf("$transclude", "tiddler", "kablam"));
 	testText(`<$link to="A" /><$transclude tiddler="A" />`,
 	         `<$link to="to there" /><$transclude tiddler="A" />`,
-	         {wiki: wiki, from: "A"});
+	         ['<$link to />'], {wiki: wiki, from: "A"});
 });
 
 /**This is legacy support. The 'title' field type used to be called 'field'
  * But field didn't make sense in many contexts.
  */
 it('supports "field" attribute configuration', function() {
-	var wiki = new $tw.Wiki();
+	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf("$transclude", "tiddler", "field"));
-	testText(`<$transclude tiddler="from here" />`, {wiki: wiki});
+	testText(`<$transclude tiddler="from here" />`, true, ['<$transclude tiddler />'], {wiki: wiki});
 });
 
 it('filter attributes', function() {
-	var wiki = new $tw.Wiki();
-	testText(`<$list filter="A [[from here]] B" />`, {wiki: wiki});
-	testText(`<$list nothing="A [[from here]] B" />`, {wiki: wiki, ignored: true});
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$list', 'filter', 'filter'));
+	wiki.addTiddler(utils.operatorConf('tag'));
+	testText('<$list filter="A [[from here]] B" />', true,
+	         ['<$list filter />'], {wiki: wiki});
+	testText('<$list filter="[[from here]] [tag[from here]] B" />', true,
+	         ['<$list filter />', '<$list filter="[tag[]]" />'], {wiki: wiki});
+	testText('<$list nothing="A [[from here]] B" />', false,
+	         undefined, {wiki: wiki});
 });
 
 it('mixed failure with string and reference attributes', function() {
 	// Regression test on bug which resulted from the output value of the
 	// first attribute bleeding into the second if the second fails.
-	testText("<$link to='from here' tooltip={{from here}} />",
-	         "<$link to='to}}there' tooltip={{from here}} />",
-	         {to: "to}}there", fails: 1});
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	const fails = utils.collectFailures(function() {
+		testText("<$link to='from here' tooltip={{from here}} />",
+		         "<$link to='to}}there' tooltip={{from here}} />",
+		         ['<$link to />', '<$link tooltip={{}} />'],
+		         {to: "to}}there", wiki: wiki});
+	});
+	expect(fails.length).toBe(1);
 });
 
 it('mixed failure and replacement with macro attributes', function() {
-	var wiki = new $tw.Wiki();
+	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'macro', tags: '$:/tags/Macro', text: '\\relink macro A:title B:reference\n\\define macro(A, B) $A$$B$'});
-	testText("<$link to=<<macro A:'from here' B:'from here'>> />",
-	         "<$link to=<<macro A:'to!!there' B:'from here'>> />",
-	         {to: 'to!!there', wiki: wiki, fails: 1});
+	const fails = utils.collectFailures(function() {
+		testText("<$link to=<<macro A:'from here' B:'from here'>> />",
+		         "<$link to=<<macro A:'to!!there' B:'from here'>> />",
+		         ['<$link to=<<macro A>> />', '<$link to=<<macro B>> />'],
+		         {to: 'to!!there', wiki: wiki, fails: 1});
+	});
 });
 
 it('supports relinking of internal text content', function() {
-	testText("<$link to='whatevs'><$a b={{from here!!field}} /></$link>");
-	testText("<$link to='from here'><$a b={{from here!!field}} /></$link>");
-	testText("<$link to='whatevs'>[[from here]]</$link>");
-	testText("<$link to='from here'>[[from here]]</$link>");
-});
-
-it("reports", function() {
-	function test(text, expected, extraTiddlers) {
-		var wiki = new $tw.Wiki();
-		wiki.addTiddler({title: 'test', text: text});
-		wiki.addTiddlers(utils.setupTiddlers());
-		if (extraTiddlers) {
-			wiki.addTiddlers(extraTiddlers);
-		}
-		var refs = wiki.getTiddlerRelinkReferences('test');
-		expect(refs).toEqual(expected);
-	};
-	test("<$link to='from' />", {from: ["<$link to />"]});
-	test("<$text text={{from}} />", {from: ["<$text text={{}} />"]});
-	test("<$text text={{from!!F}} />", {from: ["<$text text={{!!F}} />"]});
-	test("<$list filter='from' />", {from: ["<$list filter />"]});
-	test("<$list filter='[tag[from]]' />", {from: ['<$list filter="[tag[]]" />']});
-	test("<$A ref='from' />", {from: ['<$A ref />']},
-		[utils.attrConf("$A", "ref", "reference")]);
-	test("<$A ref='from!!field' />", {from: ['<$A ref="!!field" />']},
-		[utils.attrConf("$A", "ref", "reference")]);
-	test("<$A wiki='text {{from!!field}}' />",
-	     {from: ['<$A wiki="{{!!field}}" />']},
-	     [utils.attrConf("$A", "wiki", "wikitext")]);
-
-	// Nested content
-	test("<$list><$link to='from'/></$list>", {from: ['<$link to />']});
-
-	// Macro attributes
-	test("\\define test(title) stuff\n<$link to=<<test from>> />",
-	     {from: ["<$link to=<<test title>> />"]},
-	     [utils.macroConf("test", "title", "title")]);
-	test("<$link to=<<test filt: '[tag[from]]'>> />",
-	     {from: ['<$link to=<<test filt: "[tag[]]">> />']},
-	     [utils.macroConf("test", "filt", "filter")]);
-	test("<$link to=<<test filt: 'from [tag[from]]'>> />",
-	     {from: ['<$link to=<<test filt>> />', '<$link to=<<test filt: "[tag[]]">> />']},
-	     [utils.macroConf("test", "filt", "filter")]);
-
-	// Multiples
-	test("<$link to='from' tooltip={{from}} />",
-	     {from: ["<$link to />", "<$link tooltip={{}} />"]});
-	test("<$text text={{{from [tag[from]]}}} />",
-	     {from: ["<$text text={{{}}} />", "<$text text={{{[tag[]]}}} />"]});
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	testText("<$link to='whatevs'><$a b={{from here!!field}} /></$link>", true, ['<$a b={{!!field}} />'], {wiki: wiki});
+	testText("<$link to='from here'><$a b={{from here!!field}} /></$link>", true, ['<$link to />', '<$a b={{!!field}} />'], {wiki: wiki});
+	testText("<$link to='whatevs'>[[from here]]</$link>", true, ['[[from here]]'], {wiki: wiki});
+	testText("<$link to='from here'>[[from here]]</$link>", true, ['<$link to />', '[[from here]]'], {wiki: wiki});
 });
 
 });

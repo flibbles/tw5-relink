@@ -52,7 +52,8 @@ function relinkTiddler(fromTitle, toTitle, options) {
 		}
 		// If any fields changed, update tiddler
 		if (update) {
-			language.log(title, fromTitle, toTitle, options);
+			console.log("Renaming '"+fromTitle+"' to '"+toTitle+"' in '" + title + "'");
+
 			var tiddler = this.getTiddler(title);
 			var newTiddler = new $tw.Tiddler(tiddler,changes,this.getModificationFields())
 			newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
