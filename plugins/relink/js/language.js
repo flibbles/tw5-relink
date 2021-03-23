@@ -5,19 +5,6 @@ This handles all logging and alerts Relink emits.
 
 \*/
 
-exports.eachImpossible = function(rootEntry) {
-	if (rootEntry.impossible) {
-		return true;
-	}
-	var imp = false;
-	if (rootEntry.eachChild) {
-		rootEntry.eachChild(function(child) {
-			imp = imp || exports.eachImpossible.call(this, child);
-		});
-	}
-	return imp;
-};
-
 exports.log = function(title, from, to) {
 	console.log("Renaming '"+from+"' to '"+to+"' in '" + title + "'");
 };

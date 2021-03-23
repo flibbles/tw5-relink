@@ -11,7 +11,6 @@ whichever markdown plugin you're using.
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 var wikitextHandler = require("$:/plugins/flibbles/relink/js/utils.js").getType('wikitext');
 var utils = require("$:/plugins/flibbles/relink/js/utils/markdown.js");
-var language = require("$:/plugins/flibbles/relink/js/language.js");
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")['text/vnd.tiddlywiki'];
 
 function MarkdownWalker(text, options) {
@@ -153,7 +152,7 @@ MarkdownRelinker.prototype = Object.create(MarkdownWalker.prototype);
 MarkdownRelinker.prototype.handleRule = function(ruleInfo) {
 	var newEntry = ruleInfo.rule.relink(this.source, this.fromTitle, this.toTitle, this.options);
 	if (newEntry !== undefined) {
-		if (language.eachImpossible(newEntry)) {
+		if (newEntry.impossible) {
 			this.impossible = true;
 		}
 		if (newEntry.output) {
@@ -171,7 +170,7 @@ MarkdownRelinker.prototype.handleWikitext = function(startPos, end) {
 			var pragma = config.wikitextPragma;
 			var wikiEntry = wikitextHandler.relink(pragma + substr, this.fromTitle, this.toTitle, this.options);
 			if (wikiEntry != undefined) {
-				if (language.eachImpossible(wikiEntry)) {
+				if (wikiEntry.impossible) {
 					this.impossible = true;
 				}
 				if (wikiEntry.output) {

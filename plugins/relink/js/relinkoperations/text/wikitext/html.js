@@ -16,7 +16,6 @@ var refHandler = relinkUtils.getType('reference');
 var filterHandler = relinkUtils.getType('filter');
 var ImportContext = relinkUtils.getContext('import');
 var macrocall = require("./macrocall.js");
-var language = require('$:/plugins/flibbles/relink/js/language');
 
 exports.name = "html";
 
@@ -188,7 +187,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			if (child.output) {
 				builder.add(child.output, child.start, child.end);
 			}
-			if (language.eachImpossible(child)) {
+			if (child.impossible) {
 				widgetEntry.impossible = true;
 			}
 		}

@@ -31,12 +31,10 @@ exports.impossible = function(source,operator,options) {
 	source(function(tiddler, title) {
 		var fields = records[title];
 		if (fields) {
-			var impossible = false;
 			for (var field in fields) {
-				impossible = impossible || language.eachImpossible(fields[field]);
-			}
-			if (impossible) {
-				results.push(title);
+				if (fields[field].impossible) {
+					results.push(title);
+				}
 			}
 		}
 	});

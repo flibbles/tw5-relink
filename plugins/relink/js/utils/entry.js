@@ -17,38 +17,8 @@ module.exports = EntryNode;
  * EntryNode.prototype.report = function() -> ["string", ...]
  */
 
-EntryNode.newType = function(name) {
-	function NewEntry() {
-		EntryNode.apply(this, arguments);
-	};
-	NewEntry.prototype = Object.create(EntryNode.prototype);
-	NewEntry.prototype.name = name;
-	return NewEntry;
-};
-
-// TODO: very temporary
-EntryNode.prototype.isImpossible = function(rootEntry) {
-	if (rootEntry.impossible) {
-		return true;
-	}
-	var imp = false;
-	var self = this;
-	if (rootEntry.eachChild) {
-		rootEntry.eachChild(function(child) {
-			if (child) {
-				imp = imp || self.isImpossible(child);
-			}
-		});
-	}
-	return imp;
-};
-
-EntryNode.prototype.eachChild = function(method) {
-	if (this.children) {
-		for (var i = 0; i < this.children.length; i++) {
-			method(this.children[i]);
-		}
-	}
+EntryNode.newType = function() {
+	return EntryNode;
 };
 
 EntryNode.prototype.add = function(entry) {
@@ -61,13 +31,20 @@ function EntryCollection() {
 };
 
 EntryNode.newCollection = function(name) {
-	function NewCollection() {
-		EntryCollection.apply(this, arguments);
-	};
-	NewCollection.prototype = Object.create(EntryCollection.prototype);
-	NewCollection.prototype.name = name;
-	return NewCollection;
+	return EntryCollection;
 };
+
+// Again. I reiterate. Don't use this. All this is just legacy support.
+Object.defineProperty(EntryCollection, 'impossible', {
+	get: function() {
+		var imp = this._impossible;
+		this.eachChild(function(child) { imp = imp || child.impossible; });
+		return imp;
+	},
+	set: function(impossible) {
+		this._impossible = true;
+	}
+});
 
 EntryCollection.prototype.eachChild = function(method) {
 	for (var child in this.children) {

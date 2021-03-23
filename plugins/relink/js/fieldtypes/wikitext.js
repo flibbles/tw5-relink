@@ -9,7 +9,6 @@ var type = 'text/vnd.tiddlywiki';
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 var utils = require('$:/plugins/flibbles/relink/js/utils');
-var language = require('$:/plugins/flibbles/relink/js/language');
 var WikitextContext = utils.getContext('wikitext');
 
 function collectRules() {
@@ -224,7 +223,7 @@ exports.relink = function(wikitext, fromTitle, toTitle, options) {
 		wikiEntry = {};
 		for (var i = 0; i < parser.tree.length; i++) {
 			var entry = parser.tree[i];
-			if (language.eachImpossible(entry)) {
+			if (entry.impossible) {
 				wikiEntry.impossible = true;
 			}
 			if (entry.output) {

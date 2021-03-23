@@ -4,7 +4,6 @@ This specifies logic for updating filters to reflect title changes.
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
-var language = require('$:/plugins/flibbles/relink/js/language');
 
 exports.name = "filter";
 
@@ -126,7 +125,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 				entry.output = toTitle;
 				entry.operator = {operator: "title"};
 				entry.quotation = preference;
-				if (language.eachImpossible(entry)) {
+				if (entry.impossible) {
 					relinker.impossible = true;
 				}
 				relinker.add(newVal,p,operandRegExp.lastIndex);
@@ -262,7 +261,7 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, filterString, p, co
 				break;
 		}
 		if (entry) {
-			if (language.eachImpossible(entry)) {
+			if (entry.impossible) {
 				relinker.impossible = true;
 			}
 		}

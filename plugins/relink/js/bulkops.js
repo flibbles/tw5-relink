@@ -40,10 +40,12 @@ function relinkTiddler(fromTitle, toTitle, options) {
 		var update = false;
 		for (var field in entries) {
 			var entry = entries[field];
-			if (language.eachImpossible(entry)) {
+			if (entry.impossible) {
+				// TODO: doesn't this mean multiple failures could be pushed
+				//       as long as they occur in different fields?
 				failures.push(title);
 			}
-			if (entry && entry.output) {
+			if (entry.output) {
 				changes[field] = entry.output;
 				update = true;
 			}

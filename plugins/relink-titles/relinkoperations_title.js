@@ -21,14 +21,6 @@ $tw.modules.forEachModuleOfType('relinktitlesrule', function(title, module) {
 	titleRules[title] = module;
 });
 
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
-var TitleEntry = EntryNode.newType("title");
-
-
-TitleEntry.prototype.report = function() {
-	return ["title: " + this.title];
-};
-
 exports.name = 'title';
 
 exports.report = function(tiddler, callback, options) {
@@ -50,8 +42,9 @@ exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 			var rule = rules[i];
 			var result = rule.relink(title, fromTitle, toTitle, options);
 			if (result && (result !== title)) {
-				var entry = new TitleEntry();
-				entry.title = title;
+				// TODO: Since I'm changing the paradigm. I should support
+				//       impossible title relinks.
+				var entry = {};
 				if (options.wiki.getTiddler(result) || cache.touched[result]) {
 					// There's already a tiddler there. We won't clobber it.
 					entry.impossible = true;
