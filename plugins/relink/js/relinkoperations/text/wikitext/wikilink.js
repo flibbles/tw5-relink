@@ -16,12 +16,6 @@ var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wi
 
 exports.name = "wikilink";
 
-function WikilinkEntry() {};
-WikilinkEntry.prototype.name = "wikilink";
-WikilinkEntry.prototype.report = function() {
-	return [$tw.config.textPrimitives.unWikiLink + this.link];
-};
-
 exports.report = function(text, callback, options) {
 	var title = this.match[0],
 		unlink = $tw.config.textPrimitives.unWikiLink;
@@ -36,9 +30,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		title = this.match[0];
 	this.parser.pos = this.matchRegExp.lastIndex;
 	if (title === fromTitle && title[0] !== $tw.config.textPrimitives.unWikiLink) {
-		entry = new WikilinkEntry();
-		entry.link = fromTitle;
-		entry.output = this.makeWikilink(toTitle, options);
+		entry = { output: this.makeWikilink(toTitle, options) };
 		if (entry.output === undefined) {
 			entry.impossible = true;
 		}

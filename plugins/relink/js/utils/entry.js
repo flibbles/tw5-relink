@@ -1,3 +1,12 @@
+/*\
+
+Entries are deprecated. Don't use them. These classes are here just so that
+any 3rd party modules built for Relink V1 don't break.
+
+Just return an object like, {output: "string", impossible: true|undefined}
+
+\*/
+
 function EntryNode() {
 	this.children = [];
 };
@@ -29,17 +38,6 @@ EntryNode.prototype.add = function(entry) {
 	this.children.push(entry);
 };
 
-EntryNode.prototype.report = function() {
-	var output = [];
-	$tw.utils.each(this.children, function(child) {
-		// All wikitext children should be able to report
-		$tw.utils.each(child.report(), function(report) {
-			output.push(report);
-		});
-	});
-	return output;
-};
-
 function EntryCollection() {
 	this.children = Object.create(null);
 	this.types = Object.create(null);
@@ -63,24 +61,6 @@ EntryCollection.prototype.eachChild = function(method) {
 EntryCollection.prototype.addChild = function(child, name, type) {
 	this.children[name] = child;
 	this.types[name] = type;
-};
-
-EntryCollection.prototype.report = function() {
-	var output = [];
-	for (var name in this.children) {
-		var child = this.children[name];
-		var type = this.types[name];
-		if (child.report) {
-			var reports = child.report();
-			for (var i = 0; i < reports.length; i++) {
-				output.push(this.forEachChildReport(reports[i], name, type));
-			}
-		} else {
-			output.push(this.forEachChildReport('', name, type));
-
-		}
-	}
-	return output;
 };
 
 EntryCollection.prototype.hasChildren = function() {

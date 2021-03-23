@@ -19,16 +19,6 @@ function MacrodefEntry(macroName, bodyEntry) {
 };
 MacrodefEntry.prototype.name = "macrodef";
 MacrodefEntry.prototype.eachChild = function(block) { return block(this.body);};
-MacrodefEntry.prototype.report = function() {
-	var macroStr = "\\define " + this.macro + "()";
-	if (this.body.report) {
-		return this.body.report().map(function(report) {
-			return macroStr + " " + report;
-		});
-	} else {
-		return [macroStr];
-	}
-};
 
 exports.report = function(text, callback, options) {
 	var setParseTreeNode = this.parse(),

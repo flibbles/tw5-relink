@@ -21,26 +21,6 @@ var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 
 var FilteredTranscludeEntry = EntryNode.newType("filteredtransclude");
 
-FilteredTranscludeEntry.prototype.report = function() {
-	var output = [];
-	var self = this;
-	$tw.utils.each(this.children, function(child) {
-		if (child.name === "filter") {
-			var append = "}}}";
-			if (self.template) {
-				append = "||" + self.template + append;
-			}
-			$tw.utils.each(child.report(), function(report) {
-				output.push("{{{" + report + append);
-			});
-		} else {
-			// Must be the template
-			output.push("{{{" + self.filter + "||}}}");
-		}
-	});
-	return output;
-};
-
 exports.report = function(text, callback, options) {
 	var m = this.match,
 		filter = m[1],
