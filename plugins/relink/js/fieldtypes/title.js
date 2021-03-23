@@ -8,7 +8,7 @@ simplest kind of field type. One title swaps out for the other.
 exports.name = 'title';
 
 exports.report = function(value, callback, options) {
-	callback(value, '');
+	callback(value);
 };
 
 /**Returns undefined if no change was made.

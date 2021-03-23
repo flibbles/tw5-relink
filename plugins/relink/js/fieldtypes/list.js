@@ -9,8 +9,7 @@ exports.name = "list";
 exports.report = function(value, callback, options) {
 	var list = $tw.utils.parseStringArray(value);
 	for (var i = 0; i < list.length; i++) {
-		//TODO: I don't need last last parameter
-		callback(list[i], '');
+		callback(list[i]);
 	}
 };
 

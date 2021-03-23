@@ -357,7 +357,7 @@ function reportFilterOperation(filterString, callback, p, context, options) {
 				var operand = filterString.substring(p,nextBracketPos);
 				// Just report it
 				refHandler.report(operand, function(title, blurb) {
-					callback(title, operatorBlurb(operator, '{' + blurb + '}'));
+					callback(title, operatorBlurb(operator, '{' + (blurb || '') + '}'));
 				}, options);
 				break;
 			case "[": // Square brackets
@@ -371,7 +371,7 @@ function reportFilterOperation(filterString, callback, p, context, options) {
 				}
 				// We just have to report it. Nothing more.
 				handler.report(operand, function(title, blurb) {
-					callback(title, operatorBlurb(operator, '[' + blurb + ']'));
+					callback(title, operatorBlurb(operator, '[' + (blurb || '') + ']'));
 				}, options);
 				break;
 
