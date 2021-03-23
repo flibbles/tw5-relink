@@ -51,7 +51,7 @@ exports.report = function(text, callback, options) {
 			}, options);
 		} else if (attr.type === "indirect") {
 			entry = refHandler.report(attr.textReference, function(title, blurb) {
-				callback(title, '<' + element + ' ' + attributeName + '={{' + blurb + '}} />');
+				callback(title, '<' + element + ' ' + attributeName + '={{' + (blurb || '') + '}} />');
 			}, options);
 		} else if (attr.type === "filtered") {
 			entry = filterHandler.report(attr.filter, function(title, blurb) {

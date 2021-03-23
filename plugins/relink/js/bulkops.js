@@ -35,9 +35,10 @@ function relinkTiddler(fromTitle, toTitle, options) {
 	var indexer = utils.getIndexer(this);
 	var records = indexer.relinkLookup(fromTitle, toTitle, options);
 	for (var title in records) {
-		var entries = records[title];
-		var changes = Object.create(null);
-		var update = false, fails = false;
+		var entries = records[title],
+			changes = Object.create(null),
+			update = false,
+			fails = false;
 		for (var field in entries) {
 			var entry = entries[field];
 			fails = fails || entry.impossible;

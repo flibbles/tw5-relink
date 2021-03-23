@@ -138,7 +138,7 @@ function reportAttribute(parser, attribute, callback, options) {
 		ptr = text.indexOf('{{', ptr);
 		var end = ptr + attribute.textReference.length + 4;
 		refHandler.report(attribute.textReference, function(title, blurb) {
-			callback(title, '[img ' + attribute.name + '={{' + blurb + '}}]');
+			callback(title, '[img ' + attribute.name + '={{' + (blurb || '') + '}}]');
 		}, options);
 	} else if (attribute.type === "filtered") {
 		ptr = text.indexOf('{{{', ptr);

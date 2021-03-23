@@ -82,6 +82,12 @@ it('relinks filter field', function() {
 	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 });
 
+it('relinks references', function() {
+	testField("from here", true, ['ref'], {field: "ref", type: "reference"});
+	testField("from here!!stuff", true, ['ref: !!stuff'], {field: "ref", type: "reference"});
+	testField("from here##ind", true, ['ref: ##ind'], {field: "ref", type: "reference"});
+});
+
 it('lists work with strange titles', function() {
 	function works(title, wrapped) {
 		//var expected = wrapped ? "A [["+title+"]] B" : "A "+title+" B";

@@ -13,8 +13,7 @@ exports.report = function(value, callback, options) {
 	if (value) {
 		var reference = $tw.utils.parseTextReference(value),
 			title = reference.title,
-			// TODO: no empty string should be needed
-			blurb = '';
+			blurb;
 		if (title) {
 			if (reference.field) {
 				blurb = '!!' + reference.field;
