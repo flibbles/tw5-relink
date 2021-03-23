@@ -17,9 +17,6 @@ exports.name = ['filteredtranscludeinline', 'filteredtranscludeblock'];
 
 var filterHandler = require("$:/plugins/flibbles/relink/js/utils").getType('filter');
 var utils = require("./utils.js");
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
-
-var FilteredTranscludeEntry = EntryNode.newType("filteredtransclude");
 
 exports.report = function(text, callback, options) {
 	var m = this.match,
@@ -43,27 +40,28 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		style = m[4],
 		classes = m[5],
 		parser = this.parser,
-		entry = new FilteredTranscludeEntry();
+		entry = {};
 	parser.pos = this.matchRegExp.lastIndex;
 	var modified = false;
 
 	var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, options);
 	if (filterEntry !== undefined) {
-		entry.add(filterEntry);
 		if (filterEntry.output) {
-			modified = true;
 			filter = filterEntry.output;
+			modified = true;
+		}
+		if (filterEntry.impossible) {
+			entry.impossible = true;
 		}
 	}
 
 	if ($tw.utils.trim(template) === fromTitle) {
 		// preserves user-inputted whitespace
 		template = template.replace(fromTitle, toTitle);
-		entry.add({name: "title", output: template});
 		modified = true;
 	}
 	if (!modified) {
-		if (entry.children.length <= 0) {
+		if (!entry.impossible) {
 			return undefined;
 		}
 	} else {
@@ -76,9 +74,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			// both the inline and block rule
 			entry.output = output + utils.getEndingNewline(m[0]);
 		}
-		entry.filter = filter;
 	}
-	entry.template = template;
 	return entry;
 };
 
