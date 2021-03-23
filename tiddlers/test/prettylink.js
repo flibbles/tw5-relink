@@ -5,7 +5,7 @@ Tests prettylinks.
 \*/
 
 var utils = require("test/utils");
-var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js');
+var wikitextUtils = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/utils.js');
 
 function testText(text, expected, report, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);
@@ -82,7 +82,7 @@ it('unpretty, without caption, and pre 5.1.20', function() {
 	// It doesn't fill in <$link to="tiddler" /> with the caption of
 	// "tiddler". Also, we must placeholder both caption and "to", or else
 	// we might desync the link with its caption with later name changes.
-	spyOn(prettylink, 'shorthandSupported').and.returnValue(false);
+	spyOn(wikitextUtils, 'shorthandPrettylinksSupported').and.returnValue(false);
 	testText("Link [[from here]].",
 			 utils.placeholder(1, "to [bracks]") +
 			 "Link <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link>.",

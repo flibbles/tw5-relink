@@ -12,7 +12,6 @@ but not:
 \*/
 
 var utils = require("./utils.js");
-var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js');
 
 exports.name = "wikilink";
 
@@ -42,6 +41,6 @@ exports.makeWikilink = function(title, options) {
 	if (title.match(this.matchRegExp) && title[0] !== $tw.config.textPrimitives.unWikiLink) {
 		return title;
 	} else {
-		return prettylink.makeLink(this.parser.context, title, undefined, options);
+		return utils.makeLink(this.parser.context, title, undefined, options);
 	}
 };

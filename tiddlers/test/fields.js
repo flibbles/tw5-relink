@@ -133,7 +133,6 @@ it("lists don't fail when fromTitle not in list", function() {
 	expect(fails.length).toEqual(0);
 });
 
-// TODO: Improve the failure testing
 it('handles failures across multiple fields', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([

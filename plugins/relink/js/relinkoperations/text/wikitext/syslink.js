@@ -9,11 +9,9 @@ but not:
 
 ~$:/sys/link
 
-// TODO: prettylink stuff needs to go in utils.
 \*/
 
 var utils = require("./utils.js");
-var prettylink = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/prettylink.js');
 
 exports.name = "syslink";
 
@@ -42,6 +40,6 @@ exports.makeSyslink = function(title, options) {
 	if (match && match[0] === title && title[0] !== "~") {
 		return title;
 	} else {
-		return prettylink.makeLink(this.parser.context, title, undefined, options);
+		return utils.makeLink(this.parser.context, title, undefined, options);
 	}
 };
