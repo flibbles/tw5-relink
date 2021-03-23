@@ -8,6 +8,10 @@ var utils = require("test/utils");
 
 describe("custom: fieldtypes", function() {
 
+beforeEach(function() {
+	spyOn(console, 'log');
+});
+
 it("works with custom fieldtypes", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.fieldConf("dummy", "dummy-type"));
@@ -49,7 +53,6 @@ it("has access to fields of locally defined macro", function() {
 
 it("handles types with newline characters", function() {
 	const wiki = new $tw.Wiki();
-	spyOn(console, 'log');
 	wiki.addTiddlers([
 		utils.fieldConf('newline', 'reference\n'),
 		{title: 'test', newline: 'from here!!field'}]);
@@ -60,6 +63,10 @@ it("handles types with newline characters", function() {
 });
 
 describe("custom: surveyors", function() {
+
+beforeEach(function() {
+	spyOn(console, 'log');
+});
 
 it('uses custom surveyors', function() {
 	var wiki = new $tw.Wiki(),

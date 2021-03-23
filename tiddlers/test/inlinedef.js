@@ -19,6 +19,10 @@ function testText(text, expected, options) {
 
 describe("inlinedef", function() {
 
+beforeEach(function() {
+	spyOn(console, 'log');
+});
+
 it('linedef macros', function() {
 	var wiki = new $tw.Wiki();
 	// local

@@ -8,6 +8,10 @@ var utils = require("test/utils");
 
 describe("filtertext", function() {
 
+beforeEach(function() {
+	spyOn(console, 'log');
+});
+
 function testDefault(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var type = options.type || "text/vnd.tiddlywiki";

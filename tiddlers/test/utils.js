@@ -36,14 +36,12 @@ exports.relink = function(fields, options) {
 		// themselves. So we want to make sure not to override them.
 		wiki.addTiddler({title: results.from, type: options.type});
 	}
-	results.log = exports.collect("log", function() {
 	results.fails = exports.collectFailures(function() {
 		var tiddler = new $tw.Tiddler({title: target}, fields);
 		var title = tiddler.fields.title;
 		wiki.addTiddler(tiddler);
 		wiki.renameTiddler(results.from, results.to, options);
 		results.tiddler = wiki.getTiddler(title);
-	});
 	});
 	return results;
 };

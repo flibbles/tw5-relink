@@ -10,9 +10,13 @@ E.G.
 
 \*/
 
+var utils = require("test/utils");
+
 describe("macrodef", function() {
 
-var utils = require("test/utils");
+beforeEach(function() {
+	spyOn(console, 'log');
+});
 
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);

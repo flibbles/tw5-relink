@@ -25,6 +25,10 @@ function testReport(text, expected) {
 
 describe("wikitext", function() {
 
+beforeEach(function() {
+	spyOn(console, 'log');
+});
+
 it('allows all other unmanaged wikitext rules', function() {
 	function fine(text) { testText(text + " [[from here]]"); };
 	fine("This is ordinary text");

@@ -8,6 +8,10 @@ var utils = require("test/utils");
 
 describe('legacy', function() {
 
+beforeEach(function() {
+	spyOn(console, 'log');
+});
+
 it('supports oldstyle relinkoperators', function() {
 	var results = utils.relink({'field.ref': 'from here', 'field.refs': '[[from here]]'});
 	expect(results.tiddler.fields['field.ref']).toBe('to there');

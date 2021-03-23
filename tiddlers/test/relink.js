@@ -9,6 +9,10 @@ var relink = utils.relink;
 
 describe('relink', function() {
 
+beforeEach(function() {
+	spyOn(console, 'log');
+});
+
 function testConfig(options, /* tiddler objects */) {
 	var text = "[[from here]]", expected;
 	var tiddlerObj = Object.assign({text: text}, options);
@@ -95,7 +99,7 @@ it("handles relinking errors with at least some grace", function() {
 
 it("doesn't relink if from and to are the same", function() {
 	var results = utils.relink({text: "[[from here]]"}, {to: "from here"});
-	expect(results.log.length).toEqual(0);
+	expect(console.log).not.toHaveBeenCalled();
 	expect(results.fails.length).toEqual(0);
 });
 
