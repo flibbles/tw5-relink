@@ -4,7 +4,6 @@ module-type: indexer
 Indexes results from tiddler reference reports so we don't have to call them
 so much.
 
-TODO: The indexer should just be called the RelinkIndexer
 \*/
 
 "use strict";
@@ -12,15 +11,15 @@ TODO: The indexer should just be called the RelinkIndexer
 var utils = require("./utils.js");
 var TiddlerContext = utils.getContext('tiddler');
 
-function ReferencesIndexer(wiki) {
+function Indexer(wiki) {
 	this.wiki = wiki;
 };
 
-ReferencesIndexer.prototype.init = function() {
+Indexer.prototype.init = function() {
 	this.rebuild();
 };
 
-ReferencesIndexer.prototype.rebuild = function() {
+Indexer.prototype.rebuild = function() {
 	this.index = null;
 	this.backIndex = null;
 	this.contexts = Object.create(null);
@@ -28,7 +27,7 @@ ReferencesIndexer.prototype.rebuild = function() {
 	this.lastRelinkFrom = undefined;
 };
 
-ReferencesIndexer.prototype.update = function(updateDescriptor) {
+Indexer.prototype.update = function(updateDescriptor) {
 	if (!this.index) {
 		return;
 	}
@@ -48,17 +47,17 @@ ReferencesIndexer.prototype.update = function(updateDescriptor) {
 	}
 };
 
-ReferencesIndexer.prototype.lookup = function(title) {
+Indexer.prototype.lookup = function(title) {
 	this._upkeep();
 	return this.index[title];
 };
 
-ReferencesIndexer.prototype.reverseLookup = function(title) {
+Indexer.prototype.reverseLookup = function(title) {
 	this._upkeep();
 	return this.backIndex[title] || Object.create(null);
 };
 
-ReferencesIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
+Indexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 	this._upkeep();
 	var shortlist = undefined;
 	if (this.lastRelinkFrom === fromTitle) {
@@ -77,7 +76,7 @@ ReferencesIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options)
 	return this.lastRelinkResult;
 };
 
-ReferencesIndexer.prototype._upkeep = function() {
+Indexer.prototype._upkeep = function() {
 	var title;
 	if (this.changedTiddlers && (this.context.changed(this.changedTiddlers) || this.context.parent.changed(this.changedTiddlers))) {
 		// If global macro context or whitelist context changed, wipe all
@@ -115,7 +114,7 @@ ReferencesIndexer.prototype._upkeep = function() {
 	}
 };
 
-ReferencesIndexer.prototype._purge = function(title) {
+Indexer.prototype._purge = function(title) {
 	for (var entry in this.index[title]) {
 		delete this.backIndex[entry][title];
 	}
@@ -124,7 +123,7 @@ ReferencesIndexer.prototype._purge = function(title) {
 };
 
 // This drops the cached relink results if unsanctioned tiddlers were changed
-ReferencesIndexer.prototype._dropResults = function(title) {
+Indexer.prototype._dropResults = function(title) {
 	var tiddler = this.wiki.getTiddler(title);
 	if (title !== this.lastRelinkFrom
 	&& title !== this.lastRelinkTo
@@ -142,7 +141,7 @@ function references(list, item) {
 	return list !== undefined && list[item];
 };
 
-ReferencesIndexer.prototype._populate = function(title) {
+Indexer.prototype._populate = function(title) {
 	// Fetch the report for a title, and populate the indexes with result
 	var tiddlerContext = new TiddlerContext(this.wiki, this.context, title);
 	var references = utils.getTiddlerRelinkReferences(this.wiki, title, tiddlerContext);
@@ -156,4 +155,4 @@ ReferencesIndexer.prototype._populate = function(title) {
 	}
 };
 
-exports.RelinkReferencesIndexer = ReferencesIndexer;
+exports.RelinkIndexer = Indexer;

@@ -110,7 +110,7 @@ exports.getWikiContext = function(wiki) {
  */
 exports.getIndexer = function(wiki) {
 	if (!wiki._relink_indexer) {
-		wiki._relink_indexer = (wiki.getIndexer && wiki.getIndexer("RelinkReferencesIndexer")) || new (require('$:/plugins/flibbles/relink/js/utils/backupIndexer.js'))(wiki);
+		wiki._relink_indexer = (wiki.getIndexer && wiki.getIndexer("RelinkIndexer")) || new (require('$:/plugins/flibbles/relink/js/utils/backupIndexer.js'))(wiki);
 	}
 	return wiki._relink_indexer;
 };

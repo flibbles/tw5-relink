@@ -53,7 +53,6 @@ BackupIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 };
 
 function getCache(wiki) {
-	// TODO: do I have any potential name conflicts with my use of cache keys?
 	return wiki.getGlobalCache('relink', function() {
 		var tiddlerList = wiki.getRelinkableTitles();
 		var index = Object.create(null);
