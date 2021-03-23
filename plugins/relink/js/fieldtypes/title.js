@@ -15,7 +15,7 @@ exports.report = function(value, callback, options) {
  */
 exports.relink = function(value, fromTitle, toTitle, options) {
 	if (value === fromTitle) {
-		return {name: "title", output: toTitle};
+		return {output: toTitle};
 	}
 	return undefined;
 };

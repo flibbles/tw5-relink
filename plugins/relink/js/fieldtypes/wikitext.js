@@ -8,11 +8,9 @@ var type = 'text/vnd.tiddlywiki';
 
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")[type];
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
 var utils = require('$:/plugins/flibbles/relink/js/utils');
+var language = require('$:/plugins/flibbles/relink/js/language');
 var WikitextContext = utils.getContext('wikitext');
-
-var WikitextEntry = EntryNode.newType("wikitext");
 
 function collectRules() {
 	var rules = Object.create(null);
@@ -223,10 +221,12 @@ exports.relink = function(wikitext, fromTitle, toTitle, options) {
 	// containing them all.
 	if (parser.tree.length > 0) {
 		var builder = new Rebuilder(wikitext);
-		wikiEntry = new WikitextEntry();
+		wikiEntry = {};
 		for (var i = 0; i < parser.tree.length; i++) {
 			var entry = parser.tree[i];
-			wikiEntry.add(entry);
+			if (language.eachImpossible(entry)) {
+				wikiEntry.impossible = true;
+			}
 			if (entry.output) {
 				builder.add(entry.output, entry.start, entry.end);
 			}

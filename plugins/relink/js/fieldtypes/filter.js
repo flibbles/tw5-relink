@@ -4,44 +4,9 @@ This specifies logic for updating filters to reflect title changes.
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
+var language = require('$:/plugins/flibbles/relink/js/language');
 
 exports.name = "filter";
-
-var FilterEntry = EntryNode.newType("filter");
-
-FilterEntry.prototype.report = function() {
-	return this.children.map(function(child) {
-		if (!child.report) {
-			return "";
-		}
-		return child.report();
-	});
-};
-
-function OperatorEntry(operandEntry) { this.entry = operandEntry; };
-OperatorEntry.prototype.name = "operator";
-
-OperatorEntry.prototype.eachChild = function(method) { method(this.entry); }
-
-OperatorEntry.prototype.report = function() {
-	var operand = "";
-	if (this.entry.report) {
-		operand = this.entry.report();
-	}
-	var op = this.operator;
-	var brackets = '[]';
-	if (this.type === "indirect") {
-		operand = "{" + operand + "}";
-	} else {
-		operand = "[" + operand + "]";
-	}
-	var suffix = '';
-	if (op.suffix) {
-		suffix = ":" + op.suffix;
-	}
-	return "[" + (op.prefix || '') + op.operator + suffix + operand + "]";
-};
 
 exports.report = function(filter, callback, options) {
 	// I cheat here for now. Relink handles reporting too in cases where
@@ -52,9 +17,8 @@ exports.report = function(filter, callback, options) {
 /**Returns undefined if no change was made.
  */
 exports.relink = function(filter, fromTitle, toTitle, options) {
-	var filterEntry = new FilterEntry();
-	var relinker = new Rebuilder(filter);
-	var p = 0, // Current position in the filter string
+	var relinker = new Rebuilder(filter),
+		p = 0, // Current position in the filter string
 		match, noPrecedingWordBarrier,
 		wordBarrierRequired=false;
 	var whitespaceRegExp = /\s+/mg,
@@ -105,7 +69,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 							}
 						},p,options.settings,options);
 					} else {
-						p =relinkFilterOperation(relinker,fromTitle,toTitle,filterEntry,filter,p,options.settings,options);
+						p =relinkFilterOperation(relinker,fromTitle,toTitle,filter,p,options.settings,options);
 					}
 					// It's a legit run
 					if (p === undefined) {
@@ -143,8 +107,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 				var newVal = wrapTitle(toTitle, preference);
 				if (newVal === undefined || (options.inBraces && newVal.indexOf('}}}') >= 0)) {
 					if (!options.placeholder) {
-						entry.impossible = true;
-						filterEntry.add(entry);
+						relinker.impossible = true;
 						p = operandRegExp.lastIndex;
 						continue;
 					}
@@ -163,7 +126,9 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 				entry.output = toTitle;
 				entry.operator = {operator: "title"};
 				entry.quotation = preference;
-				filterEntry.add(entry);
+				if (language.eachImpossible(entry)) {
+					relinker.impossible = true;
+				}
 				relinker.add(newVal,p,operandRegExp.lastIndex);
 			}
 			p = operandRegExp.lastIndex;
@@ -177,9 +142,8 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 			toTitle(blurbs[i][0], blurbs[i][1]);
 		}
 	}
-	if (filterEntry.children.length > 0) {
-		filterEntry.output = relinker.results();
-		return filterEntry;
+	if (relinker.changed() || relinker.impossible) {
+		return {output: relinker.results(), impossible: relinker.impossible };
 	}
 	return undefined;
 };
@@ -225,7 +189,7 @@ function wrapTitle(value, preference) {
 	return undefined;
 }
 
-function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterString, p, context, options) {
+function relinkFilterOperation(relinker, fromTitle, toTitle, filterString, p, context, options) {
 	var nextBracketPos, operator;
 	// Skip the starting square bracket
 	if(filterString.charAt(p++) !== "[") {
@@ -298,10 +262,9 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, logger, filterStrin
 				break;
 		}
 		if (entry) {
-			var operatorEntry = new OperatorEntry(entry);
-			operatorEntry.operator = operator;
-			operatorEntry.type = type;
-			logger.add(operatorEntry);
+			if (language.eachImpossible(entry)) {
+				relinker.impossible = true;
+			}
 		}
 
 		if(nextBracketPos === -1) {
