@@ -21,18 +21,6 @@ CannotFindMacroDef.prototype.name = "macroparam";
 // I may want to do something special later on.
 CannotFindMacroDef.prototype.report = function() { return []; };
 
-var MacrocallEntry = EntryNode.newCollection("macrocall");
-
-MacrocallEntry.prototype.forEachChildReport = function(report, parameter, type) {
-	var rtn;
-	if (report.length > 0) {
-		rtn = parameter + ': "' + report + '"';
-	} else {
-		rtn = parameter;
-	}
-	return "<<" + this.macro + " " + rtn + ">>";
-};
-
 exports.report = function(text, callback, options) {
 	var macroInfo = getInfoFromRule(this);
 	this.parser.pos = macroInfo.end;
@@ -56,7 +44,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 	var entry = relinkMacroInvocation(this.parser, macroInfo, text, fromTitle, toTitle, mayBeWidget, options);
 	if (entry && entry.output) {
-		entry.output =macroToString(entry.output, text, names, options);
+		entry.output = macroToString(entry.output, text, names, options);
 	}
 	return entry;
 };
@@ -121,8 +109,7 @@ function relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, mayBeWid
 		return undefined;
 	}
 	var outMacro = $tw.utils.extend({}, macro);
-	var macroEntry = new MacrocallEntry();
-	macroEntry.parameters = Object.create(null);
+	var macroEntry = {};
 	outMacro.params = macro.params.slice();
 	for (var managedArg in managedMacro) {
 		var index;
@@ -130,7 +117,7 @@ function relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, mayBeWid
 			index = getParamIndexWithinMacrocall(parser, macro.name, managedArg, macro.params, options);
 		} catch (e) {
 			if (e instanceof CannotFindMacroDef) {
-				macroEntry.addChild(e);
+				macroEntry.impossible = true;
 				continue;
 			}
 		}
@@ -150,7 +137,9 @@ function relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, mayBeWid
 		}
 		// Macro parameters can only be string parameters, not
 		// indirect, or macro, or filtered
-		macroEntry.addChild(entry, managedArg, "string");
+		if (entry.impossible) {
+			macroEntry.impossible = true;
+		}
 		if (!entry.output) {
 			continue;
 		}
@@ -159,7 +148,7 @@ function relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, mayBeWid
 		var newParam = $tw.utils.extend({}, param);
 		if (quoted === undefined) {
 			if (!mayBeWidget || !options.placeholder) {
-				entry.impossible = true;
+				macroEntry.impossible = true;
 				continue;
 			}
 			var ph = options.placeholder.getPlaceholderFor(entry.output,handler.name, options);
@@ -173,8 +162,7 @@ function relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, mayBeWid
 		outMacro.params[index] = newParam;
 		modified = true;
 	}
-	if (macroEntry.hasChildren()) {
-		macroEntry.macro = macro.name;
+	if (modified || macroEntry.impossible) {
 		if (modified) {
 			macroEntry.output = outMacro;
 		}

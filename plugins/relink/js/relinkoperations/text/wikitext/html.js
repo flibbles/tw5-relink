@@ -16,39 +16,9 @@ var refHandler = relinkUtils.getType('reference');
 var filterHandler = relinkUtils.getType('filter');
 var ImportContext = relinkUtils.getContext('import');
 var macrocall = require("./macrocall.js");
-var EntryNode = require('$:/plugins/flibbles/relink/js/utils/entry');
+var language = require('$:/plugins/flibbles/relink/js/language');
 
 exports.name = "html";
-
-var HtmlEntry = EntryNode.newCollection("html");
-
-HtmlEntry.prototype.forEachChildReport = function(report, attribute, type) {
-	var rtn = attribute;
-	if (type === "filtered") {
-		rtn += "={{{" + report + "}}}";
-	} else if (type === "indirect") {
-		rtn += "={{" + report + "}}";
-	} else if (type === "macro") {
-		rtn += "="+report;
-	} else{
-		// must be string.
-		if (report.length > 0) {
-			rtn += '="' + report + '"';
-		}
-	}
-	return "<" + this.element + " " + rtn + " />";
-};
-
-HtmlEntry.prototype.eachChild = function(method) {
-	for (var child in this.children) {
-		method(this.children[child]);
-	}
-	if (this.innerText) {
-		for (var i = 0; i < this.innerText.length; i++) {
-			method(this.innerText[i]);
-		}
-	}
-};
 
 exports.report = function(text, callback, options) {
 	var managedElement = this.parser.context.getAttribute(this.nextTag.tag);
@@ -113,7 +83,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var managedElement = this.parser.context.getAttribute(this.nextTag.tag),
 		builder = new Rebuilder(text, this.nextTag.start);
 	var importFilterAttr;
-	var widgetEntry = new HtmlEntry();
+	var widgetEntry = {};
 	widgetEntry.attributes = Object.create(null);
 	widgetEntry.element = this.nextTag.tag;
 	for (var attributeName in this.nextTag.attributes) {
@@ -187,13 +157,15 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			if (entry === undefined) {
 				continue;
 			}
-			if (!entry.impossible) {
+			if (entry.output) {
 				// already includes '<<' and '>>'
 				oldLength = macro.end-macro.start;
 				quotedValue = entry.output;
 			}
 		}
-		widgetEntry.addChild(entry, attributeName, attr.type);
+		if (entry.impossible) {
+			widgetEntry.impossible = true;
+		}
 		if (quotedValue === undefined) {
 			continue;
 		}
@@ -211,15 +183,17 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 	var tag = this.parse()[0];
 	if (tag.children) {
-		widgetEntry.innerText = tag.children;
 		for (var i = 0; i < tag.children.length; i++) {
 			var child = tag.children[i];
 			if (child.output) {
 				builder.add(child.output, child.start, child.end);
 			}
+			if (language.eachImpossible(child)) {
+				widgetEntry.impossible = true;
+			}
 		}
 	}
-	if (widgetEntry.hasChildren() || (widgetEntry.innerText && widgetEntry.innerText.length > 0)) {
+	if (builder.changed() || widgetEntry.impossible) {
 		widgetEntry.output = builder.results(this.parser.pos);
 		return widgetEntry;
 	}

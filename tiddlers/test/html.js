@@ -274,6 +274,14 @@ it('mixed failure with string and reference attributes', function() {
 	         {to: "to}}there", fails: 1});
 });
 
+it('mixed failure and replacement with macro attributes', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'macro', tags: '$:/tags/Macro', text: '\\relink macro A:title B:reference\n\\define macro(A, B) $A$$B$'});
+	testText("<$link to=<<macro A:'from here' B:'from here'>> />",
+	         "<$link to=<<macro A:'to!!there' B:'from here'>> />",
+	         {to: 'to!!there', wiki: wiki, fails: 1});
+});
+
 it('supports relinking of internal text content', function() {
 	testText("<$link to='whatevs'><$a b={{from here!!field}} /></$link>");
 	testText("<$link to='from here'><$a b={{from here!!field}} /></$link>");
