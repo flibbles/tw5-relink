@@ -55,7 +55,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		modified = true;
 	}
 	if (modified) {
-		var output = this.makeTransclude(this.parser.context, reference, template, options);
+		var output = this.makeTransclude(this.parser, reference, template, options);
 		if (output) {
 			// Adding any newline that might have existed is
 			// what allows this relink method to work for both
@@ -89,22 +89,22 @@ function parseTextReference(textRef) {
 /** This converts a reference and a template into a string representation
  *  of a transclude.
  */
-exports.makeTransclude = function(context, reference, template, options) {
+exports.makeTransclude = function(parser, reference, template, options) {
 	var rtn;
 	if (!canBePrettyTemplate(template)) {
-		var widget = utils.makeWidget(context, '$transclude', {
+		var widget = utils.makeWidget(parser, '$transclude', {
 			tiddler: $tw.utils.trim(template),
 			field: reference.field,
-			index: reference.index}, undefined, options);
+			index: reference.index});
 		if (reference.title && widget !== undefined) {
-			rtn = utils.makeWidget(context, '$tiddler', {tiddler: $tw.utils.trim(reference.title)}, widget, options);
+			rtn = utils.makeWidget(parser, '$tiddler', {tiddler: $tw.utils.trim(reference.title)}, widget);
 		} else {
 			rtn = widget;
 		}
 	} else if (!canBePrettyTitle(reference.title)) {
 		// This block and the next account for the 1%...
 		var reducedRef = {field: reference.field, index: reference.index};
-		rtn = utils.makeWidget(context, '$tiddler', {tiddler: $tw.utils.trim(reference.title)}, prettyTransclude(reducedRef, template), options);
+		rtn = utils.makeWidget(parser, '$tiddler', {tiddler: $tw.utils.trim(reference.title)}, prettyTransclude(reducedRef, template));
 	} else {
 		// This block takes care of 99% of all cases
 		rtn = prettyTransclude(reference, template);

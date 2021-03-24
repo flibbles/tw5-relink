@@ -122,7 +122,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 						// but we can't...
 						entry.impossible = true;
 					} else {
-						var value = options.placeholder.getPlaceholderFor(entry.output,handler.name,options)
+						var value = options.placeholder.getPlaceholderFor(entry.output,handler.name)
 						quotedValue = "<<"+value+">>";
 					}
 				}

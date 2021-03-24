@@ -5,8 +5,8 @@ Utility methods for the wikitext relink rules.
 
 \*/
 
-exports.makeWidget = function(context, tag, attributes, body, options) {
-	if (!context.allowWidgets()) {
+exports.makeWidget = function(parser, tag, attributes, body) {
+	if (!parser.context.allowWidgets()) {
 		return undefined;
 	}
 	var string = '<' + tag;
@@ -15,12 +15,12 @@ exports.makeWidget = function(context, tag, attributes, body, options) {
 		if (value !== undefined) {
 			var quoted = exports.wrapAttributeValue(value);
 			if (!quoted) {
-				if (!options.placeholder) {
+				if (!parser.options.placeholder) {
 					// It's not possible to make this widget
 					return undefined;
 				}
-				var category = getPlaceholderCategory(context, tag, attr);
-				quoted = '<<' + options.placeholder.getPlaceholderFor(value, category, options) + '>>';
+				var category = getPlaceholderCategory(parser.context, tag, attr);
+				quoted = '<<' + parser.options.placeholder.getPlaceholderFor(value, category) + '>>';
 			}
 			string += ' ' + attr + '=' + quoted;
 		}
@@ -50,23 +50,23 @@ function getPlaceholderCategory(context, tag, attribute) {
 	}
 };
 
-exports.makePrettylink = function(parser, tiddler, caption, options) {
+exports.makePrettylink = function(parser, tiddler, caption) {
 	var output;
 	if (parser.context.allowPrettylinks() && this.canBePrettylink(tiddler, caption)) {
 		output = prettyLink(tiddler, caption);
 	} else if (caption !== undefined) {
-		var safeCaption = sanitizeCaption(parser.context, caption, options);
+		var safeCaption = sanitizeCaption(parser, caption);
 		if (safeCaption !== undefined) {
-			output = exports.makeWidget(parser.context, '$link', {to: tiddler}, safeCaption, options);
+			output = exports.makeWidget(parser, '$link', {to: tiddler}, safeCaption);
 		}
 	} else if (exports.shorthandPrettylinksSupported(parser.wiki)) {
-		output = exports.makeWidget(parser.context, '$link', {to: tiddler}, undefined, options);
+		output = exports.makeWidget(parser, '$link', {to: tiddler});
 	} else if (parser.context.allowWidgets() && parser.options.placeholder) {
 		// If we don't have a caption, we must resort to
 		// placeholders anyway to prevent link/caption desync
 		// from later relinks.
 		// It doesn't matter whether the tiddler is quotable.
-		var ph = parser.options.placeholder.getPlaceholderFor(tiddler, undefined, options);
+		var ph = parser.options.placeholder.getPlaceholderFor(tiddler);
 		output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 	}
 	return output;
@@ -100,12 +100,12 @@ exports.shorthandPrettylinksSupported = function(wiki) {
 	return _supported;
 };
 
-function sanitizeCaption(context, caption, options) {
-	var plaintext = options.wiki.renderText("text/plain", "text/vnd.tiddlywiki", caption);
+function sanitizeCaption(parser, caption) {
+	var plaintext = parser.wiki.renderText("text/plain", "text/vnd.tiddlywiki", caption);
 	if (plaintext === caption && caption.indexOf("</$link>") <= 0) {
 		return caption;
 	} else {
-		return exports.makeWidget(context, '$text', {text: caption}, undefined, options);
+		return exports.makeWidget(parser, '$text', {text: caption});
 	}
 };
 

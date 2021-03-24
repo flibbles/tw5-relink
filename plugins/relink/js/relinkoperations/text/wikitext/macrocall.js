@@ -151,7 +151,7 @@ function relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, mayBeWid
 				macroEntry.impossible = true;
 				continue;
 			}
-			var ph = options.placeholder.getPlaceholderFor(entry.output,handler.name, options);
+			var ph = options.placeholder.getPlaceholderFor(entry.output,handler.name);
 			newParam.newValue = "<<"+ph+">>";
 			newParam.type = "macro";
 		} else {

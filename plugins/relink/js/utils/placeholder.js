@@ -16,13 +16,13 @@ function Placeholder() {
 
 module.exports = Placeholder;
 
-Placeholder.prototype.getPlaceholderFor = function(value, category, options) {
+Placeholder.prototype.getPlaceholderFor = function(value, category) {
 	this.reverseMap[category] = this.reverseMap[category] || Object.create(null);
 	var placeholder = this.reverseMap[category][value];
 	if (placeholder) {
 		return placeholder;
 	}
-	var config = (this.parser ? this.parser.context : options.settings) || utils.getWikiContext(options.wiki);
+	var config = (this.parser && this.parser.context) || utils.getWikiContext(this.parser.wiki);
 	var number = 0;
 	var prefix = "relink-"
 	if (category && category !== "title") {

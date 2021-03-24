@@ -111,7 +111,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 						continue;
 					}
 
-					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle,undefined,options)+">]";
+					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]";
 				}
 				if (newVal[0] != '[') {
 					// not bracket enclosed
@@ -238,7 +238,7 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, filterString, p, co
 						entry.impossible = true;
 						break;
 					}
-					var ph = options.placeholder.getPlaceholderFor(entry.output, handler.name, options);
+					var ph = options.placeholder.getPlaceholderFor(entry.output, handler.name);
 					wrapped = "<"+ph+">";
 				} else {
 					wrapped = "["+entry.output+"]";
