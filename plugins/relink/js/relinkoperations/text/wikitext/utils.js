@@ -61,12 +61,12 @@ exports.makePrettylink = function(parser, tiddler, caption, options) {
 		}
 	} else if (exports.shorthandPrettylinksSupported(parser.wiki)) {
 		output = exports.makeWidget(parser.context, '$link', {to: tiddler}, undefined, options);
-	} else if (parser.context.allowWidgets() && options.placeholder) {
+	} else if (parser.context.allowWidgets() && parser.options.placeholder) {
 		// If we don't have a caption, we must resort to
 		// placeholders anyway to prevent link/caption desync
 		// from later relinks.
 		// It doesn't matter whether the tiddler is quotable.
-		var ph = options.placeholder.getPlaceholderFor(tiddler, undefined, options);
+		var ph = parser.options.placeholder.getPlaceholderFor(tiddler, undefined, options);
 		output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 	}
 	return output;
