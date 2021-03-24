@@ -60,7 +60,11 @@ exports.relink = function(targetTitle, fromTitle, toTitle, options) {
 	// If this is the TitlesExample tiddler for the renamed tiddler...
 	if (targetTitle === ('$:/TitlesExample/' + fromTitle)) {
 		// Then return the TitlesExample tiddler for the new name.
-		return '$:/TitlesExample/' + toTitle;
+		return {output: '$:/TitlesExample/' + toTitle};
+		// If, for whatever reason, we could NOT change the targetTitle
+		// given this particular toTitle, then we would instead return:
+		//     {impossible: true};
 	}
-	// Otherwise do nothing. (return undefined)
+	// Otherwise, if this targetTitle is irrelevant, do nothing, or return:
+	//     undefined
 };

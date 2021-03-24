@@ -31,7 +31,7 @@ exports.report = function(title, callback, options) {
 exports.relink = function(title, fromTitle, toTitle, options) {
 	var length = fromTitle.length;
 	if (title.charAt(length) === '/' && title.substr(0, length) === fromTitle) {
-		return toTitle + title.substr(length);
+		return {output: toTitle + title.substr(length)};
 	}
 	return undefined;
 };

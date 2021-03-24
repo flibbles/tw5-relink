@@ -6,7 +6,6 @@ type: application/javascript
 Renames tiddlers which have titles derived from fromTitle. Then it makes
 sure that those tiddlers are properly relinked too.
 
-TODO: Do I want support for report disabling?
 \*/
 
 /*jslint node: false, browser: true */
@@ -41,22 +40,21 @@ exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 		var rules = cache.rules;
 		for (var i = 0; i < rules.length; i++) {
 			var rule = rules[i];
-			var result = rule.relink(title, fromTitle, toTitle, options);
-			if (result && (result !== title)) {
-				// TODO: Since I'm changing the paradigm. I should support
-				//       impossible title relinks.
-				var entry = {};
-				if (options.wiki.getTiddler(result) || cache.touched[result]) {
-					// There's already a tiddler there. We won't clobber it.
-					entry.impossible = true;
-				} else {
-					entry.output = result;
+			var entry = rule.relink(title, fromTitle, toTitle, options);
+			if (entry) {
+				var result = entry.output;
+				if (result && (result !== title)) {
+					if (options.wiki.getTiddler(result) || cache.touched[result]) {
+						// There's already a tiddler there. We won't clobber it.
+						entry.impossible = true;
+						entry.output = undefined;
+					}
+					cache.touched[result] = true;
 				}
-				changes.title = entry;
 				// Record that we've touched this one, so we only touch it once.
 				// Both its prior and latter. Neither should be touched again.
 				cache.touched[title] = true;
-				cache.touched[result] = true;
+				changes.title = entry;
 				break;
 			}
 		}

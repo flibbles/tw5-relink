@@ -21,9 +21,12 @@ exports.report = function(targetTitle, callback, options) {
 	// to describe what kind of reference this is.
 };
 
-exports.relink = function(title, fromTitle, toTitle, options) {
-	// code that returns a new version of "title" whenever fromTitle
-	// is renamed into toTitle.
+exports.relink = function(targetTitle, fromTitle, toTitle, options) {
+	// code that determines what to change targetTitle to whenever
+	// fromTitle is renamed into toTitle.
+	// Return {output: 'newTitle'} if targetTitle should change.
+	// Return {impossible: true} if targetTitle should change, but can't.
+	// Return undefined if targetTitle should remain unchanged.
 };
 ```
 

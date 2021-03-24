@@ -3,7 +3,6 @@
 A method which doles out placeholders when requested, and constructs
 the necessary supporting pragma when requested.
 
-TODO: This should probably be merged with the context
 \*/
 
 var utils = require('../utils');

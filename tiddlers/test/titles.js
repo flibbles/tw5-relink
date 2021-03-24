@@ -128,6 +128,18 @@ it("doesn't override other changes with nested renames", function() {
 	expect(utils.getText('to/path/end', wiki)).toBe('[[to/path]].');
 });
 
+it("supports title rules returning failure", function() {
+	var wiki = new $tw.Wiki();
+	const text = 'renaming this to "fail" causes a failure';
+	wiki.addTiddlers([
+		{title: 'relink-title-test/A', text: text}]);
+	const fails = utils.collectFailures(function() {
+		wiki.renameTiddler('$:/relink-title', 'fail');
+	});
+	expect(fails.length).toBe(1);
+	expect(utils.getText('relink-title-test/A', wiki)).toBe(text);
+});
+
 it("doesn't rename two tiddlers to the same thing", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
@@ -140,9 +152,12 @@ it("doesn't rename two tiddlers to the same thing", function() {
 	expect(utils.getText('relink-title-test/new', wiki)).toBe('I was A');
 });
 
-it("doesn't make same-name changes during live relinking", function() {
+it("may make same-name changes during live relinking", function() {
+	// This shouldn't happen unless someone makes a rule that does it
+	// accidentally, but I don't see why I should bother worrying about it
+	// nothing will change, and no other part of Relink makes checks like this.
 	test('relink-title-test/same', 'relink-title-test/same', ['title'], {from: '$:/relink-title', to: 'same'});
-	expect(console.log).not.toHaveBeenCalled();
+	expect(console.log).toHaveBeenCalledTimes(1);
 });
 
 it("handles indexer and non-existent tiddlers", function() {

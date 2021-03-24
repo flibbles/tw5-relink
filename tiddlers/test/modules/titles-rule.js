@@ -23,6 +23,10 @@ exports.report = function(title, callback, options) {
 
 exports.relink = function(title, fromTitle, toTitle, options) {
 	if (fromTitle === key && title.startsWith(prefix)) {
-		return prefix + toTitle;
+		if (toTitle === 'fail') {
+			return {impossible: true};
+		} else {
+			return {output: prefix + toTitle};
+		}
 	}
 };
