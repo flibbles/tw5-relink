@@ -12,8 +12,23 @@ Returns all tiddlers that reference `fromTiddler` somewhere inside them.
 Input is ignored. Maybe it shouldn't do this.
 \*/
 
+var LinkedList = $tw.utils.LinkedList;
+
+if (!LinkedList) {
+	/* If the linked list isn't available, make a quick crappy version. */
+	LinkedList = function() {this.array=[];};
+
+	LinkedList.prototype.pushTop = function(array) {
+		$tw.utils.pushTop(this.array, array);
+	};
+
+	LinkedList.prototype.toArray = function() {
+		return this.array;
+	};
+};
+
 exports.backreferences = function(source,operator,options) {
-	var results = new $tw.utils.LinkedList();
+	var results = new LinkedList();
 	source(function(tiddler,title) {
 		results.pushTop(Object.keys(options.wiki.getTiddlerRelinkBackreferences(title,options)));
 	});
@@ -21,7 +36,7 @@ exports.backreferences = function(source,operator,options) {
 };
 
 exports.references = function(source,operator,options) {
-	var results = new $tw.utils.LinkedList();
+	var results = new LinkedList();
 	source(function(tiddler,title) {
 		var refs = options.wiki.getTiddlerRelinkReferences(title,options);
 		if (refs) {

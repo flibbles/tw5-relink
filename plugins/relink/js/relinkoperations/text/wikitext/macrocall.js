@@ -332,9 +332,14 @@ function parseParams(paramString, pos) {
 		paramMatch = reParam.exec(paramString);
 	while(paramMatch) {
 		// Process this parameter
-		var paramInfo = {
-			value: paramMatch[2] || paramMatch[3] || paramMatch[4] || paramMatch[5] || paramMatch[6]
-		};
+		var paramInfo = { };
+		// We need to find the group match that isn't undefined.
+		for (var i = 2; i <= 6; i++) {
+			if (paramMatch[i] !== undefined) {
+				paramInfo.value = paramMatch[i];
+				break;
+			}
+		}
 		if(paramMatch[1]) {
 			paramInfo.name = paramMatch[1];
 		}

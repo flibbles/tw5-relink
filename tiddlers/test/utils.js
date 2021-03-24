@@ -134,6 +134,11 @@ exports.flush = function(wiki) {
 	});
 };
 
+exports.version = function() {
+	// Shouldn't matter if it says prerelease or anything like that
+	return parseInt($tw.version.split('.')[2]);
+};
+
 exports.addPlugin = function(pluginName, tiddlers, options) {
 	options = options || {};
 	var wiki = options.wiki || new $tw.Wiki();
