@@ -1,6 +1,10 @@
+created: 20210324034859173
+
 This version overhauls the internal design in order to integrate with ~TiddlyWiki's indexer system. This version is ''considerably faster'' than V1 when it comes to the Relink info panel and general performance when doing non-Relink things.
 
 Unfortunately, this release required non-backward compatible changes. This will only affect anyone who has created or uses modules that integrate with Relink. [[See here for more details.|Migration to V2]] (Note: Your modules will still work for relinking! They just won't work with the [[TiddlerInfo Tab]].)
+
+''Make sure you update any //Relink// supplemental plugins you're using~''
 
 ''Other changes''
 
