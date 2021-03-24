@@ -65,7 +65,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			return undefined;
 		}
 	} else {
-		var output = this.makeFilteredtransclude(this.parser, filter, tooltip, template, style, classes, options);
+		var output = this.makeFilteredtransclude(this.parser, filter, tooltip, template, style, classes);
 		if (output === undefined) {
 			entry.impossible = true;
 		} else {
@@ -78,7 +78,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	return entry;
 };
 
-exports.makeFilteredtransclude = function(parser, filter, tooltip, template, style, classes, options) {
+exports.makeFilteredtransclude = function(parser, filter, tooltip, template, style, classes) {
 	if (canBePretty(filter) && canBePrettyTemplate(template)) {
 		return prettyList(filter, tooltip, template, style, classes);
 	}

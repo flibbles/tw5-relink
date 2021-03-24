@@ -55,7 +55,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		modified = true;
 	}
 	if (modified) {
-		var output = this.makeTransclude(this.parser, reference, template, options);
+		var output = this.makeTransclude(this.parser, reference, template);
 		if (output) {
 			// Adding any newline that might have existed is
 			// what allows this relink method to work for both
@@ -89,7 +89,7 @@ function parseTextReference(textRef) {
 /** This converts a reference and a template into a string representation
  *  of a transclude.
  */
-exports.makeTransclude = function(parser, reference, template, options) {
+exports.makeTransclude = function(parser, reference, template) {
 	var rtn;
 	if (!canBePrettyTemplate(template)) {
 		var widget = utils.makeWidget(parser, '$transclude', {

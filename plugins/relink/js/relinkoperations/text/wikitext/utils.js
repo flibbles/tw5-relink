@@ -50,40 +50,30 @@ function getPlaceholderCategory(context, tag, attribute) {
 	}
 };
 
-exports.makePrettylink = function(parser, tiddler, caption) {
+exports.makePrettylink = function(parser, title, caption) {
 	var output;
-	if (parser.context.allowPrettylinks() && this.canBePrettylink(tiddler, caption)) {
-		output = prettyLink(tiddler, caption);
+	if (parser.context.allowPrettylinks() && canBePrettylink(title, caption)) {
+		if (caption !== undefined) {
+			output = "[[" + caption + "|" + title + "]]";
+		} else {
+			output = "[[" + title + "]]";
+		}
 	} else if (caption !== undefined) {
 		var safeCaption = sanitizeCaption(parser, caption);
 		if (safeCaption !== undefined) {
-			output = exports.makeWidget(parser, '$link', {to: tiddler}, safeCaption);
+			output = exports.makeWidget(parser, '$link', {to: title}, safeCaption);
 		}
 	} else if (exports.shorthandPrettylinksSupported(parser.wiki)) {
-		output = exports.makeWidget(parser, '$link', {to: tiddler});
+		output = exports.makeWidget(parser, '$link', {to: title});
 	} else if (parser.context.allowWidgets() && parser.options.placeholder) {
 		// If we don't have a caption, we must resort to
 		// placeholders anyway to prevent link/caption desync
 		// from later relinks.
 		// It doesn't matter whether the tiddler is quotable.
-		var ph = parser.options.placeholder.getPlaceholderFor(tiddler);
+		var ph = parser.options.placeholder.getPlaceholderFor(title);
 		output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 	}
 	return output;
-};
-
-function prettyLink(title, caption) {
-	if (caption !== undefined) {
-		return "[[" + caption + "|" + title + "]]";
-	} else {
-		return "[[" + title + "]]";
-	}
-};
-
-/**Return true if value can be used inside a prettylink.
- */
-exports.canBePrettylink = function(value, customCaption) {
-	return value.indexOf("]]") < 0 && value[value.length-1] !== ']' && (customCaption !== undefined || value.indexOf('|') < 0);
 };
 
 /**In version 5.1.20, Tiddlywiki made it so <$link to"something" /> would
@@ -98,6 +88,12 @@ exports.shorthandPrettylinksSupported = function(wiki) {
 		_supported = (test === "test");
 	}
 	return _supported;
+};
+
+/**Return true if value can be used inside a prettylink.
+ */
+function canBePrettylink(value, customCaption) {
+	return value.indexOf("]]") < 0 && value[value.length-1] !== ']' && (customCaption !== undefined || value.indexOf('|') < 0);
 };
 
 function sanitizeCaption(parser, caption) {
@@ -150,7 +146,7 @@ exports.wrapParameterValue = function(value, preference) {
 		"": function(v) {return !/([\s>"'=])/.test(v); },
 		"'": function(v) {return v.indexOf("'") < 0; },
 		'"': function(v) {return v.indexOf('"') < 0; },
-		"[[": exports.canBePrettyOperand,
+		"[[": canBePrettyOperand,
 		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';}
 	};
 	if (choices[preference] && choices[preference](value)) {
@@ -182,7 +178,7 @@ function wrap(value, wrapper) {
 	}
 };
 
-exports.canBePrettyOperand = function(value) {
+function canBePrettyOperand(value) {
 	return value.indexOf(']') < 0;
 };
 
