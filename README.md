@@ -28,8 +28,7 @@ It will also have instructions for how to install any Relink supplemental plugin
 
 ### For Node.js
 
-The contents of the `plugins` directory must be copied into the `plugins`
-directory in your tiddlywiki installation. This is likely in:
+First, check out the source code using git. Then the contents of the `plugins` directory must be copied into the `plugins` directory in your tiddlywiki installation. This is likely in:
 
 `/usr/local/lib/node_modules/tiddlywiki/plugins/flibbles`
 

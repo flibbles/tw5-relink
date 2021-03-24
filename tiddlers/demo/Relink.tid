@@ -14,12 +14,13 @@ This is the demo site for ''Relink'', the Tiddlywiki5 plugin which aids in renam
 <<ul Relink>>
 
 To report an issue, please visit <a href={{!!source}}>the github page</a>.
-</$tiddler>
 
 !! To Install
 
-Drag the following onto your Tiddlywiki project and say "yes" to import.
+Drag the following onto your Tiddlywiki project and say "yes" to import. (Or to install on Node.js, <a href={{{ [{!!source}addsuffix[#for-nodejs]] }}}>see the github page</a> for instructions.)
 
 @@text-align:center;
 <$link to=<<plugin>> class="relink-dragger">Drag n' Drop me!</$link>
 @@
+
+</$tiddler>
