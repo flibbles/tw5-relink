@@ -20,7 +20,7 @@ exports.makeWidget = function(parser, tag, attributes, body) {
 					return undefined;
 				}
 				var category = getPlaceholderCategory(parser.context, tag, attr);
-				quoted = '<<' + parser.options.placeholder.getPlaceholderFor(value, category) + '>>';
+				quoted = '<<' + parser.placeholder.getPlaceholderFor(value, category) + '>>';
 			}
 			string += ' ' + attr + '=' + quoted;
 		}
@@ -65,12 +65,12 @@ exports.makePrettylink = function(parser, title, caption) {
 		}
 	} else if (exports.shorthandPrettylinksSupported(parser.wiki)) {
 		output = exports.makeWidget(parser, '$link', {to: title});
-	} else if (parser.context.allowWidgets() && parser.options.placeholder) {
+	} else if (parser.context.allowWidgets() && parser.placeholder) {
 		// If we don't have a caption, we must resort to
 		// placeholders anyway to prevent link/caption desync
 		// from later relinks.
 		// It doesn't matter whether the tiddler is quotable.
-		var ph = parser.options.placeholder.getPlaceholderFor(title);
+		var ph = parser.placeholder.getPlaceholderFor(title);
 		output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 	}
 	return output;

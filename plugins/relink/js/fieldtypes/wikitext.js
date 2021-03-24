@@ -41,10 +41,6 @@ function WikiWalker(type, text, options) {
 		});
 		WikiWalker.prototype.relinkMethodsInjected = true;
 	}
-	// TODO: This isn't a great way to do this. The placeholder and the parser should be closer tied together.
-	if (options.placeholder) {
-		options.placeholder.parser = this;
-	}
 	this.context = new WikitextContext(options.settings);
 	WikiParser.call(this, type, text, options);
 };
@@ -183,6 +179,10 @@ exports.report = function(wikitext, callback, options) {
 function WikiRelinker(type, text, fromTitle, toTitle, options) {
 	this.fromTitle = fromTitle;
 	this.toTitle = toTitle;
+	this.placeholder = options.placeholder;
+	if (this.placeholder) {
+		this.placeholder.parser = this;
+	}
 	WikiWalker.call(this, type, text, options);
 };
 
