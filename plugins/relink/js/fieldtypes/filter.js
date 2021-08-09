@@ -221,7 +221,7 @@ function relinkFilterOperation(relinker, fromTitle, toTitle, filterString, p, co
 				nextBracketPos = filterString.indexOf("]",p);
 				var operand = filterString.substring(p,nextBracketPos);
 				// Check if this is a relevant operator
-				var handler = fieldType(context, operator);
+				var handler = fieldType(context, operator, options);
 				if (!handler) {
 					// This operator isn't managed. Bye.
 					break;
@@ -326,7 +326,7 @@ function reportFilterOperation(filterString, callback, p, context, options) {
 				nextBracketPos = filterString.indexOf("]",p);
 				var operand = filterString.substring(p,nextBracketPos);
 				// Check if this is a relevant operator
-				var handler = fieldType(context, operator);
+				var handler = fieldType(context, operator, options);
 				if (!handler) {
 					// This operator isn't managed. Bye.
 					break;
@@ -427,10 +427,18 @@ function operatorBlurb(operator, enquotedOperand) {
 };
 
 // Returns the relinker needed for a given operator, or returns undefined.
-function fieldType(context, operator) {
-	return (operator.suffix &&
-	        context.getOperator(operator.operator + ':' + operator.suffix, operator.index)) ||
-	        context.getOperator(operator.operator, operator.index);
+function fieldType(context, operator, options) {
+	var op = operator.operator,
+		suffix = operator.suffix,
+		ind = operator.index,
+		rtn = (suffix && context.getOperator(op + ':' + suffix, ind))
+		   || context.getOperator(op, ind);
+	if (!rtn && ind == 1) {
+		// maybe it's a field operator?
+		rtn = (op === 'field' && context.getFields()[suffix])
+		   || (!suffix && !options.wiki.getFilterOperators()[op] && context.getFields()[op]);
+	}
+	return rtn;
 };
 
 function canBePrettyOperand(value) {

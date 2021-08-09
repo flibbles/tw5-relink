@@ -324,4 +324,52 @@ it("but it doesn't ignore 'yes' configurations", function() {
 	testFilter("[[A]] [good[A]]", true, ['filt', 'filt: [good[]]'], {from: "A", wiki: wiki});
 });
 
+it("looks to field whitelists for field operators", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.fieldConf('relinktest'));
+	wiki.addTiddler(utils.fieldConf('relinkref', 'reference'));
+
+	// IMPLICIT FIELD OPERATORS//
+	testFilter("[relinktest[from here]]", true, ['filt: [relinktest[]]'], {wiki: wiki});
+	// but it ignores implicit field operators with a suffix
+	testFilter("[[from here]] [relinktest:suffix[from here]]",
+	           "[[to there]] [relinktest:suffix[from here]]",
+	           ['filt'], {wiki: wiki});
+	// references work too
+	testFilter("[relinkref[from here!!field]]", true, ['filt: [relinkref[!!field]]'], {wiki: wiki});
+	// multiple indexes
+	testFilter("[relinktest[from here],[from here]]",
+	           "[relinktest[to there],[from here]]",
+	           ['filt: [relinktest[]]'], {wiki: wiki});
+
+	// EXPLICIT FIELD OPERATORS //
+	testFilter("[field:relinktest[from here]]", true, ['filt: [field:relinktest[]]'], {wiki: wiki});
+	// but it ignores implicit field operators with a suffix
+	testFilter("[[from here]] [field:relinktest:suffix[from here]]",
+	           "[[to there]] [field:relinktest:suffix[from here]]",
+	           ['filt'], {wiki: wiki});
+	// references work too
+	testFilter("[field:relinkref[from here!!field]]", true, ['filt: [field:relinkref[!!field]]'], {wiki: wiki});
+	// multiple indexes
+	testFilter("[field:relinktest[from here],[from here]]",
+	           "[field:relinktest[to there],[from here]]",
+	           ['filt: [field:relinktest[]]'], {wiki: wiki});
+
+});
+
+it("ignores implicit field whitelist for existing filter ops", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.fieldConf('tags'));
+	testFilter("[[from here]] [tags[from here]]", "[[to there]] [tags[from here]]", ['filt'], {wiki: wiki});
+	// but when it's explicit, Relink does find it
+	testFilter("[field:tags[from here]]", true, ['filt: [field:tags[]]'], {wiki: wiki});
+});
+
+it("prefers operator conf to field conf", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.fieldConf('relinktest'));
+	wiki.addTiddler(utils.operatorConf('relinktest', 'reference'));
+	testFilter("[relinktest[from here!!field]]", true, ['filt: [relinktest[!!field]]'], {wiki: wiki});
+});
+
 });
