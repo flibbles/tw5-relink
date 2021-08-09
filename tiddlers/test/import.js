@@ -44,7 +44,7 @@ it('import pragma', function() {
 });
 
 // I think this
-((utils.version() >= 24) ? it : xit)('handles no newline', function() {
+(utils.atLeastVersion('5.2.0') ? it : xit)('handles no newline', function() {
 	// Technically, Tiddlywiki core is mishandling it, but it doesn't matter
 	// for core, because an import with new newline means an import for no
 	// reason at all.

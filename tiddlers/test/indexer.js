@@ -202,7 +202,7 @@ it('updates when relevant $importvariables in fields exist', function() {
 	expect(getReport('test', wiki)).toEqual({B: ['wikitext: <<M Barg>>']});
 });
 
-((utils.version() >= 24) ? it : xit)('updates for relevant $importvariables in nested context', function() {
+(utils.atLeastVersion('5.2.0') ? it : xit)('updates for relevant $importvariables in nested context', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.attrConf('$list', 'emptyMessage', 'wikitext'),

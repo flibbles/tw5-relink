@@ -45,7 +45,7 @@ it('adds fields', function() {
 });
 
 // These tests are specific to TiddlyWiki V5.2.*
-if ($tw.utils.compareVersions($tw.version, "5.2.0") >= 0) {
+if (utils.atLeastVersion("5.2.0")) {
 	it('allows weird fields', function() {
 		var wiki = test("relink-add-field", {field: "te$t"});
 		var results = wiki.getTiddler(prefix + "fields/te$t");

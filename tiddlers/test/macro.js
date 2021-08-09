@@ -289,7 +289,7 @@ it('local macros simple', function() {
 	test("\\define test(Dref) stuff\n\n<<test 'from here##index'>>");
 });
 
-((utils.version() >= 24) ? it : xit)('macros in nested wikitext', function() {
+(utils.atLeastVersion('5.2.0') ? it : xit)('macros in nested wikitext', function() {
 	// The `text` parameter uses a different wikiparser than the one
 	// parsing the tiddler. That parser might not have access to definitions
 	// in the tiddler, but it should.

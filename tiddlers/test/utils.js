@@ -134,9 +134,9 @@ exports.flush = function(wiki) {
 	});
 };
 
-exports.version = function() {
+exports.atLeastVersion = function(targetVersion) {
 	// Shouldn't matter if it says prerelease or anything like that
-	return parseInt($tw.version.split('.')[2]);
+	return $tw.utils.compareVersions($tw.version, targetVersion) >= 0;
 };
 
 exports.addPlugin = function(pluginName, tiddlers, options) {
