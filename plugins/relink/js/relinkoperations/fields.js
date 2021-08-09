@@ -16,6 +16,12 @@ exports.report = function(tiddler, callback, options) {
 	$tw.utils.each(fields, function(handler, field) {
 		var input = tiddler.fields[field];
 		if (input) {
+			if (field === 'list' && tiddler.fields['plugin-type']) {
+				// We have a built-in exception here. plugins use their list
+				// field differently. There's a whole mechanism for what
+				// they actually point to, but let's not bother with that now
+				return;
+			}
 			handler.report(input, function(title, blurb) {
 				if (blurb) {
 					callback(title, field + ': ' + blurb);

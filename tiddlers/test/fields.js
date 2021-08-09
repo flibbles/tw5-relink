@@ -226,6 +226,35 @@ it("doesn't crash with missing any type of field", function() {
 	test('wikitext');
 });
 
+it("doesn't report plugin's list, since they're used differently", function() {
+	var wiki = utils.addPlugin("testPlugin",
+		[{title: 'testPlugin/readme', text: "This is readme text"}],
+		{list: 'readme'});
+	wiki.addTiddlers([
+		utils.fieldConf('list', 'list'),
+		{title: 'test', list: 'readme'}
+	]);
+	expect(wiki.getTiddlerRelinkBackreferences('readme')).toEqual({test: ['list']});
+	wiki.renameTiddler('readme', 'new');
+	expect(wiki.getTiddler('test').fields.list).toEqual(['new']);
+	expect(wiki.getTiddler('testPlugin').fields.list).toEqual(['readme']);
+});
+
+it("does report plugin's tags, since they're not used differently", function() {
+	var wiki = utils.addPlugin("testPlugin",
+		[{title: 'testPlugin/myTag', text: "This is a tag"}],
+		{tags: 'myTag'});
+	wiki.addTiddlers([
+		utils.fieldConf('tags', 'list'),
+		{title: 'test', tags: 'myTag'}
+	]);
+	expect(wiki.getTiddlerRelinkBackreferences('myTag')).toEqual({testPlugin: ['tags'], test: ['tags']});
+	wiki.renameTiddler('myTag', 'new');
+	expect(wiki.getTiddler('test').fields.tags).toEqual(['new']);
+	// but it still doesn't relink
+	expect(wiki.getTiddler('testPlugin').fields.tags).toEqual(['myTag']);
+});
+
 if ($tw.utils.compareVersions($tw.version, "5.2.0") >= 0) {
 	it('handles fields with problematic characters', function() {
 		testField('from here', true, ['back/slash'], {field: 'back/slash', type: 'title'});

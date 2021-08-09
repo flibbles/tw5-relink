@@ -151,6 +151,8 @@ exports.addPlugin = function(pluginName, tiddlers, options) {
 		title: pluginName,
 		type: "application/json",
 		"plugin-type": "plugin",
+		list: options.list || undefined,
+		tags: options.tags || undefined,
 		description: options.description || undefined,
 		text: JSON.stringify(content)});
 	wiki.registerPluginTiddlers("plugin");
