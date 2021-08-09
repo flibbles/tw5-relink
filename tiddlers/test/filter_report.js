@@ -83,4 +83,10 @@ it("missing tiddler", function() {
 	expect(wiki.filterTiddlers('[[X]relink:report[Y]]')).toEqual([]);
 });
 
+it('can handle undefined blurb', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'test', 'undefined': 'A'});
+	expect(wiki.filterTiddlers('[[test]relink:report[A]]')).toEqual(['']);
+});
+
 });
