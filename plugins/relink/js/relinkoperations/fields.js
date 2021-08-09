@@ -38,6 +38,10 @@ exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 	$tw.utils.each(fields, function(handler, field) {
 		var input = tiddler.fields[field];
 		if (input) {
+			if (field === 'list' && tiddler.fields['plugin-type']) {
+				// Same deal as above. Skip.
+				return;
+			}
 			var entry = handler.relink(input, fromTitle, toTitle, options);
 			if (entry !== undefined) {
 				changes[field] = entry;

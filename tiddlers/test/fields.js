@@ -235,9 +235,13 @@ it("doesn't report plugin's list, since they're used differently", function() {
 		{title: 'test', list: 'readme'}
 	]);
 	expect(wiki.getTiddlerRelinkBackreferences('readme')).toEqual({test: ['list']});
-	wiki.renameTiddler('readme', 'new');
+	const fails = utils.collectFailures(function() {
+		wiki.renameTiddler('readme', 'new');
+	});
 	expect(wiki.getTiddler('test').fields.list).toEqual(['new']);
 	expect(wiki.getTiddler('testPlugin').fields.list).toEqual(['readme']);
+	// There shouldn't be any errors
+	expect(fails.length).toEqual(0);
 });
 
 it("does report plugin's tags, since they're not used differently", function() {
@@ -249,10 +253,15 @@ it("does report plugin's tags, since they're not used differently", function() {
 		{title: 'test', tags: 'myTag'}
 	]);
 	expect(wiki.getTiddlerRelinkBackreferences('myTag')).toEqual({testPlugin: ['tags'], test: ['tags']});
-	wiki.renameTiddler('myTag', 'new');
+	const fails = utils.collectFailures(function() {
+		wiki.renameTiddler('myTag', 'new');
+	});
 	expect(wiki.getTiddler('test').fields.tags).toEqual(['new']);
 	// but it still doesn't relink
 	expect(wiki.getTiddler('testPlugin').fields.tags).toEqual(['myTag']);
+	// also, it warns about it
+	expect(fails.length).toEqual(1);
+	expect(fails[0]).toContain('testPlugin');
 });
 
 if ($tw.utils.compareVersions($tw.version, "5.2.0") >= 0) {

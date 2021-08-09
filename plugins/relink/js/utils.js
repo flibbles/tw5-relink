@@ -65,7 +65,7 @@ exports.getRelinkResults = function(wiki, fromTitle, toTitle, context, tiddlerLi
 		for (var i = 0; i < tiddlerList.length; i++) {
 			var title = tiddlerList[i];
 			var tiddler = wiki.getTiddler(title);
-			if(tiddler && !tiddler.fields["plugin-type"]) {
+			if(tiddler) {
 				try {
 					var entries = Object.create(null),
 						operators = getRelinkOperators();
@@ -76,7 +76,13 @@ exports.getRelinkResults = function(wiki, fromTitle, toTitle, context, tiddlerLi
 					for (var field in entries) {
 						// So long as there is one key,
 						// add it to the change list.
-						changeList[title] = entries;
+						if (tiddler.fields["plugin-type"]) {
+							// We never change plugins, even if they have links
+							changeList[title] = {};
+							changeList[title][field] = {impossible: true};
+						} else {
+							changeList[title] = entries;
+						}
 						break;
 					}
 				} catch (e) {
