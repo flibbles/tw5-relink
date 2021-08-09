@@ -46,7 +46,6 @@ it('adds fields', function() {
 
 // These tests are specific to TiddlyWiki V5.2.*
 if ($tw.utils.compareVersions($tw.version, "5.2.0") >= 0) {
-
 	it('allows weird fields', function() {
 		var wiki = test("relink-add-field", {field: "te$t"});
 		var results = wiki.getTiddler(prefix + "fields/te$t");
@@ -57,14 +56,7 @@ if ($tw.utils.compareVersions($tw.version, "5.2.0") >= 0) {
 		// field name for the warning string to embed.
 	});
 
-	it('allows fields with capital letters', function() {
-		var wiki = test('relink-add-field', {field: 'Capital'});
-		var results = wiki.getTiddler(prefix + 'fields/Capital');
-		expect(results).not.toBeUndefined();
-		expect(Mangler.prototype.alert).not.toHaveBeenCalled();
-	});
 } else {
-
 	// This test confirms that Relink on earlier versions still has strict
 	// field names
 	it('rejects illegal fields', function() {
@@ -77,16 +69,16 @@ if ($tw.utils.compareVersions($tw.version, "5.2.0") >= 0) {
 		// field name for the warning string to embed.
 		expect(Mangler.prototype.alert.calls.argsFor(0)[0]).toContain('te$t');
 	});
-
-	it('does not allow fields with capital letters', function() {
-		var wiki = test('relink-add-field', {field: 'Capital'});
-		var results = wiki.getTiddler(prefix + 'fields/Capital');
-		expect(results).toBeUndefined();
-		expect(Mangler.prototype.alert).not.toHaveBeenCalled();
-		results = wiki.getTiddler(prefix + 'fields/capital');
-		expect(results).not.toBeUndefined();
-	});
 }
+
+// For v5.1.*, this is technically wrong. We shouldn't allow field names with
+// capital letters, but it's more important to function for v5.2.*, which does
+// allow them.
+it('allows fields with capital letters', function() {
+	var wiki = test('relink-add-field', {field: 'Capital'});
+	expect(wiki.getTiddler(prefix + 'fields/Capital')).not.toBeUndefined();
+	expect(Mangler.prototype.alert).not.toHaveBeenCalled();
+});
 
 it('ignores some fields', function() {
 	function ignore(field, expectedNonexistent) {
