@@ -35,7 +35,7 @@ RelinkManglerWidget.prototype.handleAddFieldEvent = function(event) {
 		// Can't handle it.
 		return true;
 	}
-	var trimmedName = param.field.toLowerCase().trim();
+	var trimmedName = param.field.trim();
 	if (!trimmedName) {
 		// Still can't handle it, but don't warn.
 		return true;

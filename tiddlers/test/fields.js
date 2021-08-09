@@ -226,4 +226,12 @@ it("doesn't crash with missing any type of field", function() {
 	test('wikitext');
 });
 
+if ($tw.utils.compareVersions($tw.version, "5.2.0") >= 0) {
+	it('handles fields with problematic characters', function() {
+		testField('from here', true, ['back/slash'], {field: 'back/slash', type: 'title'});
+		testField('from here', true, ['dollar$sign'], {field: 'dollar$sign', type: 'title'});
+		testField('from here', true, ['Capital'], {field: 'Capital', type: 'title'});
+	});
+}
+
 });

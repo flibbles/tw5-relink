@@ -44,16 +44,49 @@ it('adds fields', function() {
 	expect(results.fields.text).toEqual("wikitext");
 });
 
-it('rejects illegal fields', function() {
-	var wiki = test("relink-add-field", {field: "te$t"});
-	var results = wiki.getTiddler(prefix + "fields/te$t");
-	expect(results).toBeUndefined();
-	expect(Mangler.prototype.alert).toHaveBeenCalledTimes(1);
-	// We don't test the output, since it's Tiddlywiki's,
-	// but we do make sure we're properly supplying the
-	// field name for the warning string to embed.
-	expect(Mangler.prototype.alert.calls.argsFor(0)[0]).toContain('te$t');
-});
+// These tests are specific to TiddlyWiki V5.2.*
+if ($tw.utils.compareVersions($tw.version, "5.2.0") >= 0) {
+
+	it('allows weird fields', function() {
+		var wiki = test("relink-add-field", {field: "te$t"});
+		var results = wiki.getTiddler(prefix + "fields/te$t");
+		expect(results).not.toBeUndefined();
+		expect(Mangler.prototype.alert).not.toHaveBeenCalled();
+		// We don't test the output, since it's Tiddlywiki's,
+		// but we do make sure we're properly supplying the
+		// field name for the warning string to embed.
+	});
+
+	it('allows fields with capital letters', function() {
+		var wiki = test('relink-add-field', {field: 'Capital'});
+		var results = wiki.getTiddler(prefix + 'fields/Capital');
+		expect(results).not.toBeUndefined();
+		expect(Mangler.prototype.alert).not.toHaveBeenCalled();
+	});
+} else {
+
+	// This test confirms that Relink on earlier versions still has strict
+	// field names
+	it('rejects illegal fields', function() {
+		var wiki = test("relink-add-field", {field: "te$t"});
+		var results = wiki.getTiddler(prefix + "fields/te$t");
+		expect(results).toBeUndefined();
+		expect(Mangler.prototype.alert).toHaveBeenCalledTimes(1);
+		// We don't test the output, since it's Tiddlywiki's,
+		// but we do make sure we're properly supplying the
+		// field name for the warning string to embed.
+		expect(Mangler.prototype.alert.calls.argsFor(0)[0]).toContain('te$t');
+	});
+
+	it('does not allow fields with capital letters', function() {
+		var wiki = test('relink-add-field', {field: 'Capital'});
+		var results = wiki.getTiddler(prefix + 'fields/Capital');
+		expect(results).toBeUndefined();
+		expect(Mangler.prototype.alert).not.toHaveBeenCalled();
+		results = wiki.getTiddler(prefix + 'fields/capital');
+		expect(results).not.toBeUndefined();
+	});
+}
 
 it('ignores some fields', function() {
 	function ignore(field, expectedNonexistent) {
