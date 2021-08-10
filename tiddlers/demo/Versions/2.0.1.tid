@@ -1,0 +1,9 @@
+
+
+This release is mainly for support for Tiddlywiki v5.2.*, but there are a few bug fixes and improvements included with it.
+
+* Support for tiddler fields with any kind of characters, as it is now supported in Tiddlywiki v5.2.*.
+* Support for the implicit and explicit `field` filter operator. As in, filters like `[myfield[Tiddler A]]` and `[field:myfield[Tiddler A]]` will now get detected by //Relink// if ''myfield'' is a registered tiddler field in the whitelist.
+* Fixed issue where tiddlers named 'readme' (or something like that) would report //Relink// references from many plugins, because plugins usually have 'readme' in their list, even though they're referring to the '${plugin_name}/readme' shadow tiddler, and not 'readme' the tiddler.
+* If plugins would ever actually relink from a namechange, it gets reported as a tiddler which couldn't be updated, rather than being silently ignored.
+* Fixed issue where 'undefined' blurbs returned by a custom relink module could cause some relink filters to RSoD.

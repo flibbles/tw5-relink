@@ -1,7 +1,5 @@
 created: 20200424034709562
 
-\rules except wikilink
-
 This release introduces the `\relink` pragma for inline declaration of macro parameters. No longer do you have to the whitelist to register some little ol' macro you just wrote. You can write a pragma right alongside it that does all the work!
 
 * When about to perform a rename which can't be fully completed, //Relink// warns with one list with highlighted problems, instead of two separate lists. Much cleaner.
