@@ -70,13 +70,12 @@ it('widgets nested as macro arguments', function() {
 	expect(reportText(wiki, 'yesWidgets')).toEqual({from: ['<<macro text: "<$link to />">>', '<$link to />']});
 	expect(reportText(wiki, 'noWidgets')).toEqual({from: ['<<macro text: "<$link to />">>']});
 
-	var failures = utils.collectFailures(function() {
-		wiki.renameTiddler('from', 'to]]there');
-	});
+	utils.spyFailures(spyOn);
+	wiki.renameTiddler('from', 'to]]there');
 	expect(getText(wiki, 'yesLinks')).toBe('<<macro text:"<$link to=to]]there/>">>\n<$link to=to]]there/>');
 	expect(getText(wiki, 'noLinks')).toBe('\\rules except html\n<<macro text:"<$link to=to]]there/>">>\n[[from]]');
-	expect(failures.length).toEqual(1);
-	expect(failures[0]).toContain('noLinks');
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	expect(utils.failures.calls.first().args[0]).toEqual(['noLinks']);
 });
 
 it('widgets nested as widget arguments', function() {
@@ -89,14 +88,14 @@ it('widgets nested as widget arguments', function() {
 		utils.attrConf('$list', 'emptyMessage', 'wikitext')
 	]);
 
-	var failures = utils.collectFailures(function() {
-		wiki.renameTiddler('from', 'to]]there');
-	});
+	utils.spyFailures(spyOn);
+	wiki.renameTiddler('from', 'to]]there');
 	expect(getText(wiki, 'yesLinks')).toBe('<$list emptyMessage="<$link to=to]]there/>"/>\n<$link to=to]]there/>');
 	expect(getText(wiki, 'noLinks')).toBe('\\rules except html\n<$list emptyMessage="[[from]]"/>\n[[from]]');
 	// Two failures because the nested [[from]] gets parsed as wikitext,
 	// and not as an attribute, so it still tries (and fails) to relink.
-	expect(failures).toEqual(['noLinks']);
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	expect(utils.failures.calls.first().args[0]).toEqual(['noLinks']);
 });
 
 it('doesn\'t impact macrodef blocks', function() {

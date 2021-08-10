@@ -110,12 +110,11 @@ it("doesn't wipe the content of changed tiddler", function() {
 it("doesn't clobber existing tiddlers", function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'new/file', text: 'original text'});
-	const fails = utils.collectFailures(function() {
-		test('old/file', 'old/file', ['title: ./file'],
-		     {wiki: wiki, from: 'old', to: 'new'});
-	});
+	utils.spyFailures(spyOn);
+	test('old/file', 'old/file', ['title: ./file'],
+		 {wiki: wiki, from: 'old', to: 'new'});
 	expect(utils.getText('new/file', wiki)).toBe('original text');
-	expect(fails.length).toBe(1);
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it("doesn't override other changes with nested renames", function() {
@@ -133,10 +132,9 @@ it("supports title rules returning failure", function() {
 	const text = 'renaming this to "fail" causes a failure';
 	wiki.addTiddlers([
 		{title: 'relink-title-test/A', text: text}]);
-	const fails = utils.collectFailures(function() {
-		wiki.renameTiddler('$:/relink-title', 'fail');
-	});
-	expect(fails.length).toBe(1);
+	utils.spyFailures(spyOn);
+	wiki.renameTiddler('$:/relink-title', 'fail');
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 	expect(utils.getText('relink-title-test/A', wiki)).toBe(text);
 });
 
@@ -145,10 +143,9 @@ it("doesn't rename two tiddlers to the same thing", function() {
 	wiki.addTiddlers([
 		{title: 'relink-title-test/A', text: 'I was A'},
 		{title: 'relink-title-test/B', text: 'I was B'}]);
-	const fails = utils.collectFailures(function() {
-		wiki.renameTiddler('$:/relink-title', 'new');
-	});
-	expect(fails.length).toBe(1);
+	utils.spyFailures(spyOn);
+	wiki.renameTiddler('$:/relink-title', 'new');
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 	expect(utils.getText('relink-title-test/new', wiki)).toBe('I was A');
 });
 

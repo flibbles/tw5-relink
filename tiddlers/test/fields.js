@@ -113,13 +113,13 @@ it('lists work with strange titles', function() {
 });
 
 it('lists recognize impossibly strange titles', function() {
+	utils.spyFailures(spyOn);
 	function fails(title) {
 		var options = {to: title, field: "example", type: "list"};
 		var list = "A [[from here]] B";
-		var fails = utils.collectFailures(function() {
-			testField(list, false, ['example'], options);
-		});
-		expect(fails.length).toEqual(1);
+		utils.failures.calls.reset();
+		testField(list, false, ['example'], options);
+		expect(utils.failures).toHaveBeenCalledTimes(1);
 	};
 	fails("X and]] Y");
 	fails("]] X");
@@ -127,10 +127,9 @@ it('lists recognize impossibly strange titles', function() {
 
 it("lists don't fail when fromTitle not in list", function() {
 	var options = {to: "X and]] Y", field: 'list'};
-	var fails = utils.collectFailures(function() {
-		testField("A B C", ["A", "B", "C"], undefined, options);
-	});
-	expect(fails.length).toEqual(0);
+	utils.spyFailures(spyOn);
+	testField("A B C", ["A", "B", "C"], undefined, options);
+	expect(utils.failures).not.toHaveBeenCalled();
 });
 
 it('handles failures across multiple fields', function() {
@@ -140,10 +139,9 @@ it('handles failures across multiple fields', function() {
 		utils.fieldConf('B', 'list'),
 		utils.fieldConf('C'),
 		{title: 'test', A: 'from', B: 'from', C: 'from'}]);
-	const fails = utils.collectFailures(function() {
-		wiki.renameTiddler('from', 'to]] here');
-	});
-	expect(fails.length).toBe(1);
+	utils.spyFailures(spyOn);
+	wiki.renameTiddler('from', 'to]] here');
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 	var fields = wiki.getTiddler('test').fields;
 	expect(fields.A).toBe('from');
 	expect(fields.B).toBe('from');
@@ -235,13 +233,12 @@ it("doesn't report plugin's list, since they're used differently", function() {
 		{title: 'test', list: 'readme'}
 	]);
 	expect(wiki.getTiddlerRelinkBackreferences('readme')).toEqual({test: ['list']});
-	const fails = utils.collectFailures(function() {
-		wiki.renameTiddler('readme', 'new');
-	});
+	utils.spyFailures(spyOn);
+	wiki.renameTiddler('readme', 'new');
 	expect(wiki.getTiddler('test').fields.list).toEqual(['new']);
 	expect(wiki.getTiddler('testPlugin').fields.list).toEqual(['readme']);
 	// There shouldn't be any errors
-	expect(fails.length).toEqual(0);
+	expect(utils.failures).not.toHaveBeenCalled();
 });
 
 it("does report plugin's tags, since they're not used differently", function() {
@@ -253,15 +250,14 @@ it("does report plugin's tags, since they're not used differently", function() {
 		{title: 'test', tags: 'myTag'}
 	]);
 	expect(wiki.getTiddlerRelinkBackreferences('myTag')).toEqual({testPlugin: ['tags'], test: ['tags']});
-	const fails = utils.collectFailures(function() {
-		wiki.renameTiddler('myTag', 'new');
-	});
+	utils.spyFailures(spyOn);
+	wiki.renameTiddler('myTag', 'new');
 	expect(wiki.getTiddler('test').fields.tags).toEqual(['new']);
 	// but it still doesn't relink
 	expect(wiki.getTiddler('testPlugin').fields.tags).toEqual(['myTag']);
 	// also, it warns about it
-	expect(fails.length).toEqual(1);
-	expect(fails[0]).toContain('testPlugin');
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	expect(utils.failures.calls.first().args[0]).toEqual(['testPlugin']);
 });
 
 if ($tw.utils.compareVersions($tw.version, "5.2.0") >= 0) {

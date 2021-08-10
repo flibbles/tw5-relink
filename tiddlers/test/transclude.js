@@ -136,11 +136,11 @@ it('respects \\rules', function() {
 	testText("\\rules only transcludeblock\n{{from here}}", true, ['{{}}']);
 	testText("\\rules only html\n{{from here}}", false, undefined);
 
+	utils.spyFailures(spyOn);
 	function fails(to, text, expected, report) {
-		const fails = utils.collectFailures(function() {
-			testText(text, expected, report, {to: to, macrodefCanBeDisabled: true});
-		});
-		expect(fails.length).toEqual(1);
+		utils.failures.calls.reset();
+		testText(text, expected, report, {to: to, macrodefCanBeDisabled: true});
+		expect(utils.failures).toHaveBeenCalledTimes(1);
 	};
 	fails("curly {}", "\\rules except html\n{{from here}}", false, ['{{}}']);
 	fails("curly {}", "\\rules except html\n{{||from here}}", false, ['{{||}}']);

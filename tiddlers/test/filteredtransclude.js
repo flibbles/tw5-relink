@@ -130,11 +130,11 @@ it('unpretty (degrades to widget)', function() {
 });
 
 it('unpretty (\\rules prohibit widgets)', function() {
+	utils.spyFailures(spyOn);
 	function test(rules) {
-		const fails = utils.collectFailures(function() {
-			testText(rules + "{{{[[from here]]}}}", false, ['{{{}}}'], {to: "b|h"});
-		});
-		expect(fails.length).toEqual(1);
+		utils.failures.calls.reset();
+		testText(rules + "{{{[[from here]]}}}", false, ['{{{}}}'], {to: "b|h"});
+		expect(utils.failures).toHaveBeenCalledTimes(1);
 	};
 	test("\\rules except html\n");
 	test("\\rules only macrodef filteredtranscludeblock\n");

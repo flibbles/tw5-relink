@@ -60,11 +60,11 @@ it('tricky cases', function() {
 
 it('respects \\rules', function() {
 	const report = ['~WikiLink'];
+	utils.spyFailures(spyOn);
 	function testFail(rules, expected, options) {
-		var fails = utils.collectFailures(function() {
-			testText(rules, expected, report, options);
-		});
-		expect(fails.length).toBe(1);
+		utils.failures.calls.reset();
+		testText(rules, expected, report, options);
+		expect(utils.failures).toHaveBeenCalledTimes(1);
 	};
 	testText("\\rules except wikilink\nWikiLink", false, undefined);
 	testText("\\rules only wikilink\nWikiLink", true, report, {to: "ToThere"});

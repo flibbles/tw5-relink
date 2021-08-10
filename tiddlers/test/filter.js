@@ -258,11 +258,11 @@ it('field failures', function() {
 		wiki.addTiddlers([
 			utils.operatorConf('wiki', 'wikitext'),
 			utils.operatorConf('tag')]);
-		const fails = utils.collectFailures(function() {
-			testFilter(filter, false, report, options);
-		});
-		expect(fails.length).toEqual(1);
+		utils.failures.calls.reset();
+		testFilter(filter, false, report, options);
+		expect(utils.failures).toHaveBeenCalledTimes(1);
 	};
+	utils.spyFailures(spyOn);
 	fails("[tag[from here]]", "brackets]there", ['filt: [tag[]]']);
 	fails("[[from here]]", "A\"bad'stupid]title", ['filt']);
 	fails("[{from here}]", "A\"bad'stupid}title", ['filt: [{}]']);
@@ -281,11 +281,11 @@ it("field failures don't prevent from continuing", function() {
 			utils.operatorConf('title'),
 			utils.operatorConf('tag')]);
 		const options = {from: "from", to: toTitle, wiki: wiki};
-		const fails = utils.collectFailures(function() {
-			testFilter(filter, expected, report, options);
-		});
-		expect(fails.length).toEqual(failures);
+		utils.failures.calls.reset();
+		testFilter(filter, expected, report, options);
+		expect(utils.failures).toHaveBeenCalledTimes(failures);
 	};
+	utils.spyFailures(spyOn);
 	fail("from [tag{from}]", "to]'\"there",
 	     "from [tag{to]'\"there}]", ['filt', 'filt: [tag{}]'], 1);
 	fail("[tag[from]tag{from}]", "to}there",

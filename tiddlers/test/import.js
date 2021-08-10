@@ -93,10 +93,9 @@ it('resorts to placeholders when possible', function() {
 });
 
 it('handles failures', function() {
-	var failures = utils.collectFailures(function() {
-		testText("\\import [tag{from here}]\nstuff", false, ['\\import [tag{}]'], {to: "to}there"});
-	});
-	expect(failures.length).toBe(1);
+	utils.spyFailures(spyOn);
+	testText("\\import [tag{from here}]\nstuff", false, ['\\import [tag{}]'], {to: "to}there"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it("handles tricky importing using just-imported variables", function() {

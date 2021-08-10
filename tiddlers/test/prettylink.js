@@ -139,15 +139,14 @@ it('unquotable and unpretty', function() {
 	         ['[[caption]]'], {to: to, wiki: wiki});
 	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test'");
 
+	utils.spyFailures(spyOn);
 	// If rules disable macrodef, then don't placeholder
-	var fails = utils.collectFailures(function() {
-		testText("\\rules except macrodef\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true, wiki: wiki});
-	});
-	expect(fails.length).toEqual(1);
-	fails = utils.collectFailures(function() {
-		testText("\\rules only prettylink html\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true, wiki: wiki});
-	});
-	expect(fails.length).toEqual(1);
+	testText("\\rules except macrodef\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true, wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+
+	utils.failures.calls.reset();
+	testText("\\rules only prettylink html\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true, wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('unquotable when $link is customized', function() {
@@ -181,17 +180,15 @@ it('respects rules', function() {
 	         "\\rules except macrodef\n<$link to='to]] there'/>",
 	         ['[[from here]]'], {to: "to]] there"});
 
-	var fails;
-	fails = utils.collectFailures(function() {
-		testText("\\rules only prettylink\n[[from here]]",
-		         false, ['[[from here]]'], {to: "to]] there"});
-	});
-	expect(fails.length).toEqual(1);
-	fails = utils.collectFailures(function() {
-		testText("\\rules except html\n[[from here]]",
-		         false, ['[[from here]]'], {to: "to]] there"});
-	});
-	expect(fails.length).toEqual(1);
+	utils.spyFailures(spyOn);
+	testText("\\rules only prettylink\n[[from here]]",
+			 false, ['[[from here]]'], {to: "to]] there"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+
+	utils.failures.calls.reset();
+	testText("\\rules except html\n[[from here]]",
+			 false, ['[[from here]]'], {to: "to]] there"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it("tricky report situations", function() {

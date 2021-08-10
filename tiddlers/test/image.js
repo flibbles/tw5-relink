@@ -52,13 +52,13 @@ it("image respects \\rules", function() {
 
 	testText("\\rules except image\n[img[from here]]", false, undefined);
 	testText("\\rules only html macrodef\n[img[from here]]", false, undefined);
+	utils.spyFailures(spyOn);
 
 	function testFails(text, to, options) {
 		options = Object.assign({to: to}, options);
-		var fails = utils.collectFailures(function() {
-			testText(text, false, ['[img[]]'], options);
-		});
-		expect(fails.length).toEqual(1);
+		utils.failures.calls.reset();
+		testText(text, false, ['[img[]]'], options);
+		expect(utils.failures).toHaveBeenCalledTimes(1);
 	};
 	testFails("\\rules except html\n[img[from here]]", "to]there");
 	testFails("\\rules only image macrodef\n[img[from here]]", "to]there");
@@ -70,18 +70,17 @@ it("indirect attributes", function() {
 	testText("[img width  =  {{from here}} [s]]", true, ['[img width={{}}]']);
 	testText("[img width={{from here!!width}} [s]]", true, ['[img width={{!!width}}]']);
 	testText("[img width={{from here##width}} [s]]", true, ['[img width={{##width}}]']);
-	var fails = utils.collectFailures(function() {
-		testText("[img width={{from here}} [from here]]",
-		         "[img width={{from here}} [brack}]]",
-		         ['[img width={{}}]', '[img[]]'], {to: "brack}"});
-	});
-	expect(fails.length).toEqual(1);
-	fails = utils.collectFailures(function() {
-		testText("[img width={{from here}} [from here]]",
-		         "[img width={{from here}} [A!!B]]",
-		         ['[img width={{}}]', '[img[]]'], {to: "A!!B"});
-	});
-	expect(fails.length).toEqual(1);
+	utils.spyFailures(spyOn);
+	testText("[img width={{from here}} [from here]]",
+			 "[img width={{from here}} [brack}]]",
+			 ['[img width={{}}]', '[img[]]'], {to: "brack}"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+
+	utils.failures.calls.reset();
+	testText("[img width={{from here}} [from here]]",
+			 "[img width={{from here}} [A!!B]]",
+			 ['[img width={{}}]', '[img[]]'], {to: "A!!B"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it("filtered attributes", function() {
@@ -92,12 +91,11 @@ it("filtered attributes", function() {
 	testText("[img width={{{[tag[from here]]}}} [s]].",
 	         "\\define relink-1() A]B\n[img width={{{[tag<relink-1>]}}} [s]].",
 	         ['[img width={{{[tag[]]}}}]'], {to: "A]B", wiki: wiki});
-	var fails = utils.collectFailures(function() {
-		testText("[img width={{{[r{from here}]}}} [from here]]",
-		         "[img width={{{[r{from here}]}}} [A}}}B]]",
-                 ['[img width={{{[r{}]}}}]', '[img[]]'], {to:"A}}}B"});
-	});
-	expect(fails.length).toEqual(1);
+	utils.spyFailures(spyOn);
+	testText("[img width={{{[r{from here}]}}} [from here]]",
+			 "[img width={{{[r{from here}]}}} [A}}}B]]",
+			 ['[img width={{{[r{}]}}}]', '[img[]]'], {to:"A}}}B"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it("macro attributes", function() {
@@ -106,13 +104,12 @@ it("macro attributes", function() {
 	const macros = "\\define ten(tiddler) 10\n";
 
 	testText(macros+"[img width=<<ten 'from here'>> [s]]", true, ['[img width=<<ten tiddler>>]'], {wiki: wiki});
-	var fails = utils.collectFailures(function() {
-		testText(macros+"[img width=<<ten 'from here'>> [s]] [[from here]]",
-		         macros+"[img width=<<ten 'from here'>> [s]] [[A ']B\"]]",
-		         ['[img width=<<ten tiddler>>]', '[[from here]]'],
-		         {to: "A ']B\"", wiki: wiki});
-	});
-	expect(fails.length).toEqual(1);
+	utils.spyFailures(spyOn);
+	testText(macros+"[img width=<<ten 'from here'>> [s]] [[from here]]",
+			 macros+"[img width=<<ten 'from here'>> [s]] [[A ']B\"]]",
+			 ['[img width=<<ten tiddler>>]', '[[from here]]'],
+			 {to: "A ']B\"", wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it("whitespace surrounding values", function() {

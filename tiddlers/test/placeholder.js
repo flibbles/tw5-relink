@@ -111,11 +111,10 @@ it("failed relinking properly moves pointer head", function() {
 	// The placeholder list will fail to relink. But it could theoretically
 	// relink if [[from here]] is enterpreted as text. That's why the parse
 	// head must move past it.
-	const fails = utils.collectFailures(function() {
-		testText(macro("list-1", "content [[from here]]")+"Body",
-		         false, ['\\define relink-list-1()'], {to: "A ]] B"});
-	});
-	expect(fails.length).toBe(1);
+	utils.spyFailures(spyOn);
+	testText(macro("list-1", "content [[from here]]")+"Body",
+			 false, ['\\define relink-list-1()'], {to: "A ]] B"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it("unfound relinking properly moves pointer head", function() {

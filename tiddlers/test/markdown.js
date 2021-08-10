@@ -234,11 +234,12 @@ it("changing captions", function() {
 
 it("impossible caption changes", function() {
 	function testFails() {
-		var args = arguments;
-		var failures = utils.collectFailures(() => test.apply(this, args));
-		expect(failures.length).toBe(1);
+		utils.failures.calls.reset();
+		test.apply(this, arguments);
+		expect(utils.failures).toHaveBeenCalledTimes(1);
 	};
 	var to = "t}}x";
+	utils.spyFailures(spyOn);
 	// Fails because inner wikitext can't change on its own
 	testFails("[<$link to={{from}}/>](#from)", "[<$link to={{from}}/>](#"+encodeURIComponent(to)+")", ['[<$link to={{}} />](#from)', '[<$link to={{fro...](#)'], {from: "from", to: to});
 	testFails("[<$link to='from' tag={{from}} />](#else)", "[<$link to='"+to+"' tag={{from}} />](#else)", ['[<$link to />](#else)', '[<$link tag={{}} />](#else)'], {from: "from", to: to});
@@ -527,11 +528,10 @@ it("won't make placeholders with default markdown settings", function() {
 		utils.attrConf('$link', 'to'),
 		{title: 'test', type: 'text/x-markdown',
 		 text: "<$link to='from here' />[C](#from%20here)"}]);
-	var failures = utils.collectFailures(function() {
-		wiki.renameTiddler('from here', "to 'there\"");
-	});
+	utils.spyFailures(spyOn);
+	wiki.renameTiddler('from here', "to 'there\"");
 	expect(utils.getText('test', wiki)).toBe("<$link to='from here' />[C](#to%20'there%22)");
-	expect(failures.length).toBe(1);
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 });
