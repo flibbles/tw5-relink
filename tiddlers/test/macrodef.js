@@ -16,14 +16,15 @@ describe("macrodef", function() {
 
 beforeEach(function() {
 	spyOn(console, 'log');
+	utils.spyFailures(spyOn);
 });
 
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
-	var failCount = options.fails || 0;
+	utils.failures.calls.reset();
 	var results = utils.relink({text: text}, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
-	expect(results.fails.length).toEqual(failCount, "Incorrect number of failures");
+	expect(utils.failures).toHaveBeenCalledTimes(options.fails || 0);
 	return results;
 };
 

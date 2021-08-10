@@ -98,9 +98,10 @@ it("handles relinking errors with at least some grace", function() {
 });
 
 it("doesn't relink if from and to are the same", function() {
-	var results = utils.relink({text: "[[from here]]"}, {to: "from here"});
+	utils.spyFailures(spyOn);
+	utils.relink({text: "[[from here]]"}, {to: "from here"});
 	expect(console.log).not.toHaveBeenCalled();
-	expect(results.fails.length).toEqual(0);
+	expect(utils.failures).not.toHaveBeenCalled();
 });
 
 it("supports IE11", function() {
@@ -136,15 +137,12 @@ it('can filter for all impossible tiddlers', function() {
 		while (widget.children.length > 0) {
 			widget = widget.children[0];
 		}
-		var warn = utils.collect("warn", function() {
-			var log = utils.collect("log", function() {
-				result = wiki.filterTiddlers(filter, widget);
-			});
-			expect(log).toEqual([]);
-		});
-		expect(warn).toEqual([]);
+		result = wiki.filterTiddlers(filter, widget);
+		expect(console.log).not.toHaveBeenCalled();
+		expect(console.warn).not.toHaveBeenCalled();
 		expect(result).toEqual(expected);
 	};
+	spyOn(console, 'warn');
 	test("[relink:impossible[to}this]]", ["A"]);
 	test("[[from]relink:backreferences[]]", ["A", "C"]);
 	test("[relink:nonexistent[]]", ["This text is pulled"]);

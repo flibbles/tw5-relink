@@ -11,9 +11,10 @@ var utils = require("test/utils");
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var fields = Object.assign({text: text}, options.fields);
+	utils.failures.calls.reset();
 	var results = utils.relink(fields, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
-	expect(results.fails.length).toEqual(options.fails || 0);
+	expect(utils.failures).toHaveBeenCalledTimes(options.fails || 0);
 	return results;
 };
 
@@ -21,6 +22,7 @@ describe("inlinedef", function() {
 
 beforeEach(function() {
 	spyOn(console, 'log');
+	utils.spyFailures(spyOn);
 });
 
 it('linedef macros', function() {

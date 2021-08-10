@@ -85,31 +85,6 @@ exports.prepArgs = function(input, expected, options) {
 	return [input, expected, options];
 };
 
-/**Runs the given scope while swallowing any console messages of a given type.
- * param output: "log", "warn", "error", ...
- * Options:
- *   debug: if true, then this function doesn't divert messages.
- *          Useful to see output.
- * returns: Array of the emitted log messages.
- */
-exports.collect = function(output, scope) {
-	var messages = [];
-	function pusher(message) { messages.push(message); };
-	this.monkeyPatch(console, output, pusher, function() {
-		scope.call();
-	});
-	return messages;
-};
-
-exports.collectFailures = function(scope) {
-	var failures = [];
-	function newReport(list) { failures.push.apply(failures, list); };
-	this.monkeyPatch(language, "reportFailures", newReport, function() {
-		scope.call();
-	});
-	return failures;
-};
-
 exports.spyFailures = function(spyOn) {
 	return spyOn(language, 'reportFailures');
 };

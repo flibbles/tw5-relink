@@ -16,10 +16,11 @@ function testText(text, expected, options) {
 		{title: "testMacro", tags: "$:/tags/Macro",
 		 text: "\\define test(A, Btitle, Clist, Dref, Ewiki) stuff\n"}
 	]);
+	utils.failures.calls.reset();
 	var fields = Object.assign({text: text}, options.fields);
 	var results = utils.relink(fields, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
-	expect(results.fails.length).toEqual(options.fails || 0);
+	expect(utils.failures).toHaveBeenCalledTimes(options.fails || 0);
 	return results;
 };
 
@@ -35,6 +36,7 @@ describe("macro", function() {
 
 beforeEach(function() {
 	spyOn(console, 'log');
+	utils.spyFailures(spyOn);
 });
 
 it('argument orders', function() {

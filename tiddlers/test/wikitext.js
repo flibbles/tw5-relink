@@ -10,9 +10,10 @@ var wikitextUtils = require('$:/plugins/flibbles/relink/js/relinkoperations/text
 function testText(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var failCount = options.fails || 0;
+	utils.failures.calls.reset();
 	var results = utils.relink({text: text}, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
-	expect(results.fails.length).toEqual(failCount, "Incorrect number of failures");
+	expect(utils.failures).toHaveBeenCalledTimes(failCount);
 	return results;
 };
 
@@ -27,6 +28,7 @@ describe("wikitext", function() {
 
 beforeEach(function() {
 	spyOn(console, 'log');
+	utils.spyFailures(spyOn);
 });
 
 it('allows all other unmanaged wikitext rules', function() {
@@ -69,7 +71,7 @@ it('continues on after impossible relink', function() {
 	// the failure.
 	var text = "{{from here}}";
 	var results = utils.relink({text: text, list: "[[from here]]"}, {to: "to ]] here"});
-	expect(results.fails.length).toEqual(1);
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 	expect(results.tiddler.fields.text).toEqual("{{to ]] here}}");
 	expect(results.tiddler.fields.list).toEqual(["from here"]);
 });
@@ -117,9 +119,10 @@ it('field', function() {
 		var expected;
 		[text, expected, options] = utils.prepArgs(text, options);
 		options.wiki.addTiddler(utils.fieldConf("field", "wikitext"));
+		utils.failures.calls.reset();
 		var results = utils.relink({field: text}, options);
 		expect(results.tiddler.fields.field).toEqual(expected);
-		expect(results.fails.length).toEqual(0, "Failure detected");
+		expect(utils.failures).not.toHaveBeenCalled();
 	};
 	test("This text has nothing to replace");
 	test("A [[from here]] link");
@@ -141,12 +144,13 @@ it('field', function() {
 it('field failures without placeholdering', function() {
 	function fails(text, expected, options) {
 		[text, expected, options] = utils.prepArgs(text, expected, options);
+		utils.failures.calls.reset();
 		options.wiki.addTiddler(utils.fieldConf("field", "wikitext"));
 		var results = utils.relink({field: text}, options);
 		// TAKE NOTE: DEFAULT IS 1 FAILURE
 		var fails = (options.fails === undefined)? 1 : options.fails;
 		expect(results.tiddler.fields.field).toEqual(expected);
-		expect(results.fails.length).toEqual(fails, "Failure detected");
+		expect(utils.failures).toHaveBeenCalledTimes(fails);
 	};
 	// html
 	fails("A <$link to='from here' /> link", {ignored: true, to: "]] '\""});
