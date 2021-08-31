@@ -1,3 +1,5 @@
 created: 20210831152902863
 
-It seems //Relink// had a blindspot for tables. Any relinkable content inside a table was completely ignored. This release adds the wikitext parser rule necessary to fix that.
+It seems //Relink// had a blindspot for tables. Any relinkable content inside a table was completely ignored. Fixed.
+
+* Added wikitext rule to support for tables.
