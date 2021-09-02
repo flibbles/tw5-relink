@@ -12,10 +12,14 @@ exports.getString = function(title, options) {
 
 var logger;
 
-exports.reportFailures = function(failureList, options) {
+exports.warn = function(string, options) {
 	if (!logger) {
 		logger = new $tw.utils.Logger("Relinker");
 	}
+	logger.alert(string);
+};
+
+exports.reportFailures = function(failureList, options) {
 	var alertString = this.getString("Error/ReportFailedRelinks", options)
 	var alreadyReported = Object.create(null);
 	var reportList = [];
@@ -31,5 +35,5 @@ exports.reportFailures = function(failureList, options) {
 			alreadyReported[f] = true;
 		}
 	});
-	logger.alert(alertString + "\n" + reportList.join(""));
+	this.warn(alertString + "\n" + reportList.join(""));
 };

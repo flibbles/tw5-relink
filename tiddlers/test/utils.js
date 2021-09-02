@@ -93,6 +93,14 @@ Object.defineProperty(exports, 'failures', {
 	get: function() { return language.reportFailures; }
 });
 
+exports.spyWarnings = function(spyOn) {
+	return spyOn(language, 'warn');
+};
+
+Object.defineProperty(exports, 'warnings', {
+	get: function() { return language.warn; }
+});
+
 /** This allows some method to be swapped out with a mock method for the
  *  purpose of testing a block. Afterward, it replaces the old method.
  */
