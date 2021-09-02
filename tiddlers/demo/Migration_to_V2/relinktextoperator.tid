@@ -2,6 +2,8 @@ caption: relinktextoperator module
 tags: [[Migration to V2]]
 title: Migration to V2/relinktextoperator
 
+Change the module-type from `relinktextoperator` to `relinktext`.
+
 The old signature used to be this:
 
 ```javascript
@@ -15,11 +17,13 @@ It is now:
 ```javascript
 exports.type = "[[tiddler MIME type]]";
 
-exports.relink = function(tiddler, fromTitle, toTitle, options) {
-	// same code for relinking as before
+exports.relink = function(text, fromTitle, toTitle, options) {
+	// same code for relinking as before,
+	// except it takes the tiddler's text as an argument
+	// instead of the tiddler itself.
 };
 
-exports.report = function(tiddler, callback, options) {
+exports.report = function(text, callback, options) {
 	// calls `callback(title, blurb)` for each reference to any other
 	// tiddler inside of `tiddler`. Blurb is an optional  SHORT string
 	// to describe what kind of reference it is.
@@ -27,6 +31,8 @@ exports.report = function(tiddler, callback, options) {
 ```
 
 The old signature will still successfully relink in Relink V2 (although it won't report in the [[TiddlerInfo Tab]]. If you want your module to still be compatible with Relink V1, include the following at the end:
+
+''Note:'' In Relink V2.1, the `relinktextoperator` module-type was deprecated in favor of `relinktext`, which is functionally the same, except the relink and report methods switched from taking 'tiddler' as the first argument to 'text'.
 
 ```javascript
 exports.[[Tiddler MIME type]] = exports.relink;

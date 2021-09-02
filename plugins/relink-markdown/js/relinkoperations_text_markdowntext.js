@@ -1,5 +1,5 @@
 /*\
-module-type: relinktextoperator
+module-type: relinktext
 title: $:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext.js
 type: application/javascript
 
@@ -17,17 +17,15 @@ var markdownHandler = require('$:/plugins/flibbles/relink/js/utils.js').getType(
 
 exports.type = "text/x-markdown";
 
-exports.report = function(tiddler, callback, options) {
-	markdownHandler.report(tiddler.fields.text, callback, options);
-};
+exports.report = markdownHandler.report;
 
-exports.relink = function(tiddler, fromTitle, toTitle, options) {
+exports.relink = function(text, fromTitle, toTitle, options) {
 	var placeholder = new Placeholder();
 	var extraOptions = $tw.utils.extend(
 		{
 			placeholder: placeholder
 		}, options);
-	var entry = markdownHandler.relink(tiddler.fields.text, fromTitle, toTitle, extraOptions);
+	var entry = markdownHandler.relink(text, fromTitle, toTitle, extraOptions);
 	if (entry && entry.output) {
 		// If there's output, we've also got to prepend any macros
 		// that the placeholder defined.

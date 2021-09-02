@@ -55,7 +55,7 @@
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,
 			"fields": {
-				"module-type": "relinktextoperator",
+				"module-type": "relinktext",
 				"title": {
 					"source": "filename",
 					"prefix": "$:/plugins/flibbles/relink/js/relinkoperations/text/"

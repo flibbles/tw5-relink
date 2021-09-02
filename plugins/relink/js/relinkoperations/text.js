@@ -14,7 +14,10 @@ var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 
 exports.name = 'text';
 
-var textOperators = utils.getModulesByTypeAsHashmap('relinktextoperator', 'type');
+var textOperators = utils.getModulesByTypeAsHashmap('relinktext', 'type');
+
+// These are deprecated. Don't use them.
+var oldTextOperators = utils.getModulesByTypeAsHashmap('relinktextoperator', 'type');
 
 // $:/DefaultTiddlers is a tiddler which has type "text/vnd.tiddlywiki",
 // but it lies. It doesn't contain wikitext. It contains a filter, so
@@ -29,7 +32,10 @@ exports.report = function(tiddler, callback, options) {
 	if (fields.text) {
 		var type = exceptions[fields.title] || fields.type || defaultOperator;
 		if (textOperators[type]) {
-			var entry = textOperators[type].report(tiddler, callback, options);
+			textOperators[type].report(tiddler.fields.text, callback, options);
+		} else if (oldTextOperators[type]) {
+			// For the deprecated text operators
+			oldTextOperators[type].report(tiddler, callback, options);
 		}
 	}
 };
@@ -37,12 +43,16 @@ exports.report = function(tiddler, callback, options) {
 exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 	var fields = tiddler.fields;
 	if (fields.text) {
-		var type = exceptions[fields.title] || fields.type || defaultOperator;
+		var type = exceptions[fields.title] || fields.type || defaultOperator,
+			entry;
 		if (textOperators[type]) {
-			var entry = textOperators[type].relink(tiddler, fromTitle, toTitle, options);
-			if (entry) {
-				changes.text = entry;
-			}
+			entry = textOperators[type].relink(tiddler.fields.text, fromTitle, toTitle, options);
+		} else if (oldTextOperators[type]) {
+			// For the deprecated text operators
+			entry = oldTextOperators[type].relink(tiddler, fromTitle, toTitle, options);
+		}
+		if (entry) {
+			changes.text = entry;
 		}
 	}
 };

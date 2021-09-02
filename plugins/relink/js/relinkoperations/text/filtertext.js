@@ -13,10 +13,5 @@ var filterHandler = require("$:/plugins/flibbles/relink/js/utils").getType('filt
 
 exports.type = 'text/x-tiddler-filter';
 
-exports.report = function(tiddler, callback, options) {
-	return filterHandler.report(tiddler.fields.text, callback, options);
-};
-
-exports.relink = function(tiddler, fromTitle, toTitle, options) {
-	return filterHandler.relink(tiddler.fields.text, fromTitle, toTitle, options)
-};
+exports.report = filterHandler.report;
+exports.relink = filterHandler.relink;
