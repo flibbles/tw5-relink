@@ -35,7 +35,7 @@ exports.parse = function() {
 	this.interpretSettings(function(macro, parameter, type) {
 		macroName = macro;
 		if (type && !utils.getType(type)) {
-			error = language.getString("Error/UnrecognizedType",
+			error = language.getString("text/plain", "Error/UnrecognizedType",
 				{variables: {type: type}, wiki: self.parser.wiki});
 		}
 		macroParams[parameter] = type;

@@ -5,9 +5,9 @@ This handles all logging and alerts Relink emits.
 
 \*/
 
-exports.getString = function(title, options) {
+exports.getString = function(outputType, title, options) {
 	title = "$:/plugins/flibbles/relink/language/" + title;
-	return options.wiki.renderTiddler("text/plain", title, options);
+	return options.wiki.renderTiddler(outputType, title, options);
 };
 
 var logger;
@@ -20,7 +20,7 @@ exports.warn = function(string, options) {
 };
 
 exports.reportFailures = function(failureList, options) {
-	var alertString = this.getString("Error/ReportFailedRelinks", options)
+	var alertString = this.getString("text/html", "Error/ReportFailedRelinks", options)
 	var alreadyReported = Object.create(null);
 	var reportList = [];
 	$tw.utils.each(failureList, function(f) {

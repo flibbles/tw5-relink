@@ -32,7 +32,7 @@ exports.relink = function(source,operator,options) {
 		newOperator.suffix = suffixPair[1];
 		return relinkFilterOperator(source, newOperator, options);
 	} else {
-		return [language.getString("Error/RelinkFilterOperator", options)];
+		return [language.getString("text/plain", "Error/RelinkFilterOperator", options)];
 	}
 };
 

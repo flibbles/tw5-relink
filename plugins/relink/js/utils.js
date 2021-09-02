@@ -21,6 +21,7 @@ exports.getModulesByTypeAsHashmap = function(moduleType, nameField) {
 				results[entry] = {
 					relink: module[entry],
 					report: function() {}};
+				results[entry][nameField] = entry;
 			}
 		}
 	});
