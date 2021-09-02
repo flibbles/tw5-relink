@@ -1,0 +1,5 @@
+
+
+* Implemented typedblock wikitext, which is (hopefully) the last blindspot Relink had.
+
+''Note:'' This update requires migration for anyone implementing the `relinktextoperator` module-type and who wishes to use typedblocks using that MIME-type. The method signature has changed. Instead of taking 'tiddler' as a first argument for "report" and "relink", it takes "text", where text is the text body of the tiddler. Then you must change the type of your module to `relinktext`. See the <<link-to-tab [[Migration to V2]] [[Migration to V2/relinktextoperator]] "page on migration">> for an example of the new method signatures.
