@@ -1,0 +1,4 @@
+created: 20211010233445978
+
+* Added `text/x-tiddler-list`, `text/x-tiddler-reference`, and `text/x-tiddler-title` types so that plugins can set types to their tiddlers with specialized content, and those tiddlers can be relinked appropriately.
+* Small change so relinkoperator modules are capable of deleting tiddler fields if they really want to. Just set {output: null}.
