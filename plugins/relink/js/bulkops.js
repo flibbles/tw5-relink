@@ -42,7 +42,7 @@ function relinkTiddler(fromTitle, toTitle, options) {
 		for (var field in entries) {
 			var entry = entries[field];
 			fails = fails || entry.impossible;
-			if (entry.output) {
+			if (entry.output !== undefined) {
 				changes[field] = entry.output;
 				update = true;
 			}

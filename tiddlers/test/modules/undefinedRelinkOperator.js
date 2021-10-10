@@ -16,6 +16,10 @@ exports.report = function(tiddler, callback, options) {
 	}
 };
 
+// Tests that relinkoperators are capable of deleting fields
 exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
-	// Only reports.
+	if (fromTitle === 'undefined' && tiddler && tiddler.fields['undefined']) {
+		changes[toTitle] = {output: tiddler.fields[fromTitle]};
+		changes[fromTitle] = {output: null};
+	}
 };
