@@ -22,6 +22,10 @@ will updated to:
 
 If //Tiddler B// is renamed to //New Tiddler//.
 
-''Note:'' Tiddlywiki v5.2.* allows for capitalized field names, thus so does //Relink//. However, capital letters in field names are illegal in Tiddlywiki v5.1.*, so if you are using an old version of TiddlyWiki, you must be careful not to include capital letters in the field names in //Relink//'s whitelist.
+''Note:'' Tiddlywiki v5.2.* allows for capitalized field names, thus so does //Relink//. However, capital letters in field names are illegal in Tiddlywiki v5.1.*, so if you are using an old version of Tiddlywiki, you must be careful not to include capital letters in the field names in //Relink//'s whitelist.
+
+! Text field
+
+The text field (the main body of a tiddler) should not be configured to a type, since its type is designated by a tiddler's `type` field. See [[Tiddler Type]] for more information on that.
 
 <<link-to-tab Demo Demo/Fields Demo>>

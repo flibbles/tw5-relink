@@ -1,0 +1,22 @@
+tags: Feature
+caption: Tiddler types besides //text/vnd.tiddlywiki//
+title: Tiddler Type
+
+By default, Relink treats the text body of most tiddlers as [[Wikitext]]. This includes all tiddlers that don't have a ''type'' field, or have a ''type'' field of `text/vnd.tiddlywiki`. However, different type fields will be relinked differently. For instance, //Relink// will ignore the text bodies of all `text/plain` tiddlers, because plain text doesn't have any links or references.
+
+If you have the [[supplemental Relink-Markdown plugin|Plugins/Markdown]], all `text/x-markdown` files will be relinked as markdown.
+
+! Custom types
+
+Sometimes tiddlers are used to store information instead of wikitext, particularly config tiddlers. They may store a filter, or a simple title, and it's important not only to still relink them, but to prevent them by being wrongfully relinked if they're interpretted as wikitext. For them, //Relink// defines four custom tiddler types:
+
+* text/x-tiddler-filter
+* text/x-tiddler-list
+* text/x-tiddler-reference
+* text/x-tiddler-title
+
+Tiddlers assigned one of these types will be relinked as a filter, list, reference, or a title respectively.
+
+!!! Exceptions
+
+''$:/DefaultTiddlers'' is a core tiddler which is an exception. It doesn't have a type since core Tiddlywiki doesn't integrate with //Relink//, but it's treated as a filter.
