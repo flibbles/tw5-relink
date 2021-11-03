@@ -2,8 +2,10 @@
 	"description": "Testing documentation, and demo framework for tw5-relink",
 	"plugins": [
 		"tiddlywiki/jasmine",
+		"tiddlywiki/highlight",
 		"tiddlywiki/pluginlibrary",
-		"tiddlywiki/markdown"
+		"tiddlywiki/markdown",
+		"flibbles/uglify"
 	],
 	"themes": [
 		"tiddlywiki/vanilla",
@@ -15,12 +17,13 @@
 		],
 		"test": [
 			"--output", "./docs/",
-			"--rendertiddler","$:/core/save/all","test.html","text/plain", "", "publishFilter", "-$:/plugins/tiddlywiki/pluginlibrary"
+			"--rendertiddler","$:/core/save/all","test.html","text/plain", "", "publishFilter", "-$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/tiddlywiki/highlight -$:/plugins/flibbles/uglify"
 		],
 		"demo": [
+			"--deletetiddlers", "$:/config/flibbles/uglify/compress",
 			"--setfield", "$:/plugins/flibbles/relink", "created", "Templates/release-date", "text/plain",
 			"--output", "./docs/",
-			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary -[prefix[$:/UpgradeLibrary]]"
+			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/flibbles/uglify -[prefix[$:/UpgradeLibrary]]"
 		],
 		"library": [
 			"--output", "./docs/library/",
