@@ -17,11 +17,22 @@
 		],
 		"test": [
 			"--output", "./docs/",
-			"--rendertiddler","$:/core/save/all","test.html","text/plain", "", "publishFilter", "-$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/tiddlywiki/highlight -$:/plugins/flibbles/uglify"
+			"--rendertiddler",
+				"$:/core/save/all",
+				"test.html",
+				"text/plain",
+				"",
+				"publishFilter",
+				"-$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/tiddlywiki/highlight -$:/plugins/flibbles/uglify"
 		],
 		"demo": [
-			"--deletetiddlers", "$:/config/flibbles/uglify/compress",
-			"--setfield", "$:/plugins/flibbles/relink", "created", "Templates/release-date", "text/plain",
+			"--deletetiddlers",
+				"$:/config/flibbles/uglify/compress",
+			"--setfield",
+				"$:/plugins/flibbles/relink",
+				"created",
+				"Templates/release-date",
+				"text/plain",
 			"--output", "./docs/",
 			"--rendertiddler",
 				"$:/core/save/all",
@@ -34,9 +45,18 @@
 		"library": [
 			"--output", "./docs/library/",
 			"--makelibrary","$:/UpgradeLibrary",
-			"--savelibrarytiddlers","$:/UpgradeLibrary","[prefix[$:/plugins/flibbles/relink]]","recipes/library/tiddlers/","$:/UpgradeLibrary/List",
-			"--savetiddler","$:/UpgradeLibrary/List","recipes/library/tiddlers.json",
-			"--rendertiddler","$:/plugins/tiddlywiki/pluginlibrary/library.template.html","index.html","text/plain"
+			"--savelibrarytiddlers",
+				"$:/UpgradeLibrary",
+				"[prefix[$:/plugins/flibbles/relink]]",
+				"recipes/library/tiddlers/",
+				"$:/UpgradeLibrary/List",
+			"--savetiddler",
+				"$:/UpgradeLibrary/List",
+				"recipes/library/tiddlers.json",
+			"--rendertiddler",
+				"$:/plugins/tiddlywiki/pluginlibrary/library.template.html",
+				"index.html",
+				"text/plain"
 		]
 	}
 }
