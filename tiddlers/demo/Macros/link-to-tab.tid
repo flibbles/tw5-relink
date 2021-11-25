@@ -1,6 +1,6 @@
 tags: $:/tags/Macro
 title: Macros/link-to-tab
-qualifiers: Demo 1577183281 Types 2094947537 Plugins -1909702749 Versions 1626946465 [[Migration to V2]] 1061141861
+qualifiers: Demo -1725644622 Types -1703315334 Plugins -1285577930 Versions 838063682 [[Migration to V2]] -680834286
 
 \relink link-to-tab tiddler tab caption:wikitext
 \define link-to-tab(tiddler, tab, caption)
@@ -15,12 +15,12 @@ $caption$
 \define link-to-config-tab(configTab, caption)
 <$button class="tc-btn-invisible tc-tiddlylink">
 <$action-setfield
-	$tiddler="$:/state/plugin-info--1512302538-$:/plugins/flibbles/relink--2093943750"
+	$tiddler="$:/state/plugin-info--1931129592-$:/plugins/flibbles/relink---1659944808"
 	text="configuration" />
 <$list filter="[<__configTab__>!match[]]">
 <$action-setfield
-	$tiddler="$:/state/tab--1862192285"
-	text={{{[[$:/plugins/flibbles/relink/ui/configuration/]addsuffix<__configTab__>]}}} />
+	$tiddler="$:/state/tab-1407883317"
+	text={{{[[$:/plugins/flibbles/relink/ui/configuration/]addsuffix<__configTab__>is[tiddler]else<__configTab__>]}}} />
 </$list>
 <$action-navigate $to="$:/plugins/flibbles/relink" />
 $caption$

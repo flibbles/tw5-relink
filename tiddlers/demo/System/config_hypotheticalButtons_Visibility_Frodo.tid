@@ -1,0 +1,11 @@
+title: $:/config/HypotheticalButtons/Visibility/Frodo
+
+```
+show
+```
+
+<<<
+This is a hypothetical settings tiddler for Frodo, kinda like the settings tiddlers for button visibility in Tiddlywiki.
+
+This settings tiddler will rename along with Frodo because of the <<link-to-config-tab $:/plugins/flibbles/relink-titles/configuration "Relink-titles lookup rule">>. See the <<link-to-tab Plugins Plugins/Titles "Relink-titles documentation">> for more information.
+<<<
