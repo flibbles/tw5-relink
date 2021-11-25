@@ -5,7 +5,7 @@ title: Plugins/Titles
 
 The //Relink// supplemental child-plugin, //Relink-titles//, allows for other tiddlers to have their titles renamed when specific target tiddlers are relinked. Usually, these other tiddlers will relate to the target tiddler in some way.
 
-There are a number of preset rules you can use (...//*cough*// one). Or you can write a custom rename rule for your project. //Or// third party plugins can introduce their own preset rules.
+There are two preset rules you can use. Or you can write a custom rename rule for your plugin or project.
 
 !!! Preset Rules
 

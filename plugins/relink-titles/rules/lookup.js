@@ -1,6 +1,6 @@
 /*\
-caption: Lookup tiddlers
-description: {{$:/plugins/flibbles/relink-titles/rules/lookup/description}}
+caption: {{$:/plugins/flibbles/relink-titles/language/Lookup/Caption}}
+description: {{$:/plugins/flibbles/relink-titles/language/Lookup/Description}}
 module-type: relinktitlesrule
 title: $:/plugins/flibbles/relink-titles/rules/lookup
 type: application/javascript

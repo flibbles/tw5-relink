@@ -1,4 +1,4 @@
-title: $:/plugins/flibbles/relink-titles/rules/lookup/description
+title: $:/plugins/flibbles/relink-titles/language/Lookup/Description
 
 This options updates all configuration tiddlers which relate to target tiddlers either through fixed prefixes or suffixes, i.e. `$:/config/Buttons/Visibility/fromFile` becomes `$:/config/Buttons/Visibility/toFile` when "fromFile" is renamed.
 

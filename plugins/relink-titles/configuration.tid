@@ -5,6 +5,8 @@ title: $:/plugins/flibbles/relink-titles/configuration
 \define lingo-base() $:/plugins/flibbles/relink-titles/language/
 \define prefix() $:/config/flibbles/relink-titles/relink/
 
+<div class="tc-control-panel">
+
 <<lingo Help>>
 
 <table>
@@ -23,4 +25,4 @@ title: $:/plugins/flibbles/relink-titles/configuration
 <$transclude field='description' />
 
 </td></tr></$list>
-</tbody></table>
+</tbody></table></div>

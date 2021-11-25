@@ -1,0 +1,13 @@
+caption: {{$:/plugins/flibbles/relink-titles/language/Lookup/Caption}}
+tags: TitlesPreset
+title: Plugins/Titles/lookup
+
+This //Titles// setting allows you to update configuration tiddlers associated with the tiddler being renamed. For instance, if you have `History/myTiddler` which contains the history for `myTiddler`, you'd want that history tiddler to update accordingly. You can use the lookup pattern `History/$(currentTiddler)$` to manage that.
+
+Let's say you have many history tiddlers representing different version, like `History/2020-05-05/myTiddler`. You can use a wildcard in your pattern, like `History/$(*)$/$(currentTiddler)$`.
+
+The patterns are highly flexible. `$(currentTiddler)$` can appear anywhere in the pattern, so can as many wildcards (`$(*)$`) as you want. By default, there is a pattern already configured which concerns the visibility of Tiddlywiki buttons:
+
+<$codeblock code={{$:/config/flibbles/relink-titles/lookup/patterns}} />
+
+Since all Tiddlywiki buttons are shadow tiddlers which will never rename, you can safely remove it and put in your own patterns. It's there primarily as an example.
