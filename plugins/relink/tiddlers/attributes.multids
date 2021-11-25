@@ -1,13 +1,19 @@
 title: $:/config/flibbles/relink/attributes/
 
+$button/actions: wikitext
 $button/set: reference
 $button/setTo: title
 $button/to: title
+$checkbox/actions: wikitext
+$checkbox/checkactions: wikitext
 $checkbox/tiddler: title
 $checkbox/tag: title
+$checkbox/uncheckactions: wikitext
 $count/filter: filter
 $draggable/tiddler: title
 $draggable/filter: filter
+$droppable/actions: wikitext
+$dropzone/actions: wikitext
 $edit-bitmap/tiddler: title
 $edit-text/tiddler: title
 $edit/tiddler: title
@@ -16,20 +22,29 @@ $fieldmangler/tiddler: title
 $fields/tiddler: title
 $image/source: title
 $importvariables/filter: filter
+$keyboard/actions: wikitext
 $linkcatcher/to: title
 $linkcatcher/set: title
 $link/to: title
+$link/tooltip: wikitext
+$linkcatcher/actions: wikitext
 $list/filter: filter
 $list/template: title
 $list/editTemplate: title
 $list/emptyMessage: wikitext
 $list/history: title
+$messagecatcher/actions: wikitext
 $navigator/story: title
 $navigator/history: title
+$radio/actions: wikitext
 $radio/tiddler: title
+$range/actions: wikitext
+$range/actionsStart: wikitext
+$range/actionsStop: wikitext
 $range/tiddler: title
-#  $reveal/state: title
+$reveal/state: reference
 $reveal/stateTitle: title
+$select/actions: wikitext
 $select/tiddler: title
 $setvariable/tiddler: title
 $setvariable/subtiddler: title
@@ -42,3 +57,4 @@ $transclude/tiddler: title
 $transclude/subtiddler: title
 $view/tiddler: title
 $view/subtiddler: title
+$wikify/text: wikitext
