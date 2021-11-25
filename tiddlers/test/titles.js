@@ -44,6 +44,8 @@ beforeEach(function() {
 	spyOn(console, 'log');
 });
 
+describe('directories', function() {
+
 it("works at all", function() {
 	test('from here/subdir', 'to there/subdir', ['title: ./subdir']);
 });
@@ -176,6 +178,96 @@ it("handles indexer and rule settings changes", function() {
 	// And then it can be reenabled
 	wiki.addTiddler(dirDisabler('enabled'));
 	expect(utils.getReport('dir/file', wiki)).toEqual({dir: ['title: ./file']})
+});
+
+});
+
+describe('lookup', function() {
+
+function patterns(string) {
+	return {title: "$:/config/flibbles/relink-titles/lookup/patterns", text: string};
+};
+
+it('handles multiple patterns', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		patterns("A-$(currentTiddler)$\nB-$(currentTiddler)$-C"),
+		{title: "A-from", text: "anything"},
+		{title: "B-from-C", text: "anything"},
+		{title: "from"}]);
+	expect(utils.getReport('A-from', wiki)).toEqual({from: ['title: A-...']});
+	expect(utils.getReport('B-from-C', wiki)).toEqual({from: ['title: B-...-C']});
+	wiki.renameTiddler('from', 'to');
+	expect(wiki.tiddlerExists('A-from')).toBe(false);
+	expect(wiki.tiddlerExists('B-from-C')).toBe(false);
+	expect(wiki.tiddlerExists('A-to')).toBe(true);
+	expect(wiki.tiddlerExists('B-to-C')).toBe(true);
+});
+
+it('handles escape characters', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		patterns("$:/[prefix]/$(currentTiddler)$"),
+		dirDisabler(),
+		{title: "$:/[prefix]/from", text: "anything"},
+		{title: "aaa"},
+		{title: "from"},
+		{title: "zzz"}]);
+	expect(utils.getReport('$:/[prefix]/from', wiki)).toEqual({from: ['title: $:/[prefix]/...']});
+	wiki.renameTiddler('from', 'to');
+	expect(wiki.tiddlerExists('$:/[prefix]/from')).toBe(false);
+	expect(wiki.tiddlerExists('$:/[prefix]/to')).toBe(true);
+	expect(console.log).toHaveBeenCalledTimes(1);
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from' to 'to' in '$:/[prefix]/from'");
+});
+
+it('handles patterns with multiple placeholders', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		patterns("A-$(currentTiddler)$-B-$(currentTiddler)$-C"),
+		{title: "A-from-B-from-C", text: "anything"},
+		{title: "from"}]);
+	expect(utils.getReport('A-from-B-from-C', wiki)).toEqual({from: ['title: A-...-B-...-C']});
+	wiki.renameTiddler('from', 'to');
+	expect(wiki.tiddlerExists('A-from-B-from-C')).toBe(false);
+	expect(wiki.tiddlerExists('A-to-B-to-C')).toBe(true);
+	expect(console.log).toHaveBeenCalledTimes(1);
+});
+
+it('handles empty pattern list', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		patterns(""),
+		{title: "from", text: "anything"}]);
+	expect(utils.getReport('from', wiki)).toEqual({});
+	wiki.renameTiddler('from', 'to');
+	expect(wiki.tiddlerExists('from')).toBe(false);
+	expect(wiki.tiddlerExists('to')).toBe(true);
+	expect(console.log).toHaveBeenCalledTimes(0);
+});
+
+it('trims whitespace out of patterns', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		patterns("  prefix-$(currentTiddler)$   "),
+		{title: "prefix-from", text: "anything"},
+		{title: "from"}]);
+	expect(utils.getReport('prefix-from', wiki)).toEqual({from: ['title: prefix-...']});
+	wiki.renameTiddler('from', 'to');
+	expect(wiki.tiddlerExists('prefix-from')).toBe(false);
+	expect(wiki.tiddlerExists('prefix-to')).toBe(true);
+	expect(console.log).toHaveBeenCalledTimes(1);
+});
+
+it('ignores patterns without the placeholder', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		patterns("prefix"),
+		{title: "prefix", text: "anything"},
+		{title: "from"}]);
+	expect(utils.getReport('prefix', wiki)).toEqual({});
+});
+
 });
 
 });
