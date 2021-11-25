@@ -349,6 +349,20 @@ it('matches multiple wildcards', function() {
 	expect(wiki.tiddlerExists('cats-from-from-dogs')).toBe(false);
 });
 
+it('does not conflict with directory rule', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		patterns("$(currentTiddler)$/data"),
+		{title: "from/data", text: "anything"},
+		{title: "from"}]);
+	expect(utils.getReport('from/data', wiki)).toEqual({from: ['title: ./data', 'title: .../data']});
+	wiki.renameTiddler('from', 'to');
+	expect(wiki.tiddlerExists('from/data')).toBe(false);
+	expect(wiki.tiddlerExists('to/data')).toBe(true);
+	expect(wiki.getTiddlerText('to/data')).toBe('anything');
+	expect(console.log).toHaveBeenCalledTimes(1);
+});
+
 });
 
 });
