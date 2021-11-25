@@ -2,8 +2,11 @@ title: $:/plugins/flibbles/relink/ui/components/button-delete
 
 \define lingo-base() $:/plugins/flibbles/relink/language/Buttons/
 \define prefix() $:/config/flibbles/relink/
+\whitespace trim
 
-<$list filter="[all[current]prefix<prefix>]" >
+<$list
+	filter="[all[current]prefix<prefix>]"
+	emptyMessage="<$link><$button class='tc-btn-invisible' tooltip={{$:/plugins/flibbles/relink/language/Buttons/LinkToInline/Hint}}>{{$:/core/images/link}}</$button></$link>">
 <$button class="tc-btn-invisible" tooltip={{$:/plugins/flibbles/relink/language/Buttons/Delete/Hint}}><$list filter="[all[current]is[tiddler]]">
 <$action-deletetiddler $tiddler=<<currentTiddler>> />
 </$list><$list filter="[all[current]is[shadow]]">
@@ -11,6 +14,4 @@ title: $:/plugins/flibbles/relink/ui/components/button-delete
 </$list>
 {{$:/core/images/delete-button}}
 </$button>
-</$list><$list filter="[all[current]!prefix<prefix>]">
-<$link><$button class="tc-btn-invisible" tooltip={{$:/plugins/flibbles/relink/language/Buttons/LinkToInline/Hint}}>{{$:/core/images/link}}</$button></$link>
 </$list>

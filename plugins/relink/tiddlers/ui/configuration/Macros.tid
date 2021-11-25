@@ -9,29 +9,33 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
 \define parameter-name-tiddler() $:/state/flibbles/relink/parameter-name
 
 \define row()
+\whitespace trim
 <$set name="parameter"
-      filter="[<key>relink:splitafter[/]]">
-<$set name="macro"
-      filter="[<key>removesuffix<parameter>removesuffix[/]]">
+      value={{{[<key>relink:splitafter[/]]}}}>
+<$set name='macro'
+      value={{{[<key>removesuffix<parameter>removesuffix[/]]}}}>
 <td><$text text=<<macro>> /></td>
 <td><$text text=<<parameter>> /></td>
 </$set></$set>
 \end
-\define body()
 
-{{$:/plugins/flibbles/relink/language/Help/Macros}}
+\define body()
+\whitespace trim
 
 <em class="tc-edit">Add a new macro parameter:</em>
+&#32;
 <$edit-text
 	tiddler=<<macro-name-tiddler>>
 	tag="input"
 	default=""
 	placeholder="macro" />
+&#32;
 <$edit-text
 	tiddler=<<parameter-name-tiddler>>
 	tag="input"
 	default=""
 	placeholder="parameter" />
+&#32;
 <$reveal type="nomatch" text="" state=<<macro-name-tiddler>> >
 <$reveal type="nomatch" text="" state=<<parameter-name-tiddler>> >
 <$relinkmangler>
@@ -59,13 +63,13 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
 <$text text={{$(lingo-base)$NewParameter/Caption}}/>
 </$button>
 </$reveal>
-
-
 <$macrocall
 	$name=tables
 	category="macros"
 	header-list="Macro Parameter Type"
 	list-row-macro="row" />
 \end
+
+{{$:/plugins/flibbles/relink/language/Help/Macros}}
 
 <<body>>

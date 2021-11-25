@@ -1,5 +1,6 @@
 title: $:/plugins/flibbles/relink/ui/ListItemTemplate
 
+\whitespace trim
 <$set
 	name="classes"
 	filter="[<listItem>relink:impossible<toTitle>]"

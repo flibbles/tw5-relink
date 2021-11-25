@@ -9,16 +9,18 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 \define row()
 <td><$text text=<<key>> /></td>
 \end
+
 \define body()
+\whitespace trim
 
-{{$:/plugins/flibbles/relink/language/Help/Operators}}
-
-<em class="tc-edit">Add a new filter operator:</em>
+<em class='tc-edit'>Add a new filter operator:</em>
+&#32;
 <$edit-text
 	tiddler=<<operator-name-tiddler>>
 	tag="input"
 	default=""
 	placeholder="operator name" />
+&#32;
 <$reveal type="nomatch" text="" state=<<operator-name-tiddler>>>
 <$relinkmangler>
 <$button
@@ -37,12 +39,13 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 <$text text={{$(lingo-base)$NewOperator/Caption}}/>
 </$button>
 </$reveal>
-
 <$macrocall
 	$name=tables
 	category="operators"
 	header-list="[[Filter Operator]] [[Operand Type]]"
 	list-row-macro="row" />
 \end
+
+{{$:/plugins/flibbles/relink/language/Help/Operators}}
 
 <<body>>

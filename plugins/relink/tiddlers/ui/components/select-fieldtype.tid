@@ -1,6 +1,7 @@
 title: $:/plugins/flibbles/relink/ui/components/select-fieldtype
 
 \define prefix() $:/config/flibbles/relink/
+\whitespace trim
 
 <$vars type={{{ [<signature>relink:type[]] }}} >
 <$list filter="[all[current]prefix<prefix>]" >

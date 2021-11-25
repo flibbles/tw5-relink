@@ -1,6 +1,7 @@
 tags: $:/tags/EditTemplate
 title: $:/core/ui/EditTemplate/title
 
+\whitespace trim
 <$edit-text field="draft.title" class="tc-titlebar tc-edit-texteditor" focus="true" tabindex={{$:/config/EditTabIndex}}/>
 
 <$reveal state="!!draft.title" type="nomatch" text={{!!draft.of}} tag="div">
@@ -11,7 +12,7 @@ title: $:/core/ui/EditTemplate/title
 
 <div class="tc-message-box">
 
-{{$:/core/images/warning}} {{$:/language/EditTemplate/Title/BadCharacterWarning}}
+{{$:/core/images/warning}}&#32;{{$:/language/EditTemplate/Title/BadCharacterWarning}}
 
 </div>
 
@@ -23,7 +24,7 @@ title: $:/core/ui/EditTemplate/title
 
 <div class="tc-message-box">
 
-{{$:/core/images/warning}} {{$:/language/EditTemplate/Title/Exists/Prompt}}
+{{$:/core/images/warning}}&#32;{{$:/language/EditTemplate/Title/Exists/Prompt}}
 
 </div>
 
@@ -33,7 +34,7 @@ title: $:/core/ui/EditTemplate/title
 
 <$vars fromTitle={{!!draft.of}} toTitle={{!!draft.title}}>
 
-<$checkbox tiddler="$:/config/RelinkOnRename" field="text" checked="yes" unchecked="no" default="no"> {{$:/language/EditTemplate/Title/Relink/Prompt}}</$checkbox>
+<$checkbox tiddler="$:/config/RelinkOnRename" field="text" checked="yes" unchecked="no" default="no">&#32;{{$:/language/EditTemplate/Title/Relink/Prompt}}</$checkbox>
 
 <$tiddler tiddler=<<fromTitle>> >
 
@@ -47,12 +48,16 @@ title: $:/core/ui/EditTemplate/title
 	value="EditTemplate/Title/Impossibles/Prompt"
 	emptyValue="EditTemplate/Title/References/Prompt" >
 <$reveal type="nomatch" state=<<stateTiddler>> text="show">
-<$button set=<<stateTiddler>> setTo="show" class="tc-btn-invisible">{{$:/core/images/right-arrow}}
+<$button set=<<stateTiddler>> setTo="show" class="tc-btn-invisible">
+{{$:/core/images/right-arrow}}
+&#32;
 <$macrocall $name=lingo title=<<prompt>> />
 </$button>
 </$reveal>
 <$reveal type="match" state=<<stateTiddler>> text="show">
-<$button set=<<stateTiddler>> setTo="hide" class="tc-btn-invisible">{{$:/core/images/down-arrow}}
+<$button set=<<stateTiddler>> setTo="hide" class="tc-btn-invisible">
+{{$:/core/images/down-arrow}}
+&#32;
 <$macrocall $name=lingo title=<<prompt>> />
 </$button>
 </$reveal>

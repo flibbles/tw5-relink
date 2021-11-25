@@ -9,16 +9,18 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 \define row()
 <td><$text text=<<key>> /></td>
 \end
+
 \define body()
+\whitespace trim
 
-{{$:/plugins/flibbles/relink/language/Help/Fields}}
-
-<em class="tc-edit">Add a new field:</em>
+<em class='tc-edit'>Add a new field:</em>
+&#32;
 <$edit-text
 	tiddler=<<field-name-tiddler>>
 	tag="input"
 	default=""
 	placeholder="field name" />
+&#32;
 <$reveal type="nomatch" text="" state=<<field-name-tiddler>> >
 <$relinkmangler>
 <$button
@@ -37,13 +39,13 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 <$text text={{$(lingo-base)$NewField/Caption}}/>
 </$button>
 </$reveal>
-
-
 <$macrocall
 	$name=tables
 	category="fields"
 	header-list="[[Field Name]] [[Field Type]]"
 	list-row-macro="row" />
 \end
+
+{{$:/plugins/flibbles/relink/language/Help/Fields}}
 
 <<body>>
