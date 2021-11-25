@@ -59,7 +59,7 @@ exports.getRelinkResults = function(wiki, fromTitle, toTitle, context, tiddlerLi
 	fromTitle = (fromTitle || "").trim();
 	toTitle = (toTitle || "").trim();
 	var changeList = Object.create(null);
-	if(fromTitle && toTitle) {
+	if(fromTitle && toTitle !== undefined) {
 		if (tiddlerList === undefined) {
 			tiddlerList = wiki.getRelinkableTitles();
 		}

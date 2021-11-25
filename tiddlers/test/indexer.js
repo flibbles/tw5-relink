@@ -413,6 +413,18 @@ it("won't ignore current draft changes if referenced by other", function() {
 	expect(utils.getText('A', wiki)).toBe('\\import [tag[tag]]\n<<macro to>>');
 });
 
+it("can test changes to empty string", function() {
+	// This case came up when someone cleared the draft's title, then
+	// typed something else it. wouldChange starts returning nothing.
+	const wiki = new $tw.Wiki()
+	wiki.addTiddlers([
+		{title: 'from', text: "anything"},
+		{title: 'A', text: 'links to [[from]]'}]);
+	expect(wouldChange(wiki, 'from', '')).toEqual(['A']);
+	// Now that the results are cached, what would it be now?
+	expect(wouldChange(wiki, 'from', '')).toEqual(['A']);
+});
+
 });
 
 });
