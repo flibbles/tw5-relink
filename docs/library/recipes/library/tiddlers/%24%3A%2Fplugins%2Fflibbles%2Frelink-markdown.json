@@ -1,4 +1,5 @@
-{"name":"Relink Markdown",
+{
+"name":"Relink Markdown",
 "title":"$:/plugins/flibbles/relink-markdown",
 "description":"Markdown support for Relink",
 "author":"Flibbles",

@@ -1,0 +1,5 @@
+created: 20211125192514840
+
+* Fixed bug where cleared draft title would prevent changed tiddlers notification from coming up.
+* Added rule to //Relink-titles// for lookup and config tiddlers with names derived from other tiddlers. Allows both prefix and suffixes, as well as wildcard matching.
+* Optimized //Relink// and all of its supplimental plugins for [ext[TW5-Uglify|https://flibbles.github.io/tw5-uglify/]] to get better compression.
