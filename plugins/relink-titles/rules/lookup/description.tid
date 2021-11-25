@@ -1,0 +1,10 @@
+title: $:/plugins/flibbles/relink-titles/rules/lookup/description
+
+This options updates all configuration tiddlers which relate to target tiddlers either through fixed prefixes or suffixes, i.e. `$:/config/Buttons/Visibility/fromFile` becomes `$:/config/Buttons/Visibility/toFile` when "fromFile" is renamed.
+
+Each line corresponds to a pattern, where `$(currentTiddler)$` would be the name of the tiddler being renamed, and `$(*)$` matches with anything.
+
+<$edit-text
+	tiddler="$:/config/flibbles/relink-titles/lookup/patterns"
+	tag="textarea"
+/>
