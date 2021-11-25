@@ -4,6 +4,7 @@ title: $:/plugins/flibbles/relink-titles/configuration
 
 \define lingo-base() $:/plugins/flibbles/relink-titles/language/
 \define prefix() $:/config/flibbles/relink-titles/relink/
+\whitespace trim
 
 <div class="tc-control-panel">
 
@@ -19,8 +20,10 @@ title: $:/plugins/flibbles/relink-titles/configuration
 	field="text"
 	checked="enabled"
 	unchecked="disabled"
-	default="enabled"
-> ''{{!!caption}}''</$checkbox></td><td>
+	default="enabled">
+&#32;
+''{{!!caption}}''
+</$checkbox></td><td>
 
 <$transclude field='description' />
 
