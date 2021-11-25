@@ -23,7 +23,13 @@
 			"--deletetiddlers", "$:/config/flibbles/uglify/compress",
 			"--setfield", "$:/plugins/flibbles/relink", "created", "Templates/release-date", "text/plain",
 			"--output", "./docs/",
-			"--rendertiddler","$:/core/save/all","index.html","text/plain", "", "publishFilter", "-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/flibbles/uglify -[prefix[$:/UpgradeLibrary]]"
+			"--rendertiddler",
+				"$:/core/save/all",
+				"index.html",
+				"text/plain",
+				"",
+				"publishFilter",
+				"-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/flibbles/uglify -$:/config/flibbles/uglify/blacklist -[prefix[$:/UpgradeLibrary]]"
 		],
 		"library": [
 			"--output", "./docs/library/",
