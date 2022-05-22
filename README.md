@@ -28,13 +28,15 @@ It will also have instructions for how to install any Relink supplemental plugin
 
 ### For Node.js
 
-First, check out the source code using git. Then the contents of the `plugins` directory must be copied into the `plugins` directory in your tiddlywiki installation. This is likely in:
+The following is an abridged version of the [instructions found here](https://tiddlywiki.com/#Installing%20custom%20plugins%20on%20Node.js).
 
-`/usr/local/lib/node_modules/tiddlywiki/plugins/flibbles`
+First, check out the source code using git. Then copy the contents of the `plugins` directory into a "flibbles" directory in a path where you'd like it to be available. Then add that path to the TIDDLYWIKI_PLUGIN_PATH environment variable.
 
-You will likely need to make the `flibbles` directory. If you've installed it correctly, the path to the `plugin.info` file should look something like:
+For instance, copy the contents of the plugin directory to "~/.tiddlywiki/flibbles" directory. Then run `echo "TIDDLYWIKI_PLUGIN_PATH=~/.tiddlywiki" >> .profile`
 
-`/usr/local/lib/node_modules/tiddlywiki/plugins/flibbles/relink/plugin.info`
+If you've installed it correctly, the path to the `plugin.info` file should look something like:
+
+`~/.tiddlywiki/flibbles/relink/plugin.info`
 
 Same goes for any supplimental plugins you want, like *relink-markdown*.
 
