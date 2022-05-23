@@ -393,7 +393,7 @@ it("report", function() {
 	test("<<test wiki: {{from##index}}>>", {from: ['<<test wiki: "{{##index}}">>']}, global);
 
 	// Multiples
-	test("<<test from filt:'[[from]]'>>", {from: ["<<test title>>", "<<test filt>>"]}, global);
+	test("<<test from filt:'[[from]]'>>", {from: ["<<test filt>>", "<<test title>>"]}, global);
 	test("<<test filt:'[list[from]tag[from]]'>>", {from: ['<<test filt: "[list[]]">>', '<<test filt: "[tag[]]">>']}, global);
 	test("<<test from>>\n<<test from>>", {from: ["<<test title>>", "<<test title>>"]}, global);
 
