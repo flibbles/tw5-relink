@@ -1,0 +1,5 @@
+created: 20220523154431401
+
+* Implemented block quotes. It was yet another wikitext syntax I'd completely overlooked.
+* Made //Relink// conform more effectively to the current palette.
+* Added hackability that allows you to control whether //Relink// updates modified fields as it relinks.

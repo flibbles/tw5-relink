@@ -4,7 +4,7 @@
         "title": "$:/plugins/flibbles/relink",
         "description": "Flexibility when relinking renamed tiddlers",
         "author": "Flibbles",
-        "version": "2.1.2",
+        "version": "2.1.3",
         "core-version": ">=5.1.22",
         "source": "https://github.com/flibbles/tw5-relink",
         "demo": "http://flibbles.github.io/tw5-relink/",
@@ -12,7 +12,7 @@
         "dependents": "",
         "plugin-type": "plugin",
         "type": "application/json",
-        "readme": "When renaming a tiddler, Relink can update the fields, filters, and widgets\nof all other tiddlers. However, it works through whitelisting.\n\nIt's already configured to update tiddler titles for all core widgets, filters,\nand fields, but the whitelists can be customized for each of this in the\nconfiguration panel.\n\nSee <a href={{$:/plugins/flibbles/relink!!source}}>the tw5-relink website</a> for more details and examples.\n",
+        "readme": "When renaming a tiddler, Relink can update the fields, filters, and widgets\nof all other tiddlers. However, it works through whitelisting.\n\nIt's already configured to update tiddler titles for all core widgets, filters,\nand fields, but the whitelists can be customized for each of this in the\nconfiguration panel.\n\nSee <a href={{$:/plugins/flibbles/relink!!source}} class=\"tc-tiddlylink-external\">the tw5-relink website</a> for more details and examples.\n",
         "requires-reload": "yes"
     },
     {
@@ -36,7 +36,7 @@
         "title": "$:/plugins/flibbles/relink-titles",
         "description": "Renames tiddlers with titles derived from Relinked tiddler",
         "author": "Flibbles",
-        "version": "2.1.2",
+        "version": "2.1.3",
         "core-version": ">=5.1.22",
         "parent-plugin": "$:/plugins/flibbles/relink",
         "source": "https://github.com/flibbles/tw5-relink",
@@ -45,7 +45,7 @@
         "dependents": "",
         "plugin-type": "plugin",
         "type": "application/json",
-        "readme": "Highly customizable relinking of tiddler titles //related// to the renamed tiddler.\n\n* Rename a hierarchy of subtiddlers when renaming a root tiddler.\n* Make custom filter rules to rename other tiddlers the way you want when Relinking.\n* Integrates with other plugins for plugin-specific rules.\n\nSee <a href={{$:/plugins/flibbles/relink-titles!!source}}>the tw5-relink website</a> for more details and examples.\n\n{{$:/core/images/warning}} ''Warning:'' You must use //Relink// v1.10.2 or greater with this, or this plugin may delete some tiddler bodies while trying to relink titles.\n",
+        "readme": "Highly customizable relinking of tiddler titles //related// to the renamed tiddler.\n\n* Rename a hierarchy of subtiddlers when renaming a root tiddler.\n* Make custom filter rules to rename other tiddlers the way you want when Relinking.\n* Integrates with other plugins for plugin-specific rules.\n\nSee <a href={{$:/plugins/flibbles/relink-titles!!source}} class=\"tc-tiddlylink-external\">the tw5-relink website</a> for more details and examples.\n\n{{$:/core/images/warning}} ''Warning:'' You must use //Relink// v1.10.2 or greater with this, or this plugin may delete some tiddler bodies while trying to relink titles.\n",
         "requires-reload": "yes"
     }
 ]
