@@ -88,7 +88,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		rowMatch = rowRegExp.exec(this.parser.source);
 	}
 	if (builder.changed() || impossible) {
-		var entry = {}
+		entry = {}
 		entry.output = builder.results(this.parser.pos);
 		if (impossible) {
 			entry.impossible = true;

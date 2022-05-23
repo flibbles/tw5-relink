@@ -108,8 +108,8 @@ WikiWalker.prototype.parseInlineRunTerminated = function(terminatorRegExp,option
 
 };
 
-WikiWalker.prototype.parseBlock = function(terminatorRegExp) {
-	var terminatorRegExp = /(\r?\n\r?\n)/mg;
+WikiWalker.prototype.parseBlock = function(terminatorRegExpString) {
+	var terminatorRegExp = terminatorRegExpString ? new RegExp("(" + terminatorRegExpString + "|\\r?\\n\\r?\\n)","mg") : /(\r?\n\r?\n)/mg;
 	this.skipWhitespace();
 	if (this.pos >= this.sourceLength) {
 		return [];

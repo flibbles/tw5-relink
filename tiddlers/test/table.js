@@ -1,6 +1,6 @@
 /*\
 
-Tests transcludes.
+Tests tables.
 
 \*/
 
