@@ -19,10 +19,10 @@ Error/RelinkFilterOperator: Filter Error: Unknown suffix for the 'relink' filter
 Error/ReportFailedRelinks: Relink could not update '<<from>>' to '<<to>>' inside the following tiddlers:
 Error/UnrecognizedType: Relink parse error: Unrecognized field type '<<type>>'
 
-Help/Attributes: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Attributes]]}}}>Attributes documentation page</a> for details.
-Help/Fields: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Fields]]}}}>Fields documentation page</a> for details.
-Help/Macros: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Macros]]}}}>Macros documentation page</a> for details.
-Help/Operators: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Operators]]}}}>Operators documentation page</a> for details.
+Help/Attributes: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Attributes]]}}} class="tc-tiddlylink-external">Attributes documentation page</a> for details.
+Help/Fields: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Fields]]}}} class="tc-tiddlylink-external">Fields documentation page</a> for details.
+Help/Macros: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Macros]]}}} class="tc-tiddlylink-external">Macros documentation page</a> for details.
+Help/Operators: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Operators]]}}} class="tc-tiddlylink-external">Operators documentation page</a> for details.
 
 TiddlerInfo/References/Empty: No tiddlers contain any fields, links, macros, transclusions, or widgets referencing this one
 TiddlerInfo/References/Description: The following tiddlers contain fields, links, macros, transclusions, or widgets referencing this one:
@@ -33,4 +33,4 @@ ui/Fields/Caption: Fields
 ui/Macros/Caption: Macros
 ui/Operators/Caption: Operators
 
-Warning/OldRelinkTextOperator: Relink cannot parse your <code>$$$<<keyword>></code> wikitext until you migrate your "<<type>>" relink module from the deprecated ''relinktextoperator'' module-type to ''relinktext''.<br><br>See <a href={{{ [[Versions/2.1.0]addprefix[#]addprefix{$:/plugins/flibbles/relink!!demo}encodeuri[]] }}} >the online documentation</a> for details.
+Warning/OldRelinkTextOperator: Relink cannot parse your <code>$$$<<keyword>></code> wikitext until you migrate your "<<type>>" relink module from the deprecated ''relinktextoperator'' module-type to ''relinktext''.<br><br>See <a href={{{ [[Versions/2.1.0]addprefix[#]addprefix{$:/plugins/flibbles/relink!!demo}encodeuri[]] }}} class="tc-tiddlylink-external">the online documentation</a> for details.

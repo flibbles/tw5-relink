@@ -4,4 +4,4 @@ Caption: Titles
 Directory/Caption: Rename subdirectories
 Directory/Description: For wikis set up hierarchically using `/`, like a filesystem. This option will update all tiddlers nested inside the target tiddler. i.e. `fromTiddler/path/file` becomes `toTiddler/path/file`.
 Lookup/Caption: Lookup tiddlers
-Help: See the <a href={{{ [{$:/plugins/flibbles/relink-titles!!demo}addsuffix[#Plugins/Titles]] }}}>//Relink-titles// documentation page</a> for details.
+Help: See the <a href={{{ [{$:/plugins/flibbles/relink-titles!!demo}addsuffix[#Plugins/Titles]] }}} class="tc-tiddlylink-external">//Relink-titles// documentation page</a> for details.

@@ -5,7 +5,7 @@ title: Plugins/Markdown
 
 //Relink// has a supplemental child-plugin you can install which integrates markdown support. With that installed, your //text/x-markdown// tiddlers will be relinked along with your wiki tiddlers.
 
-This plugin is designed to work against the <a href="https://tiddlywiki.com/plugins/tiddlywiki/markdown/">core ''tiddlywiki/markdown'' plugin</a>, however, it will mostly support any other markdown plugin you choose to use (such as ''anstosa/tw5-markdown'' or others).
+This plugin is designed to work against the [ext[core ''tiddlywiki/markdown'' plugin|https://tiddlywiki.com/plugins/tiddlywiki/markdown/]], however, it will mostly support any other markdown plugin you choose to use (such as ''anstosa/tw5-markdown'' or others).
 
 !!! Markdown Syntax
 
