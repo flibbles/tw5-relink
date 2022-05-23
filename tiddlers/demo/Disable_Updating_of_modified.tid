@@ -1,0 +1,7 @@
+tags: Hacks
+title: Disable Updating of modified
+caption: Disable Updating of //modified//
+
+By default, //Relink// will update the //modified// field of any tiddlers it relinks, as this is the default behavior seen in TiddlyWiki's core relinking. However, you might not want this.
+
+If you set the system tiddler `$:/config/flibbles/relink/touch-modify` to a text value of "no", then //Relink// will no longer update the "modified" field of tiddlers it touches.

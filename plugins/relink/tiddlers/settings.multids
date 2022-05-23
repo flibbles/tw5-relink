@@ -3,6 +3,9 @@ title: $:/
 # in \relink pragma, unspecified macro attributes are assumed to be this:
 config/flibbles/relink/settings/default-type: title
 
+# Specify whether relinking should update a tiddler's modify field
+config/flibbles/relink/touch-modify: yes
+
 # Default color for list items representing relinks where errors occurred
 config/DefaultColourMappings/relink-impossible: <<colour dirty-indicator>>
 language/Docs/PaletteColours/relink-impossible: Relink link impossible

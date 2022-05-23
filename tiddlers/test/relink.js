@@ -74,6 +74,21 @@ it("does touch shadow tiddlers when configured to", function() {
 	expect(tiddler.fields.text).toEqual("Shadow [[to there]]");
 });
 
+it("respects touch modify settings", function() {
+	// No config (only possible with custom wiki objects
+	var results = testConfig({});
+	expect(results.wiki.getTiddler("test").fields.modified).toBeUndefined();
+	// Yes config (the shadow default)
+	var results = testConfig({}, utils.touchModifyConf("yes"));
+	expect(results.wiki.getTiddler("test").fields.modified).not.toBeUndefined();
+	// No config (turned off)
+	var results = testConfig({}, utils.touchModifyConf("no"));
+	expect(results.wiki.getTiddler("test").fields.modified).toBeUndefined();
+	// Sloppy yes
+	var results = testConfig({}, utils.touchModifyConf("yes\n"));
+	expect(results.wiki.getTiddler("test").fields.modified).not.toBeUndefined();
+});
+
 it("handles reporting errors with at least some grace", function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([

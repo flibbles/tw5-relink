@@ -206,6 +206,10 @@ exports.toUpdateConf = function(filter) {
 	return {title: "$:/config/flibbles/relink/to-update", text: filter};
 };
 
+exports.touchModifyConf = function(bool) {
+	return {title: "$:/config/flibbles/relink/touch-modify", text: bool};
+};
+
 exports.draft = function(fields) {
 	const newFields = $tw.utils.extend({
 		'draft.of': fields.title,

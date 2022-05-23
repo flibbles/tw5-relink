@@ -160,6 +160,11 @@ exports.getDefaultType = function(wiki) {
 	return fieldTypes[defaultType] ? defaultType : "title";
 };
 
+exports.touchModifyField = function(wiki) {
+	var tiddler = wiki.getTiddler("$:/config/flibbles/relink/touch-modify");
+	return tiddler && tiddler.fields.text.trim() === "yes";
+};
+
 var fieldTypes;
 
 function getFieldTypes() {

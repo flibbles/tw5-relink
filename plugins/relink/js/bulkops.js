@@ -55,7 +55,8 @@ function relinkTiddler(fromTitle, toTitle, options) {
 			console.log("Renaming '"+fromTitle+"' to '"+toTitle+"' in '" + title + "'");
 
 			var tiddler = this.getTiddler(title);
-			var newTiddler = new $tw.Tiddler(tiddler,changes,this.getModificationFields())
+			var modifyField = utils.touchModifyField(this) ? this.getModificationFields() : undefined;
+			var newTiddler = new $tw.Tiddler(tiddler,changes,modifyField)
 			newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
 			this.addTiddler(newTiddler);
 			// If the title changed, we need to perform a nested rename

@@ -5,7 +5,7 @@ You can tinker with //Relink// in several ways if you wish. It's designed to be 
 
 <$list filter="[tag[Hacks]]">
 
-!! {{!!title}}
+!! <$transclude field="caption">{{!!title}}</$transclude>
 
 <$transclude />
 

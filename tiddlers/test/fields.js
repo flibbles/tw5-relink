@@ -51,6 +51,7 @@ it("doesn't touch ineligible tiddlers", function() {
 
 it("touches eligible tiddlers", function() {
 	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.touchModifyConf("yes"));
 	var results = testTags("[[from here]]", ["to there"], ['tags'], {wiki: wiki});
 	expect($tw.utils.hop(wiki.getTiddler('test').fields, 'modified')).toBe(true);
 });
