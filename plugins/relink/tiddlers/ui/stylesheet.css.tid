@@ -1,3 +1,6 @@
+tags: $:/tags/Stylesheet
+title: $:/plugins/flibbles/relink/ui/stylesheet.css
+
 .tc-relink-references {
 }
 
@@ -53,5 +56,5 @@
 }
 
 .tc-relink-impossible a.tc-tiddlylink {
-	color: red;
+	color: <<colour relink-impossible>>;
 }
