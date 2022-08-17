@@ -64,6 +64,11 @@ it('does not confuse with macrocalls', function() {
 	testText("<<<\nText\n<<<\n\n[[from here]]\n\n<<macro>>\n", true, ['[[from here]]']);
 });
 
+it('missing closing syntax', function() {
+	testText("<<<\n[[from here]]", true, ['[[from here]]']);
+	testText("<<<\n[[from here]]", true, ['[[from here]]']);
+});
+
 it('handles errors', function() {
 	utils.spyFailures(spyOn);
 	testText("<<<\n<$text text={{from here}}/>\n<<<[[from here]]\n[[from here]]",

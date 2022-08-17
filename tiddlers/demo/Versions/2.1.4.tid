@@ -1,0 +1,3 @@
+created: 20220817160826682
+
+* Relink would crash if it encountered quote blocks without closing syntax. Fixed.

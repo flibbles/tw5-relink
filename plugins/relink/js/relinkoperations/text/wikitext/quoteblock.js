@@ -26,8 +26,10 @@ exports.report = function(text, callback, options) {
 	reportCite(this.parser, this.match[1]);
 	// Now parse the body of the quote
 	this.parser.parseBlocks(reEndString);
-	// Now parse the closing cite
-	reportCite(this.parser, this.match[1]);
+	if (this.match) {
+		// Now parse the closing cite
+		reportCite(this.parser, this.match[1]);
+	}
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
