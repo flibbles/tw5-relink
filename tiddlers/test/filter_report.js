@@ -84,6 +84,7 @@ it("missing tiddler", function() {
 });
 
 it('can handle undefined blurb', function() {
+	// This test relies on the undefinedRelinkOperator to function
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'test', 'undefined': 'A'});
 	expect(wiki.filterTiddlers('[[test]relink:report[A]]')).toEqual(['']);

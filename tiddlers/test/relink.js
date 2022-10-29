@@ -119,16 +119,6 @@ it("doesn't relink if from and to are the same", function() {
 	expect(utils.failures).not.toHaveBeenCalled();
 });
 
-it("is capable of deleting fields", function() {
-	const wiki = new $tw.Wiki();
-	// This depends on the dummy module undefinedRelinkOperator
-	wiki.addTiddler({title: 'test', 'undefined': 'Value'});
-	wiki.renameTiddler('undefined', 'newdefined');
-	var tiddler = wiki.getTiddler('test');
-	expect(tiddler.fields['undefined']).toBe(undefined);
-	expect(tiddler.fields['newdefined']).toBe('Value');
-});
-
 it("supports IE11", function() {
 	// Also, backticks aren't allowed, but there isn't an easy way
 	// to test for that.
