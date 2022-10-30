@@ -2,8 +2,21 @@ title: $:/plugins/flibbles/relink-fieldnames/readme
 
 Enables Relink to relink field names associated with renamed tiddlers. The following fields cannot be interacted with in this way:
 
-* text
-* title
-* type
+"""
+<$list filter="[enlist[text title type]]">
+''<<currentTiddler>>''
+</$list>
+"""
 
 See <a href={{$:/plugins/flibbles/relink-fieldnames!!source}} class="tc-tiddlylink-external">the tw5-relink website</a> for more details and examples.
+
+The following is a table of all tiddlers currently being used as field names.
+
+<table class="tc-view-field-table">
+<tbody>
+<tr><th>Title</th><th>Uses</th></tr>
+<$list filter="[fields[]is[tiddler]] -text -title -type">
+<tr class="tc-view-field"><td align="right"><$link to=<<currentTiddler>> />:</td><td class="tc-view-field-value"><$text text={{{ [has<currentTiddler>] }}} /></td></tr>
+</$list>
+</tbody>
+</table>

@@ -1,5 +1,5 @@
 {
-	"name": "Relink Fieldnames",
+	"name": "Relink Field Names",
 	"title": "$:/plugins/flibbles/relink-fieldnames",
 	"description": "Renames field names with titles matching Relinked tiddlers",
 	"author": "Flibbles",

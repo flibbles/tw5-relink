@@ -1,6 +1,8 @@
 description: Optionally, //Relink// can update the names of any fields which match the name of the Relinked tiddler. This will also update any corresponding configuration that field has in the //Relink// whitelist.
-relink.showcase: title tags Frodo
+relink.showcase: title type Frodo
 Frodo: [[Hairy feet]] [[Short stature]] Frodo
 tags: Demo Supplemental
+type: text/vnd.tiddlywiki
+warning: Fieldnames support requires you to download the <<link-to-tab Plugins Plugins/Fieldnames "//Relink-fieldnames// supplimental plugin">>.
 
 This is the <<link-to-tab Demo Demo/Fieldnames "Fieldnames Demo">>. It has a field named [[Frodo]] in order to demonstrate how //Relink// can update the field's name.

@@ -1,4 +1,4 @@
-caption: Fieldnames
+caption: Field Names
 plugin: $:/plugins/flibbles/relink-fieldnames
 tags: Feature Plugin
 title: Plugins/Fieldnames
@@ -12,7 +12,7 @@ This plugin also takes care of updating any entries in the //Relink// whitelist 
 
 !!! Tiddlywiki version
 
-TiddlyWiki version 5.2.0 changed so that field names can be any possible value, whereas before fields could only be lowercase alphanumeric with `_`, `-`, and `.`. This plugin will work with version both after and prior to v5.2.0.
+Tiddlywiki version 5.2.0 changed so that field names can be any possible value, whereas before fields could only be lowercase alphanumeric with `_`, `-`, and `.`. This plugin will work with version both after and prior to v5.2.0.
 
 !!! Install
 
