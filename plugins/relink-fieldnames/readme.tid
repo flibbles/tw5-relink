@@ -1,0 +1,9 @@
+title: $:/plugins/flibbles/relink-fieldnames/readme
+
+Enables Relink to relink field names associated with renamed tiddlers. The following fields cannot be interacted with in this way:
+
+* text
+* title
+* type
+
+See <a href={{$:/plugins/flibbles/relink-fieldnames!!source}} class="tc-tiddlylink-external">the tw5-relink website</a> for more details and examples.

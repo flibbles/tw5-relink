@@ -1,0 +1,25 @@
+caption: Fieldnames
+plugin: $:/plugins/flibbles/relink-fieldnames
+tags: Feature Plugin
+title: Plugins/Fieldnames
+
+
+With this supplemental plugin installed, any field //names// that correspond with a renamed tiddler will also be renamed.
+
+For example, if you have a field used across many tiddlers called `price` (which likely contains numeric values), you might have a tiddler named `price` which describes a filter on how to display this field, as well as a field description. If you later decided the field should instead have been called `cost`, then you can rename the tiddler, and all fields across all tiddlers will update, assuming you have this plugin installed.
+
+This plugin also takes care of updating any entries in the //Relink// whitelist concerning any renamed fields.
+
+!!! Tiddlywiki version
+
+TiddlyWiki version 5.2.0 changed so that field names can be any possible value, whereas before fields could only be lowercase alphanumeric with `_`, `-`, and `.`. This plugin will work with version both after and prior to v5.2.0.
+
+!!! Install
+
+To install //Relink-fieldnames//, first install //Relink//, then drag the following pill button onto your project:
+
+@@text-align:center;
+<$link to={{!!plugin}} class="relink-dragger relink-markdown">Field renaming support!</$link>
+@@
+
+<<link-to-tab Demo Demo/Fieldnames Demo>>
