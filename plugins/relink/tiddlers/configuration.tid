@@ -1,6 +1,6 @@
 title: $:/plugins/flibbles/relink/configuration
 
-/whitespace trim
+\whitespace trim
 <div class="tc-control-panel">
 <<tabs "[all[shadows+tiddlers]tag[$:/tags/flibbles/relink/Configuration]!has[draft.of]]" "$:/plugins/flibbles/relink/ui/configuration/Fields">>
 </div>
