@@ -1,0 +1,33 @@
+title: $:/plugins/flibbles/relink-fieldnames/style
+tags: $:/tags/Stylesheet
+
+.tc-relink-fieldnames-table {
+	width: 100%;
+	border: 0px;
+}
+
+.tc-relink-fieldnames-field a {
+	font-weight: bold;
+}
+
+.tc-relink-fieldnames-field td {
+	border: 0px;
+}
+
+.tc-relink-fieldnames-count {
+	color: lightgray;
+}
+
+.tc-relink-fieldnames-title {
+	margin-left: 3pt;
+	min-width: 30%;
+}
+
+.tc-relink-fieldnames-entry td {
+	border: 0px;
+	border-bottom: 1px solid <<colour table-border>>;
+}
+
+.tc-relink-fieldnames-margin {
+	width: 25pt;
+}
