@@ -42,6 +42,15 @@
 				"publishFilter",
 				"-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/flibbles/uglify -$:/config/flibbles/uglify/blacklist -[prefix[$:/UpgradeLibrary]]"
 		],
+		"bundle": [
+			"--output", "./bundle",
+			"--verbose",
+			"--render",
+				"[plugin-type[plugin]prefix[$:/plugins/flibbles/relink]]",
+				"[split[/]last[]addsuffix[.json]]",
+				"text/plain",
+				"$:/core/templates/json-tiddler"
+		],
 		"library": [
 			"--output", "./docs/library/",
 			"--makelibrary","$:/UpgradeLibrary",
