@@ -46,7 +46,7 @@ exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 			};
 			// But we leave the original change in place in case it described
 			// an impossible relink or something.
-			changes[fromTitle].output = undefined;
+			changes[fromTitle].output = null;
 		} else {
 			changes[toTitle] = {output: tiddler.fields[fromTitle]};
 			changes[fromTitle] = {output: null};

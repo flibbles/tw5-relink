@@ -53,7 +53,7 @@ it('doesn\'t clobber existing field values', function() {
 	wiki.renameTiddler('from', 'to');
 	var test1Fields = wiki.getTiddler('test1').fields;
 	var test2Fields = wiki.getTiddler('test2').fields;
-	expect(test1Fields).not.toContain("from");
+	expect(test1Fields.from).toBeUndefined();
 	expect(test1Fields.to).toBe("content");
 	expect(test2Fields.from).toBe("content");
 	expect(test2Fields.to).toBe("");
@@ -69,7 +69,7 @@ it('avoids relinking to blacklisted fields', function() {
 	utils.spyFailures(spyOn);
 	wiki.renameTiddler('from', 'type');
 	expect(wiki.getTiddler('test').fields.from).toBe('content');
-	expect(wiki.getTiddler('test').fields).not.toContain("type");
+	expect(wiki.getTiddler('test').fields.type).toBeUndefined();
 	// Throws an error since the user might wonder why they're not clobbering
 	// every single tiddler?
 	expect(utils.failures).toHaveBeenCalledTimes(1);
@@ -83,7 +83,7 @@ it('avoids relinking from blacklisted fields', function() {
 	wiki.renameTiddler('title', 'to');
 	// Doesn't throw an error since it was ignoring "title" to begin with.
 	expect(wiki.getTiddler('test').fields.title).toBe('test');
-	expect(wiki.getTiddler('test').fields).not.toContain("to");
+	expect(wiki.getTiddler('test').fields.to).toBeUndefined();
 });
 
 it("can relink both field name and field value", function() {
@@ -95,7 +95,7 @@ it("can relink both field name and field value", function() {
 		{title: 'from'},
 		fromConf]);
 	wiki.renameTiddler("from", "to");
-	expect(wiki.getTiddler('test').fields).not.toContain("from");
+	expect(wiki.getTiddler('test').fields.from).toBeUndefined();
 	expect(wiki.getTiddler('test').fields.to).toBe("Content contains to");
 	// The whitelist entry should have been updated
 	expect(wiki.tiddlerExists(fromConf.title)).toBe(false);
@@ -122,7 +122,7 @@ it("can relink a tiddler with itself as a field", function() {
 		fromConf]);
 	utils.spyFailures(spyOn);
 	wiki.renameTiddler("from", to);
-	expect(wiki.getTiddler('test').fields).not.toContain("from");
+	expect(wiki.getTiddler('test').fields.from).toBeUndefined();
 	expect(wiki.getTiddler('test').fields[to]).toBe("Content contains from");
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
@@ -154,14 +154,14 @@ it("can relink into weird field names", function() {
 	if (utils.atLeastVersion('5.2.0')) {
 		// This works in post v5.2.0
 		expect(utils.failures).not.toHaveBeenCalled();
-		expect(wiki.getTiddler('test').fields).not.toContain("from");
+		expect(wiki.getTiddler('test').fields.from).toBeUndefined();
 		expect(wiki.getTiddler('test').fields[string]).toBe('content');
 	} else {
 		// This doesn't in pre v5.2.0
 		expect(utils.failures).toHaveBeenCalledTimes(1);
 		expect(utils.failures.calls.first().args[0]).toEqual(['test']);
 		expect(wiki.getTiddler('test').fields.from).toBe('content');
-		expect(wiki.getTiddler('test').fields).not.toContain(string);
+		expect(wiki.getTiddler('test').fields[string]).toBeUndefined();
 	}
 });
 
@@ -175,14 +175,14 @@ it('can change capitalization', function() {
 	if (utils.atLeastVersion('5.2.0')) {
 		// This works in post v5.2.0
 		expect(utils.failures).not.toHaveBeenCalled();
-		expect(wiki.getTiddler('test').fields).not.toContain("from");
+		expect(wiki.getTiddler('test').fields.from).toBeUndefined();
 		expect(wiki.getTiddler('test').fields.From).toBe('content');
 	} else {
 		// This doesn't in pre v5.2.0
 		expect(utils.failures).toHaveBeenCalledTimes(1);
 		expect(utils.failures.calls.first().args[0]).toEqual(['test']);
 		expect(wiki.getTiddler('test').fields.from).toBe('content');
-		expect(wiki.getTiddler('test').fields).not.toContain("From");
+		expect(wiki.getTiddler('test').fields.From).toBeUndefined();
 	}
 });
 
