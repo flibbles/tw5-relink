@@ -16,6 +16,23 @@
         "requires-reload": "yes"
     },
     {
+        "name": "Relink Field Names",
+        "title": "$:/plugins/flibbles/relink-fieldnames",
+        "description": "Renames field names with titles matching Relinked tiddlers",
+        "author": "Flibbles",
+        "version": "2.1.3",
+        "core-version": ">=5.1.22",
+        "parent-plugin": "$:/plugins/flibbles/relink",
+        "source": "https://github.com/flibbles/tw5-relink",
+        "demo": "http://flibbles.github.io/tw5-relink/",
+        "list": "readme",
+        "dependents": "",
+        "plugin-type": "plugin",
+        "type": "application/json",
+        "readme": "\nEnables Relink to relink field names associated with renamed tiddlers. The following fields cannot be interacted with in this way:\n<$list counter=counter filter=\"[enlist[text title type]]\"><$list filter=\"[<counter-first>] -yes\">, </$list>''<<currentTiddler>>''</$list>\n\nSee <a href={{$:/plugins/flibbles/relink-fieldnames!!source}} class=\"tc-tiddlylink-external\">the tw5-relink website</a> for more details and examples.\n\n{{$:/plugins/flibbles/relink-fieldnames/reference}}\n",
+        "requires-reload": "yes"
+    },
+    {
         "name": "Relink Markdown",
         "title": "$:/plugins/flibbles/relink-markdown",
         "description": "Markdown support for Relink",
