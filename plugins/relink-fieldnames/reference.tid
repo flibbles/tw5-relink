@@ -1,0 +1,26 @@
+caption: Field Names
+title: $:/plugins/flibbles/relink-fieldnames/reference
+tags: $:/tags/flibbles/relink/Configuration
+
+\define label(arrow, setTo) <$reveal type="nomatch" state=<<table-state>> text="$setTo$" default="no"><$button class="tc-btn-invisible tc-btn-dropdown" set=<<table-state>> setTo="$setTo$">{{$arrow$}} ''<$link to=<<field>>/>''</$button> <span class="tc-relink-fieldnames-count">(<$text text={{{ [has<field>count[]] }}} />)</span></$reveal>
+
+\define entry(field)
+<$set name="table-state" value=<<qualify """$:/state/flibbles/relink-fieldnames/table/$field$""">>>
+<tr class="tc-relink-fieldnames-field">
+<td colspan="3">
+<<label $:/core/images/right-arrow yes>>
+<<label $:/core/images/down-arrow no>>
+</td>
+</tr>
+<$list filter="[has<field>]" >
+<$reveal tag="tr" type="match" state=<<table-state>> text="yes" default="no" class="tc-relink-fieldnames-entry">
+<td class="tc-relink-fieldnames-margin"></td>
+<td class="tc-relink-fieldnames-title"><$link to=<<currentTiddler>> /></td><td><$text text={{{ [all[current]get<field>] }}} /></td>
+</$reveal>
+</$list>
+</$set>
+\end
+
+The following is a table of all tiddlers currently being used as field names.
+
+<table class="tc-relink-fieldnames-table"><tbody><$list variable="field" filter="[fields[]is[tiddler]] -text -title -type"><$macrocall $name="entry" field=<<field>> /></$list></tbody></table>
