@@ -23,8 +23,8 @@ var reservedFields = {
 exports.report = function(tiddler, callback, options) {
 	var fields = tiddler.fields;
 	for (var field in fields) {
-		if (!reservedFields[field] && options.wiki.tiddlerExists(field)) {
-			callback(field, ': ' + abridge(fields[field], 20));
+		if (!reservedFields[field]) {
+			callback(field, ': ' + abridge(fields[field], 20), {soft: true});
 		}
 	}
 };

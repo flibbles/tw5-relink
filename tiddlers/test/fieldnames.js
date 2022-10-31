@@ -43,6 +43,17 @@ it('abridges reports if field value is long', function() {
 		.toEqual([": " + string.substr(0,maxLength) + "..."]);
 });
 
+it('does not invalidate reports when renaming to existing field', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'test', to: "content"},
+		{title: 'from'}]);
+	// It's important to run this test first to instantiate any caches
+	expect(utils.getReport('test', wiki)).toEqual({});
+	wiki.renameTiddler('from', 'to');
+	expect(utils.getReport('test', wiki)).toEqual({to: [': content']});
+});
+
 it('doesn\'t clobber existing field values', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
