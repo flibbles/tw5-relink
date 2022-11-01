@@ -12,14 +12,20 @@ beforeEach(function() {
 	spyOn(console, 'log');
 });
 
-// Only need one "report" test for this plugin. It's dead simple. No edge cases.
-it('reports only existing, non-blacklisted tiddlers', function() {
+it('reports only non-blacklisted tiddlers', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
-		{title: 'test', exists: "content", missing: "content", text: "content"},
+		{title: 'test', exists: "content", text: "content"},
 		{title: "exists"}, // Exists gets reported
 		{title: "text"}]);
 	expect(utils.getReport('test', wiki)).toEqual({ "exists": [": content"] });
+});
+
+it('reports missing tiddlers (for now)', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'test', missing: "content"}]);
+	expect(utils.getReport('test', wiki)).toEqual({ "missing": [": content"] });
 });
 
 it('reports field name and field value', function() {
@@ -49,7 +55,7 @@ it('does not invalidate reports when renaming to existing field', function() {
 		{title: 'test', to: "content"},
 		{title: 'from'}]);
 	// It's important to run this test first to instantiate any caches
-	expect(utils.getReport('test', wiki)).toEqual({});
+	utils.getReport('test', wiki);
 	wiki.renameTiddler('from', 'to');
 	expect(utils.getReport('test', wiki)).toEqual({to: [': content']});
 });

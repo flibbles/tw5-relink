@@ -46,11 +46,11 @@ it("globally caches report results when not indexing", function() {
 it("detects changes to configuration", async function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'test', filter: '[tag[x]]'});
-	expect(wiki.getTiddlerRelinkReferences('test')).toEqual({});
+	expect(getReport('test', wiki).x).toBeUndefined();
 	wiki.addTiddler(utils.operatorConf('tag'));
 	wiki.addTiddler(utils.fieldConf('filter', 'filter'));
 	await utils.flush();
-	expect(getReport('test', wiki)).toEqual({x: ['filter: [tag[]]']});
+	expect(getReport('test', wiki).x).toEqual(['filter: [tag[]]']);
 });
 
 it("only checks tiddler contexts if and when they need checking", function() {
@@ -167,6 +167,8 @@ it("removes old reports when target tiddler renamed", function() {
 	var wiki = new $tw.Wiki();
 	spyOn(console, 'log');
 	wiki.addTiddler({title: 'test', text: '[[link]]'});
+	// We do this to keep pesky modified fields from showing up.
+	wiki.addTiddler({title: '$:/config/TimestampDisable', text: 'yes'});
 	expect(getReport('test', wiki)).toEqual({link: ['[[link]]']});
 	wiki.renameTiddler('test', 'newtest');
 	expect(getReport('test', wiki)).toEqual(undefined);
@@ -197,9 +199,11 @@ it('updates when relevant $importvariables in fields exist', function() {
 		utils.fieldConf('wikitext', 'wikitext'),
 		{title: 'test', wikitext: '<$importvariables filter="[tag[local]]"><<M Aarg:A Barg:B>></$importvariables>'},
 		{title: 'macro', tags: 'local', text: '\\relink M Aarg'}]);
-	expect(getReport('test', wiki)).toEqual({A: ['wikitext: <<M Aarg>>']});
+	expect(getReport('test', wiki).A).toEqual(['wikitext: <<M Aarg>>']);
+	expect(getReport('test', wiki).B).toBeUndefined();
 	wiki.addTiddler({title: 'macro', tags: 'local', text: '\\relink M Barg'});
-	expect(getReport('test', wiki)).toEqual({B: ['wikitext: <<M Barg>>']});
+	expect(getReport('test', wiki).A).toBeUndefined();
+	expect(getReport('test', wiki).B).toEqual(['wikitext: <<M Barg>>']);
 });
 
 (utils.atLeastVersion('5.2.0') ? it : xit)('updates for relevant $importvariables in nested context', function() {

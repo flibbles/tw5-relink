@@ -17,7 +17,11 @@ it('javascript allows fields to be processed', function() {
 	wiki.addTiddlers([
 		utils.fieldConf('list', 'list'),
 		{title: 'test.js', list: 'A from', text: '"use string";', type: 'application/javascript'}]);
-	expect(utils.getReport('test.js', wiki)).toEqual({A: ['list'], from: ['list']});
+	var report = utils.getReport('test.js', wiki);
+	// We test "report.A" and "report.from" explicitly instead of "report",
+	// because relink-field-names may be introducing irrelevant reports here.
+	expect(report.A).toEqual(['list']);
+	expect(report.from).toEqual(['list']);
 	wiki.renameTiddler('from', 'to');
 	expect(wiki.getTiddler('test.js').fields.list).toEqual(['A', 'to']);
 });
