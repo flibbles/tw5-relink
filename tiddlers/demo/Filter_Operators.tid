@@ -3,6 +3,8 @@ tags: Feature
 
 //Relink// introduces a few filter operators which may be useful to you. All filters are namespaced with `relink:`, so for instance, the backreferences filter operator is accessed as `[relink:backreferences[]]`.
 
+''Note:'' //Relink// defines other filter operators than these, but they are for internal use only, and are subject to change between releases.
+
 <table>
 <tr>
 <th align="left">Operator</th>
