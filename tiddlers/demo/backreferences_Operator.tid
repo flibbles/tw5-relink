@@ -1,0 +1,20 @@
+title: backreferences Operator
+tags: [[Filter Operators]]
+caption: backreferences
+purpose: find the titles that reference each input title in any way
+
+|!purpose |{{!!purpose}} |
+|!input |a selection of titles |
+|!parameter |none |
+|!output |any titles that contain any sort of reference to the input title |
+
+[ext[Learn more about how to use Filters|https://tiddlywiki.com/#Filters]]
+
+''Usage'': `[relink:backreferences[]]`
+
+
+Each input title is processed in turn. A tiddler's list of backreferences is generated and then dominantly appended to the operator's overall output.
+
+This functions like Tiddlywiki's `backlinks` operator, only instead of considering only hard links, it will consider all possible references which //Relink// can find.
+
+[[Examples|backreferences Operator (Examples)]]

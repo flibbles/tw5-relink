@@ -1,0 +1,5 @@
+title: backreferences Operator (Examples)
+tags: [[Operator Examples]]
+
+<<operator-example 1 "[[Frodo]relink:backreferences[]]">>
+<<operator-example 2 "[all[current]relink:backreferences[]]" "tiddlers that link to this one">>

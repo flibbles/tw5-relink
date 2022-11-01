@@ -1,0 +1,20 @@
+title: references Operator
+tags: [[Filter Operators]]
+caption: references
+purpose: find the titles referenced by each input title
+
+|!purpose |{{!!purpose}} |
+|!input |a selection of titles |
+|!parameter |none |
+|!output |the titles to which the input tiddlers contain any sort of reference |
+
+[ext[Learn more about how to use Filters|https://tiddlywiki.com/#Filters]]
+
+''Usage'': `[relink:references[]]`
+
+
+Each input title is processed in turn. A tiddler's list of references is generated (in no defined order) and then dominantly appended to the operator's overall output. This will include ''all referenced'' tiddlers, including ones that don't exist.
+
+This functions like Tiddlywiki's `links` operator, only instead of considering only hard links, it will consider all possible references which //Relink// can find.
+
+[[Examples|references Operator (Examples)]]

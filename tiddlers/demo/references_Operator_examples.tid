@@ -1,0 +1,5 @@
+title: references Operator (Examples)
+tags: [[Operator Examples]]
+
+<<operator-example 1 "[[Demo]relink:references[]]">>
+<<operator-example 2 "[[Demo]relink:references[]is[tiddler]]" "filtering out non-existent titles is useful">>

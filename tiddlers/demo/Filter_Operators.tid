@@ -1,0 +1,19 @@
+title: Filter Operators
+tags: Feature
+
+//Relink// introduces a few filter operators which may be useful to you. All filters are namespaced with `relink:`, so for instance, the backreferences filter operator is accessed as `[relink:backreferences[]]`.
+
+<table>
+<tr>
+<th align="left">Operator</th>
+<th align="left">Purpose</th>
+<th align="center">`!`</th>
+</tr>
+<$list filter="[tag[Filter Operators]]">
+<tr>
+<td><$link>relink:{{!!caption}}</$link></td>
+<td>{{!!purpose}}</td>
+<td></td>
+</tr>
+</$list>
+</table>
