@@ -1,0 +1,6 @@
+title: report Operator (Examples)
+tags: [[Operator Examples]]
+
+<<operator-example 1 "[[Demo/Transcludes]relink:report[Frodo]]" "returns all blurbs describing [[Demo/Transcludes]]'s references of [[Frodo]]">>
+<<operator-example 2 "[[report Operator]relink:report<currentTiddler>]" "blurbs describing [[report Operator]]'s references to this tiddler">>
+<<operator-example 3 "[relink:report[Documentation]]" "blurbs about all references across all tiddlers referencing the [[Documentation]] tiddler.">>

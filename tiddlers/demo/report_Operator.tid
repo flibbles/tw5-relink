@@ -1,0 +1,19 @@
+title: report Operator
+tags: [[Filter Operators]]
+caption: report
+purpose: returns blurbs describing all input tiddlers' references to the operand title
+
+|!purpose |{{!!purpose}} |
+|!input |a selection of titles, most likely just one |
+|!parameter |the title of a tiddler to which the input tiddlers reference |
+|!output |blurbs describing the nature of the references to the operand |
+
+[ext[Learn more about how to use Filters|https://tiddlywiki.com/#Filters]]
+
+''Usage'': `[relink:report[$referencedTiddler$]]`
+
+Each input title is examined for references to the operand. For each one, a blurb describing that reference is outputted. Multiple identical blurbs can exist in the output. If this is undesired, use the pre-existing `[unique[]]` operator.
+
+Most likely, you will want to use this operator with a single input at a time, since blurbs do not contain any information describing the tiddler they're referencing, or what tiddler contains the reference.
+
+[[Examples|report Operator (Examples)]]
