@@ -12,11 +12,7 @@ const blacklist = "$:/config/flibbles/relink-fieldnames/blacklist";
 
 function getWiki() {
 	const wiki = new $tw.Wiki();
-	const limited = "$:/plugins/flibbles/relink-fieldnames/blacklist/limited";
-	wiki.addTiddlers([
-		{title: blacklist, text: limited},
-		// This includes text, title, and type
-		$tw.wiki.getTiddler(limited)]);
+	wiki.addTiddler({title: blacklist, filter: "text title type"});
 	return wiki;
 };
 
@@ -25,7 +21,7 @@ beforeEach(function() {
 });
 
 it('reports only non-blacklisted tiddlers', function() {
-	const documented = $tw.wiki.getTiddler("$:/plugins/flibbles/relink-fieldnames/blacklist/documented");
+	const realBlacklist = $tw.wiki.getTiddler(blacklist);
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: 'test', exists: "content", text: "content"},
@@ -33,13 +29,9 @@ it('reports only non-blacklisted tiddlers', function() {
 		{title: "text"}]);
 	// By default, nothing gets reported when there is no blacklist
 	expect(utils.getReport('test', wiki)).toEqual({});
-	// It still does when the blacklist points to non-existent tiddlers
-	wiki.addTiddler({title: blacklist, text: documented.fields.title});
-	expect(utils.getReport('test', wiki)).toEqual({});
 	// But when it's pointing to a blacklist. Uses its filter.
-	wiki.addTiddlers([documented,
-		{title: "$:/language/Docs/Fields/title", text: "defined"},
-		{title: "$:/language/Docs/Fields/text", text: ""}]);
+	wiki.addTiddlers([realBlacklist,
+		{title: "$:/language/Docs/Fields/title", text: "defined"}]);
 	expect(utils.getReport('test', wiki))
 		.toEqual({ "exists": [": content"], "text": [": content"] });
 	// The blank should have been skipped, but not once it's filled out.

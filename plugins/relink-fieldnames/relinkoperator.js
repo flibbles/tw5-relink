@@ -78,8 +78,7 @@ function abridge(string, length) {
 
 function isReserved(wiki, field) {
 	var method = wiki.getGlobalCache('relink-fieldnames-reserved', function() {
-		var blacklistTitle = wiki.getTiddlerText(blacklistTiddler);
-		var blacklist = wiki.getTiddler(blacklistTitle);
+		var blacklist = wiki.getTiddler(blacklistTiddler);
 		if (blacklist) {
 			var tiddlers = wiki.filterTiddlers(blacklist.fields.filter);
 			var fieldMap = Object.create(null);

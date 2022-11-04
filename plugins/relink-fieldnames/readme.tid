@@ -1,9 +1,15 @@
 title: $:/plugins/flibbles/relink-fieldnames/readme
 
+\whitespace trim
 
 Enables Relink to relink field names associated with renamed tiddlers. The following fields cannot be interacted with in this way:
-<$list counter=counter filter="[enlist[text title type]]"><$list filter="[<counter-first>] -yes">, </$list>''<<currentTiddler>>''</$list>
 
-See <a href={{$:/plugins/flibbles/relink-fieldnames!!source}} class="tc-tiddlylink-external">the tw5-relink website</a> for more details and examples.
+<<<
+<$set name=blacklisted filter={{$:/config/flibbles/relink-fieldnames/blacklist!!filter}}>
+''<$list counter=counter filter="[enlist<blacklisted>sort[]]">
+<<currentTiddler>><br>
+</$list>''
+</$set>
+<<<
 
-{{$:/plugins/flibbles/relink-fieldnames/reference}}
+See&#32;<a href={{$:/plugins/flibbles/relink-fieldnames!!source}} class="tc-tiddlylink-external">the tw5-relink website</a>&#32;for more details and examples.

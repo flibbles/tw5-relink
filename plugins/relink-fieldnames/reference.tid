@@ -20,7 +20,16 @@ tags: $:/tags/flibbles/relink/Configuration
 </$list>
 </$set>
 \end
+\whitespace trim
 
 The following is a table of all tiddlers currently being used as field names.
 
-<table class="tc-relink-fieldnames-table"><tbody><$list variable="field" filter="[fields[]is[tiddler]] -[all[shadows+tiddlers]removeprefix[$:/language/Docs/Fields/]]"><$macrocall $name="entry" field=<<field>> /></$list></tbody></table>
+<$set name=blacklisted filter={{$:/config/flibbles/relink-fieldnames/blacklist!!filter}} >
+<table class="tc-relink-fieldnames-table">
+<tbody>
+<$list variable="field" filter="[fields[]is[tiddler]] -[enlist<blacklisted>]">
+<$macrocall $name="entry" field=<<field>> />
+</$list>
+</tbody>
+</table>
+</$set>

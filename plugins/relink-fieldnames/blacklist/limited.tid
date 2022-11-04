@@ -1,5 +1,0 @@
-caption: No vital field names
-title: $:/plugins/flibbles/relink-fieldnames/blacklist/limited
-filter: text title type
-
-This blacklist only protects field names which would fundamentally change the tiddler if that field name were renamed. Allows you greater relinking freedom, but be careful.
