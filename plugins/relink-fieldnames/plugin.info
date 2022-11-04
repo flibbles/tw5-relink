@@ -8,7 +8,7 @@
 	"parent-plugin": "$:/plugins/flibbles/relink",
 	"source": "https://github.com/flibbles/tw5-relink",
 	"demo": "http://flibbles.github.io/tw5-relink/",
-	"list": "readme",
+	"list": "readme reference",
 	"dependents": "",
 	"plugin-type": "plugin"
 }

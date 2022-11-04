@@ -15,11 +15,11 @@ exports.name = 'field-names';
 
 var configPrefix = "$:/config/flibbles/relink/fields/";
 var docPrefix = "$:/language/Docs/Fields/";
-var enableTiddler = "$:/config/flibbles/relink-fieldnames/enabled";
+var blacklistTiddler = "$:/config/flibbles/relink-fieldnames/blacklist";
 
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 utils.getContext('whitelist').hotDirectories.push(docPrefix);
-utils.getContext('whitelist').hotDirectories.push(enableTiddler);
+utils.getContext('whitelist').hotDirectories.push("$:/config/flibbles/relink-fieldnames/");
 
 exports.report = function(tiddler, callback, options) {
 	var fields = tiddler.fields;
@@ -78,18 +78,17 @@ function abridge(string, length) {
 
 function isReserved(wiki, field) {
 	var method = wiki.getGlobalCache('relink-fieldnames-reserved', function() {
-		var enabled = wiki.getTiddlerText(enableTiddler, "no");
-		if (enabled === "yes") {
+		var blacklistTitle = wiki.getTiddlerText(blacklistTiddler);
+		var blacklist = wiki.getTiddler(blacklistTitle);
+		if (blacklist) {
+			var tiddlers = wiki.filterTiddlers(blacklist.fields.filter);
 			var fieldMap = Object.create(null);
-			wiki.eachShadowPlusTiddlers(function(tiddler, title) {
-				if (title.substr(0, docPrefix.length) === docPrefix) {
-					var reserved = title.substr(docPrefix.length);
-					fieldMap[reserved] = true;
-				}
-			});
+			for (var i = 0; i < tiddlers.length; i++) {
+				fieldMap[tiddlers[i]] = true;
+			}
 			return function(field) {return fieldMap[field] || false;};
 		} else {
-			// fieldnames is disabled. Everything is reserved.
+			// no blacklist. fieldnames is disabled. Everything is reserved.
 			return function() { return true; };
 		}
 	});

@@ -23,4 +23,4 @@ tags: $:/tags/flibbles/relink/Configuration
 
 The following is a table of all tiddlers currently being used as field names.
 
-<table class="tc-relink-fieldnames-table"><tbody><$list variable="field" filter="[fields[]is[tiddler]] -text -title -type"><$macrocall $name="entry" field=<<field>> /></$list></tbody></table>
+<table class="tc-relink-fieldnames-table"><tbody><$list variable="field" filter="[fields[]is[tiddler]] -[all[shadows+tiddlers]removeprefix[$:/language/Docs/Fields/]]"><$macrocall $name="entry" field=<<field>> /></$list></tbody></table>
