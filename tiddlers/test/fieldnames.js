@@ -8,28 +8,54 @@ var utils = require("test/utils");
 
 describe('fieldname plugin', function() {
 
+function getWiki() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: "$:/config/flibbles/relink-fieldnames/enabled", text: "yes"},
+		{title: "$:/language/Docs/Fields/text", text: "defined"},
+		{title: "$:/language/Docs/Fields/title", text: "defined"},
+		{title: "$:/language/Docs/Fields/type", text: "defined"}]);
+	return wiki;
+};
+
 beforeEach(function() {
 	spyOn(console, 'log');
 });
 
 it('reports only non-blacklisted tiddlers', function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	wiki.addTiddlers([
 		{title: 'test', exists: "content", text: "content"},
 		{title: "exists"}, // Exists gets reported
 		{title: "text"}]);
 	expect(utils.getReport('test', wiki)).toEqual({ "exists": [": content"] });
+	// Once we document a field, it will stop showing up.
+	wiki.addTiddler({title: "$:/language/Docs/Fields/exists", text: "defined"});
+	expect(utils.getReport('test', wiki)).toEqual({});
+	// And taking out the definition?
+	wiki.deleteTiddler("$:/language/Docs/Fields/exists");
+	expect(utils.getReport('test', wiki)).toEqual({ "exists": [": content"] });
+});
+
+it('can be toggled by the configuration tiddler', function() {
+	const wiki = getWiki();
+	wiki.addTiddlers([{title: 'test', exists: "content"}]);
+	expect(utils.getReport('test', wiki)).toEqual({ "exists": [": content"] });
+	wiki.addTiddler({title: "$:/config/flibbles/relink-fieldnames/enabled", text: "no"});
+	expect(utils.getReport('test', wiki)).toEqual({ });
+	wiki.addTiddler({title: "$:/config/flibbles/relink-fieldnames/enabled", text: "yes"});
+	expect(utils.getReport('test', wiki)).toEqual({ "exists": [": content"] });
 });
 
 it('reports missing tiddlers (for now)', function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	wiki.addTiddlers([
 		{title: 'test', missing: "content"}]);
 	expect(utils.getReport('test', wiki)).toEqual({ "missing": [": content"] });
 });
 
 it('reports field name and field value', function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	wiki.addTiddlers([
 		{title: 'test', active: "other"},
 		{title: "active"},
@@ -41,7 +67,7 @@ it('reports field name and field value', function() {
 it('abridges reports if field value is long', function() {
 	const string = "This is an excessively long value to have as a field.";
 	const maxLength = 20;
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	wiki.addTiddlers([
 		{title: 'test', field: string},
 		{title: 'field'}]);
@@ -50,7 +76,7 @@ it('abridges reports if field value is long', function() {
 });
 
 it('does not invalidate reports when renaming to existing field', function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	wiki.addTiddlers([
 		{title: 'test', to: "content"},
 		{title: 'from'}]);
@@ -61,7 +87,7 @@ it('does not invalidate reports when renaming to existing field', function() {
 });
 
 it('doesn\'t clobber existing field values', function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	wiki.addTiddlers([
 		{title: 'test1', from: "content"},
 		{title: 'test2', from: "content", to: ""}, // Blanks count as values
@@ -79,7 +105,7 @@ it('doesn\'t clobber existing field values', function() {
 });
 
 it('avoids relinking to blacklisted fields', function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	wiki.addTiddlers([
 		{title: 'test', from: "content"},
 		{title: 'from'}]);
@@ -93,7 +119,7 @@ it('avoids relinking to blacklisted fields', function() {
 });
 
 it('avoids relinking from blacklisted fields', function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	wiki.addTiddlers([
 		{title: 'test', text: "content"},
 		{title: 'title'}]);
@@ -104,7 +130,7 @@ it('avoids relinking from blacklisted fields', function() {
 });
 
 it("can relink both field name and field value", function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	const fromConf = utils.fieldConf("from", "list");
 	const toConf = utils.fieldConf("to", "list");
 	wiki.addTiddlers([
@@ -120,7 +146,7 @@ it("can relink both field name and field value", function() {
 });
 
 it("can relink a tiddler with itself as a field", function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	wiki.addTiddlers([{title: 'from', from: "Content"}]);
 	wiki.renameTiddler("from", "to");
 	expect(wiki.tiddlerExists('from')).toBe(false);
@@ -129,7 +155,7 @@ it("can relink a tiddler with itself as a field", function() {
 
 (utils.atLeastVersion('5.2.0')? it : xit)
 ("can relink field name even if field value impossible", function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	const to = "to]] val";
 	const fromConf = utils.fieldConf("from", "list");
 	const toConf = utils.fieldConf(to, "list");
@@ -145,7 +171,7 @@ it("can relink a tiddler with itself as a field", function() {
 });
 
 it("won't clobber existing whitelist entries", function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	const fromConf = utils.fieldConf("from", "list");
 	const toConf = utils.fieldConf("to", "title");
 	wiki.addTiddlers([
@@ -160,8 +186,19 @@ it("won't clobber existing whitelist entries", function() {
 	expect(wiki.getTiddler(toConf.title).fields.text).toBe("title");
 });
 
+it("won't touch plugins ever", function() {
+	const wiki = utils.addPlugin("testPlugin", [{}], {description: "Anything", wiki: getWiki()});
+	wiki.addTiddler({title: "description"});
+	utils.spyFailures(spyOn);
+	wiki.renameTiddler("description", "to");
+	expect(wiki.getTiddler("testPlugin").fields.description).toBe("Anything");
+	expect(wiki.getTiddler("testPlugin").fields.to).toBeUndefined();
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	expect(utils.failures.calls.first().args[0]).toEqual(['testPlugin']);
+});
+
 it("can relink into weird field names", function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	const string = 'This:has a colon';
 	wiki.addTiddlers([
 		{title: 'test', from: "content"},
@@ -183,7 +220,7 @@ it("can relink into weird field names", function() {
 });
 
 it('can change capitalization', function() {
-	const wiki = new $tw.Wiki();
+	const wiki = getWiki();
 	wiki.addTiddlers([
 		{title: 'test', from: "content"},
 		{title: 'from'}]);

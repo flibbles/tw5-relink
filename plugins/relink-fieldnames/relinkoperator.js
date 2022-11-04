@@ -13,17 +13,18 @@ Updates the field names if they correspond to the renamed tiddler.
 
 exports.name = 'field-names';
 
-var configPrefix = "$:/config/flibbles/relink/fields/"
-var reservedFields = {
-	title: true,
-	text: true,
-	type: true
-};
+var configPrefix = "$:/config/flibbles/relink/fields/";
+var docPrefix = "$:/language/Docs/Fields/";
+var enableTiddler = "$:/config/flibbles/relink-fieldnames/enabled";
+
+var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+utils.getContext('whitelist').hotDirectories.push(docPrefix);
+utils.getContext('whitelist').hotDirectories.push(enableTiddler);
 
 exports.report = function(tiddler, callback, options) {
 	var fields = tiddler.fields;
 	for (var field in fields) {
-		if (!reservedFields[field]) {
+		if (!isReserved(options.wiki, field)) {
 			callback(field, ': ' + abridge(fields[field], 20), {soft: true});
 		}
 	}
@@ -31,9 +32,9 @@ exports.report = function(tiddler, callback, options) {
 
 exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 	if ($tw.utils.hop(tiddler.fields, fromTitle)
-	&& !reservedFields[fromTitle]) {
+	&& !isReserved(options.wiki, fromTitle)) {
 		if ($tw.utils.hop(tiddler.fields, toTitle)
-		|| reservedFields[toTitle]
+		|| isReserved(options.wiki, toTitle)
 		|| !isValidFieldName(toTitle)) {
 			// There is already a [toTitle] field, and we won't clobber it.
 			// Or this is an illegal field name
@@ -73,4 +74,24 @@ function isValidFieldName(field) {
 
 function abridge(string, length) {
 	return (string.length > length)? string.substr(0, length) + "..." : string;
+};
+
+function isReserved(wiki, field) {
+	var method = wiki.getGlobalCache('relink-fieldnames-reserved', function() {
+		var enabled = wiki.getTiddlerText(enableTiddler, "no");
+		if (enabled === "yes") {
+			var fieldMap = Object.create(null);
+			wiki.eachShadowPlusTiddlers(function(tiddler, title) {
+				if (title.substr(0, docPrefix.length) === docPrefix) {
+					var reserved = title.substr(docPrefix.length);
+					fieldMap[reserved] = true;
+				}
+			});
+			return function(field) {return fieldMap[field] || false;};
+		} else {
+			// fieldnames is disabled. Everything is reserved.
+			return function() { return true; };
+		}
+	});
+	return method(field);
 };
