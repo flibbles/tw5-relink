@@ -1,0 +1,9 @@
+tags: $:/tags/Macro
+title: Macros/hide
+
+\define hide(content) $content$
+<<print-before-this>>
+
+`hide` will output whatever input it's given. It makes no change. The reason it exists is shield its contents from //Relink//, so that the plugin will not index that content, and thus create //missing// tiddlers based on whatever it finds in there.
+
+This is something I do for the demo to keep the "//Relink// Missing" cleaned up for demonstration purposes. You will probably never need to do something like this yourself.

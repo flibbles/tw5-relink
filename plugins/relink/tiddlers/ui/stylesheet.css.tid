@@ -58,3 +58,7 @@ title: $:/plugins/flibbles/relink/ui/stylesheet.css
 .tc-relink-impossible a.tc-tiddlylink {
 	color: <<colour relink-impossible>>;
 }
+
+.tc-relink-menu-missing-blurb {
+	margin-left: 30pt;
+}

@@ -9,6 +9,9 @@ title: Macros/say-list
 
 `say-list` prints a filter's items in a conversational way. For instance:
 
+<<hide """
+
 : `<<say-list "this that [[another thing]]">>` -> ''<<say-list "this that [[another thing]]">>''
+""" >>
 
 This macro declares its parameters through [[pragma|Inline Declarations]]. Since this tiddler is global (because of <<tag $:/tags/Macro>>), its parameters will get a mention in the <<link-to-config-tab Macros "whitelist configuration page">>

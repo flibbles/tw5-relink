@@ -22,4 +22,4 @@ To install //Relink-fieldnames//, first install //Relink//, then drag the follow
 <$link to={{!!plugin}} class="relink-dragger relink-markdown">Field renaming support!</$link>
 @@
 
-<<link-to-tab Demo Demo/Fieldnames Demo>>
+<<link-to-tab Demo "Demo/Field names" Demo>>

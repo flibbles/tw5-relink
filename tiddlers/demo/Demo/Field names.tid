@@ -5,4 +5,4 @@ tags: Demo Supplemental
 type: text/vnd.tiddlywiki
 warning: Fieldnames support requires you to download the <<link-to-tab Plugins Plugins/Fieldnames "//Relink-fieldnames// supplimental plugin">>.
 
-This is the <<link-to-tab Demo Demo/Fieldnames "Fieldnames Demo">>. It has a field named [[Frodo]] in order to demonstrate how //Relink// can update the field's name.
+This is the <<link-to-tab Demo "Demo/Field names" "Fieldnames Demo">>. It has a field named [[Frodo]] in order to demonstrate how //Relink// can update the field's name.

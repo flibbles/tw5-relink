@@ -1,0 +1,4 @@
+title: $:/plugins/flibbles/relink/ui/ListItemWithBlurbTemplate
+
+<div class="tc-menu-list-item"><$link /></div>
+<$list variable=blurb filter="[<currentTiddler>relink:report<missingTiddler>]"><div class="tc-relink-menu-missing-blurb"><$text text=<<blurb>> /></div>

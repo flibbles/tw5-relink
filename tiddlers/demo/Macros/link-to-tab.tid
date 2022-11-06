@@ -20,7 +20,7 @@ $caption$
 <$list filter="[<__configTab__>!match[]]">
 <$action-setfield
 	$tiddler="$:/state/tab-1407883317"
-	text={{{[[$:/plugins/flibbles/relink/ui/configuration/]addsuffix<__configTab__>is[tiddler]else<__configTab__>]}}} />
+	text={{{[<__configTab__>addprefix[$:/plugins/flibbles/relink/ui/configuration/]is[shadow]else<__configTab__>]}}} />
 </$list>
 <$action-navigate $to="$:/plugins/flibbles/relink" />
 $caption$
