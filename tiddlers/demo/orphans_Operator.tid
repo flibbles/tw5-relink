@@ -1,0 +1,17 @@
+title: orphans Operator
+tags: [[Filter Operators]]
+caption: orphans
+purpose: outputs all non-shadow tiddlers with no references
+
+|!purpose |{{!!purpose}} |
+|!input |ignored |
+|!parameter |none |
+|!output |any non-shadow tiddlers which are not referenced by any other tiddler |
+
+[ext[Learn more about how to use Filters|https://tiddlywiki.com/#Filters]]
+
+''Usage'': `[relink:orphans[]]`
+
+Behaves much like `[all[orphans]]`, except that this will look at all possible references, not just hard links.
+
+[[Examples|orphans Operator (Examples)]]

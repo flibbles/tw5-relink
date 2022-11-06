@@ -84,6 +84,18 @@ Indexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 	return results;
 };
 
+// Returns all tiddlers that don't have anything referencing it.
+Indexer.prototype.orphans = function() {
+	this._upkeep();
+	var results = [];
+	for (var title in this.index) {
+		if (!this.backIndex[title]) {
+			results.push(title);
+		}
+	}
+	return results;
+};
+
 Indexer.prototype._upkeep = function() {
 	var title;
 	if (this.changedTiddlers && (this.context.changed(this.changedTiddlers) || this.context.parent.changed(this.changedTiddlers))) {

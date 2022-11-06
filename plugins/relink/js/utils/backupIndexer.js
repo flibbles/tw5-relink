@@ -52,6 +52,22 @@ BackupIndexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 	return cache.lastRelink;
 };
 
+BackupIndexer.prototype.orphans = function() {
+	var index = getCache(this.wiki).lookup;
+	var results = [];
+	for (var title in index) {
+		var found = false;
+		for (var anything in this.reverseLookup(title)) {
+			found = true;
+			break;
+		}
+		if (!found) {
+			results.push(title);
+		}
+	}
+	return results;
+};
+
 function getCache(wiki) {
 	return wiki.getGlobalCache('relink', function() {
 		var tiddlerList = wiki.getRelinkableTitles();

@@ -27,3 +27,7 @@ exports.getRelinkableTitles = function() {
 		}
 	})();
 };
+
+exports.getRelinkOrphans = function() {
+	return utils.getIndexer(this).orphans();
+};
