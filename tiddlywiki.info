@@ -44,7 +44,6 @@
 		],
 		"bundle": [
 			"--output", "./bundle",
-			"--verbose",
 			"--render",
 				"[plugin-type[plugin]prefix[$:/plugins/flibbles/relink]]",
 				"[split[/]last[]addsuffix[.json]]",

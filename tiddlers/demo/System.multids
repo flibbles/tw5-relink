@@ -12,4 +12,4 @@ SiteSubtitle: flexibility when relinking renamed tiddlers
 themes/tiddlywiki/vanilla/options/sidebarlayout: fluid-fixed
 
 config/flibbles/uglify/compress: no
-config/flibbles/uglify/blacklist: $:/plugins/flibbles/relink $:/plugins/flibbles/relink-markdown $:/plugins/flibbles/relink-titles $:/plugins/flibbles/3rd-party
+config/flibbles/uglify/blacklist: $:/plugins/flibbles/relink $:/plugins/flibbles/relink-markdown $:/plugins/flibbles/relink-titles $:/plugins/flibbles/relink-fieldnames $:/plugins/flibbles/3rd-party

@@ -35,11 +35,11 @@ var assetList = [
         "parent-plugin": "$:/plugins/flibbles/relink",
         "source": "https://github.com/flibbles/tw5-relink",
         "demo": "http://flibbles.github.io/tw5-relink/",
-        "list": "readme",
+        "list": "readme reference",
         "dependents": "",
         "plugin-type": "plugin",
         "type": "application/json",
-        "readme": "\nEnables Relink to relink field names associated with renamed tiddlers. The following fields cannot be interacted with in this way:\n<$list counter=counter filter=\"[enlist[text title type]]\"><$list filter=\"[<counter-first>] -yes\">, </$list>''<<currentTiddler>>''</$list>\n\nSee <a href={{$:/plugins/flibbles/relink-fieldnames!!source}} class=\"tc-tiddlylink-external\">the tw5-relink website</a> for more details and examples.\n\n{{$:/plugins/flibbles/relink-fieldnames/reference}}\n",
+        "readme": "\\whitespace trim\n\nEnables Relink to relink field names associated with renamed tiddlers. The following fields cannot be interacted with in this way:\n\n<<<\n<$set name=blacklisted filter={{$:/config/flibbles/relink-fieldnames/blacklist!!filter}}>\n''<$list counter=counter filter=\"[enlist<blacklisted>sort[]]\">\n<<currentTiddler>><br>\n</$list>''\n</$set>\n<<<\n\nSee&#32;<a href={{$:/plugins/flibbles/relink-fieldnames!!source}} class=\"tc-tiddlylink-external\">the tw5-relink website</a>&#32;for more details and examples.\n",
         "requires-reload": "yes"
     },
     {

@@ -1,0 +1,8 @@
+created: 20221106022952190
+
+\rules except wikilink
+
+* Introducing the //Relink-Fieldnames// supplemental plugin, which allows you to manage the field names themselves, not just the field values. If you have tiddlers whose title is used a a field name, those field names will be updated when that tiddler is renamed.
+* Filters! While //Relink// has always had filters, they were never documented and defined, but enough of you have been using them that I went ahead and finalized them. Introducing `relink:references`, `relink:backreferences`, `relink:report`, and `relink:orphans`. If you were already using any of these filters, don't worry. They work exactly as they have been, only now they're documented, and their usage is set in stone now.
+* Introducing the "//Relink// Missing" and "//Relink// Orphans" MoreSideBar lists. They are moderately more useful than the built-in "Missing" and "Orphans" lists.
+* Made improvements to the indexer to greatly improve performance while you have uncommitted tiddler renames in place. (i.e. You edit a tiddler title, but you don't save, and you go and edit other stuff. Before, //Relink// would make things laggy.)
