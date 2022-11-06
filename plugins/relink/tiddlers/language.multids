@@ -19,10 +19,14 @@ Error/RelinkFilterOperator: Filter Error: Unknown suffix for the 'relink' filter
 Error/ReportFailedRelinks: Relink could not update '<<from>>' to '<<to>>' inside the following tiddlers:
 Error/UnrecognizedType: Relink parse error: Unrecognized field type '<<type>>'
 
+Filters/Missing: //Relink// Missing tiddlers
+
 Help/Attributes: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Attributes]]}}} class="tc-tiddlylink-external">Attributes documentation page</a> for details.
 Help/Fields: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Fields]]}}} class="tc-tiddlylink-external">Fields documentation page</a> for details.
 Help/Macros: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Macros]]}}} class="tc-tiddlylink-external">Macros documentation page</a> for details.
 Help/Operators: See the <a href={{{[{$:/plugins/flibbles/relink!!demo}addsuffix[#Operators]]}}} class="tc-tiddlylink-external">Operators documentation page</a> for details.
+
+SideBar/Missing/Caption: //Relink//<br>Missing
 
 TiddlerInfo/References/Empty: No tiddlers contain any fields, links, macros, transclusions, or widgets referencing this one
 TiddlerInfo/References/Description: The following tiddlers contain fields, links, macros, transclusions, or widgets referencing this one:
