@@ -24,7 +24,7 @@ Indexer.prototype.rebuild = function() {
 	this.backIndex = null;
 	this.contexts = Object.create(null);
 	this.changedTiddlers = undefined;
-	this.lastRelinkFrom = undefined;
+	this.lastRelinks = Object.create(null);
 };
 
 Indexer.prototype.update = function(updateDescriptor) {
@@ -60,8 +60,8 @@ Indexer.prototype.reverseLookup = function(title) {
 Indexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 	this._upkeep();
 	var shortlist = undefined;
-	var lastRelink = this.lastRelinks;
-	if (lastRelink && lastRelink.from === fromTitle) {
+	var lastRelink = this.lastRelinks[fromTitle];
+	if (lastRelink) {
 		if (lastRelink.to === toTitle) {
 			// We need to reintroduce the relink cache, where temporary info
 			// was stored.
@@ -71,12 +71,16 @@ Indexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 		shortlist = buildShortlist(lastRelink);
 	}
 	var results = utils.getRelinkResults(this.wiki, fromTitle, toTitle, this.context, shortlist, options);
-	this.lastRelinks = {
+	if (Object.keys(this.lastRelinks).length > 3) {
+		// The cache got a little large. wipe it clean.
+		this.lastRelinks = Object.create(null);
+	}
+	this.lastRelinks[fromTitle] = {
 		from: fromTitle,
 		results: results,
 		to: toTitle,
 		cache: options.cache,
-		changesSince: Object.create(null)};
+		maybeRelevant: Object.create(null)};
 	return results;
 };
 
@@ -129,11 +133,8 @@ Indexer.prototype._purge = function(title) {
 // This drops the cached relink results if unsanctioned tiddlers were changed
 Indexer.prototype._decacheRelink = function(title) {
 	var tiddler = this.wiki.getTiddler(title);
-	var lastRelink = this.lastRelinks;
-	if (lastRelink) {
-		var from = this.lastRelinks.from;
-	//for (var from in this.lastRelinks) {
-		//var lastRelink = this.lastRelinks[from];
+	for (var from in this.lastRelinks) {
+		var lastRelink = this.lastRelinks[from];
 		if (title !== from
 		&& title !== lastRelink.to
 		&& (!tiddler
@@ -142,7 +143,7 @@ Indexer.prototype._decacheRelink = function(title) {
 		|| references(this.index[title], from))) { // draft references target
 			// This is not the draft of the last relinked title,
 			// so our cached results should be wiped.
-			lastRelink.changesSince[title] = true;
+			lastRelink.maybeRelevant[title] = true;
 			// Force this cached relink to partially refresh when it comes time
 			lastRelink.to = undefined;
 		}
@@ -157,7 +158,7 @@ function references(list, item) {
 // This list will be much faster to relink again.
 function buildShortlist(lastRelink) {
 	var shortlist = Object.keys(lastRelink.results);
-	for (var title in lastRelink.changesSince) {
+	for (var title in lastRelink.maybeRelevant) {
 		if (lastRelink.results[title] === undefined) {
 			shortlist.push(title);
 		}

@@ -363,6 +363,20 @@ it('does not call getRelinkResults on rename after scanning', function() {
 	expect(operators.text.relink).toHaveBeenCalledTimes(0);
 });
 
+it('discovers when non-cached tiddler should now be on shortlist', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'A', text: ''},
+		{title: 'B', text: '\\import A\n<<macro from>>'},
+		{title: 'C', text: '[[from]]'},
+		{title: 'from', text: 'text'}]);
+	// A and B are not on the shortlist
+	expect(wouldChange(wiki, 'from', 'to')).toEqual(['C']);
+	// A is changed, but now it's B that would be changed if From changes
+	wiki.addTiddler({title: 'A', text: '\\define macro(x) $x$\n\\relink macro x'});
+	expect(wouldChange(wiki, 'from', 'to')).toEqual(['C', 'B']);
+});
+
 it('keeps the relink shortlist as short as possible', function() {
 	const wiki = new $tw.Wiki();
 	// This make sure various text patterns don't accidentally get cached
