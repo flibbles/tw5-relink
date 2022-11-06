@@ -60,21 +60,24 @@ Indexer.prototype.reverseLookup = function(title) {
 Indexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 	this._upkeep();
 	var shortlist = undefined;
-	if (this.lastRelinkFrom === fromTitle) {
-		if (this.lastRelinkTo === toTitle) {
+	var lastRelink = this.lastRelinks;
+	if (lastRelink && lastRelink.from === fromTitle) {
+		if (lastRelink.to === toTitle) {
 			// We need to reintroduce the relink cache, where temporary info
 			// was stored.
-			options.cache = this.lastRelinkCache;
-			return this.lastRelinkResult;
+			options.cache = lastRelink.cache;
+			return lastRelink.results;
 		}
-		shortlist = buildShortlist(this.lastRelinkResult, this.lastRelinkChangesSince);
+		shortlist = buildShortlist(lastRelink);
 	}
-	this.lastRelinkResult = utils.getRelinkResults(this.wiki, fromTitle, toTitle, this.context, shortlist, options);
-	this.lastRelinkTo = toTitle;
-	this.lastRelinkFrom = fromTitle;
-	this.lastRelinkCache = options.cache;
-	this.lastRelinkChangesSince = Object.create(null);
-	return this.lastRelinkResult;
+	var results = utils.getRelinkResults(this.wiki, fromTitle, toTitle, this.context, shortlist, options);
+	this.lastRelinks = {
+		from: fromTitle,
+		results: results,
+		to: toTitle,
+		cache: options.cache,
+		changesSince: Object.create(null)};
+	return results;
 };
 
 Indexer.prototype._upkeep = function() {
@@ -98,7 +101,7 @@ Indexer.prototype._upkeep = function() {
 			if (tiddlerContext.changed(this.changedTiddlers)) {
 				this._purge(title);
 				this._populate(title);
-				this._dropResults(title);
+				this._decacheRelink(title);
 				// Wipe this change, so we don't risk updating it twice.
 				this.changedTiddlers[title] = undefined;
 			}
@@ -108,7 +111,7 @@ Indexer.prototype._upkeep = function() {
 			if (change && change.modified) {
 				this._purge(title);
 				this._populate(title);
-				this._dropResults(title);
+				this._decacheRelink(title);
 			}
 		}
 		this.changedTiddlers = undefined;
@@ -124,19 +127,25 @@ Indexer.prototype._purge = function(title) {
 };
 
 // This drops the cached relink results if unsanctioned tiddlers were changed
-Indexer.prototype._dropResults = function(title) {
+Indexer.prototype._decacheRelink = function(title) {
 	var tiddler = this.wiki.getTiddler(title);
-	if (this.lastRelinkFrom
-	&& title !== this.lastRelinkFrom
-	&& title !== this.lastRelinkTo
-	&& (!tiddler
+	var lastRelink = this.lastRelinks;
+	if (lastRelink) {
+		var from = this.lastRelinks.from;
+	//for (var from in this.lastRelinks) {
+		//var lastRelink = this.lastRelinks[from];
+		if (title !== from
+		&& title !== lastRelink.to
+		&& (!tiddler
 		|| !$tw.utils.hop(tiddler.fields, 'draft.of') // is a draft
-		|| tiddler.fields['draft.of'] !== this.lastRelinkFrom // draft of target
-		|| references(this.index[title], this.lastRelinkFrom))) { // draft references target
-		// This is not the draft of the last relinked title,
-		// so our cached results should be wiped.
-		this.lastRelinkChangesSince[title] = true;
-		this.lastRelinkTo = undefined;
+		|| tiddler.fields['draft.of'] !== from// draft of target
+		|| references(this.index[title], from))) { // draft references target
+			// This is not the draft of the last relinked title,
+			// so our cached results should be wiped.
+			lastRelink.changesSince[title] = true;
+			// Force this cached relink to partially refresh when it comes time
+			lastRelink.to = undefined;
+		}
 	}
 };
 
@@ -146,10 +155,10 @@ function references(list, item) {
 
 // Compiles a short list of tiddlers we need to check for a rename.
 // This list will be much faster to relink again.
-function buildShortlist(lastResults, changedTiddlersSinceLastResults) {
-	var shortlist = Object.keys(lastResults);
-	for (var title in changedTiddlersSinceLastResults) {
-		if (lastResults[title] === undefined) {
+function buildShortlist(lastRelink) {
+	var shortlist = Object.keys(lastRelink.results);
+	for (var title in lastRelink.changesSince) {
+		if (lastRelink.results[title] === undefined) {
 			shortlist.push(title);
 		}
 	}
