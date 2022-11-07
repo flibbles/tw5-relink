@@ -1,0 +1,17 @@
+title: $:/config/flibbles/relink/operators/
+
+# list: reference
+# search:$comma,deliniated,name$:<flag list>
+# field:$name$:
+# $name$
+
+each: fieldname
+eachday: fieldname
+get: fieldname
+has: fieldname
+listed: fieldname
+nsort: fieldname
+nsortcs: fieldname
+sort: fieldname
+sortan: fieldname
+sortcs: fieldname

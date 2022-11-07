@@ -58,7 +58,7 @@ it('reports field name and field value', function() {
 
 it('abridges reports if field value is long', function() {
 	const string = "This is an excessively long value to have as a field.";
-	const maxLength = 20;
+	const maxLength = 30;
 	const wiki = getWiki();
 	wiki.addTiddlers([
 		{title: 'test', field: string},
@@ -230,6 +230,32 @@ it('can change capitalization', function() {
 		expect(wiki.getTiddler('test').fields.from).toBe('content');
 		expect(wiki.getTiddler('test').fields.From).toBeUndefined();
 	}
+});
+
+function testText(text, expected, report, options) {
+	options = Object.assign({from: 'from', to: 'to'}, options);
+	const wiki = options.wiki || getWiki();
+	if (expected === true) {
+		expected = text.split(options.from).join(options.to);
+	} else if (expected === false) {
+		expected = text;
+	}
+	wiki.addTiddler({title: 'test', text: text});
+	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+	wiki.renameTiddler(options.from, options.to, options);
+	expect(utils.getText('test', wiki)).toEqual(expected);
+};
+
+it('can handle filter operators', function() {
+	const wiki = getWiki();
+	wiki.addTiddler(utils.operatorConf("has", "fieldname"));
+	testText("{{{ [has[from]] }}}", true, ['{{{[has[]]}}}'], {wiki: wiki});
+	testText("{{{ [has[from]] }}}",
+	         utils.placeholder('fieldname-1', 'to]]here')+"{{{ [has<relink-fieldname-1>] }}}",
+	         ['{{{[has[]]}}}'], {wiki: wiki, to: 'to]]here'});
+	utils.spyFailures(spyOn);
+	testText("{{{ [has[from]] }}}", false, ['{{{[has[]]}}}'], {wiki: wiki, to: 'title'});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 });
