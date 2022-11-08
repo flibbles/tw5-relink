@@ -1,5 +1,6 @@
 description: Example plugin which integrates with Relink.
 list: readme
+name: Relink Example
 plugin-type: plugin
 title: $:/plugins/flibbles/3rd-party
 type: application/json

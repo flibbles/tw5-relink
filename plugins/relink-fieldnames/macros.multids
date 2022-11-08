@@ -1,0 +1,7 @@
+title: $:/config/flibbles/relink/macros/
+
+keyboard-driven-input/firstSearchFilterField: fieldname
+keyboard-driven-input/secondSearchFilterField: fieldname
+list-links-draggable/field: fieldname
+tag-picker/tagField: fieldname
+timeline/dateField: fieldname

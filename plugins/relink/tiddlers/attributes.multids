@@ -1,5 +1,22 @@
 title: $:/config/flibbles/relink/attributes/
 
+$action-deletefield/$tiddler: filter
+$action-deletetiddler/$filter: filter
+$action-deletetiddler/$tiddler: title
+$action-listops/$filter: filter
+$action-listops/$tiddler: title
+# $action-listops/$subfilter: subfilter
+# $action-listops/$tags: subfilter
+$action-log/$$filter: filter
+$action-navigate/$to: title
+$action-popup/$state: title
+$action-sendmessage/$names: filter
+$action-sendmessage/$values: filter
+$action-setfield/$tiddler: title
+$action-setmultiplefields/$tiddler: title
+$action-setmultiplefields/$fields: filter
+$action-setmultiplefields/$indexes: filter
+$action-setmultiplefields/$values: filter
 $button/actions: wikitext
 $button/set: reference
 $button/setTo: title
@@ -16,12 +33,15 @@ $droppable/actions: wikitext
 $dropzone/actions: wikitext
 $edit-bitmap/tiddler: title
 $edit-text/tiddler: title
+$edit/inputActions: wikitext
+$edit/refreshTitle: title
 $edit/tiddler: title
 $encrypt/filter: filter
 $fieldmangler/tiddler: title
 $fields/tiddler: title
 $image/source: title
 $importvariables/filter: filter
+$jsontiddler/tiddler: title
 $keyboard/actions: wikitext
 $linkcatcher/to: title
 $linkcatcher/set: title
@@ -33,6 +53,7 @@ $list/template: title
 $list/editTemplate: title
 $list/emptyMessage: wikitext
 $list/history: title
+$log/$$filter: filter
 $messagecatcher/actions: wikitext
 $navigator/story: title
 $navigator/history: title
@@ -52,6 +73,8 @@ $setvariable/filter: filter
 $set/tiddler: title
 $set/subtiddler: title
 $set/filter: filter
+$setmultiplevariables/$names: filter
+$setmultiplevariables/$values: filter
 $tiddler/tiddler: title
 $transclude/tiddler: title
 $transclude/subtiddler: title

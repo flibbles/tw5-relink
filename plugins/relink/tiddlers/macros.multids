@@ -1,23 +1,38 @@
 title: $:/config/flibbles/relink/macros/
 
+colour-picker/actions: wikitext
 csvtiddlers/filter: filter
 datauri/title: title
+image-picker/actions: wikitext
 # image-picker/subfilter: subfilter // Not the same as a filter
 jsontiddler/title: title
 jsontiddlers/filter: filter
+keyboard-driven-input/configTiddlerFilter: filter
+keyboard-driven-input/inputAcceptActions: wikitext
+keyboard-driven-input/inputAcceptVariantActions: wikitext
+keyboard-driven-input/inputCancelActions: wikitext
+keyboard-driven-input/selectionStateTitle: title
+keyboard-driven-input/storeTitle: title
+keyboard-driven-input/tiddler: title
 list-links/filter: filter
+list-links/emptyMessage: wikitext
 list-links-draggable/tiddler: title
 list-links-draggable/itemTemplate: title
 list-tagged-draggable/tag: title
-# list-tagged-draggable/subFilter: filter // Subfilter, not the same.
+list-tagged-draggable/emptyMessage: wikitext
 list-tagged-draggable/itemTemplate: title
+# list-tagged-draggable/subFilter: filter // Subfilter, not the same.
+list-thumbnails/filter: filter
+tabs/actions: wikitext
 tabs/buttonTemplate: title
 tabs/default: title
 tabs/tabsList: filter
 tabs/template: title
 tag/tag: title
+tag-picker/actions: wikitext
+tag-pill/actions: wikitext
 tag-pill/tag: title
-timeline/subfilter: filter
+#timeline/subfilter: subfilter
 
 toc/tag: title
 #toc/sort: subfilter
