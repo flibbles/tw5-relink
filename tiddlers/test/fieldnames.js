@@ -258,4 +258,45 @@ it('can handle filter operators', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it('can handle transcludes', function() {
+	testText("{{tid!!from}}", true, ['{{tid!!}}']);
+	testText("{{tid!!from}}", "<$tiddler tiddler=tid><$transclude tiddler=tid field=t|o/></$tiddler>", ['{{tid!!}}'], {to: "t|o"});
+	testText("{{tid!!from}}", "<$tiddler tiddler=tid><$transclude tiddler=tid field=t{o/></$tiddler>", ['{{tid!!}}'], {to: "t{o"});
+	utils.spyFailures(spyOn);
+	testText("{{tid!!from}}", false, ['{{tid!!}}'], {to: "t}o"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+});
+
+it('can handle transcludes where both title and field changed', function() {
+	testText("{{from!!from}}", true, ['{{!!from}}', '{{from!!}}']);
+	testText("{{from!!from}}", "<$tiddler tiddler=t!!o>{{!!t!!o}}</$tiddler>", ['{{!!from}}', '{{from!!}}'], {to: "t!!o"});
+	// One final hard test
+	var to = "t!!'o\"";
+	const wiki = getWiki();
+	wiki.addTiddler(utils.attrConf("$tiddler", "tiddler"));
+	testText("{{from!!from}}", utils.placeholder(1,to) + "<$tiddler tiddler=<<relink-1>>>{{!!"+to+"}}</$tiddler>", ['{{!!from}}', '{{from!!}}'], {to: to, wiki: wiki});
+	utils.spyFailures(spyOn);
+	// This one will fail though
+	testText("{{from!!from}}", "<$tiddler tiddler=}o>{{!!from}}</$tiddler>", ['{{!!from}}', '{{from!!}}'], {to: "}o"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+});
+
+it('can handle indirect references', function() {
+	testText("<$w a={{tid!!from}}/>", true, ['<$w a={{tid!!}} />']);
+	testText("<$w a={{tid!!from}}/>", true, ['<$w a={{tid!!}} />'], {to: "t{o"});
+	testText("<$w a={{tid!!from}}/>", true, ['<$w a={{tid!!}} />'], {to: "t|o"});
+	utils.spyFailures(spyOn);
+	testText("<$w a={{tid!!from}}/>", false, ['<$w a={{tid!!}} />'], {to: "t}o"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+});
+
+it('can handle indirect references where title and field change', function() {
+	testText("<$w a={{from!!from}}/>", true, ['<$w a={{!!from}} />', '<$w a={{from!!}} />']);
+	utils.spyFailures(spyOn);
+	testText("<$w a={{from!!from}}/>", false, ['<$w a={{!!from}} />', '<$w a={{from!!}} />'], {to: "t}o"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	testText("<$w a={{from!!from}}/>", "<$w a={{from!!t!!o}}/>", ['<$w a={{!!from}} />', '<$w a={{from!!}} />'], {to: "t!!o"});
+	expect(utils.failures).toHaveBeenCalledTimes(2);
+});
+
 });

@@ -12,6 +12,8 @@ This renames both the tiddler and the template field.
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var utils = require("./utils.js");
+var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
+var referenceOperators = relinkUtils.getModulesByTypeAsHashmap('relinkreference', 'name');
 
 exports.name = ['transcludeinline', 'transcludeblock'];
 
@@ -35,6 +37,11 @@ exports.report = function(text, callback, options) {
 	if (template) {
 		callback(template, '{{' + refString + '||}}');
 	}
+	for (var operator in referenceOperators) {
+		referenceOperators[operator].report(ref, function(title, blurb) {
+			callback(title, "{{" + (blurb || "") + "}}");
+		}, options);
+	}
 	this.parser.pos = this.matchRegExp.lastIndex;
 };
 
@@ -43,6 +50,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		reference = parseTextReference(m[1]),
 		template = m[2],
 		entry = undefined,
+		impossible = false,
 		modified = false;
 	this.parser.pos = this.matchRegExp.lastIndex;
 	if ($tw.utils.trim(reference.title) === fromTitle) {
@@ -54,6 +62,16 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		template = template.replace(fromTitle, toTitle);
 		modified = true;
 	}
+	for (var operator in referenceOperators) {
+		var result = referenceOperators[operator].relink(reference, fromTitle, toTitle, options);
+		if (result !== undefined) {
+			if (result === false) {
+				impossible = true;
+			} else {
+				modified = true
+			}
+		}
+	}
 	if (modified) {
 		var output = this.makeTransclude(this.parser, reference, template);
 		if (output) {
@@ -62,8 +80,12 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			// the block and inline filter wikitext rule.
 			entry = {output: output + utils.getEndingNewline(m[0])};
 		} else {
-			entry = {impossible: true}
+			impossible = true;
 		}
+	}
+	if (impossible) {
+		entry = entry || {};
+		entry.impossible = true;
 	}
 	return entry;
 };
@@ -101,10 +123,16 @@ exports.makeTransclude = function(parser, reference, template) {
 		} else {
 			rtn = widget;
 		}
-	} else if (!canBePrettyTitle(reference.title)) {
+	} else if (!canBePrettyTitle(reference.title) || !canBePrettyField(reference.field)) {
 		// This block and the next account for the 1%...
-		var reducedRef = {field: reference.field, index: reference.index};
-		rtn = utils.makeWidget(parser, '$tiddler', {tiddler: $tw.utils.trim(reference.title)}, prettyTransclude(reducedRef, template));
+		var transclude;
+		if (canBePrettyField(reference.field)) {
+			var reducedRef = {field: reference.field, index: reference.index};
+			transclude = prettyTransclude(reducedRef, template);
+		} else {
+			transclude = utils.makeWidget(parser, "$transclude", {tiddler: $tw.utils.trim(reference.title), field: reference.field});
+		}
+		rtn = utils.makeWidget(parser, '$tiddler', {tiddler: $tw.utils.trim(reference.title)}, transclude);
 	} else {
 		// This block takes care of 99% of all cases
 		rtn = prettyTransclude(reference, template);
@@ -114,6 +142,10 @@ exports.makeTransclude = function(parser, reference, template) {
 
 function canBePrettyTitle(value) {
 	return refHandler.canBePretty(value) && canBePrettyTemplate(value);
+};
+
+function canBePrettyField(value) {
+	return !/[\|\}\{]/.test(value);
 };
 
 function canBePrettyTemplate(value) {

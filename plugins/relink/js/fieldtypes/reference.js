@@ -7,6 +7,9 @@ tiddlerTitle!!field
 tiddlerTitle##propertyIndex
 \*/
 
+var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+var referenceOperators = utils.getModulesByTypeAsHashmap('relinkreference', 'name');
+
 exports.name = "reference";
 
 exports.report = function(value, callback, options) {
@@ -22,20 +25,42 @@ exports.report = function(value, callback, options) {
 			}
 			callback(title, blurb);
 		}
+		for (var operator in referenceOperators) {
+			referenceOperators[operator].report(reference, callback, options);
+		}
 	}
 };
 
 exports.relink = function(value, fromTitle, toTitle, options) {
 	var entry;
 	if (value) {
+		var impossible = false;
+		var modified = false;
 		var reference = $tw.utils.parseTextReference(value);
 		if (reference.title === fromTitle) {
 			if (!exports.canBePretty(toTitle)) {
-				entry = {impossible: true};
+				impossible = true;
 			} else {
+				modified = true;
 				reference.title = toTitle;
-				entry = {output: exports.toString(reference)};
 			}
+		}
+		for (var operator in referenceOperators) {
+			var result = referenceOperators[operator].relink(reference, fromTitle, toTitle, options);
+			if (result !== undefined) {
+				if (result === false) {
+					impossible = true;
+				} else {
+					modified = true;
+				}
+			}
+		}
+		if (modified) {
+			entry = {output: exports.toString(reference)};
+		}
+		if (impossible) {
+			entry = entry || {};
+			entry.impossible = true;
 		}
 	}
 	return entry;
