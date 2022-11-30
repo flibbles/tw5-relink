@@ -20,16 +20,11 @@ exports.report = function(reference, callback, options) {
 exports.relink = function(reference, fromTitle, toTitle, options) {
 	if (reference.field === fromTitle
 	&& !utils.isReserved(options.wiki, fromTitle)) {
-		if (utils.isReserved(options.wiki, toTitle)
-		|| !isValidFieldRef(toTitle)) {
-			return false;
+		if (utils.isReserved(options.wiki, toTitle)) {
+			return {impossible: true};
 		} else {
 			reference.field = toTitle;
-			return true;
+			return {output: reference};
 		}
 	}
-};
-
-function isValidFieldRef(field) {
-	return field.indexOf('}') < 0;
 };

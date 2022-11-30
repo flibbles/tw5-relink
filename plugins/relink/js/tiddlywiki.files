@@ -38,6 +38,19 @@
 			}
 		},
 		{
+			"path": "./fieldtypes/reference",
+			"filesRegExp": "^.*\\.js$",
+			"isTiddlerFile": true,
+			"fields": {
+				"module-type": "relinkreference",
+				"title": {
+					"source": "filename",
+					"prefix": "$:/plugins/flibbles/relink/js/fieldtypes/reference/"
+				},
+				"type": "application/javascript"
+			}
+		},
+		{
 			"path": "./relinkoperations",
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,

@@ -14,17 +14,7 @@ exports.name = "reference";
 
 exports.report = function(value, callback, options) {
 	if (value) {
-		var reference = $tw.utils.parseTextReference(value),
-			title = reference.title,
-			blurb;
-		if (title) {
-			if (reference.field) {
-				blurb = '!!' + reference.field;
-			} else if (reference.index) {
-				blurb = '##' + reference.index;
-			}
-			callback(title, blurb);
-		}
+		var reference = $tw.utils.parseTextReference(value);
 		for (var operator in referenceOperators) {
 			referenceOperators[operator].report(reference, callback, options);
 		}
@@ -37,26 +27,24 @@ exports.relink = function(value, fromTitle, toTitle, options) {
 		var impossible = false;
 		var modified = false;
 		var reference = $tw.utils.parseTextReference(value);
-		if (reference.title === fromTitle) {
-			if (!exports.canBePretty(toTitle)) {
-				impossible = true;
-			} else {
-				modified = true;
-				reference.title = toTitle;
-			}
-		}
 		for (var operator in referenceOperators) {
 			var result = referenceOperators[operator].relink(reference, fromTitle, toTitle, options);
-			if (result !== undefined) {
-				if (result === false) {
+			if (result) {
+				if (result.impossible) {
 					impossible = true;
-				} else {
+				}
+				if (result.output) {
 					modified = true;
+					reference = result.output;
 				}
 			}
 		}
 		if (modified) {
-			entry = {output: exports.toString(reference)};
+			if (exports.canBePretty(reference.title)) {
+				entry = {output: exports.toString(reference)};
+			} else {
+				impossible = true;
+			}
 		}
 		if (impossible) {
 			entry = entry || {};
@@ -71,7 +59,7 @@ exports.relink = function(value, fromTitle, toTitle, options) {
  */
 exports.relinkInBraces = function(value, fromTitle, toTitle, options) {
 	var log = this.relink(value, fromTitle, toTitle, options);
-	if (log && log.output && toTitle.indexOf("}") >= 0) {
+	if (log && log.output && log.output.indexOf("}") >= 0) {
 		delete log.output;
 		log.impossible = true;
 	}

@@ -22,25 +22,17 @@ exports.report = function(text, callback, options) {
 		refString = $tw.utils.trim(m[1]),
 		ref = parseTextReference(refString);
 		template = $tw.utils.trim(m[2]);
-	if (ref.title) {
-		var suffix = '';
-		if (ref.index) {
-			suffix = '##' + ref.index;
-		} else if (ref.field) {
-			suffix = '!!' + ref.field;
-		}
-		if (template) {
-			suffix = suffix + '||' + template;
-		}
-		callback(ref.title, '{{' + suffix + '}}')
+	for (var operator in referenceOperators) {
+		referenceOperators[operator].report(ref, function(title, blurb) {
+			blurb = blurb || "";
+			if (template) {
+				blurb += '||' + template;
+			}
+			callback(title, "{{" + blurb + "}}");
+		}, options);
 	}
 	if (template) {
 		callback(template, '{{' + refString + '||}}');
-	}
-	for (var operator in referenceOperators) {
-		referenceOperators[operator].report(ref, function(title, blurb) {
-			callback(title, "{{" + (blurb || "") + "}}");
-		}, options);
 	}
 	this.parser.pos = this.matchRegExp.lastIndex;
 };
@@ -53,24 +45,21 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		impossible = false,
 		modified = false;
 	this.parser.pos = this.matchRegExp.lastIndex;
-	if ($tw.utils.trim(reference.title) === fromTitle) {
-		// preserve user's whitespace
-		reference.title = reference.title.replace(fromTitle, toTitle);
-		modified = true;
+	for (var operator in referenceOperators) {
+		var result = referenceOperators[operator].relink(reference, fromTitle, toTitle, options);
+		if (result !== undefined) {
+			if (result.impossible) {
+				impossible = true;
+			}
+			if (result.output) {
+				reference = result.output;
+				modified = true
+			}
+		}
 	}
 	if ($tw.utils.trim(template) === fromTitle) {
 		template = template.replace(fromTitle, toTitle);
 		modified = true;
-	}
-	for (var operator in referenceOperators) {
-		var result = referenceOperators[operator].relink(reference, fromTitle, toTitle, options);
-		if (result !== undefined) {
-			if (result === false) {
-				impossible = true;
-			} else {
-				modified = true
-			}
-		}
 	}
 	if (modified) {
 		var output = this.makeTransclude(this.parser, reference, template);

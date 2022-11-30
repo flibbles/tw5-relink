@@ -262,9 +262,7 @@ it('can handle transcludes', function() {
 	testText("{{tid!!from}}", true, ['{{tid!!}}']);
 	testText("{{tid!!from}}", "<$tiddler tiddler=tid><$transclude tiddler=tid field=t|o/></$tiddler>", ['{{tid!!}}'], {to: "t|o"});
 	testText("{{tid!!from}}", "<$tiddler tiddler=tid><$transclude tiddler=tid field=t{o/></$tiddler>", ['{{tid!!}}'], {to: "t{o"});
-	utils.spyFailures(spyOn);
-	testText("{{tid!!from}}", false, ['{{tid!!}}'], {to: "t}o"});
-	expect(utils.failures).toHaveBeenCalledTimes(1);
+	testText("{{tid!!from}}", "<$tiddler tiddler=tid><$transclude tiddler=tid field=t}o/></$tiddler>", ['{{tid!!}}'], {to: "t}o"});
 });
 
 it('can handle transcludes where both title and field changed', function() {
@@ -275,10 +273,7 @@ it('can handle transcludes where both title and field changed', function() {
 	const wiki = getWiki();
 	wiki.addTiddler(utils.attrConf("$tiddler", "tiddler"));
 	testText("{{from!!from}}", utils.placeholder(1,to) + "<$tiddler tiddler=<<relink-1>>>{{!!"+to+"}}</$tiddler>", ['{{!!from}}', '{{from!!}}'], {to: to, wiki: wiki});
-	utils.spyFailures(spyOn);
-	// This one will fail though
-	testText("{{from!!from}}", "<$tiddler tiddler=}o>{{!!from}}</$tiddler>", ['{{!!from}}', '{{from!!}}'], {to: "}o"});
-	expect(utils.failures).toHaveBeenCalledTimes(1);
+	testText("{{from!!from}}", "<$tiddler tiddler=}o><$transclude tiddler=}o field=}o/></$tiddler>", ['{{!!from}}', '{{from!!}}'], {to: "}o"});
 });
 
 it('can handle indirect references', function() {
@@ -295,8 +290,15 @@ it('can handle indirect references where title and field change', function() {
 	utils.spyFailures(spyOn);
 	testText("<$w a={{from!!from}}/>", false, ['<$w a={{!!from}} />', '<$w a={{from!!}} />'], {to: "t}o"});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
-	testText("<$w a={{from!!from}}/>", "<$w a={{from!!t!!o}}/>", ['<$w a={{!!from}} />', '<$w a={{from!!}} />'], {to: "t!!o"});
+	testText("<$w a={{from!!from}}/>", "<$w a={{from!!from}}/>", ['<$w a={{!!from}} />', '<$w a={{from!!}} />'], {to: "t!!o"});
 	expect(utils.failures).toHaveBeenCalledTimes(2);
+});
+
+it('can handle transcludes in fields or attribute string values', function() {
+	const wiki = getWiki();
+	wiki.addTiddler(utils.attrConf("$button", "set", "reference"));
+	testText('<$button set="tid!!from"/>', true, ['<$button set="tid!!" />'], {wiki: wiki, to: "to!!this"});
+	testText('<$button set="tid!!from"/>', true, ['<$button set="tid!!" />'], {wiki: wiki, to: "to this"});
 });
 
 });
