@@ -23,7 +23,8 @@
 				"text/plain",
 				"",
 				"publishFilter",
-				"-$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/tiddlywiki/highlight -$:/plugins/flibbles/uglify"
+				"-$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/tiddlywiki/highlight -$:/plugins/flibbles/uglify",
+			"--test"
 		],
 		"demo": [
 			"--deletetiddlers",

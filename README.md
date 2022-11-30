@@ -64,3 +64,7 @@ Make sure you have `tiddlywiki` available on your PATH. Then from the project ro
 `tiddlywiki --build test`
 
 Don't worry about its mention of not finding the [flibbles/uglify](https://github.com/flibbles/tw5-uglify) plugin.
+
+If you're using TiddlyWiki v5.2.3 or earlier (or you get an "Error: Unkown command: test" warning"), the command you type is just:
+
+`tiddlywiki`

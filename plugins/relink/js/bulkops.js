@@ -21,6 +21,8 @@ exports.synchronous = true;
 // load-modules is when wikimethods are applied in
 // ``$:/core/modules/startup/load-modules.js``
 exports.after = ['load-modules'];
+// We come before commands because they may do renaming, or jasmine testing
+exports.before = ['commands'];
 
 exports.startup = function() {
 	$tw.Wiki.prototype.relinkTiddler = relinkTiddler;
