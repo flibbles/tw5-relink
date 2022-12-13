@@ -20,7 +20,6 @@ var htmlOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtml', 'name');
 exports.name = "html";
 
 exports.report = function(text, callback, options) {
-	var managedElement = this.parser.context.getAttribute(this.nextTag.tag);
 	var element = this.nextTag.tag;
 	for (var attributeName in this.nextTag.attributes) {
 		var attr = this.nextTag.attributes[attributeName];
@@ -74,8 +73,7 @@ exports.report = function(text, callback, options) {
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var managedElement = this.parser.context.getAttribute(this.nextTag.tag),
-		builder = new Rebuilder(text, this.nextTag.start);
+	var builder = new Rebuilder(text, this.nextTag.start);
 	var widgetEntry = {};
 	widgetEntry.attributes = Object.create(null);
 	widgetEntry.element = this.nextTag.tag;
