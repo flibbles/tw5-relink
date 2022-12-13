@@ -1,6 +1,6 @@
 /*\
 
-Handles replacement in $importvariables widgets
+Handles state updating required for $importvariables widgets
 
 \*/
 

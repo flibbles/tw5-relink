@@ -33,7 +33,11 @@ exports.report = function(text, callback, options) {
 		}
 		var oldLength, quotedValue = undefined, entry;
 		if (attr.type === "string") {
-			var handler = getAttributeHandler(this.parser.context, this.nextTag, attributeName, options);
+			var handler;
+			var setting = this.parser.context.getAttribute(this.nextTag.tag);
+			if (setting) {
+				handler = setting[attributeName];
+			}
 			if (!handler) {
 				// We don't manage this attribute. Bye.
 				continue;
