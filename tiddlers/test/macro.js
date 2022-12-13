@@ -275,6 +275,7 @@ it('imported macros', function() {
 	test("<$importvariables filter='otherTiddler'><<other Z otherTiddler>></$importvariables>", {from: "otherTiddler", to: "toThereAgain"});
 	test("<$importvariables filter={{otherRef!!pointer}}><<other Z otherRef>></$importvariables>", {from: "otherRef", to: "toThereAgain"});
 	test("<$importvariables filter=<<ptr otherTiddler>>><<other Z otherTiddler>></$importvariables>", {from: "otherTiddler", to: "toThereAgain"});
+	test("<$importvariables filter={{{otherRef +[get[pointer]]}}}><<other Z otherRef>></$importvariables>", {from: "otherRef", to: "toThereAgain"});
 });
 
 it('local macros simple', function() {

@@ -14,14 +14,13 @@ var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 var refHandler = relinkUtils.getType('reference');
 var filterHandler = relinkUtils.getType('filter');
-var ImportContext = relinkUtils.getContext('import');
 var macrocall = require("./macrocall.js");
+var htmlOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtml', 'name');
 
 exports.name = "html";
 
 exports.report = function(text, callback, options) {
 	var managedElement = this.parser.context.getAttribute(this.nextTag.tag);
-	var importFilterAttr;
 	var element = this.nextTag.tag;
 	for (var attributeName in this.nextTag.attributes) {
 		var attr = this.nextTag.attributes[attributeName];
@@ -31,9 +30,6 @@ exports.report = function(text, callback, options) {
 		// implicit, like <$link to /> We ignore those.
 		if (nextEql < 0 || nextEql > attr.end) {
 			continue;
-		}
-		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
-			importFilterAttr = attr;
 		}
 		var oldLength, quotedValue = undefined, entry;
 		if (attr.type === "string") {
@@ -66,14 +62,9 @@ exports.report = function(text, callback, options) {
 		if (quotedValue === undefined) {
 			continue;
 		}
-		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
-			// If this is an import variable filter, we gotta
-			// remember this new value when we import lower down.
-			importFilterAttr = quotedValue;
-		}
 	}
-	if (importFilterAttr) {
-		processImportFilter(this.parser, importFilterAttr, options);
+	for (var operator in htmlOperators) {
+		htmlOperators[operator].report(this.nextTag, this.parser, callback, options);
 	}
 	this.parse();
 };
@@ -81,7 +72,6 @@ exports.report = function(text, callback, options) {
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var managedElement = this.parser.context.getAttribute(this.nextTag.tag),
 		builder = new Rebuilder(text, this.nextTag.start);
-	var importFilterAttr;
 	var widgetEntry = {};
 	widgetEntry.attributes = Object.create(null);
 	widgetEntry.element = this.nextTag.tag;
@@ -93,9 +83,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		// implicit, like <$link to /> We ignore those.
 		if (nextEql < 0 || nextEql > attr.end) {
 			continue;
-		}
-		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
-			importFilterAttr = attr;
 		}
 		var oldLength, quotedValue = undefined, entry;
 		var nestedOptions = Object.create(options);
@@ -126,6 +113,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 						quotedValue = "<<"+value+">>";
 					}
 				}
+				attr.value = entry.output;
 			}
 			break;
 		case 'indirect':
@@ -137,6 +125,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				// +4 for '{{' and '}}'
 				oldLength = attr.textReference.length + 4;
 				quotedValue = "{{"+entry.output+"}}";
+				attr.textReference = entry.output;
 			}
 			break;
 		case 'filtered':
@@ -148,6 +137,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				// +6 for '{{{' and '}}}'
 				oldLength = attr.filter.length + 6;
 				quotedValue = "{{{"+ entry.output +"}}}";
+				attr.filter = entry.output;
 			}
 			break;
 		case 'macro':
@@ -160,6 +150,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				// already includes '<<' and '>>'
 				oldLength = macro.end-macro.start;
 				quotedValue = entry.output;
+				attr.value = $tw.utils.parseMacroInvocation(entry.output, 0);
 			}
 		}
 		if (entry.impossible) {
@@ -168,17 +159,12 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		if (quotedValue === undefined) {
 			continue;
 		}
-		if (this.nextTag.tag === "$importvariables" && attributeName === "filter") {
-			// If this is an import variable filter, we gotta
-			// remember this new value when we import lower down.
-			importFilterAttr = quotedValue;
-		}
 		// We count backwards from the end to preserve whitespace
 		var valueStart = attr.end - oldLength;
 		builder.add(quotedValue, valueStart, attr.end);
 	}
-	if (importFilterAttr) {
-		processImportFilter(this.parser, importFilterAttr, options);
+	for (var operator in htmlOperators) {
+		htmlOperators[operator].relink(this.nextTag, this.parser, fromTitle, toTitle, options);
 	}
 	var tag = this.parse()[0];
 	if (tag.children) {
@@ -218,34 +204,4 @@ function getAttributeHandler(context, widget, attributeName, options) {
 		}
 	}
 	return undefined;
-};
-
-function computeAttribute(context, attribute, options) {
-	var value;
-	if(attribute.type === "filtered") {
-		var parentWidget = context.widget;
-		value = options.wiki.filterTiddlers(attribute.filter,parentWidget)[0] || "";
-	} else if(attribute.type === "indirect") {
-		var parentWidget = context.widget;
-		value = options.wiki.getTextReference(attribute.textReference,"",parentWidget.variables.currentTiddler.value);
-	} else if(attribute.type === "macro") {
-		var parentWidget = context.widget;
-		value = parentWidget.getVariable(attribute.value.name,{params: attribute.value.params});
-	} else { // String attribute
-		value = attribute.value;
-	}
-	return value;
-};
-
-// This processes a <$importvariables> filter attribute and adds any new
-// variables to our parser.
-function processImportFilter(parser, importAttribute, options) {
-	if (typeof importAttribute === "string") {
-		// It was changed. Reparse it. It'll be a quoted
-		// attribute value. Add a dummy attribute name.
-		importAttribute = $tw.utils.parseAttribute("p="+importAttribute, 0)
-	}
-	var context = parser.context;
-	var importFilter = computeAttribute(context, importAttribute, options);
-	parser.context = new ImportContext(options.wiki, context, importFilter);
 };

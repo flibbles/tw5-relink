@@ -89,6 +89,19 @@
 			}
 		},
 		{
+			"path": "./relinkoperations/text/wikitext/html",
+			"filesRegExp": "^.*\\.js$",
+			"isTiddlerFile": true,
+			"fields": {
+				"module-type": "relinkhtml",
+				"title": {
+					"source": "filename",
+					"prefix": "$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/html/"
+				},
+				"type": "application/javascript"
+			}
+		},
+		{
 			"path": "./contexts",
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,
