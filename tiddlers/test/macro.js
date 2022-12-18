@@ -331,6 +331,15 @@ it('$macrocall', function() {
 	testText("<$macrocall Btitle='from here' />", {ignored: true});
 });
 
+it('$macrocall imposssibles', function() {
+	testText("<$macrocall $name=test Clist=from />",
+	         "<$macrocall $name=test Clist=from />",
+	         {from: "from", to: "t ]] o", fails: 1});
+	testText("<$macrocall $name=test Clist=from Btitle=from />",
+	         "<$macrocall $name=test Clist=from Btitle='t ]] o' />",
+	         {from: "from", to: "t ]] o", fails: 1});
+});
+
 it('attribute invocations', function() {
 	testText("Before <$a b=<<test stuff 'from here'>>/> After");
 	testText("Before <$a b   =    <<test stuff 'from here'>> /> After");
