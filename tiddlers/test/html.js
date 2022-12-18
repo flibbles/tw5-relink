@@ -99,6 +99,8 @@ it('field attributes with true', function() {
 	testText(`<$link to       /> <$link to=true />`,
 	         `<$link to       /> <$link to='to there' />`,
 	         ['<$link to />'], {wiki: wiki, from: "true"});
+	testText(`<$link to=from />`, true,
+	         ['<$link to />'], {wiki: wiki, from: "from", to: "true"});
 });
 
 it('field attributes fun with quotes', function() {
