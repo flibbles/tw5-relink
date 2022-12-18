@@ -30,13 +30,10 @@ exports.report = function(text, callback, options) {
 		if (nextEql < 0 || nextEql > attr.end) {
 			continue;
 		}
-		var oldLength, quotedValue = undefined, entry;
+		var entry;
 		if (attr.type === "string") {
-			var handler;
 			var setting = this.parser.context.getAttribute(this.nextTag.tag);
-			if (setting) {
-				handler = setting[attributeName];
-			}
+			var handler = setting && setting[attributeName];
 			if (!handler) {
 				// We don't manage this attribute. Bye.
 				continue;
@@ -62,9 +59,6 @@ exports.report = function(text, callback, options) {
 				callback(title, '<' + element + ' ' + attributeName + '=' + blurb + ' />');
 			}, options);
 		}
-		if (quotedValue === undefined) {
-			continue;
-		}
 	}
 	for (var operator in htmlOperators) {
 		htmlOperators[operator].report(this.nextTag, this.parser, callback, options);
@@ -78,6 +72,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	widgetEntry.element = this.nextTag.tag;
 	var elem = this.nextTag;
 	var changed = false;
+	var nestedOptions = Object.create(options);
+	nestedOptions.settings = this.parser.context;
 	for (var attributeName in this.nextTag.attributes) {
 		var attr = this.nextTag.attributes[attributeName];
 		var nextEql = text.indexOf('=', attr.start);
@@ -88,12 +84,11 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			attr.valueless = true;
 			continue;
 		}
-		var oldLength, quotedValue = undefined, entry;
-		var nestedOptions = Object.create(options);
-		nestedOptions.settings = this.parser.context;
+		var entry;
 		switch (attr.type) {
 		case 'string':
-			var handler = getAttributeHandler(this.parser.context, this.nextTag, attributeName, options);
+			var setting = this.parser.context.getAttribute(this.nextTag.tag);
+			var handler = setting && setting[attributeName];
 			if (!handler) {
 				// We don't manage this attribute. Bye.
 				continue;
@@ -145,7 +140,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		}
 	}
 	for (var operator in htmlOperators) {
-		var entry = htmlOperators[operator].relink(this.nextTag, this.parser, fromTitle, toTitle, options);
+		var entry = htmlOperators[operator].relink(this.nextTag, this.parser, fromTitle, toTitle, nestedOptions);
 		if (entry) {
 			if (entry.output) {
 				changed = true;
@@ -171,7 +166,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var builder = new Rebuilder(text, elem.start);
 		for (var attributeName in elem.attributes) {
 			var attr = elem.attributes[attributeName];
-			var quoatedValue;
+			var quotedValue;
 			switch (attr.type) {
 			case 'string':
 				if (attr.valueless) {
@@ -227,27 +222,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 	if (widgetEntry.output || widgetEntry.impossible) {
 		return widgetEntry;
-	}
-	return undefined;
-};
-
-/** Returns the field handler for the given attribute of the given widget.
- *  If this returns undefined, it means we don't handle it. So skip.
- */
-function getAttributeHandler(context, widget, attributeName, options) {
-	if (widget.tag === "$macrocall") {
-		var nameAttr = widget.attributes["$name"];
-		if (nameAttr) {
-			var macro = context.getMacro(nameAttr.value);
-			if (macro) {
-				return macro[attributeName];
-			}
-		}
-	} else {
-		var element = context.getAttribute(widget.tag);
-		if (element) {
-			return element[attributeName];
-		}
 	}
 	return undefined;
 };

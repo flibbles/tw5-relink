@@ -31,40 +31,28 @@ exports.report = function(element, parser, callback, options) {
 };
 
 exports.relink = function(element, parser, fromTitle, toTitle, options) {
-	return;
+	var changed = undefined;
 	if (element.tag === "$macrocall") {
 		var nameAttr = element.attributes["$name"];
 		if (nameAttr) {
-			var macro = context.getMacro(nameAttr.value);
+			var macro = parser.context.getMacro(nameAttr.value);
 			for (var attributeName in element.attributes) {
-				var attr = this.nextTag.attributes[attributeName];
+				var attr = element.attributes[attributeName];
 				if (attr.type === "string") {
 					var handler = macro[attributeName];
 					if (handler) {
-						var entry = handler.relink(attr.value, fromTitle, toTitle, nestedOptions);
-						if (entry === undefined) {
-							continue;
-						}
-						if (entry.output) {
-							var quote = utils.determineQuote(text, attr);
-							oldLength = attr.value.length + (quote.length * 2);
-							quotedValue = utils.wrapAttributeValue(entry.output,quote);
-							if (quotedValue === undefined) {
-								// The value was unquotable. We need to make
-								// a macro in order to replace it.
-								if (!options.placeholder) {
-									// but we can't...
-									entry.impossible = true;
-								} else {
-									var value = options.placeholder.getPlaceholderFor(entry.output,handler.name)
-									quotedValue = "<<"+value+">>";
-								}
-							}
+						var entry = handler.relink(attr.value, fromTitle, toTitle, options);
+						if (entry && entry.output) {
 							attr.value = entry.output;
+							attr.handler = handler.name;
+							changed = true;
 						}
 					}
 				}
 			}
 		}
+	}
+	if (changed) {
+		return {output: true};
 	}
 };
