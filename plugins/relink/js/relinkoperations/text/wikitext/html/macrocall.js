@@ -18,9 +18,9 @@ exports.report = function(element, parser, callback, options) {
 					if (handler) {
 						handler.report(attr.value, function(title, blurb) {
 							if (blurb) {
-								callback(title, element + ' ' + attributeName + '="' + blurb + '"');
+								callback(title, element.tag + ' ' + attributeName + '="' + blurb + '"');
 							} else {
-								callback(title, element + ' ' + attributeName);
+								callback(title, element.tag + ' ' + attributeName);
 							}
 						}, options);
 					}

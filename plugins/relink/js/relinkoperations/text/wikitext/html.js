@@ -21,6 +21,8 @@ exports.name = "html";
 
 exports.report = function(text, callback, options) {
 	var element = this.nextTag.tag;
+	var nestedOptions = Object.create(options);
+	nestedOptions.settings = this.parser.context;
 	for (var attributeName in this.nextTag.attributes) {
 		var attr = this.nextTag.attributes[attributeName];
 		var nextEql = text.indexOf('=', attr.start);
@@ -44,24 +46,26 @@ exports.report = function(text, callback, options) {
 				} else {
 					callback(title, '<' + element + ' ' + attributeName + ' />');
 				}
-			}, options);
+			}, nestedOptions);
 		} else if (attr.type === "indirect") {
 			entry = refHandler.report(attr.textReference, function(title, blurb) {
 				callback(title, '<' + element + ' ' + attributeName + '={{' + (blurb || '') + '}} />');
-			}, options);
+			}, nestedOptions);
 		} else if (attr.type === "filtered") {
 			entry = filterHandler.report(attr.filter, function(title, blurb) {
 				callback(title, '<' + element + ' ' + attributeName + '={{{' + blurb + '}}} />');
-			}, options);
+			}, nestedOptions);
 		} else if (attr.type === "macro") {
 			var macro = attr.value;
 			entry = macrocall.reportAttribute(this.parser, macro, function(title, blurb) {
 				callback(title, '<' + element + ' ' + attributeName + '=' + blurb + ' />');
-			}, options);
+			}, nestedOptions);
 		}
 	}
 	for (var operator in htmlOperators) {
-		htmlOperators[operator].report(this.nextTag, this.parser, callback, options);
+		htmlOperators[operator].report(this.nextTag, this.parser, function(title, blurb) {
+			callback(title, '<' + blurb + ' />');
+		}, nestedOptions);
 	}
 	this.parse();
 };
