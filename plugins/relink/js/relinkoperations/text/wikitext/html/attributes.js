@@ -75,10 +75,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 				continue;
 			}
 			entry = handler.relink(attr.value, fromTitle, toTitle, options);
-			if (entry === undefined) {
-				continue;
-			}
-			if (entry.output) {
+			if (entry && entry.output) {
 				attr.value = entry.output;
 				attr.handler = handler.name;
 				changed = true;
@@ -86,20 +83,14 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			break;
 		case 'indirect':
 			entry = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
-			if (entry === undefined) {
-				continue;
-			}
-			if (entry.output) {
+			if (entry && entry.output) {
 				attr.textReference = entry.output;
 				changed = true;
 			}
 			break;
 		case 'filtered':
 			entry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, options);
-			if (entry === undefined) {
-				continue;
-			}
-			if (entry.output) {
+			if (entry && entry.output) {
 				attr.filter = entry.output;
 				changed = true;
 			}
@@ -107,16 +98,13 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		case 'macro':
 			var macro = attr.value;
 			entry = macrocall.relinkAttribute(parser, macro, parser.source, fromTitle, toTitle, options);
-			if (entry === undefined) {
-				continue;
-			}
-			if (entry.output) {
+			if (entry && entry.output) {
 				attr.output = entry.output;
 				attr.value = $tw.utils.parseMacroInvocation(entry.output, 0);
 				changed = true;
 			}
 		}
-		if (entry.impossible) {
+		if (entry && entry.impossible) {
 			impossible = true;
 		}
 	}
