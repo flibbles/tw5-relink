@@ -12,9 +12,6 @@ should be changed.
 var utils = require("./utils.js");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
-var refHandler = relinkUtils.getType('reference');
-var filterHandler = relinkUtils.getType('filter');
-var macrocall = require("./macrocall.js");
 var htmlOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtml', 'name');
 
 exports.name = "html";
@@ -23,45 +20,6 @@ exports.report = function(text, callback, options) {
 	var element = this.nextTag.tag;
 	var nestedOptions = Object.create(options);
 	nestedOptions.settings = this.parser.context;
-	for (var attributeName in this.nextTag.attributes) {
-		var attr = this.nextTag.attributes[attributeName];
-		var nextEql = text.indexOf('=', attr.start);
-		// This is the rare case of changing tiddler
-		// "true" to something else when "true" is
-		// implicit, like <$link to /> We ignore those.
-		if (nextEql < 0 || nextEql > attr.end) {
-			continue;
-		}
-		var entry;
-		if (attr.type === "string") {
-			var setting = this.parser.context.getAttribute(this.nextTag.tag);
-			var handler = setting && setting[attributeName];
-			if (!handler) {
-				// We don't manage this attribute. Bye.
-				continue;
-			}
-			handler.report(attr.value, function(title, blurb) {
-				if (blurb) {
-					callback(title, '<' + element + ' ' + attributeName + '="' + blurb + '" />');
-				} else {
-					callback(title, '<' + element + ' ' + attributeName + ' />');
-				}
-			}, nestedOptions);
-		} else if (attr.type === "indirect") {
-			entry = refHandler.report(attr.textReference, function(title, blurb) {
-				callback(title, '<' + element + ' ' + attributeName + '={{' + (blurb || '') + '}} />');
-			}, nestedOptions);
-		} else if (attr.type === "filtered") {
-			entry = filterHandler.report(attr.filter, function(title, blurb) {
-				callback(title, '<' + element + ' ' + attributeName + '={{{' + blurb + '}}} />');
-			}, nestedOptions);
-		} else if (attr.type === "macro") {
-			var macro = attr.value;
-			entry = macrocall.reportAttribute(this.parser, macro, function(title, blurb) {
-				callback(title, '<' + element + ' ' + attributeName + '=' + blurb + ' />');
-			}, nestedOptions);
-		}
-	}
 	for (var operator in htmlOperators) {
 		htmlOperators[operator].report(this.nextTag, this.parser, function(title, blurb) {
 			callback(title, '<' + blurb + ' />');
@@ -78,71 +36,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var changed = false;
 	var nestedOptions = Object.create(options);
 	nestedOptions.settings = this.parser.context;
-	for (var attributeName in this.nextTag.attributes) {
-		var attr = this.nextTag.attributes[attributeName];
-		var nextEql = text.indexOf('=', attr.start);
-		// This is the rare case of changing tiddler
-		// "true" to something else when "true" is
-		// implicit, like <$link to /> We ignore those.
-		if (nextEql < 0 || nextEql > attr.end) {
-			attr.valueless = true;
-			continue;
-		}
-		var entry;
-		switch (attr.type) {
-		case 'string':
-			var setting = this.parser.context.getAttribute(this.nextTag.tag);
-			var handler = setting && setting[attributeName];
-			if (!handler) {
-				// We don't manage this attribute. Bye.
-				continue;
-			}
-			entry = handler.relink(attr.value, fromTitle, toTitle, nestedOptions);
-			if (entry === undefined) {
-				continue;
-			}
-			if (entry.output) {
-				attr.value = entry.output;
-				attr.handler = handler.name;
-				changed = true;
-			}
-			break;
-		case 'indirect':
-			entry = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
-			if (entry === undefined) {
-				continue;
-			}
-			if (entry.output) {
-				attr.textReference = entry.output;
-				changed = true;
-			}
-			break;
-		case 'filtered':
-			entry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, options);
-			if (entry === undefined) {
-				continue;
-			}
-			if (entry.output) {
-				attr.filter = entry.output;
-				changed = true;
-			}
-			break;
-		case 'macro':
-			var macro = attr.value;
-			entry = macrocall.relinkAttribute(this.parser, macro, text, fromTitle, toTitle, options);
-			if (entry === undefined) {
-				continue;
-			}
-			if (entry.output) {
-				attr.output = entry.output;
-				attr.value = $tw.utils.parseMacroInvocation(entry.output, 0);
-				changed = true;
-			}
-		}
-		if (entry.impossible) {
-			widgetEntry.impossible = true;
-		}
-	}
 	for (var operator in htmlOperators) {
 		var entry = htmlOperators[operator].relink(this.nextTag, this.parser, fromTitle, toTitle, nestedOptions);
 		if (entry) {
