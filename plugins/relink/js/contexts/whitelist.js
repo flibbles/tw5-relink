@@ -40,6 +40,11 @@ WhitelistContext.prototype.getFields = function() {
 	return this.fields;
 };
 
+// TODO: Don't use this. It's temporary. The contexts need a little refactor
+WhitelistContext.prototype.getFieldWidgets = function() {
+	return this.fieldwidgets;
+};
+
 WhitelistContext.prototype.getOperator = function(operatorName, operandIndex) {
 	var op = this.operators[operatorName];
 	return op && op[operandIndex || 1];
@@ -96,31 +101,66 @@ WhitelistContext.prototype.hasImports = function(value) {
  * once per rename.
  */
 var factories = {
-	attributes: function(attributes, data, key) {
-		var elem = root(key);
-		var attr = key.substr(elem.length+1);
-		attributes[elem] = attributes[elem] || Object.create(null);
-		attributes[elem][attr] = data;
+	attributes: function(attributes, tiddler, key) {
+		var data = utils.getType(tiddler.fields.text.trim());
+		if (data) {
+			data.source = tiddler.fields.title;
+			// Secret feature. You can access a config tiddler's
+			// fields from inside the fieldtype handler. Cool
+			// tricks can be done with this.
+			data.fields = tiddler.fields;
+			var elem = root(key);
+			var attr = key.substr(elem.length+1);
+			attributes[elem] = attributes[elem] || Object.create(null);
+			attributes[elem][attr] = data;
+		}
 	},
-	fields: function(fields, data, name) {
-		fields[name] = data;
+	fields: function(fields, tiddler, name) {
+		var data = utils.getType(tiddler.fields.text.trim());
+		if (data) {
+			data.source = tiddler.fields.title;
+			// Secret feature. You can access a config tiddler's
+			// fields from inside the fieldtype handler. Cool
+			// tricks can be done with this.
+			data.fields = tiddler.fields;
+			fields[name] = data;
+		}
 	},
-	macros: function(macros, data, key) {
-		// We take the last index, not the first, because macro
-		// parameters can't have slashes, but macroNames can.
-		var name = dir(key);
-		var arg = key.substr(name.length+1);
-		macros[name] = macros[name] || Object.create(null);
-		macros[name][arg] = data;
+	macros: function(macros, tiddler, key) {
+		var data = utils.getType(tiddler.fields.text.trim());
+		if (data) {
+			data.source = tiddler.fields.title;
+			// Secret feature. You can access a config tiddler's
+			// fields from inside the fieldtype handler. Cool
+			// tricks can be done with this.
+			data.fields = tiddler.fields;
+			// We take the last index, not the first, because macro
+			// parameters can't have slashes, but macroNames can.
+			var name = dir(key);
+			var arg = key.substr(name.length+1);
+			macros[name] = macros[name] || Object.create(null);
+			macros[name][arg] = data;
+		}
 	},
-	operators: function(operators, data, key) {
-		// We take the last index, not the first, because the operator
-		// may have a slash to indicate parameter number
-		var pair = key.split('/');
-		var name = pair[0];
-		data.key = key;
-		operators[name] = operators[name] || Object.create(null);
-		operators[name][pair[1] || 1] = data;
+	operators: function(operators, tiddler, key) {
+		var data = utils.getType(tiddler.fields.text.trim());
+		if (data) {
+			data.source = tiddler.fields.title;
+			// Secret feature. You can access a config tiddler's
+			// fields from inside the fieldtype handler. Cool
+			// tricks can be done with this.
+			data.fields = tiddler.fields;
+			// We take the last index, not the first, because the operator
+			// may have a slash to indicate parameter number
+			var pair = key.split('/');
+			var name = pair[0];
+			data.key = key;
+			operators[name] = operators[name] || Object.create(null);
+			operators[name][pair[1] || 1] = data;
+		}
+	},
+	fieldwidgets: function(fieldwidgets, tiddler, key) {
+		fieldwidgets[key] = new RegExp(tiddler.fields.text.trim());
 	}
 };
 
@@ -135,15 +175,7 @@ function build(settings, wiki) {
 			var factory = factories[category];
 			if (factory) {
 				var name = remainder.substr(category.length+1);
-				var data = utils.getType(tiddler.fields.text.trim());
-				if (data) {
-					data.source = title;
-					// Secret feature. You can access a config tiddler's
-					// fields from inside the fieldtype handler. Cool
-					// tricks can be done with this.
-					data.fields = tiddler.fields;
-					factory(settings[category], data, name);
-				}
+				factory(settings[category], tiddler, name);
 			}
 		}
 	});

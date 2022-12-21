@@ -31,6 +31,11 @@ Context.prototype.getAttributes = function() {
 	return this.parent.getAttributes();
 };
 
+// TODO: Don't use this. It's temporary. The contexts need a little refactor
+Context.prototype.getFieldWidgets = function() {
+	return this.parent.getFieldWidgets();
+};
+
 Context.prototype.getMacro = function(macroName) {
 	return this.parent.getMacro(macroName);
 };

@@ -1,0 +1,6 @@
+title: $:/config/flibbles/relink/fieldwidgets/
+
+$action-createtiddler: ([^$].*)
+$action-deletefield: ([^$].*)
+$action-setfield: ([^$].*)
+$jsontiddler: \$(.*)

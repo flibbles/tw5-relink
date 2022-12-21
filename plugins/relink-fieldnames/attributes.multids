@@ -1,10 +1,5 @@
 title: $:/config/flibbles/relink/attributes/
 
-# $action-createtiddler/$allNon$Attrs:
-# $action-deletefield/$allNon$Attrs:
-# $action-setfield/$allNon$Attrs:
-# $jsontiddler/$all$Attrs:
-
 $action-deletefield/$field: fieldname
 $action-listops/$field: fieldname
 $action-setfield/$field: fieldname
@@ -12,7 +7,7 @@ $button/setField: fieldname
 $checkbox/field: fieldname
 $edit-text/field: fieldname
 $edit/field: fieldname
-# Not really proper for these two needs a fieldnames-list
+#TODO: Not really proper for these two needs a fieldnames-list
 $fields/exclude: list
 $fields/include: list
 $jsontiddler/exclude: list
