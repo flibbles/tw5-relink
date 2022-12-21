@@ -8,6 +8,7 @@ var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 var refHandler = relinkUtils.getType('reference');
 var filterHandler = relinkUtils.getType('filter');
 var macrocall = require("../macrocall.js");
+var attributeOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtmlattributes', 'name');
 
 exports.name = "attributes";
 
@@ -23,19 +24,16 @@ exports.report = function(element, parser, callback, options) {
 		}
 		var entry;
 		if (attr.type === "string") {
-			var setting = parser.context.getAttribute(element.tag);
-			var handler = setting && setting[attributeName];
-			if (!handler) {
-				// We don't manage this attribute. Bye.
-				continue;
+			var handler = getHandler(parser.context, element, attributeName);
+			if (handler) {
+				handler.report(attr.value, function(title, blurb) {
+					if (blurb) {
+						callback(title, element.tag + ' ' + attributeName + '="' + blurb + '"');
+					} else {
+						callback(title, element.tag + ' ' + attributeName);
+					}
+				}, options);
 			}
-			handler.report(attr.value, function(title, blurb) {
-				if (blurb) {
-					callback(title, element.tag + ' ' + attributeName + '="' + blurb + '"');
-				} else {
-					callback(title, element.tag + ' ' + attributeName);
-				}
-			}, options);
 		} else if (attr.type === "indirect") {
 			entry = refHandler.report(attr.textReference, function(title, blurb) {
 				callback(title, element.tag + ' ' + attributeName + '={{' + (blurb || '') + '}}');
@@ -68,17 +66,14 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		var entry;
 		switch (attr.type) {
 		case 'string':
-			var setting = parser.context.getAttribute(element.tag);
-			var handler = setting && setting[attributeName];
-			if (!handler) {
-				// We don't manage this attribute. Bye.
-				continue;
-			}
-			entry = handler.relink(attr.value, fromTitle, toTitle, options);
-			if (entry && entry.output) {
-				attr.value = entry.output;
-				attr.handler = handler.name;
-				changed = true;
+			var handler = getHandler(parser.context, element, attributeName);
+			if (handler) {
+				entry = handler.relink(attr.value, fromTitle, toTitle, options);
+				if (entry && entry.output) {
+					attr.value = entry.output;
+					attr.handler = handler.name;
+					changed = true;
+				}
 			}
 			break;
 		case 'indirect':
@@ -112,3 +107,12 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		return {output: changed, impossible: impossible};
 	}
 };
+
+function getHandler(context, element, attributeName) {
+	for (var operator in attributeOperators) {
+		var handler = attributeOperators[operator].getHandler(context, element, attributeName);
+		if (handler) {
+			return handler;
+		}
+	}
+}
