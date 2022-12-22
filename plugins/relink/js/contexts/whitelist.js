@@ -19,7 +19,7 @@ var prefix = "$:/config/flibbles/relink/";
  * the number of times tiddlywiki has to run through EVERY tiddler looking
  * for relink config tiddlers.
  */
-var whitelistGenerators = utils.getModulesByTypeAsHashmap('relinkwhitelist', 'name');
+var settingsGenerators = utils.getModulesByTypeAsHashmap('relinksetting', 'name');
 
 function WhitelistContext(wiki) {
 	build(this, wiki);
@@ -98,14 +98,14 @@ WhitelistContext.prototype.hasImports = function(value) {
 };
 
 function build(settings, wiki) {
-	for (var name in whitelistGenerators) {
+	for (var name in settingsGenerators) {
 		settings[name] = Object.create(null);
 	}
 	wiki.eachShadowPlusTiddlers(function(tiddler, title) {
 		if (title.substr(0, prefix.length) === prefix) {
 			var remainder = title.substr(prefix.length);
 			var category = root(remainder);
-			var factory = whitelistGenerators[category];
+			var factory = settingsGenerators[category];
 			if (factory) {
 				var name = remainder.substr(category.length+1);
 				factory.generate(settings[category], tiddler, name, wiki);

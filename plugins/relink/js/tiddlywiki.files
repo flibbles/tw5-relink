@@ -25,14 +25,14 @@
 			}
 		},
 		{
-			"path": "./whitelists",
+			"path": "./settings",
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,
 			"fields": {
-				"module-type": "relinkwhitelist",
+				"module-type": "relinksetting",
 				"title": {
 					"source": "filename",
-					"prefix": "$:/plugins/flibbles/relink/js/whitelists/"
+					"prefix": "$:/plugins/flibbles/relink/js/settings/"
 				},
 				"type": "application/javascript"
 			}

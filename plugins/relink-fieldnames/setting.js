@@ -1,11 +1,11 @@
 /*\
 
 title: $:/plugins/flibbles/relink-fieldnames/whitelist.js
-module-type: relinkwhitelist
+module-type: relinksetting
 type: application/javascript
 
-The whitelist module interfaces with the relink whitelist settings to store
-a configuration for the... uh... blacklist. Go figure.
+The setting module interfaces with the relink settings to store
+a configuration for the blacklist.
 \*/
 
 exports.name = "fieldnames";
