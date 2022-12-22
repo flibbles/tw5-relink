@@ -108,7 +108,7 @@ function build(settings, wiki) {
 			var factory = whitelistGenerators[category];
 			if (factory) {
 				var name = remainder.substr(category.length+1);
-				factory.generate(settings[category], tiddler, name);
+				factory.generate(settings[category], tiddler, name, wiki);
 			}
 		}
 	});

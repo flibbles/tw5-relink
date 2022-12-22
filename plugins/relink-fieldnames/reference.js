@@ -12,15 +12,15 @@ exports.name = 'fieldname';
 
 exports.report = function(reference, callback, options) {
 	if (reference.field
-	&& !utils.isReserved(options.wiki, reference.field)) {
+	&& !utils.isReserved(reference.field, options)) {
 		callback(reference.field, reference.title + "!!");
 	}
 };
 
 exports.relink = function(reference, fromTitle, toTitle, options) {
 	if (reference.field === fromTitle
-	&& !utils.isReserved(options.wiki, fromTitle)) {
-		if (utils.isReserved(options.wiki, toTitle)) {
+	&& !utils.isReserved(fromTitle, options)) {
+		if (utils.isReserved(toTitle, options)) {
 			return {impossible: true};
 		} else {
 			reference.field = toTitle;

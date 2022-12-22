@@ -13,15 +13,15 @@ exports.name = 'fieldname';
 var utils = require("./utils.js");
 
 exports.report = function(value, callback, options) {
-	if (!utils.isReserved(options.wiki, value)) {
+	if (!utils.isReserved(value, options)) {
 		callback(value);
 	}
 };
 
 exports.relink = function(value, fromTitle, toTitle, options) {
 	if (value === fromTitle
-	&& !utils.isReserved(options.wiki, fromTitle)) {
-		if (utils.isReserved(options.wiki, toTitle)
+	&& !utils.isReserved(fromTitle, options)) {
+		if (utils.isReserved(toTitle, options)
 		|| !utils.isValidFieldName(toTitle)) {
 			return {impossible: true};
 		} else {

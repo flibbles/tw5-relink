@@ -5,29 +5,15 @@ type: application/javascript
 
 \*/
 
-var blacklistTiddler = "$:/config/flibbles/relink-fieldnames/blacklist";
+var blacklistTiddler = "$:/config/flibbles/relink/fieldnames/blacklist";
 var docPrefix = "$:/language/Docs/Fields/";
 
 var whitelist = require('$:/plugins/flibbles/relink/js/utils.js').getContext('whitelist');
 
 whitelist.hotDirectories.push(docPrefix);
-whitelist.hotDirectories.push("$:/config/flibbles/relink-fieldnames/");
 
-exports.isReserved = function(wiki, field) {
-	var method = wiki.getGlobalCache('relink-fieldnames-reserved', function() {
-		var blacklist = wiki.getTiddler(blacklistTiddler);
-		if (blacklist) {
-			var tiddlers = wiki.filterTiddlers(blacklist.fields.filter);
-			var fieldMap = Object.create(null);
-			for (var i = 0; i < tiddlers.length; i++) {
-				fieldMap[tiddlers[i]] = true;
-			}
-			return function(field) {return fieldMap[field] || false;};
-		} else {
-			// no blacklist. fieldnames is disabled. Everything is reserved.
-			return function() { return true; };
-		}
-	});
+exports.isReserved = function(field, options) {
+	var method = options.settings.getConfig("fieldnames").blacklist || function() { return true; };
 	return method(field);
 };
 

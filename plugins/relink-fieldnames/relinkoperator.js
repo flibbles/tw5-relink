@@ -20,7 +20,7 @@ var configPrefix = "$:/config/flibbles/relink/fields/";
 exports.report = function(tiddler, callback, options) {
 	var fields = tiddler.fields;
 	for (var field in fields) {
-		if (!utils.isReserved(options.wiki, field)) {
+		if (!utils.isReserved(field, options)) {
 			callback(field, ': ' + abridge(fields[field], 30), {soft: true});
 		}
 	}
@@ -28,9 +28,9 @@ exports.report = function(tiddler, callback, options) {
 
 exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 	if ($tw.utils.hop(tiddler.fields, fromTitle)
-	&& !utils.isReserved(options.wiki, fromTitle)) {
+	&& !utils.isReserved(fromTitle, options)) {
 		if ($tw.utils.hop(tiddler.fields, toTitle)
-		|| utils.isReserved(options.wiki, toTitle)
+		|| utils.isReserved(toTitle, options)
 		|| !utils.isValidFieldName(toTitle)) {
 			// There is already a [toTitle] field, and we won't clobber it.
 			// Or this is an illegal field name

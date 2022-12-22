@@ -8,7 +8,7 @@ var utils = require("test/utils");
 
 describe('fieldname plugin', function() {
 
-const blacklist = "$:/config/flibbles/relink-fieldnames/blacklist";
+const blacklist = "$:/config/flibbles/relink/fieldnames/blacklist";
 
 function getWiki() {
 	const wiki = new $tw.Wiki();
