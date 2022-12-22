@@ -7,7 +7,7 @@ correspond to tiddler fields.
 exports.name = "fields";
 
 exports.getHandler = function(context, element, attributeName) {
-	var regexp = context.getFieldWidgets()[element.tag];
+	var regexp = context.getConfig("fieldwidgets")[element.tag];
 	if (regexp) {
 		var results = regexp.exec(attributeName);
 		if (results && results[0] === attributeName) {

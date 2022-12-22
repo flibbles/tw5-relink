@@ -51,9 +51,8 @@ WhitelistContext.prototype.getFields = function() {
 	return this.fields;
 };
 
-// TODO: Don't use this. It's temporary. The contexts need a little refactor
-WhitelistContext.prototype.getFieldWidgets = function() {
-	return this.fieldwidgets;
+WhitelistContext.prototype.getConfig = function(category) {
+	return this[category];
 };
 
 WhitelistContext.prototype.getOperator = function(operatorName, operandIndex) {
