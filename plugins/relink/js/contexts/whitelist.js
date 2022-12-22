@@ -10,6 +10,17 @@ var Context = require('./context').context;
 
 var prefix = "$:/config/flibbles/relink/";
 
+/**Factories define methods that create settings given config tiddlers.
+ * for factory method 'example', it will be called once for each:
+ * "$:/config/flibbles/relink/example/..." tiddler that exists.
+ * the argument "key" will be set to the contents of "..."
+ *
+ * The reason I build relink settings in this convoluted way is to minimize
+ * the number of times tiddlywiki has to run through EVERY tiddler looking
+ * for relink config tiddlers.
+ */
+var whitelistGenerators = utils.getModulesByTypeAsHashmap('relinkwhitelist', 'name');
+
 function WhitelistContext(wiki) {
 	build(this, wiki);
 };
@@ -87,95 +98,18 @@ WhitelistContext.prototype.hasImports = function(value) {
 	return false;
 };
 
-/**Factories define methods that create settings given config tiddlers.
- * for factory method 'example', it will be called once for each:
- * "$:/config/flibbles/relink/example/..." tiddler that exists.
- * the argument "key" will be set to the contents of "..."
- *
- * The reason I build relink settings in this convoluted way is to minimize
- * the number of times tiddlywiki has to run through EVERY tiddler looking
- * for relink config tiddlers.
- *
- * Also, by exporting "factories", anyone who extends relink can patch in
- * their own factory methods to create settings that are generated exactly
- * once per rename.
- */
-var factories = {
-	attributes: function(attributes, tiddler, key) {
-		var data = utils.getType(tiddler.fields.text.trim());
-		if (data) {
-			data.source = tiddler.fields.title;
-			// Secret feature. You can access a config tiddler's
-			// fields from inside the fieldtype handler. Cool
-			// tricks can be done with this.
-			data.fields = tiddler.fields;
-			var elem = root(key);
-			var attr = key.substr(elem.length+1);
-			attributes[elem] = attributes[elem] || Object.create(null);
-			attributes[elem][attr] = data;
-		}
-	},
-	fields: function(fields, tiddler, name) {
-		var data = utils.getType(tiddler.fields.text.trim());
-		if (data) {
-			data.source = tiddler.fields.title;
-			// Secret feature. You can access a config tiddler's
-			// fields from inside the fieldtype handler. Cool
-			// tricks can be done with this.
-			data.fields = tiddler.fields;
-			fields[name] = data;
-		}
-	},
-	macros: function(macros, tiddler, key) {
-		var data = utils.getType(tiddler.fields.text.trim());
-		if (data) {
-			data.source = tiddler.fields.title;
-			// Secret feature. You can access a config tiddler's
-			// fields from inside the fieldtype handler. Cool
-			// tricks can be done with this.
-			data.fields = tiddler.fields;
-			// We take the last index, not the first, because macro
-			// parameters can't have slashes, but macroNames can.
-			var name = dir(key);
-			var arg = key.substr(name.length+1);
-			macros[name] = macros[name] || Object.create(null);
-			macros[name][arg] = data;
-		}
-	},
-	operators: function(operators, tiddler, key) {
-		var data = utils.getType(tiddler.fields.text.trim());
-		if (data) {
-			data.source = tiddler.fields.title;
-			// Secret feature. You can access a config tiddler's
-			// fields from inside the fieldtype handler. Cool
-			// tricks can be done with this.
-			data.fields = tiddler.fields;
-			// We take the last index, not the first, because the operator
-			// may have a slash to indicate parameter number
-			var pair = key.split('/');
-			var name = pair[0];
-			data.key = key;
-			operators[name] = operators[name] || Object.create(null);
-			operators[name][pair[1] || 1] = data;
-		}
-	},
-	fieldwidgets: function(fieldwidgets, tiddler, key) {
-		fieldwidgets[key] = new RegExp(tiddler.fields.text.trim());
-	}
-};
-
 function build(settings, wiki) {
-	for (var name in factories) {
+	for (var name in whitelistGenerators) {
 		settings[name] = Object.create(null);
 	}
 	wiki.eachShadowPlusTiddlers(function(tiddler, title) {
 		if (title.substr(0, prefix.length) === prefix) {
 			var remainder = title.substr(prefix.length);
 			var category = root(remainder);
-			var factory = factories[category];
+			var factory = whitelistGenerators[category];
 			if (factory) {
 				var name = remainder.substr(category.length+1);
-				factory(settings[category], tiddler, name);
+				factory.generate(settings[category], tiddler, name);
 			}
 		}
 	});
@@ -189,15 +123,6 @@ function root(string) {
 		return string.substr(0, index);
 	}
 };
-
-/* Returns all but the last bit of a path. path/to/tiddler -> path/to
- */
-function dir(string) {
-	var index = string.lastIndexOf('/');
-	if (index >= 0) {
-		return string.substr(0, index);
-	}
-}
 
 /* Turns {dir: {file1: 'value1', file2: 'value2'}}
  * into {dir/file1: 'value1', dir/file2: 'value2'}
