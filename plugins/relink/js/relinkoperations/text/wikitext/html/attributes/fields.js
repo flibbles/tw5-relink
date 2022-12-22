@@ -10,7 +10,7 @@ exports.getHandler = function(context, element, attributeName) {
 	var regexp = context.getFieldWidgets()[element.tag];
 	if (regexp) {
 		var results = regexp.exec(attributeName);
-		if (results) {
+		if (results && results[0] === attributeName) {
 			return context.getFields()[results[1]];
 		}
 	}

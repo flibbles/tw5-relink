@@ -382,4 +382,41 @@ it('supports relinking of internal text content', function() {
 	testText("<$link to='from here'>[[from here]]</$link>", true, ['<$link to />', '[[from here]]'], {wiki: wiki});
 });
 
+it('supports widgets that support regexp matching fields to attrs', function() {
+	const wiki = new $tw.Wiki();
+	const prefix = "$:/config/flibbles/relink/fieldwidgets/";
+	wiki.addTiddlers([
+		utils.fieldConf("myfield"),
+		utils.fieldConf("mylist", "list"),
+		$tw.wiki.getTiddler(prefix + "$action-createtiddler"),
+		$tw.wiki.getTiddler(prefix + "$jsontiddler")]);
+	// This widget follows a [^$].* pattern
+	testText('<$action-createtiddler myfield="from here" />', true,
+	         ['<$action-createtiddler myfield />'], {wiki: wiki});
+	testText('<$action-createtiddler mylist="[[from here]] X" />', true,
+	         ['<$action-createtiddler mylist />'], {wiki: wiki});
+	testText('<$action-createtiddler $myfield="from here" />', false,
+	         undefined, {wiki: wiki});
+	testText('<$action-createtiddler notmyfield="from here" />', false,
+	         undefined, {wiki: wiki});
+	testText('<$action-createtiddler myfieldNot="from here" />', false,
+	         undefined, {wiki: wiki});
+	// Test the \$(.*) pattern
+	testText('<$jsontiddler $myfield="from here" />', true,
+	         ['<$jsontiddler $myfield />'], {wiki: wiki});
+	testText('<$jsontiddler myfield="from here" />', false,
+	         undefined, {wiki: wiki});
+	testText('<$jsontiddler $$myfield="from here" />', false,
+	         undefined, {wiki: wiki});
+	testText('<$jsontiddler $xmyfield="from here" />', false,
+	         undefined, {wiki: wiki});
+	testText('<$jsontiddler $myfieldNot="from here" />', false,
+	         undefined, {wiki: wiki});
+	// Can now add new patterns to the whitelist
+	wiki.addTiddler($tw.wiki.getTiddler(prefix + "$action-deletefield"));
+	testText('<$action-deletefield myfield="from here" />', true,
+	         ['<$action-deletefield myfield />'], {wiki: wiki});
+});
+
+
 });
