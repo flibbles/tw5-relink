@@ -23,7 +23,8 @@ exports.report = function(element, parser, callback, options) {
 			continue;
 		}
 		var entry;
-		if (attr.type === "string") {
+		switch (attr.type) {
+		case "string":
 			var handler = getHandler(parser.context, element, attributeName);
 			if (handler) {
 				handler.report(attr.value, function(title, blurb) {
@@ -34,19 +35,23 @@ exports.report = function(element, parser, callback, options) {
 					}
 				}, options);
 			}
-		} else if (attr.type === "indirect") {
+			break;
+		case "indirect":
 			entry = refHandler.report(attr.textReference, function(title, blurb) {
 				callback(title, element.tag + ' ' + attributeName + '={{' + (blurb || '') + '}}');
 			}, options);
-		} else if (attr.type === "filtered") {
+			break;
+		case "filtered":
 			entry = filterHandler.report(attr.filter, function(title, blurb) {
 				callback(title, element.tag + ' ' + attributeName + '={{{' + blurb + '}}}');
 			}, options);
-		} else if (attr.type === "macro") {
+			break;
+		case "macro":
 			var macro = attr.value;
 			entry = macrocall.reportAttribute(parser, macro, function(title, blurb) {
 				callback(title, element.tag + ' ' + attributeName + '=' + blurb);
 			}, options);
+			break;
 		}
 	}
 };

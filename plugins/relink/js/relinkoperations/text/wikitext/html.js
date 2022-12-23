@@ -93,19 +93,24 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			case 'macro':
 				if (attr.output) {
 					quotedValue = attr.output;
-				} else {
-					// If output isn't set, this wasn't ever changed
-					continue;
 				}
+				// Else If output isn't set, this wasn't ever changed
 				break;
 			}
 			var ptr = attr.start;
 			ptr = $tw.utils.skipWhiteSpace(text, ptr);
-			ptr += attr.name.length;
-			ptr = $tw.utils.skipWhiteSpace(text, ptr);
-			ptr++; // For the equals
-			ptr = $tw.utils.skipWhiteSpace(text, ptr);
-			builder.add(quotedValue, ptr, attr.end);
+			if (attributeName !== attr.name) {
+				// Ooh, the attribute name changed
+				builder.add(attr.name, ptr, ptr + attributeName.length);
+			}
+			if (quotedValue) {
+				// We have a new attribute value
+				ptr += attributeName.length;
+				ptr = $tw.utils.skipWhiteSpace(text, ptr);
+				ptr++; // For the equals
+				ptr = $tw.utils.skipWhiteSpace(text, ptr);
+				builder.add(quotedValue, ptr, attr.end);
+			}
 		}
 		if (tag.children) {
 			for (var i = 0; i < tag.children.length; i++) {

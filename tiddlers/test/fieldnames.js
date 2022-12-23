@@ -301,4 +301,32 @@ it('can handle transcludes in fields or attribute string values', function() {
 	testText('<$button set="tid!!from"/>', true, ['<$button set="tid!!" />'], {wiki: wiki, to: "to this"});
 });
 
+it('can rename widget attribute names', function() {
+	const wiki = getWiki();
+	const prefix = "$:/config/flibbles/relink/fieldwidgets/";
+	wiki.addTiddlers([
+		$tw.wiki.getTiddler(prefix + "$action-createtiddler"),
+		$tw.wiki.getTiddler(prefix + "$jsontiddler")]);
+	// Test that all attribute value types work
+	testText("<$action-createtiddler from  =  'value' />", true,
+	         ['<$action-createtiddler ="value" />'], {wiki: wiki});
+	testText("<$action-createtiddler from=<<value>> />", true,
+	         ['<$action-createtiddler =<<value>> />'], {wiki: wiki});
+	testText("<$action-createtiddler from={{value!!field}} />", true,
+	         ['<$action-createtiddler ={{value!!field}} />'], {wiki: wiki});
+	testText("<$action-createtiddler from={{{ [[value]get[field]] }}} />", true,
+	         ['<$action-createtiddler ={{{ [[value]get[field]] }}} />'], {wiki: wiki});
+	// Works when attribute name doesn't exactly match title
+	testText("<$jsontiddler $from='value' />", true,
+	         ['<$jsontiddler ="value" />'], {wiki: wiki});
+	testText("<$jsontiddler $$from=value />", false, undefined, {wiki: wiki});
+	testText("<$jsontiddler from=value />", false, undefined, {wiki: wiki});
+	testText("<$jsontiddler myfrom=value />", false, undefined, {wiki: wiki});
+	testText("<$jsontiddler fromhere=value />", false, undefined, {wiki: wiki});
+	// TODO: Too long a value length
+	// TODO: newTitle wouldn't match regexp
+	// TODO: Matches regexp, but isn't a legal attribute name
+	// TODO: macro attributes that have "<" in the name?
+});
+
 });
