@@ -21,7 +21,7 @@ exports.report = function(tiddler, callback, options) {
 	var fields = tiddler.fields;
 	for (var field in fields) {
 		if (!utils.isReserved(field, options)) {
-			callback(field, ': ' + abridge(fields[field], 30), {soft: true});
+			callback(field, ': ' + utils.abridge(fields[field]), {soft: true});
 		}
 	}
 };

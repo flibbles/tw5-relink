@@ -27,17 +27,20 @@ exports.report = function(element, parser, callback, options) {
 				var blurb;
 				switch (attr.type) { 
 				case "string":
-					blurb = '"' + attr.value + '"';
+					blurb = '"' + utils.abridge(attr.value) + '"';
 					break;
 				case "indirect":
 					blurb = "{{" + attr.textReference + "}}";
 					break;
 				case "filtered":
-					blurb = "{{{" + attr.filter + "}}}";
+					blurb = "{{{" + utils.abridge(attr.filter) + "}}}";
 					break;
 				case "macro":
-					var macroStart = parser.source.indexOf("<", attr.start);
-					blurb = parser.source.substring(macroStart, attr.end);
+					// Find the equals
+					var equals = parser.source.indexOf("=", attr.start);
+					// Now that the macrostart after that equals
+					var macroStart = parser.source.indexOf("<", equals);
+					blurb = "<<" + utils.abridge(parser.source.substring(macroStart+2, attr.end-2)) + ">>";
 					break;
 				}
 				callback(results[1], element.tag + ' =' + blurb);
@@ -76,7 +79,12 @@ function alterAttributeName(attributeName, fromTitle, toTitle, regexp, options) 
 		var newName = attributeName.replace(fromTitle, toTitle);
 		var match = regexp.exec(newName);
 		if (match && match[0] === newName && match[1] === toTitle) {
-			return newName;
+			// Taken from parseutils.js
+			var reAttributeName = /([^\/\s>"'=]+)/;
+			match = reAttributeName.exec(newName);
+			if (match && match[0] === newName) {
+				return newName;
+			}
 		}
 	}
 	return undefined;

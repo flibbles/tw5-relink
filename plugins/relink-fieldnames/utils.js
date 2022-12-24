@@ -17,6 +17,15 @@ exports.isReserved = function(field, options) {
 	return method(field);
 };
 
+exports.abridge = function(string, length) {
+	if (typeof string === "string") {
+		length = length || 30;
+		string = string.replace(/\s+/g, " ");
+		return (string.length > length)? string.substr(0, length) + "..." : string;
+	}
+	return string;
+}
+
 // Pre v5.2.0, this will be false. But we can't rely on utils.isValidFieldName
 // entirely, because it is forgiving about capitalization when we can't be.
 var capitalizationAllowed = $tw.utils.isValidFieldName("A:");
@@ -25,4 +34,3 @@ exports.isValidFieldName = function(field) {
 	return $tw.utils.isValidFieldName(field)
 		&& (capitalizationAllowed || !/[A-Z]/.test(field));
 };
-

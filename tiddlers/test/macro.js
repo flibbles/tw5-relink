@@ -354,11 +354,9 @@ it('local macros simple', function() {
 	wiki.addTiddlers([
 		utils.macroConf("outer", "text", "wikitext"),
 		utils.macroConf("inner", "title", "title")]);
-	/*
 	testText('\\define inner(title) content\n<<outer text:"""<<inner "from here">>""" >>', true, ['<<outer text: "<<inner title>>">>'], {wiki: wiki});
 	testText('\\define inner(title) content\n<$macrocall $name=outer text=<<inner "from here">> />', true,
 	         ['<$macrocall text=<<inner title>> />'], {wiki: wiki});
-	*/
 	testText('\\define inner(title) content\n<$macrocall $name=outer text="""<<inner "from here">>""" />', true,
 	         ['<$macrocall text="<<inner title>>" />'], {wiki: wiki});
 });
@@ -390,6 +388,8 @@ it('$macrocall', function() {
 
 	// not having $name shouldn't cause a crash
 	testText("<$macrocall Btitle='from here' />", false, undefined);
+	// unmanaged macros shouldn't cause problems either
+	testText("<$macrocall $name=none value='from here' />", false, undefined);
 });
 
 it('$macrocall imposssibles', function() {
