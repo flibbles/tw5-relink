@@ -305,6 +305,7 @@ it('can rename widget attribute names', function() {
 	const wiki = getWiki();
 	const prefix = "$:/config/flibbles/relink/fieldwidgets/";
 	wiki.addTiddlers([
+		utils.fieldConf("hotfield"),
 		$tw.wiki.getTiddler(prefix + "$action-createtiddler"),
 		$tw.wiki.getTiddler(prefix + "$jsontiddler")]);
 	// Test that all attribute value types work
@@ -337,6 +338,10 @@ it('can rename widget attribute names', function() {
 	// Newlines or tabs exist in value
 	testText('<$jsontiddler $from="""\n\tStart of a new line\n\tStart of another line""" />', true,
 	         ['<$jsontiddler =" Start of a new line Start of ..." />'], {wiki: wiki});
+	// Attribute name and value must change
+	testText("<$jsontiddler $hotfield='hotfield' />", true,
+	         ['<$jsontiddler $hotfield />', '<$jsontiddler ="hotfield" />'],
+	         {wiki: wiki, from: "hotfield"});
 	// Respects blacklist
 	testText("<$action-createtiddler text=value />", false,
 	         undefined, {from: "text", wiki: wiki});
