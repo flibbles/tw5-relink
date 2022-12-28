@@ -21,6 +21,24 @@ beforeEach(function() {
 	spyOn(console, 'log');
 });
 
+// This relies on the relink-titles default rule instead of making a rule for
+// for itself. This may need to change in the future.
+it('updates the visibility settings', function() {
+	const wiki = getWiki();
+	const settingFrom = "$:/config/EditTemplateFields/Visibility/from";
+	const settingTo = "$:/config/EditTemplateFields/Visibility/to";
+	wiki.addTiddlers([
+		{title: "from", text: "anything"},
+		$tw.wiki.getTiddler("$:/config/flibbles/relink-titles/lookup/patterns"),
+		{title: settingFrom, text: "hide"}]);
+	expect(utils.getReport(settingFrom, wiki).from)
+		.toEqual(["title: $:/config/*/Visibility/..."]);
+	wiki.renameTiddler("from", "to");
+	expect(wiki.tiddlerExists(settingFrom)).toBe(false);
+	expect(wiki.tiddlerExists(settingTo)).toBe(true);
+	expect(wiki.getTiddler(settingTo).fields.text).toBe("hide");
+});
+
 it('reports only non-blacklisted tiddlers', function() {
 	const realBlacklist = $tw.wiki.getTiddler(blacklist);
 	const wiki = new $tw.Wiki();

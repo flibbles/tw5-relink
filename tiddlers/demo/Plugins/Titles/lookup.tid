@@ -10,4 +10,4 @@ The patterns are highly flexible. `$(currentTiddler)$` can appear anywhere in th
 
 <$codeblock code={{$:/config/flibbles/relink-titles/lookup/patterns}} />
 
-Since all Tiddlywiki buttons are shadow tiddlers which will never rename, you can safely remove it and put in your own patterns. It's there primarily as an example.
+This rule is primarily there as an example, but I recommend leaving it in as it does cover several useful cases.
