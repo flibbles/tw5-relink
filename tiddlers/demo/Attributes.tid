@@ -14,4 +14,6 @@ If you have `$list`/`filter` whitelisted and configured as a filter, then the wi
 
 For each element/attribute pair, you must specify its [[type|Types]].
 
+''Note:'' If a widget accepts a dynamic set of attributes corresponding to tiddler fields, [[see here|Widgets with tiddler fields as attributes]].
+
 <<link-to-tab Demo Demo/Widgets Demo>>

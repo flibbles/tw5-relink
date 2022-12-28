@@ -1,0 +1,31 @@
+title: Widgets with tiddler fields as attributes
+
+//Relink// has a whitelist which allows you to individually specify widget attributes which should be relinked. [[That's described here.|Attributes]] However, some widgets accept attributes which correspond to tiddler fields. For instance, the ``<$action-setfield>`` widget can accept any attribute without a `$` prefix, and those attributes will become fields in the specified tiddler.
+
+```
+<$action-setfield tags="Documentation" />
+```
+
+This will set the `tags` field of the current tiddler to `Documentation`.
+
+Because widgets like these accept a dynamic set of attributes, the attribute whitelist cannot be used to relink those fields. That's where the //fieldwidgets// settings come in. For each widget, a regular expression can be defined which specifies how its attributes correspond to tiddler fields. For `<$action-setfield>`:
+
+```
+title: $:/config/flibbles/relink/fieldwidgets/$action-setfield
+
+([^$].*)
+```
+
+In other words, for all attributes that don't start with a `$`, look up the corresponding entry in the [[Fields]] whitelist for tiddler fields. This way, if `tags` field is configured to be relinked (which it is by default), then `<$action-setfield tags="fromTitle" />` will be relinked appropriately.
+
+!!! The regular expression
+
+The regular expression used must have a single capture group which will corresponds to the actual name of the tiddler field. An expression like `field-(.*)` will match the attribute `field-tags` to the `tags` tiddler field.
+
+!!! Existing cases
+
+The following widgets are already configured. There is no table in the //Relink// whitelists because this is such an esoteric problem, but your plugins can always add more with additional `$:/config/flibbles/relink/fieldwidgets/` tiddlers.
+
+<table>
+<$list filter="[all[shadows+tiddlers]prefix[$:/config/flibbles/relink/fieldwidgets/]]"><tr><td>''<$text text={{!!title}} />''</td><td><$text text={{!!text}} /></td></tr></$list>
+</table>
