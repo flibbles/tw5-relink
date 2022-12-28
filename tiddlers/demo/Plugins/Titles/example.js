@@ -38,8 +38,8 @@ exports.name = 'example';
 exports.report = function(targetTitle, callback, options) {
 	// If this title doesn't start with the prefix,
 	// then it's irrelevant for this rule.
-	if (targetTitle.startsWith('$:/TitlesExample/')) {
-		var referencedTitle = targetTitle.substr('$:/TitlesExample/'.length);
+	if (targetTitle.startsWith('Example/setting/')) {
+		var referencedTitle = targetTitle.substr('Example/setting/'.length);
 		// First param is the other tiddler that this title references.
 		// Second param is optional. It's a blurb describing the relationship.
 		callback(referencedTitle, 'Example titles rule');
@@ -58,9 +58,9 @@ exports.report = function(targetTitle, callback, options) {
  */
 exports.relink = function(targetTitle, fromTitle, toTitle, options) {
 	// If this is the TitlesExample tiddler for the renamed tiddler...
-	if (targetTitle === ('$:/TitlesExample/' + fromTitle)) {
+	if (targetTitle === ('Example/setting/' + fromTitle)) {
 		// Then return the TitlesExample tiddler for the new name.
-		return {output: '$:/TitlesExample/' + toTitle};
+		return {output: 'Example/setting/' + toTitle};
 		// If, for whatever reason, we could NOT change the targetTitle
 		// given this particular toTitle, then we would instead return:
 		//     {impossible: true};
