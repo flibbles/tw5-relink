@@ -89,7 +89,8 @@ Indexer.prototype.orphans = function() {
 	this._upkeep();
 	var results = [];
 	for (var title in this.index) {
-		if (!this.backIndex[title]) {
+		if (!this.backIndex[title]
+		|| Object.keys(this.backIndex[title]).length === 0) {
 			results.push(title);
 		}
 	}

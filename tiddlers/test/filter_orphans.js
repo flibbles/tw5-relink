@@ -26,6 +26,21 @@ it('works with backup indexer', function() {
 	expect(wiki.filterTiddlers('[relink:orphans[]]')).toEqual(['A', 'B']);
 });
 
+it('can recognize new orphans', async function() {
+	// Make sure to use the better indexer
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'A', text: 'anything'},
+		{title: 'B', text: '[[A]]'}]);
+	expect(wiki.filterTiddlers('[relink:orphans[]]')).toEqual(['B']);
+	wiki.addTiddler({title: 'C', text: 'anything'});
+	await utils.flush();
+	expect(wiki.filterTiddlers('[relink:orphans[]]')).toEqual(['B', 'C']);
+	wiki.addTiddler({title: 'B', text: 'no link now'});
+	await utils.flush();
+	expect(wiki.filterTiddlers('[relink:orphans[]]').sort()).toEqual(['A', 'B', 'C']);
+});
+
 // Issue #43
 it('can find images', function() {
 	var wiki = new $tw.Wiki();
