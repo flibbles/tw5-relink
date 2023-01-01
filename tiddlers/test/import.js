@@ -29,13 +29,13 @@ beforeEach(function() {
 });
 
 it('import pragma', function() {
-	var r = testText("\\import [title[from here]]\nstuff.", true, ['\\import [title[]]']);
+	var r = testText("\\import [title[from here]]\nstuff.", true, ['\\import']);
 	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 	testText("\\rules except prettylink\n\\import [[from here]]\nnot prettylink.", true, ['\\import']);
 	testText("\\import [[from|here]]\ndon't parse as prettylink.", true, ['\\import'],
 	         {from: "from|here"});
-	testText("\\import [title[from here]]\n\n\nnewlines.", true, ['\\import [title[]]']);
-	testText("\\import   [title[from here]]  \nwhitespace.", true, ['\\import [title[]]']);
+	testText("\\import [title[from here]]\n\n\nnewlines.", true, ['\\import']);
+	testText("\\import   [title[from here]]  \nwhitespace.", true, ['\\import']);
 	testText("\\import [[from here]]\r\nwindows return.", true, ['\\import']);
 	testText("\\import from\nsingle to double.",
 	         "\\import [[to there]]\nsingle to double.",

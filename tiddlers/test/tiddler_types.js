@@ -40,6 +40,7 @@ it('javascript body is not treated like wikitext', function() {
 it('x-tiddler-filter types', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('tag'));
+	wiki.addTiddler(utils.operatorConf('title'));
 	wiki.addTiddler({title: 'op', type: 'text/x-tiddler-filter', text: '[tag[from]]'});
 	wiki.addTiddler({title: 'raw', type: 'text/x-tiddler-filter', text: '"from"'});
 	expect(utils.getReport('op', wiki)).toEqual({from: ['[tag[]]']});

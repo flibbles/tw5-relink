@@ -4,13 +4,25 @@ This specifies logic for updating filters to reflect title changes.
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
+var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+var filterRelinkers = utils.getModulesByTypeAsHashmap('relinkfilter', 'name');
 
 exports.name = "filter";
 
 exports.report = function(filter, callback, options) {
 	// I cheat here for now. Relink handles reporting too in cases where
 	// fromTitle is undefined. toTitle is the callback in those cases.
-	exports.relink(filter, undefined, callback, options);
+	if (filter) {
+		try {
+			var parseTree = options.wiki.parseFilter(filter);
+		} catch (e) {
+			// It must have been malformed. Return without doing anything.
+			return;
+		}
+		for (var module in filterRelinkers) {
+			filterRelinkers[module].report(parseTree, callback, options);
+		}
+	}
 };
 
 /**Returns undefined if no change was made.

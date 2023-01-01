@@ -18,12 +18,13 @@ it("caches report results when indexing", function() {
 	var wiki = new $tw.Wiki();
 	spyOn(operators.text, 'report').and.callThrough();
 	wiki.addTiddlers([
+		utils.operatorConf("title"),
 		{title: 'test', text: '\\import macros\n<<M x>>'},
 		// We have it import macros, but those macros don't change
 		{title: 'macros', text: '\\relink M arg\n\\define M(arg) X'}]);
 	expect(getReport('test', wiki)).toEqual({macros: ['\\import'], x: ['<<M arg>>']});
-	// called two times, because every tiddler gets indexed.
-	expect(operators.text.report).toHaveBeenCalledTimes(2);
+	// called three times, because every tiddler gets indexed.
+	expect(operators.text.report).toHaveBeenCalledTimes(3);
 	operators.text.report.calls.reset();
 	wiki.addTiddler({title: 'unrelated', text: 'unrelated'});
 	expect(getReport('test', wiki)).toEqual({macros: ['\\import'], x: ['<<M arg>>']});
@@ -73,6 +74,7 @@ it("only checks tiddler contexts if and when they need checking", function() {
 it("doesn't update changed & importing tiddlers multiple times", function () {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
+		utils.operatorConf('title'),
 		{title: 'A', text: 'stuff'},
 		{title: 'B', text: '\\import A\n[[c|link1]]'}]);
 	expect(getReport('B', wiki)).toEqual({A: ['\\import'], link1: ['[[c]]']});
@@ -88,6 +90,7 @@ it("doesn't update changed & importing tiddlers multiple times", function () {
 it("doesn't update deleted & importing tiddlers", function () {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
+		utils.operatorConf('title'),
 		{title: 'A', text: 'stuff'},
 		{title: 'B', text: '\\import A\n[[c|link1]]'}]);
 	expect(getReport('B', wiki)).toEqual({A: ['\\import'], link1: ['[[c]]']});
@@ -156,6 +159,7 @@ it("updates when tiddler in import list renames", function() {
 	var wiki = new $tw.Wiki();
 	spyOn(console, 'log');
 	wiki.addTiddlers([
+		utils.operatorConf("title"),
 		{title: 'test', text: '\\import macro\n<<M arg:A>>'},
 		{title: 'macro', text: '\\relink M arg'}]);
 	expect(getReport('test', wiki)).toEqual({macro: ['\\import'], A: ['<<M arg>>']});

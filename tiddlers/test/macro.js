@@ -90,7 +90,9 @@ it("block or inline", function() {
 
 it("doesn't choke if attribute string == macro name", function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.macroConf("jsontiddlers", "filter", "filter"));
+	wiki.addTiddlers([
+		utils.macroConf("jsontiddlers", "filter", "filter"),
+		utils.operatorConf("title")]);
 	testText("<<jsontiddlers jsontiddlers>>", "<<jsontiddlers to>>",
 	         ['<<jsontiddlers filter>>'],
 	         {wiki: wiki, from: "jsontiddlers", to: "to"});
@@ -103,10 +105,10 @@ it('core javascript macros', function() {
 		utils.macroConf("testmodulemacro", "param", "filter"),
 		utils.operatorConf("title")]);
 	testText("<<jsontiddlers '[title[from here]]'>>", true,
-	         ['<<jsontiddlers filter: "[title[]]">>'], {wiki: wiki});
+	         ['<<jsontiddlers filter>>'], {wiki: wiki});
 	// look in macro-module.js for the custom macro module we're calling
 	testText("<<testmodulemacro '[title[from here]]'>>", true,
-	         ['<<testmodulemacro param: "[title[]]">>'], {wiki: wiki});
+	         ['<<testmodulemacro param>>'], {wiki: wiki});
 });
 
 it('whitespace', function() {
@@ -285,6 +287,7 @@ it('imported macros', function() {
 	function test(text, expected, report, options) {
 		var wiki = new $tw.Wiki();
 		wiki.addTiddlers([
+			utils.operatorConf("title"),
 			utils.macroConf("other", "param", "title"),
 			utils.macroConf("ptr", "tiddler", "title"),
 			utils.attrConf("$importvariables", "filter", "filter"),

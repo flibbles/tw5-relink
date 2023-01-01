@@ -19,6 +19,7 @@ function testFilter(filter, expected, report, options) {
 	const wiki = options.wiki || new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.fieldConf('filt', 'filter'),
+		utils.operatorConf('title'),
 		{title: 'test', filt: filter}]);
 	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
 	wiki.renameTiddler(options.from, options.to);
@@ -88,8 +89,12 @@ it('runs', function() {
 it('title operator', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('title'));
-	testFilter("A [title[from here]] B", true, ['filt: [title[]]'], {wiki: wiki});
-	testFilter("A [title[from]] B", true, ['filt: [title[]]'], {from: 'from', wiki: wiki});
+	testFilter("A [title[from here]] B", true, ['filt'], {wiki: wiki});
+	testFilter("A [!title[from here]] B", true, ['filt: [![]]'], {wiki: wiki});
+	testFilter("A [![from here]] B", true, ['filt: [![]]'], {wiki: wiki});
+	testFilter("A [title[from here]is[tiddler]] B", true, ['filt: [[]]'], {wiki: wiki});
+	testFilter("A ~[title[from here]] B", true, ['filt: ~'], {wiki: wiki});
+	testFilter("A ~[!title[from here]] B", true, ['filt: ~[![]]'], {wiki: wiki});
 });
 
 it('malformed', function() {
@@ -107,8 +112,8 @@ it('tricky titles', function() {
 	testFilter("A [[from here]] B", "A 'a\" ]b' B",   ['filt'], {to: 'a\" ]b'});
 	testFilter("A [[from here]] B", "A a\"\'b B",     ['filt'], {to: 'a\"\'b'});
 	testFilter("A [[from here]] B", "A [[a\" \'b]] B",['filt'], {to: 'a\" \'b'});
-	testFilter("A [title[from here]] B","A [title[a\" \'b]] B", ['filt: [title[]]'], {to: 'a\" \'b', wiki: wiki});
-	testFilter("A [title[from here]] B","A [title[simple]] B", ['filt: [title[]]'], {to: 'simple', wiki: wiki});
+	testFilter("A [title[from here]] B","A [title[a\" \'b]] B", ['filt'], {to: 'a\" \'b', wiki: wiki});
+	testFilter("A [title[from here]] B","A [title[simple]] B", ['filt'], {to: 'simple', wiki: wiki});
 	testFilter('A "from here" B', 'A [[a\' \"b]] B', ['filt'], {to: 'a\' "b'});
 	testFilter("A 'from here' B", 'A [[a\' \"b]] B', ['filt'], {to: 'a\' "b'});
 });
@@ -136,8 +141,8 @@ it('supports operator negator on titles', function() {
 		utils.operatorConf('title'),
 		utils.operatorConf('tag')]);
 	testFilter("A [![from here]]", true, ['filt: [![]]'], {wiki: wiki});
-	testFilter("A [!title[from here]]", true, ['filt: [!title[]]'], {wiki: wiki});
-	testFilter("A [tag[something]!title[from here]]", true, ['filt: [!title[]]'], {wiki: wiki});
+	testFilter("A [!title[from here]]", true, ['filt: [![]]'], {wiki: wiki});
+	testFilter("A [tag[something]!title[from here]]", true, ['filt: [![]]'], {wiki: wiki});
 	// Doesn't try to collapse the brackets or anything
 	testFilter("A [![from here]]", true, ['filt: [![]]'], {to: "to", wiki: wiki});
 });
@@ -158,7 +163,9 @@ it('ignores regular expressions', function() {
 });
 
 it('handles transclusion for all operands', function() {
-	testFilter("A [title{from}] B", true, ['filt: [title{}]'], {from: "from"});
+	testFilter("A [title{from}] B", true, ['filt: [{}]'], {from: "from"});
+	testFilter("A ~[title{from}] B", true, ['filt: ~[{}]'], {from: "from"});
+	testFilter("A [!title{from}] B", true, ['filt: [!{}]'], {from: "from"});
 	testFilter("A [{from}] B", true, ['filt: [{}]'], {from: "from"});
 	testFilter("A [anything{from}] B", true, ['filt: [anything{}]'], {from: "from"});
 	testFilter("A [anything{from!!field}] B", true, ['filt: [anything{!!field}]'], {from: "from"});
@@ -173,7 +180,7 @@ it('field:title operator', function() {
 		utils.operatorConf("title", "title")]);
 	testFilter("A [field:title[from here]] B", true, ['filt: [field:title[]]'], {wiki: wiki});
 	testFilter("A [!field:title[from here]] B", true, ['filt: [!field:title[]]'], {wiki: wiki});
-	testFilter("[title:randomsuffix[from here]]", true, ['filt: [title:randomsuffix[]]'], {wiki: wiki});
+	testFilter("[title:randomsuffix[from here]]", true, ['filt: [:randomsuffix[]]'], {wiki: wiki});
 	testFilter("A [tag[something]!field:title[from here]] B", true, ['filt: [!field:title[]]'], {wiki: wiki});
 });
 
@@ -297,7 +304,7 @@ it("field failures don't prevent from continuing", function() {
 
 	// properly counts failures
 	fail("[tag[from]title[from]tag{from}]", "1]2",
-	     "[tag[from]title[from]tag{1]2}]", ['filt: [tag[]]', 'filt: [title[]]', 'filt: [tag{}]'], 1);
+	     "[tag[from]title[from]tag{1]2}]", ['filt: [tag[]]', 'filt: [[]]', 'filt: [tag{}]'], 1);
 
 	// Reference operand properly fails
 	fail("[list[from]tag[from]]", "t!!f",

@@ -78,7 +78,7 @@ it('relinks filter field', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('title'));
 	testField("[title[from here]] stuff", "[title[to there]] stuff",
-	          ['filter: [title[]]'],
+	          ['filter'],
 	          {field: "filter", type: "filter", wiki: wiki});
 	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 });

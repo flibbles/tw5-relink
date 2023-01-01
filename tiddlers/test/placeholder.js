@@ -48,13 +48,13 @@ it('increment to next available number', function() {
 	testText(
 		macro(1,"something")+"{{{[title[from here]]}}}",
 		macro(2,to)+macro(1,"something")+"{{{[title<relink-2>]}}}",
-		['{{{[title[]]}}}'],
+		['{{{}}}'],
 		{to: to, wiki: wiki});
 });
 
 it('filter', function() {
 	// Works with the filter placeholders
-	const report = ['\\define relink-filter-1() [title[]]'];
+	const report = ['\\define relink-filter-1()'];
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('title'));
 	testText(macro("filter-1","[title[from here]]")+"Tiddler body", true, report, {wiki: wiki});
