@@ -1,7 +1,7 @@
 /*\
+
 This specifies logic for updating filters to reflect title changes.
 
-TODO: I'm pretty sure this can break with particular string title changes when run prefixes are involved.
 \*/
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
@@ -208,7 +208,7 @@ exports.relinkInBraces = function(filter, fromTitle, toTitle, options) {
 
 function wrapTitle(value, preference, options) {
 	var choices = {
-		"": function(v) {return /^[^\s\[\]]*[^\s\[\]\}]$/.test(v); },
+		"": function(v) {return /^[^\s\[\]\}\+\-\~\=\:][^\s\[\]]*[^\s\[\]\}]$/.test(v); },
 		"[": canBePrettyOperand,
 		"'": function(v) {return v.indexOf("'") < 0; },
 		'"': function(v) {return v.indexOf('"') < 0; }

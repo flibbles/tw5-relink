@@ -138,6 +138,20 @@ it('supports expression prefixes', function() {
 	testFilter("A +[be{from here}]", true, ['filt: +[be{}]'], {wiki: wiki});
 });
 
+it('handles titles that would conflict with prefixes', function() {
+	// ~to alone would be incorrect
+	testFilter("A from B", "A [[~to]] B", ['filt'], {from: 'from', to: '~to'});
+	testFilter("A from B", "A '~t]o' B", ['filt'], {from: 'from', to: '~t]o'});
+	testFilter("A from B", 'A "~t]\'o" B', ['filt'], {from: 'from', to: '~t]\'o'});
+	// All symbol prefixes work
+	testFilter("A from B", "A [[+to]] B", ['filt'], {from: 'from', to: '+to'});
+	testFilter("A from B", "A [[-to]] B", ['filt'], {from: 'from', to: '-to'});
+	testFilter("A from B", "A [[=to]] B", ['filt'], {from: 'from', to: '=to'});
+	testFilter("A from B", "A [[:to]] B", ['filt'], {from: 'from', to: ':to'});
+	// Goes back to the way it was
+	testFilter("A [[:from]] B", "A to B", ['filt'], {from: ':from', to: 'to'});
+});
+
 it('supports operator negator on titles', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
