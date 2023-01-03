@@ -69,7 +69,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				if (attr.valueless) {
 					continue;
 				}
-				var quote = utils.determineQuote(text, attr);
+				var quote = relinkUtils.determineQuote(text, attr);
 				quotedValue = utils.wrapAttributeValue(attr.value, quote)
 				if (quotedValue === undefined) {
 					// The value was unquotable. We need to make

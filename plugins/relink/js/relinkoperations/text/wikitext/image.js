@@ -14,6 +14,7 @@ var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var filterHandler = require("$:/plugins/flibbles/relink/js/utils").getType('filter');
 var macrocall = require("./macrocall.js");
 var utils = require("./utils.js");
+var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 
 exports.name = "image";
 
@@ -131,7 +132,7 @@ function reportAttribute(parser, attribute, callback, options) {
 	ptr = text.indexOf('=', ptr);
 	if (attribute.type === "string") {
 		ptr = text.indexOf(attribute.value, ptr)
-		var quote = utils.determineQuote(text, attribute);
+		var quote = relinkUtils.determineQuote(text, attribute);
 		// ignore first quote. We already passed it
 		end = ptr + quote.length + attribute.value.length;
 	} else if (attribute.type === "indirect") {
@@ -166,7 +167,7 @@ function relinkAttribute(parser, attribute, builder, fromTitle, toTitle, options
 	ptr = text.indexOf('=', ptr);
 	if (attribute.type === "string") {
 		ptr = text.indexOf(attribute.value, ptr)
-		var quote = utils.determineQuote(text, attribute);
+		var quote = relinkUtils.determineQuote(text, attribute);
 		// ignore first quote. We already passed it
 		end = ptr + quote.length + attribute.value.length;
 	} else if (attribute.type === "indirect") {
