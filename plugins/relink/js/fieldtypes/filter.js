@@ -1,5 +1,7 @@
 /*\
 This specifies logic for updating filters to reflect title changes.
+
+TODO: I'm pretty sure this can break with particular string title changes when run prefixes are involved.
 \*/
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
@@ -10,8 +12,6 @@ var filterRelinkers = utils.getModulesByTypeAsHashmap('relinkfilter', 'name');
 exports.name = "filter";
 
 exports.report = function(filter, callback, options) {
-	// I cheat here for now. Relink handles reporting too in cases where
-	// fromTitle is undefined. toTitle is the callback in those cases.
 	if (filter) {
 		try {
 			var parseTree = options.wiki.parseFilter(filter);
@@ -28,135 +28,168 @@ exports.report = function(filter, callback, options) {
 /**Returns undefined if no change was made.
  */
 exports.relink = function(filter, fromTitle, toTitle, options) {
-	var relinker = new Rebuilder(filter),
-		p = 0, // Current position in the filter string
-		match, noPrecedingWordBarrier,
-		wordBarrierRequired=false;
-	var whitespaceRegExp = /\s+/mg,
-		operandRegExp = /((?:\+|\-|~|=|\:\w+)?)(?:(\[)|(?:"([^"]*)")|(?:'([^']*)')|([^\s\[\]]+))/mg,
-		blurbs = [];
-	while(p < filter.length) {
-		// Skip any whitespace
-		whitespaceRegExp.lastIndex = p;
-		match = whitespaceRegExp.exec(filter);
-		noPrecedingWordBarrier = false;
-		if(match && match.index === p) {
-			p = p + match[0].length;
-		} else if (p != 0) {
+	var changed = false;
+	var results = {};
+	var parseTree;
+	if (filter) {
+		try {
+			parseTree = options.wiki.parseFilter(filter);
+		} catch (e) {
+			// It must have been malformed. Return without doing anything.
+			return;
+		}
+		for (var module in filterRelinkers) {
+			var entry = filterRelinkers[module].relink(parseTree, fromTitle, toTitle, options);
+			if (entry.changed) {
+				changed = true;
+			}
+			if (entry.impossible) {
+				results.impossible = true;
+			}
+		}
+	}
+	if (changed) {
+		builder = assembleFilterString(parseTree, filter, options);
+		results.output = builder.results();
+		results.impossible = results.impossible || builder.impossible;
+		return results;
+	}
+	if (results.impossible) {
+		return results;
+	}
+	return undefined
+};
+
+function assembleFilterString(parseTree, oldFilter, options) {
+	var relinker = new Rebuilder(oldFilter),
+		wordBarrierRequired = false,
+		p = 0;
+	for (var i = 0; i < parseTree.length; i++) {
+		var start = $tw.utils.skipWhiteSpace(oldFilter, p);
+		if (start !== p) {
+			// There's some breathing room between this run and the last.
+			// We'll never need to insert space.
+			wordBarrierRequired = false;
+			p = start;
+		}
+		var run = parseTree[i];
+		if (run.prefix) {
 			if (wordBarrierRequired) {
 				relinker.add(' ', p, p);
 				wordBarrierRequired = false;
-			} else {
-				noPrecedingWordBarrier = true;
 			}
+			p += run.prefix.length;
 		}
-		// Match the start of the operation
-		if(p < filter.length) {
-			var val;
-			operandRegExp.lastIndex = p;
-			match = operandRegExp.exec(filter);
-			if(!match || match.index !== p) {
-				// It's a bad filter
-				return undefined;
+		if (oldFilter[p] !== '['
+		|| (oldFilter[p+1] === '[' && run.operators.length === 1)) {
+			// It's a string title
+			var text = run.operators[0].operands[0].text,
+				end,
+				old;
+			switch (oldFilter[p]) {
+			case "'":
+			case '"':
+				// p + 1 to skip the first quote
+				// indexOf() + 1 to skip the last
+				end = oldFilter.indexOf(oldFilter[p], p+1) + 1;
+				old = oldFilter.substring(p+1, end-1);
+				break;
+			case '[':
+				end = oldFilter.indexOf(']', p);
+				old = oldFilter.substring(p+2, end);
+				// +2 to get past the ']]'
+				end += 2;
+				break;
+			default:
+				end = skipWord(oldFilter, p);
+				old = oldFilter.substring(p, end);
 			}
-			if(match[1]) { // prefix
-				p += match[1].length;
-			}
-			if(match[2]) { // Opening square bracket
-				// We check if this is a standalone title,
-				// like `[[MyTitle]]`. We treat those like
-				// `"MyTitle"` or `MyTitle`. Not like a run.
-				var standaloneTitle = /\[\[([^\]]+)\]\]/g;
-				standaloneTitle.lastIndex = p;
-				var alone = standaloneTitle.exec(filter);
-				if (!alone || alone.index != p) {
-					if (fromTitle === undefined) {
-						// toTitle is a callback method in this case.
-						p =reportFilterOperation(filter, function(title, blurb){
-							if (match[1]) {
-								blurbs.push([title, match[1] + (blurb || '')]);
-							} else {
-								blurbs.push([title, blurb]);
-							}
-						},p,options.settings,options);
-					} else {
-						p =relinkFilterOperation(relinker,fromTitle,toTitle,filter,p,options.settings,options);
-					}
-					// It's a legit run
-					if (p === undefined) {
-						// The filter is malformed
-						// We do nothing.
-						return undefined;
-					}
-					continue;
-				}
-				bracketTitle = alone[1];
-				operandRegExp.lastIndex = standaloneTitle.lastIndex;
-				val = alone[1];
-			} else {
-				// standalone Double quoted string, single
-				// quoted string, or noquote ahead.
-				val = match[3] || match[4] || match[5];
-			}
-			// From here on, we're dealing with a standalone title
-			// expression. like `"MyTitle"` or `[[MyTitle]]`
-			// We're much more flexible about relinking these.
-			var preference = undefined;
-			if (match[3]) {
-				preference = '"';
-			} else if (match[4]) {
-				preference = "'";
-			} else if (match[5]) {
-				preference = '';
-			}
-			if (fromTitle === undefined) {
-				// Report it
-				blurbs.push([val, match[1]]);
-			} else if (val === fromTitle) {
-				// Relink it
-				var entry = {name: "title"};
-				var newVal = wrapTitle(toTitle, preference);
-				if (newVal === undefined || (options.inBraces && newVal.indexOf('}}}') >= 0)) {
-					if (!options.placeholder) {
-						relinker.impossible = true;
-						p = operandRegExp.lastIndex;
-						continue;
-					}
-
-					newVal = "[<"+options.placeholder.getPlaceholderFor(toTitle)+">]";
-				}
-				if (newVal[0] != '[') {
-					// not bracket enclosed
-					// this requires whitespace
-					// arnound it
-					if (noPrecedingWordBarrier && !match[1]) {
+			if (old !== text) {
+				var wrapped = wrapTitle(text, oldFilter[p] !== "[" ? oldFilter[p] : '', options);
+				if (wrapped !== undefined) {
+					// This is a no-quote title. If breathing room is required,
+					// add it. Also, we may need breathing room after it.
+					if (wordBarrierRequired && wrapped[0] !== "[") {
 						relinker.add(' ', p, p);
 					}
-					wordBarrierRequired = true;
-				}
-				entry.output = toTitle;
-				entry.operator = {operator: "title"};
-				entry.quotation = preference;
-				if (entry.impossible) {
+					relinker.add(wrapped, p, end);
+					wordBarrierRequired = wrapped === text;
+				} else if (options.placeholder) {
+					var ph = options.placeholder.getPlaceholderFor(text);
+					relinker.add('[<' + ph + '>]', p, end);
+				} else {
 					relinker.impossible = true;
 				}
-				relinker.add(newVal,p,operandRegExp.lastIndex);
+			} else {
+				if (wordBarrierRequired && oldFilter[p] !== "[") {
+					relinker.add(' ', p, p);
+				}
+				wordBarrierRequired = oldFilter.indexOf(text) === p;
 			}
-			p = operandRegExp.lastIndex;
+			p = end;
+		} else {
+			wordBarrierRequired = false;
+			p++;
+			for (var j = 0; j < run.operators.length; j++) {
+				var operator = run.operators[j];
+				for (var index = 0; index < operator.operands.length; index++) {
+					var operand = operator.operands[index],
+						skip = false;
+						end,
+						wrapped;
+					if (operand.indirect) {
+						p = oldFilter.indexOf('{', p);
+						end = oldFilter.indexOf('}', p+1);
+						wrapped = '{' + operand.text + '}';
+					} else if (operand.variable) {
+						p = oldFilter.indexOf('<', p);
+						end = oldFilter.indexOf('>', p+1);
+						wrapped = '<' + operand.text + '>';
+					} else if (operator.regexp) {
+						p = oldFilter.indexOf('/', p);
+						end = oldFilter.indexOf('/', p+1);
+						skip = true;
+					} else {
+						p = oldFilter.indexOf('[', p);
+						end = oldFilter.indexOf(']', p+1);
+						if (!canBePrettyOperand(operand.text) || (options.inBraces && operand.text.indexOf('}}}') >= 0)) {
+							if (options.placeholder) {
+								var ph = options.placeholder.getPlaceholderFor(operand.text, operand.handler);
+								wrapped = '<' + ph + '>';
+							} else {
+								skip = true;
+								relinker.impossible = true;
+							}
+						} else {
+							wrapped = '[' + operand.text + ']';
+						}
+					}
+					end++; // skip the closing brace
+					if (!skip) {
+						relinker.add(wrapped, p, end);
+					}
+					p = end;
+				}
+			}
+			p++; // Skip the closing brace;
 		}
 	}
-	if (fromTitle === undefined) {
-		// We delay the blurb calls until now in case it's a malformed
-		// filter string. We don't want to report some, only to find out
-		// it's bad.
-		for (var i = 0; i < blurbs.length; i++) {
-			toTitle(blurbs[i][0], blurbs[i][1]);
+	return relinker;
+};
+
+function skipWord(source,pos) {
+	var c;
+	while(true) {
+		c = source.charAt(pos);
+		if((c !== "") && (c !== " ") && (c !== "\f") && (c !== "\n")
+		&& (c !== "\r") && (c !== "\t")
+		&& (c !== "\v")&& (c !== "\u00a0") // Ignores obscure unicode spaces
+		&& (c !== "[") && (c !== "]")) { // Ignore brackets
+			pos++;
+		} else {
+			return pos;
 		}
 	}
-	if (relinker.changed() || relinker.impossible) {
-		return {output: relinker.results(), impossible: relinker.impossible };
-	}
-	return undefined;
 };
 
 /* Same as this.relink, except this has the added constraint that the return
@@ -173,7 +206,7 @@ exports.relinkInBraces = function(filter, fromTitle, toTitle, options) {
 	return entry;
 };
 
-function wrapTitle(value, preference) {
+function wrapTitle(value, preference, options) {
 	var choices = {
 		"": function(v) {return /^[^\s\[\]]*[^\s\[\]\}]$/.test(v); },
 		"[": canBePrettyOperand,
@@ -186,10 +219,16 @@ function wrapTitle(value, preference) {
 		"'": function(v) {return "'"+v+"'"; },
 		'"': function(v) {return '"'+v+'"'; }
 	};
-	if (choices[preference]) {
-		if (choices[preference](value)) {
-			return wrappers[preference](value);
-		}
+	if (options.inBraces && value.indexOf('}}}') >= 0) {
+		// In this particular case, it can't be wrapped in this filter,
+		// even if it would have worked within the context of the filter itself
+		return undefined;
+	}
+	if (!choices[preference]) {
+		preference = '';
+	}
+	if (choices[preference](value)) {
+		return wrappers[preference](value);
 	}
 	for (var quote in choices) {
 		if (choices[quote](value)) {
@@ -199,259 +238,6 @@ function wrapTitle(value, preference) {
 	// No quotes will work on this
 	return undefined;
 }
-
-function relinkFilterOperation(relinker, fromTitle, toTitle, filterString, p, context, options) {
-	var nextBracketPos, operator;
-	// Skip the starting square bracket
-	if(filterString.charAt(p++) !== "[") {
-		// Missing [ in filter expression
-		return undefined;
-	}
-	// Process each operator in turn
-	operator = parseOperator(filterString, p);
-	do {
-		var entry = undefined, type;
-		if (operator === undefined) {
-			return undefined;
-		}
-		p = operator.opStart;
-		switch (operator.bracket) {
-			case "{": // Curly brackets
-				type = "indirect";
-				nextBracketPos = filterString.indexOf("}",p);
-				var operand = filterString.substring(p,nextBracketPos);
-				// We've got a live reference. relink or report
-				entry = refHandler.relinkInBraces(operand, fromTitle, toTitle, options);
-				if (entry && entry.output) {
-					// We don't check the context.
-					// All indirect operands convert.
-					relinker.add(entry.output,p,nextBracketPos);
-				}
-				break;
-			case "[": // Square brackets
-				type = "string";
-				nextBracketPos = filterString.indexOf("]",p);
-				var operand = filterString.substring(p,nextBracketPos);
-				// Check if this is a relevant operator
-				var handler = fieldType(context, operator, options);
-				if (!handler) {
-					// This operator isn't managed. Bye.
-					break;
-				}
-				entry = handler.relink(operand, fromTitle, toTitle, options);
-				if (!entry || !entry.output) {
-					// The fromTitle wasn't in the operand.
-					break;
-				}
-				var wrapped;
-				if (!canBePrettyOperand(entry.output) || (options.inBraces && entry.output.indexOf('}}}') >= 0)) {
-					if (!options.placeholder) {
-						delete entry.output;
-						entry.impossible = true;
-						break;
-					}
-					var ph = options.placeholder.getPlaceholderFor(entry.output, handler.name);
-					wrapped = "<"+ph+">";
-				} else {
-					wrapped = "["+entry.output+"]";
-				}
-				relinker.add(wrapped, p-1, nextBracketPos+1);
-				break;
-			case "<": // Angle brackets
-				nextBracketPos = filterString.indexOf(">",p);
-				break;
-			case "/": // regexp brackets
-				var rex = /^((?:[^\\\/]*|\\.)*)\/(?:\(([mygi]+)\))?/g,
-					rexMatch = rex.exec(filterString.substring(p));
-				if(rexMatch) {
-					nextBracketPos = p + rex.lastIndex - 1;
-				}
-				else {
-					// Unterminated regular expression
-					return undefined;
-				}
-				break;
-		}
-		if (entry) {
-			if (entry.impossible) {
-				relinker.impossible = true;
-			}
-		}
-
-		if(nextBracketPos === -1) {
-			// Missing closing bracket in filter expression
-			return undefined;
-		}
-		p = nextBracketPos + 1;
-		// Check for multiple operands
-		switch (filterString.charAt(p)) {
-		case ',':
-			p++;
-			if(/^[\[\{<\/]/.test(filterString.substring(p))) {
-				operator.bracket = filterString.charAt(p);
-				operator.opStart = p + 1;
-				operator.index++;
-			} else {
-				return undefined;
-			}
-			continue;
-		default:
-			operator = parseOperator(filterString, p);
-			continue;
-		case ']':
-		}
-		break;
-	} while(true);
-	// Skip the ending square bracket
-	if(filterString.charAt(p++) !== "]") {
-		// Missing ] in filter expression
-		return undefined;
-	}
-	// Return the parsing position
-	return p;
-}
-
-function reportFilterOperation(filterString, callback, p, context, options) {
-	var nextBracketPos, operator;
-	// Skip the starting square bracket
-	if(filterString.charAt(p++) !== "[") {
-		// Missing [ in filter expression
-		return undefined;
-	}
-	operator = parseOperator(filterString, p);
-	// Process each operator in turn
-	do {
-		if (operator === undefined) {
-			return undefined;
-		}
-		p = operator.opStart;
-		switch (operator.bracket) {
-			case "{": // Curly brackets
-				nextBracketPos = filterString.indexOf("}",p);
-				var operand = filterString.substring(p,nextBracketPos);
-				// Just report it
-				refHandler.report(operand, function(title, blurb) {
-					callback(title, operatorBlurb(operator, '{' + (blurb || '') + '}'));
-				}, options);
-				break;
-			case "[": // Square brackets
-				nextBracketPos = filterString.indexOf("]",p);
-				var operand = filterString.substring(p,nextBracketPos);
-				// Check if this is a relevant operator
-				var handler = fieldType(context, operator, options);
-				if (!handler) {
-					// This operator isn't managed. Bye.
-					break;
-				}
-				// We just have to report it. Nothing more.
-				handler.report(operand, function(title, blurb) {
-					callback(title, operatorBlurb(operator, '[' + (blurb || '') + ']'));
-				}, options);
-				break;
-
-			case "<": // Angle brackets
-				nextBracketPos = filterString.indexOf(">",p);
-				break;
-			case "/": // regexp brackets
-				var rex = /^((?:[^\\\/]*|\\.)*)\/(?:\(([mygi]+)\))?/g,
-					rexMatch = rex.exec(filterString.substring(p));
-				if(rexMatch) {
-					nextBracketPos = p + rex.lastIndex - 1;
-				}
-				else {
-					// Unterminated regular expression
-					return undefined;
-				}
-				break;
-		}
-
-		if(nextBracketPos === -1) {
-			// Missing closing bracket in filter expression
-			return undefined;
-		}
-		p = nextBracketPos + 1;
-		// Check for multiple operands
-		switch (filterString.charAt(p)) {
-		case ',':
-			p++;
-			if(/^[\[\{<\/]/.test(filterString.substring(p))) {
-				operator.bracket = filterString.charAt(p);
-				operator.opStart = p + 1;
-				operator.index++;
-			} else {
-				return undefined;
-			}
-			continue;
-		default:
-			operator = parseOperator(filterString, p);
-			continue;
-		case ']':
-		}
-		break;
-	} while(true);
-	// Skip the ending square bracket
-	if(filterString.charAt(p++) !== "]") {
-		// Missing ] in filter expression
-		return undefined;
-	}
-	// Return the parsing position
-	return p;
-}
-
-function parseOperator(filterString, p) {
-	var nextBracketPos, operator = {index: 1};
-	// Check for an operator prefix
-	if(filterString.charAt(p) === "!") {
-		operator.prefix = "!";
-		p++;
-	}
-	// Get the operator name
-	nextBracketPos = filterString.substring(p).search(/[\[\{<\/]/);
-	if(nextBracketPos === -1) {
-		// Missing [ in filter expression
-		return undefined;
-	}
-	nextBracketPos += p;
-	operator.bracket = filterString.charAt(nextBracketPos);
-	operator.operator = filterString.substring(p,nextBracketPos);
-
-	// Any suffix?
-	var colon = operator.operator.indexOf(':');
-	if(colon > -1) {
-		operator.suffix = operator.operator.substring(colon + 1);
-		operator.operator = operator.operator.substring(0,colon) || "field";
-	}
-	// Empty operator means: title
-	else if(operator.operator === "") {
-		operator.operator = "title";
-		operator.default = true;
-	}
-	operator.opStart = nextBracketPos + 1;
-	return operator;
-};
-
-function operatorBlurb(operator, enquotedOperand) {
-	var suffix = operator.suffix ? (':' + operator.suffix) : '';
-	// commas to indicate which number operand
-	suffix += (new Array(operator.index)).join(',');
-	var op = operator.default ? '' : operator.operator;
-	return '[' + (operator.prefix || '') + op + suffix + enquotedOperand + ']';
-};
-
-// Returns the relinker needed for a given operator, or returns undefined.
-function fieldType(context, operator, options) {
-	var op = operator.operator,
-		suffix = operator.suffix,
-		ind = operator.index,
-		rtn = (suffix && context.getOperator(op + ':' + suffix, ind))
-		   || context.getOperator(op, ind);
-	if (!rtn && ind == 1) {
-		// maybe it's a field operator?
-		rtn = (op === 'field' && context.getFields()[suffix])
-		   || (!suffix && !options.wiki.getFilterOperators()[op] && context.getFields()[op]);
-	}
-	return rtn;
-};
 
 function canBePrettyOperand(value) {
 	return value.indexOf(']') < 0;

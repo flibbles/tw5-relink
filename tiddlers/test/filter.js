@@ -60,6 +60,7 @@ it('spaces around brackets', function() {
 	testFilter("A\n[[from here]]\nB", "A\nto\nB", ['filt'], {to: 'to'});
 	testFilter("A [[from here]]B", "A to B", ['filt'], {to: 'to'});
 	testFilter("A[[from here]] B", "A to B", ['filt'], {to: 'to'});
+	testFilter("A[[from here]]B", "A to B", ['filt'], {to: 'to'});
 	testFilter("[[from here]] B", "to B", ['filt'], {to: 'to'});
 	testFilter("A [[from here]]", "A to", ['filt'], {to: 'to'});
 	testFilter("[[from here]]", "to", ['filt'], {to: 'to'});
@@ -70,8 +71,10 @@ it('spaces around brackets', function() {
 	testFilter("A [[from here]]B", true, ['filt']);
 	testFilter("A[[from here]]B", true, ['filt']);
 	testFilter("   [[from here]]   ", true, ['filt']);
-	testFilter("A[[from here]]B", "A \"to [it's]\" B", ['filt'], {to: "to [it's]"});
-	testFilter("A[[from here]]B", "A 'to [\"it\"]' B", ['filt'], {to: 'to ["it"]'});
+	testFilter("   from   ", true, ['filt'], {from: "from", to: "to"});
+	testFilter("   [[from here]]   ", "   to   ", ['filt'], {to: "to"});
+	testFilter("A[[from here]]B", "A \"to [it's]\"B", ['filt'], {to: "to [it's]"});
+	testFilter("A[[from here]]B", "A 'to [\"it\"]'B", ['filt'], {to: 'to ["it"]'});
 });
 
 it('multiples', function() {

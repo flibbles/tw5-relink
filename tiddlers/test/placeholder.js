@@ -190,6 +190,7 @@ it('tracks different placeholder categories separately', function() {
 	wiki.addTiddlers([
 		utils.attrConf('$list', 'emptyMessage', 'wikitext'),
 		utils.attrConf('$list', 'filter', 'filter'),
+		utils.operatorConf('title'),
 		{title: 'test', text: '<$list filter="A [[from here]]" emptyMessage="A [[from here]]" />'}]);
 	// This is super tricky, but this used to trick Relink into using a
 	// filter placeholder for both, when it should be using a wikitext
