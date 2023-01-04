@@ -15,7 +15,8 @@ CannotFindMacroDef.prototype.name = "macroparam";
 // I may want to do something special later on.
 CannotFindMacroDef.prototype.report = function() { return []; };
 
-/** As in, report a macrocall invocation that is an html attribute. */
+/** As in, report a macrocall invocation that is an html attribute.
+ * macro: must be a macro object.*/
 exports.report = function(context, macro, callback, options) {
 	var managedMacro = context.getMacro(macro.name);
 	if (!managedMacro) {
@@ -125,6 +126,10 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, mayBeWidget,
 	return undefined;
 };
 
+/**Converts the macro object into a string, includes the <<..>>.
+ * The text is the old text the macro was formed from. It's used to preserve
+ * whitespace.
+ */
 exports.reassemble = function(macro, text, options) {
 	var builder = new Rebuilder(text, macro.start);
 	for (var i = 0; i < macro.params.length; i++) {

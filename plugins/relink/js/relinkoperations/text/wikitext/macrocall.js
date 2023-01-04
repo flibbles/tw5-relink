@@ -36,7 +36,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		// parameter needs to placeholder, just fail.
 		mayBeWidget = false;
 	}
-	var entry = relinkMacroInvocation(this.parser, macroInfo, text, fromTitle, toTitle, mayBeWidget, options);
+	var entry = macrocall.relink(this.parser.context, macroInfo, text, fromTitle, toTitle, mayBeWidget, options);
 	if (entry && entry.output) {
 		entry.output = macroToString(entry.output, text, names, options);
 	}
@@ -48,7 +48,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
  *  is complicated.
  */
 exports.relinkAttribute = function(parser, macro, text, fromTitle, toTitle, options) {
-	var entry = relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, false, options);
+	var entry = macrocall.relink(parser.context, macro, text, fromTitle, toTitle, false, options);
 	if (entry && entry.output) {
 		entry.output = macrocall.reassemble(entry.output, text, options);
 	}
@@ -60,18 +60,6 @@ exports.reportAttribute = function(parser, macro, callback, options) {
 	macrocall.report(parser.context, macro, function(title, blurb) {
 		callback(title, "<<" + blurb + ">>");
 	}, options);
-};
-
-/**Processes the given macro,
- * macro: {name:, params:, start:, end:}
- * each parameters: {name:, end:, value:}
- * Macro invocation returned is the same, but relinked, and may have new keys:
- * parameters: {type: macro, start:, newValue: (quoted replacement value)}
- * Output of the returned entry isn't a string, but a macro object. It needs
- * to be converted.
- */
-function relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, mayBeWidget, options) {
-	return macrocall.relink(parser.context, macro, text, fromTitle, toTitle, mayBeWidget, options);
 };
 
 function getInfoFromRule(rule) {
