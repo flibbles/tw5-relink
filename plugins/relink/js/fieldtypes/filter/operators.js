@@ -63,14 +63,7 @@ exports.relink = function(filterParseTree, fromTitle, toTitle, options) {
 				if (operand.indirect) {
 					entry = refHandler.relinkInBraces(operand.text, fromTitle, toTitle, options);
 				} else if (operand.variable) {
-					var macroString = "<<"+operand.text+">>";
-					var macro = $tw.utils.parseMacroInvocation(macroString, 0);
-					entry = macrocall.relink(options.settings, macro, macroString, fromTitle, toTitle, false, options);
-					if (entry && entry.output) {
-						var macroString = macrocall.reassemble(entry.output, macroString, options);
-						// The reassemble puts the <<..>> on it which we don't want in this case. Stupid string cutting.
-						entry.output = macroString.substring(2, macroString.length-2);
-					}
+					entry = relinkMacro(options.settings, operand.text, fromTitle, toTitle, options);
 				} else if (operand.text) {
 					var handler = fieldType(options.settings, operator, index, options)
 					if (handler) {
@@ -117,4 +110,24 @@ function standaloneTitleRun(run) {
 			&& !op.suffix;
 	}
 	return false;
+};
+
+// Takes care of relinking a macro, as well as putting it back together.
+function relinkMacro(context, text, fromTitle, toTitle, options) {
+	text = "<<" + text + ">>";
+	var macro = $tw.utils.parseMacroInvocation(text, 0);
+	var entry = macrocall.relink(context, macro, text, fromTitle, toTitle, false, options);
+	if (entry && entry.output) {
+		var string = macrocall.reassemble(entry.output, text, options);
+		// We remove the surrounding brackets.
+		string = string.substring(2, string.length-2);
+		// And we make sure that no brackets remain
+		if (string.indexOf(">") >= 0) {
+			delete entry.output;
+			entry.impossible = true;
+		} else {
+			entry.output = string;
+		}
+	}
+	return entry;
 };

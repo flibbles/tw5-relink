@@ -198,6 +198,10 @@ it('handles variables for all operands', function() {
 		utils.macroConf("test", "list"),
 		{title: "Macros", tags: "$:/tags/Macro", text: "\\define test(arg, list) A-$arg$-$list$-B"}]);
 	testFilter("A [tag<test from>] B", "A [tag<test 'to there'>] B", ['filt: [tag<test arg>]'], {from: 'from', wiki: wiki});
+	// Cases where it can't work
+	utils.spyFailures(spyOn);
+	testFilter("A [tag<test from>] B", "A [tag<test from>] B", ['filt: [tag<test arg>]'], {from: 'from', to: 't>o', wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('field:title operator', function() {
