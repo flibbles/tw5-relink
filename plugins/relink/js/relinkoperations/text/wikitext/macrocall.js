@@ -50,7 +50,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 exports.relinkAttribute = function(parser, macro, text, fromTitle, toTitle, options) {
 	var entry = relinkMacroInvocation(parser, macro, text, fromTitle, toTitle, false, options);
 	if (entry && entry.output) {
-		entry.output = macroToStringMacro(entry.output, text, options);
+		entry.output = macrocall.reassemble(entry.output, text, options);
 	}
 	return entry;
 };
@@ -119,19 +119,8 @@ function macroToString(macro, text, names, options) {
 		}
 		return "<$macrocall $name="+utils.wrapAttributeValue(macro.name)+attrs.join('')+"/>";
 	} else {
-		return macroToStringMacro(macro, text, options);
+		return macrocall.reassemble(macro, text, options);
 	}
-};
-
-function macroToStringMacro(macro, text, options) {
-	var builder = new Rebuilder(text, macro.start);
-	for (var i = 0; i < macro.params.length; i++) {
-		var param = macro.params[i];
-		if (param.newValue) {
-			builder.add(param.newValue, param.start, param.end);
-		}
-	}
-	return builder.results(macro.end);
 };
 
 function getParamNames(parser, macroName, params, options) {

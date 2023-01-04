@@ -190,6 +190,16 @@ it('handles transclusion for all operands', function() {
 	testFilter("[[Title]addsuffix{from!!field}]", true, ['filt: [addsuffix{!!field}]'], {from: "from"});
 });
 
+it('handles variables for all operands', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.operatorConf("tag", "list"),
+		utils.macroConf("test", "arg"),
+		utils.macroConf("test", "list"),
+		{title: "Macros", tags: "$:/tags/Macro", text: "\\define test(arg, list) A-$arg$-$list$-B"}]);
+	testFilter("A [tag<test from>] B", "A [tag<test 'to there'>] B", ['filt: [tag<test arg>]'], {from: 'from', wiki: wiki});
+});
+
 it('field:title operator', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([

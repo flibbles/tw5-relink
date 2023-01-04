@@ -5,6 +5,7 @@ Methods for reporting and relinking macros. Behaves much like a fieldtype, excep
 \*/
 
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 
 // Error thrown when a macro's definition is needed, but can't be found.
 function CannotFindMacroDef() {};
@@ -123,6 +124,18 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, mayBeWidget,
 	}
 	return undefined;
 };
+
+exports.reassemble = function(macro, text, options) {
+	var builder = new Rebuilder(text, macro.start);
+	for (var i = 0; i < macro.params.length; i++) {
+		var param = macro.params[i];
+		if (param.newValue) {
+			builder.add(param.newValue, param.start, param.end);
+		}
+	}
+	return builder.results(macro.end);
+};
+
 
 /** Returns -1 if param definitely isn't in macrocall.
  */

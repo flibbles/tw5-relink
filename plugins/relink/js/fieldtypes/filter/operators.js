@@ -5,6 +5,7 @@ Handles reporting of filter operators.
 \*/
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
+var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
 
 exports.name = "operators";
 
@@ -28,7 +29,10 @@ exports.report = function(filterParseTree, callback, options) {
 						callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '{' + (blurb || '') + '}]');
 					}, options);
 				} else if (operand.variable) {
-					// TODO: Handle macros here. They can take arguments now
+					var macro = $tw.utils.parseMacroInvocation("<<"+operand.text+">>", 0);
+					macrocall.report(options.settings, macro, function(title, blurb) {
+						callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '<' + blurb + '>]');
+					}, options);
 					continue;
 				} else if (operand.text) {
 					var handler = fieldType(options.settings, operator, index, options)
@@ -59,8 +63,14 @@ exports.relink = function(filterParseTree, fromTitle, toTitle, options) {
 				if (operand.indirect) {
 					entry = refHandler.relinkInBraces(operand.text, fromTitle, toTitle, options);
 				} else if (operand.variable) {
-					// TODO: Handle macros here. They can take arguments now
-					continue;
+					var macroString = "<<"+operand.text+">>";
+					var macro = $tw.utils.parseMacroInvocation(macroString, 0);
+					entry = macrocall.relink(options.settings, macro, macroString, fromTitle, toTitle, false, options);
+					if (entry && entry.output) {
+						var macroString = macrocall.reassemble(entry.output, macroString, options);
+						// The reassemble puts the <<..>> on it which we don't want in this case. Stupid string cutting.
+						entry.output = macroString.substring(2, macroString.length-2);
+					}
 				} else if (operand.text) {
 					var handler = fieldType(options.settings, operator, index, options)
 					if (handler) {

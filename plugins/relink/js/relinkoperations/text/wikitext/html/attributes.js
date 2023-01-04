@@ -7,7 +7,7 @@ Handles all element attribute values. Most widget relinking happens here.
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 var refHandler = relinkUtils.getType('reference');
 var filterHandler = relinkUtils.getType('filter');
-var macrocall = require("../macrocall.js");
+var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
 var attributeOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtmlattributes', 'name');
 
 exports.name = "attributes";
@@ -48,8 +48,8 @@ exports.report = function(element, parser, callback, options) {
 			break;
 		case "macro":
 			var macro = attr.value;
-			entry = macrocall.reportAttribute(parser, macro, function(title, blurb) {
-				callback(title, element.tag + ' ' + attributeName + '=' + blurb);
+			entry = macrocall.report(parser.context, macro, function(title, blurb) {
+				callback(title, element.tag + ' ' + attributeName + '=<<' + blurb + '>>');
 			}, options);
 			break;
 		}
@@ -97,10 +97,10 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			break;
 		case 'macro':
 			var macro = attr.value;
-			entry = macrocall.relinkAttribute(parser, macro, parser.source, fromTitle, toTitle, options);
+			entry = macrocall.relink(parser.context, macro, parser.source, fromTitle, toTitle, false, options);
 			if (entry && entry.output) {
-				attr.output = entry.output;
-				attr.value = $tw.utils.parseMacroInvocation(entry.output, 0);
+				attr.output = macrocall.reassemble(entry.output, parser.source, options);
+				attr.value = entry.output;
 				changed = true;
 			}
 		}
