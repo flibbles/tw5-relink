@@ -21,6 +21,8 @@ becomes
 
 `[title[New Tiddler]] [tag[New Tiddler]!field:title[New Tiddler]]`
 
+''Note:'' The `title` whitelist configuration accounts for all shorthand titles, such as `MyTiddler`, `"MyTiddler"`, `'MyTiddler'`, and `[[MyTiddler]]`. If you remove it from the whitelist, none of those will relink.
+
 ''Multi-operand operators'' are supported in Tiddlywiki >=V5.1.23. Currently, there are only a couple core operators that utilize that, and //none// of them are relevant to relinking.
 
 However, if you want to create relinkable operators, you can. Say you have an operator `myop` which takes tiddler titles for its first operand, and a reference for its second. You would put the following entries into the whitelist:
