@@ -195,12 +195,17 @@ it('handles variables for all operands', function() {
 	wiki.addTiddlers([
 		utils.operatorConf("tag", "list"),
 		utils.macroConf("test", "arg"),
-		utils.macroConf("test", "list"),
+		utils.macroConf("test", "list", "list"),
 		{title: "Macros", tags: "$:/tags/Macro", text: "\\define test(arg, list) A-$arg$-$list$-B"}]);
 	testFilter("A [tag<test from>] B", "A [tag<test 'to there'>] B", ['filt: [tag<test arg>]'], {from: 'from', wiki: wiki});
+	testFilter("A [tag<test list:'C from'>] B", "A [tag<test list:'C [[to there]]'>] B", ['filt: [tag<test list>]'], {from: 'from', wiki: wiki});
+	testFilter("A [tag<test list: from>] B", "A [tag<test list: '[[to there]]'>] B", ['filt: [tag<test list>]'], {from: 'from', wiki: wiki});
 	// Cases where it can't work
 	utils.spyFailures(spyOn);
-	testFilter("A [tag<test from>] B", "A [tag<test from>] B", ['filt: [tag<test arg>]'], {from: 'from', to: 't>o', wiki: wiki});
+	testFilter("A [tag<test from>] from", "A [tag<test from>] t>o", ['filt: [tag<test arg>]', 'filt'], {from: 'from', to: 't>o', wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	utils.failures.calls.reset();
+	testFilter("A [tag<test from>] [{from!!title}]", "A [tag<test from>] [{t' ]]\"!!title}]", ['filt: [tag<test arg>]', 'filt: [{!!title}]'], {from: 'from', to: 't\' ]]\"', wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
