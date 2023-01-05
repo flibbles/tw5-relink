@@ -14,6 +14,12 @@ sure that those tiddlers are properly relinked too.
 
 var configPrefix = "$:/config/flibbles/relink-titles/relink/";
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+// This is using hotDirectories, which is a deprecated feature. It should be
+// using the $:/config/flibbles/relink/{cateogory} directory which would be
+// automatically maintained and regenerated.
+// Maybe in time I'll get around to migrating this, but no need to complicate
+// things now with changes that would require migration, and that would
+// have no outward effect.
 utils.getContext('whitelist').hotDirectories.push(configPrefix);
 
 var titleRules = Object.create(null);
