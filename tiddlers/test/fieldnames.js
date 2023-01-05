@@ -296,6 +296,7 @@ it('can handle transcludes where both title and field changed', function() {
 
 it('can handle indirect references', function() {
 	testText("<$w a={{tid!!from}}/>", true, ['<$w a={{tid!!}} />']);
+	testText("<$w a={{!!from}}/>", true, ['<$w a={{!!}} />']);
 	testText("<$w a={{tid!!from}}/>", true, ['<$w a={{tid!!}} />'], {to: "t{o"});
 	testText("<$w a={{tid!!from}}/>", true, ['<$w a={{tid!!}} />'], {to: "t|o"});
 	utils.spyFailures(spyOn);
