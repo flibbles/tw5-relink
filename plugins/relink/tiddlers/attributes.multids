@@ -39,6 +39,8 @@ $edit/tiddler: title
 $encrypt/filter: filter
 $fieldmangler/tiddler: title
 $fields/tiddler: title
+$genesis/$names: filter
+$genesis/$values: filter
 $image/source: title
 $importvariables/filter: filter
 $jsontiddler/tiddler: title
