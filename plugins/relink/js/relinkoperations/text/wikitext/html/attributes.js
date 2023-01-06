@@ -25,7 +25,7 @@ exports.report = function(element, parser, callback, options) {
 		var entry;
 		switch (attr.type) {
 		case "string":
-			var handler = getHandler(parser.context, element, attributeName);
+			var handler = getHandler(element, attributeName, options);
 			if (handler) {
 				handler.report(attr.value, function(title, blurb) {
 					if (blurb) {
@@ -48,7 +48,7 @@ exports.report = function(element, parser, callback, options) {
 			break;
 		case "macro":
 			var macro = attr.value;
-			entry = macrocall.report(parser.context, macro, function(title, blurb) {
+			entry = macrocall.report(options.settings, macro, function(title, blurb) {
 				callback(title, element.tag + ' ' + attributeName + '=<<' + blurb + '>>');
 			}, options);
 			break;
@@ -71,7 +71,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		var entry;
 		switch (attr.type) {
 		case 'string':
-			var handler = getHandler(parser.context, element, attributeName);
+			var handler = getHandler(element, attributeName, options);
 			if (handler) {
 				entry = handler.relink(attr.value, fromTitle, toTitle, options);
 				if (entry && entry.output) {
@@ -97,7 +97,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			break;
 		case 'macro':
 			var macro = attr.value;
-			entry = macrocall.relink(parser.context, macro, parser.source, fromTitle, toTitle, false, options);
+			entry = macrocall.relink(options.settings, macro, parser.source, fromTitle, toTitle, false, options);
 			if (entry && entry.output) {
 				attr.output = macrocall.reassemble(entry.output, parser.source, options);
 				attr.value = entry.output;
@@ -113,9 +113,9 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 	}
 };
 
-function getHandler(context, element, attributeName) {
+function getHandler(element, attributeName, options) {
 	for (var operator in attributeOperators) {
-		var handler = attributeOperators[operator].getHandler(context, element, attributeName);
+		var handler = attributeOperators[operator].getHandler(element, attributeName, options);
 		if (handler) {
 			return handler;
 		}

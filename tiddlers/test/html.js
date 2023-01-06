@@ -230,6 +230,12 @@ it('supports filter attribute values', function() {
 	testText("<$link to={{{[[from here]]}}}/>", true, ['<$link to={{{}}} />'], {to: "to {}there"});
 });
 
+it('can find recently imported variables in attributes', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "X", text: "\\define macro(param)\n\\relink macro param"});
+	testText("\\import X\n<$macrocall $name=macro param='from here'/>", true, ['<$macrocall param />'], {wiki: wiki});
+});
+
 it('placeholders bad names in filtered attribute values', function() {
 	var ph = utils.placeholder;
 	var to = "brack}}}s";
