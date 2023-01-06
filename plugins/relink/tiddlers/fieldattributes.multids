@@ -1,4 +1,4 @@
-title: $:/config/flibbles/relink/fieldwidgets/
+title: $:/config/flibbles/relink/fieldattributes/
 
 $action-createtiddler: ([^$].*)
 $action-deletefield: ([^$].*)

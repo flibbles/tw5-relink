@@ -16,7 +16,7 @@ var utils = require("./utils.js");
 exports.name = "fieldnames";
 
 exports.report = function(element, parser, callback, options) {
-	var regexp = parser.context.getConfig("fieldwidgets")[element.tag];
+	var regexp = parser.context.getConfig("fieldattributes")[element.tag];
 	if (regexp) {
 		for (var attributeName in element.attributes) {
 			var results = regexp.exec(attributeName);
@@ -52,7 +52,7 @@ exports.report = function(element, parser, callback, options) {
 exports.relink = function(element, parser, fromTitle, toTitle, options) {
 	var entry = {};
 	if (!utils.isReserved(fromTitle, options)) {
-		var regexp = parser.context.getConfig("fieldwidgets")[element.tag];
+		var regexp = parser.context.getConfig("fieldattributes")[element.tag];
 		if (regexp) {
 			for (var attributeName in element.attributes) {
 				var results = regexp.exec(attributeName);

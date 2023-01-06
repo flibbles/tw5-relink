@@ -322,7 +322,7 @@ it('can handle transcludes in fields or attribute string values', function() {
 
 it('can rename widget attribute names', function() {
 	const wiki = getWiki();
-	const prefix = "$:/config/flibbles/relink/fieldwidgets/";
+	const prefix = "$:/config/flibbles/relink/fieldattributes/";
 	wiki.addTiddlers([
 		utils.fieldConf("hotfield"),
 		$tw.wiki.getTiddler(prefix + "$action-createtiddler"),

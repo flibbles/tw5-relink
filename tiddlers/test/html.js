@@ -391,7 +391,7 @@ it('supports relinking of internal text content', function() {
 
 it('supports widgets that support regexp matching fields to attrs', function() {
 	const wiki = new $tw.Wiki();
-	const prefix = "$:/config/flibbles/relink/fieldwidgets/";
+	const prefix = "$:/config/flibbles/relink/fieldattributes/";
 	wiki.addTiddlers([
 		utils.fieldConf("myfield"),
 		utils.fieldConf("mylist", "list"),

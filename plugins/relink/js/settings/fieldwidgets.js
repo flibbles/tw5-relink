@@ -1,11 +1,11 @@
 /*\
 
-Factory method for creating the fieldwidget regexp cache.
+Factory method for creating the fieldattributes regexp cache.
 
 \*/
 
-exports.name = "fieldwidgets";
+exports.name = "fieldattributes";
 
-exports.generate = function(fieldwidgets, tiddler, key) {
-	fieldwidgets[key] = new RegExp(tiddler.fields.text.trim());
+exports.generate = function(fieldattributes, tiddler, key) {
+	fieldattributes[key] = new RegExp(tiddler.fields.text.trim());
 };
