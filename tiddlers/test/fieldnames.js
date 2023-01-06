@@ -313,6 +313,16 @@ it('can handle indirect references where title and field change', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(2);
 });
 
+it('can handle operands of reference type', function() {
+	const wiki = getWiki();
+	wiki.addTiddler(utils.operatorConf("list", "reference"));
+	testText('{{{ [list[tiddler!!from]] }}}', true, ['{{{[list[tiddler!!]]}}}'], {wiki: wiki});
+	testText('{{{ [list[tiddler!!from]] }}}', true, ['{{{[list[tiddler!!]]}}}'], {wiki: wiki, to: 't}o'});
+	testText('{{{ [list[tiddler!!from]] }}}',
+	         utils.placeholder('reference-1', 'tiddler!!t]o') + '{{{ [list<relink-reference-1>] }}}',
+	         ['{{{[list[tiddler!!]]}}}'], {wiki: wiki, to: 't]o'});
+});
+
 it('can handle transcludes in fields or attribute string values', function() {
 	const wiki = getWiki();
 	wiki.addTiddler(utils.attrConf("$button", "set", "reference"));
