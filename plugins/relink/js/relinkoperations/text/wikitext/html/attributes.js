@@ -25,15 +25,21 @@ exports.report = function(element, parser, callback, options) {
 		var entry;
 		switch (attr.type) {
 		case "string":
-			var handler = getHandler(element, attributeName, options);
-			if (handler) {
-				handler.report(attr.value, function(title, blurb) {
-					if (blurb) {
-						callback(title, element.tag + ' ' + attributeName + '="' + blurb + '"');
-					} else {
-						callback(title, element.tag + ' ' + attributeName);
-					}
-				}, options);
+			for (var operatorName in attributeOperators) {
+				var operator = attributeOperators[operatorName];
+				var handler = operator.getHandler(element, attr, options);
+				if (handler) {
+					handler.report(attr.value, function(title, blurb) {
+						if (operator.formBlurb) {
+							callback(title, operator.formBlurb(element, attr, blurb, options));
+						} else if (blurb) {
+							callback(title, element.tag + ' ' + attributeName + '="' + blurb + '"');
+						} else {
+							callback(title, element.tag + ' ' + attributeName);
+						}
+					}, options);
+					break;
+				}
 			}
 			break;
 		case "indirect":
@@ -71,13 +77,17 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		var entry;
 		switch (attr.type) {
 		case 'string':
-			var handler = getHandler(element, attributeName, options);
-			if (handler) {
-				entry = handler.relink(attr.value, fromTitle, toTitle, options);
-				if (entry && entry.output) {
-					attr.value = entry.output;
-					attr.handler = handler.name;
-					changed = true;
+			for (var operatorName in attributeOperators) {
+				var operator = attributeOperators[operatorName];
+				var handler = operator.getHandler(element, attr, options);
+				if (handler) {
+					entry = handler.relink(attr.value, fromTitle, toTitle, options);
+					if (entry && entry.output) {
+						attr.value = entry.output;
+						attr.handler = handler.name;
+						changed = true;
+					}
+					break;
 				}
 			}
 			break;
@@ -112,12 +122,3 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		return {output: changed, impossible: impossible};
 	}
 };
-
-function getHandler(element, attributeName, options) {
-	for (var operator in attributeOperators) {
-		var handler = attributeOperators[operator].getHandler(element, attributeName, options);
-		if (handler) {
-			return handler;
-		}
-	}
-}

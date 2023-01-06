@@ -46,6 +46,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 /** Relinks macros that occur as attributes, like <$element attr=<<...>> />
  *  Processes the same, except it can't downgrade into a widget if the title
  *  is complicated.
+ * Kept for backward compatibility reasons
  */
 exports.relinkAttribute = function(parser, macro, text, fromTitle, toTitle, options) {
 	var entry = macrocall.relink(parser.context, macro, text, fromTitle, toTitle, false, options);
@@ -55,7 +56,9 @@ exports.relinkAttribute = function(parser, macro, text, fromTitle, toTitle, opti
 	return entry;
 };
 
-/** As in, report a macrocall invocation that is an html attribute. */
+/** As in, report a macrocall invocation that is an html attribute.
+ * Kept for backward compatibility reasons
+ */
 exports.reportAttribute = function(parser, macro, callback, options) {
 	macrocall.report(parser.context, macro, function(title, blurb) {
 		callback(title, "<<" + blurb + ">>");

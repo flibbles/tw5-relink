@@ -233,7 +233,8 @@ it('supports filter attribute values', function() {
 it('can find recently imported variables in attributes', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: "X", text: "\\define macro(param)\n\\relink macro param"});
-	testText("\\import X\n<$macrocall $name=macro param='from here'/>", true, ['<$macrocall param />'], {wiki: wiki});
+	testText("\\import X\n<$macrocall $name=macro param='from here'/>", true,
+	         ['<<macro param />'], {wiki: wiki});
 });
 
 it('placeholders bad names in filtered attribute values', function() {

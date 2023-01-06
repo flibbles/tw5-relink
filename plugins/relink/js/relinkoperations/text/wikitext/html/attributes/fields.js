@@ -6,11 +6,11 @@ correspond to tiddler fields.
 
 exports.name = "fields";
 
-exports.getHandler = function(element, attributeName, options) {
+exports.getHandler = function(element, attribute, options) {
 	var regexp = options.settings.getConfig("fieldwidgets")[element.tag];
 	if (regexp) {
-		var results = regexp.exec(attributeName);
-		if (results && results[0] === attributeName) {
+		var results = regexp.exec(attribute.name);
+		if (results && results[0] === attribute.name) {
 			return options.settings.getFields()[results[1]];
 		}
 	}

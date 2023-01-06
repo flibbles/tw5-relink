@@ -361,7 +361,7 @@ it('local macros simple', function() {
 	testText('\\define inner(title) content\n<$macrocall $name=outer text=<<inner "from here">> />', true,
 	         ['<$macrocall text=<<inner title>> />'], {wiki: wiki});
 	testText('\\define inner(title) content\n<$macrocall $name=outer text="""<<inner "from here">>""" />', true,
-	         ['<$macrocall text="<<inner title>>" />'], {wiki: wiki});
+	         ['<<outer text="<<inner title>>" />'], {wiki: wiki});
 });
 
 it('slashes in macro name', function() {
@@ -385,9 +385,9 @@ it('empty or undefined macro params', function() {
 
 it('$macrocall', function() {
 	testText("<$macrocall $name=test A=stuff Btitle='from here' Clist='[[from here]]' Dref='from here##index' />", true,
-	         ['<$macrocall Btitle />', '<$macrocall Clist />', '<$macrocall Dref="##index" />']);
+	         ['<<test Btitle />', '<<test Clist />', '<<test Dref="##index" />']);
 	testText("\n\n<$macrocall $name=test\n\nBtitle='from here'/>\n\n", true,
-	         ['<$macrocall Btitle />']);
+	         ['<<test Btitle />']);
 
 	// not having $name shouldn't cause a crash
 	testText("<$macrocall Btitle='from here' />", false, undefined);
@@ -398,11 +398,11 @@ it('$macrocall', function() {
 it('$macrocall imposssibles', function() {
 	testText("<$macrocall $name=test Clist=from />",
 	         "<$macrocall $name=test Clist=from />",
-	         ['<$macrocall Clist />'],
+	         ['<<test Clist />'],
 	         {from: "from", to: "t ]] o", fails: 1});
 	testText("<$macrocall $name=test Clist=from Btitle=from />",
 	         "<$macrocall $name=test Clist=from Btitle='t ]] o' />",
-	         ['<$macrocall Clist />', '<$macrocall Btitle />'],
+	         ['<<test Clist />', '<<test Btitle />'],
 	         {from: "from", to: "t ]] o", fails: 1});
 });
 
