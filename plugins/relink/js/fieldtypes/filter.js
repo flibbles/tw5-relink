@@ -40,11 +40,13 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 		}
 		for (var module in filterRelinkers) {
 			var entry = filterRelinkers[module].relink(parseTree, fromTitle, toTitle, options);
-			if (entry.changed) {
-				changed = true;
-			}
-			if (entry.impossible) {
-				results.impossible = true;
+			if (entry) {
+				if (entry.changed) {
+					changed = true;
+				}
+				if (entry.impossible) {
+					results.impossible = true;
+				}
 			}
 		}
 	}
@@ -132,6 +134,7 @@ function assembleFilterString(parseTree, oldFilter, options) {
 			p++;
 			for (var j = 0; j < run.operators.length; j++) {
 				var operator = run.operators[j];
+				var start = p;
 				for (var index = 0; index < operator.operands.length; index++) {
 					var operand = operator.operands[index],
 						skip = false;
@@ -165,6 +168,10 @@ function assembleFilterString(parseTree, oldFilter, options) {
 						}
 					}
 					end++; // skip the closing brace
+					if (index === 0) {
+						// If this is the first operand, let's first recreate the operator signature in case it was changed at all.
+						relinker.add(operatorSignature(operator, oldFilter, start), start, p);
+					}
 					if (!skip) {
 						relinker.add(wrapped, p, end);
 					}
@@ -176,6 +183,16 @@ function assembleFilterString(parseTree, oldFilter, options) {
 	}
 	return relinker;
 };
+
+function operatorSignature(operator, oldText, start) {
+	// If it's a title operand, try to determine if it was a shorthand.
+	var prefix = operator.prefix || '';
+	var signature = prefix + ((operator.operator === 'title' && oldText[start + prefix.length] !== 't')? '': operator.operator);
+	if (operator.suffix) {
+		signature += ':' + operator.suffix;
+	}
+	return signature;
+}
 
 function skipWord(source,pos) {
 	var c;

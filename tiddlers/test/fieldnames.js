@@ -397,4 +397,12 @@ it('can rename widget attribute names', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it('handles operator suffixes', function() {
+	const wiki = getWiki();
+	const prefix = "$:/config/flibbles/relink/suffixes/";
+	wiki.addTiddlers([
+		$tw.wiki.getTiddler(prefix + "contains/1")]);
+	testText("{{{ A [contains:from[text]] }}}", true, ['{{{[contains:]}}}'], {wiki: wiki});
+});
+
 });

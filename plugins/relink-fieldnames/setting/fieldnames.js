@@ -1,6 +1,6 @@
 /*\
 
-title: $:/plugins/flibbles/relink-fieldnames/whitelist.js
+title: $:/plugins/flibbles/relink-fieldnames/setting/fieldnames.js
 module-type: relinksetting
 type: application/javascript
 

@@ -1,16 +1,7 @@
 title: $:/config/flibbles/relink/operators/
 
-# search:$comma,deliniated,name$:<flag list>
-# contains:$name$:
-# days:$name$:
-# field:$name$:
-# $name$
-# regexp:$name$:
-
-
 each: fieldname
 eachday: fieldname
-# Not a perfect fit for fields. It allows blacklisted titles
 fields: list
 get: fieldname
 has: fieldname

@@ -7,7 +7,6 @@ $button/setField: fieldname
 $checkbox/field: fieldname
 $edit-text/field: fieldname
 $edit/field: fieldname
-#TODO: Not really proper for these two needs a fieldnames-list
 $fields/exclude: list
 $fields/include: list
 $jsontiddler/exclude: list

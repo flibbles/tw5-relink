@@ -16,8 +16,6 @@ exports.generate = function(operators, tiddler, key) {
 		// fields from inside the fieldtype handler. Cool
 		// tricks can be done with this.
 		data.fields = tiddler.fields;
-		// We take the last index, not the first, because the operator
-		// may have a slash to indicate parameter number
 		var pair = key.split('/');
 		var name = pair[0];
 		data.key = key;
