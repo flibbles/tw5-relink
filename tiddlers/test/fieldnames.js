@@ -401,8 +401,42 @@ it('handles operator suffixes', function() {
 	const wiki = getWiki();
 	const prefix = "$:/config/flibbles/relink/suffixes/";
 	wiki.addTiddlers([
-		$tw.wiki.getTiddler(prefix + "contains/1")]);
-	testText("{{{ A [contains:from[text]] }}}", true, ['{{{[contains:]}}}'], {wiki: wiki});
+		utils.operatorConf('contains'),
+		{title: prefix + 'myref', text: 'reference'},
+		$tw.wiki.getTiddler(prefix + "contains")]);
+	testText("{{{ A [contains:from[text]] }}}", true, ['{{{[contains:[text]]}}}'], {to: "to", wiki: wiki});
+	testText("{{{ A [contains:from[text]] }}}", true, ['{{{[contains:[text]]}}}'], {to: "to there", wiki: wiki});
+	testText("{{{ A [contains:from[text]] }}}", true, ['{{{[contains:[text]]}}}'], {to: "to,there", wiki: wiki});
+	// Multiple operands
+	testText("{{{ A [contains:from[text],<other>] }}}", true, ['{{{[contains:[text],<other>]}}}'], {to: "to", wiki: wiki});
+	// Very long operands are truncated
+	const string = "This is an excessively long value to have as a field.";
+	testText("{{{ A [contains:from["+string+"]] }}}", true, ['{{{[contains:['+string.substr(0,maxLength)+'...]]}}}'], {to: "to", wiki: wiki});
+	testText("{{{ A [contains:from<"+string+">] }}}", true, ['{{{[contains:<'+string.substr(0,maxLength)+'...>]}}}'], {to: "to", wiki: wiki});
+	testText("{{{ A [contains:from{"+string+"}] }}}", true, ['{{{[contains:{'+string.substr(0,maxLength)+'...}]}}}'], {to: "to", wiki: wiki});
+	// can read strange fields from suffixes too
+	testText("{{{ A [contains:from, here[text]] }}}", true, ['{{{[contains:[text]]}}}'], {to: "to", from: "from, here", wiki: wiki});
+	// Can have weird suffix types like lists
+	testText("{{{ A [myref:from!!field[x]] }}}", true, ['{{{[myref:!!field[x]]}}}'], {from: "from", wiki: wiki});
+	testText("{{{ A [myref:tid!!from[x]] }}}", true, ['{{{[myref:tid!![x]]}}}'], {from: "from", wiki: wiki});
+	// Ultimate test: suffix and operands
+	testText("{{{ A [contains:from[from]] }}}", true, ['{{{[contains:from[]]}}}', '{{{[contains:[from]]}}}'], {to: "to", wiki: wiki});
+	// Reserved keywords
+	testText("{{{ A [contains:text[a]] }}}", false, undefined, {from: 'text', to: "to", wiki: wiki});
+	utils.spyFailures(spyOn);
+	testText("{{{ A [contains:from[a]] }}}", false, ['{{{[contains:[a]]}}}'], {from: 'from', to: "text", wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	// Errors coming from within the suffix are handled
+	utils.failures.calls.reset();
+	testText("{{{ A [myref:from!!field[x]] }}}", false, ['{{{[myref:!!field[x]]}}}'], {from: "from", to: "t!!o", wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	// Brackets aren't compatible though
+	utils.failures.calls.reset();
+	testText("{{{ A [contains:from[text]] }}}", false, ['{{{[contains:[text]]}}}'], {to: "to[there", wiki: wiki});
+	testText("{{{ A [contains:from[text]] }}}", false, ['{{{[contains:[text]]}}}'], {to: "to<there", wiki: wiki});
+	testText("{{{ A [contains:from[text]] }}}", false, ['{{{[contains:[text]]}}}'], {to: "to{there", wiki: wiki});
+	testText("{{{ A [contains:from[text]] }}}", false, ['{{{[contains:[text]]}}}'], {to: "to/there", wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(4);
 });
 
 });

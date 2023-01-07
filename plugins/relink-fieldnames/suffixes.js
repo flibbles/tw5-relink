@@ -7,6 +7,8 @@ Handles reporting of filter operators.
 
 \*/
 
+var utils = require("./utils.js");
+
 exports.name = "suffixes";
 
 exports.report = function(filterParseTree, callback, options) {
@@ -16,21 +18,23 @@ exports.report = function(filterParseTree, callback, options) {
 			var operator = run.operators[j];
 			var settings = options.settings.getConfig('suffixes')[operator.operator];
 			if (settings) {
-				for (var index = 0; index < operator.suffixes.length; index++) {
-					if (settings[index+1]) {
-						var value = operator.suffixes[index];
-						settings[index+1].report(value, function(title, blurb) {
-							var newBlurb = '[' + operator.operator;
-							for (var x = 0; x < operator.suffixes.length; x++) {
-								newBlurb += ':';
-								if (x !== index) {
-									newBlurb += operator.suffixes[x].value;
-								}
-							}
-							callback(title, newBlurb + ']');
-						}, options);
+				settings[1].report(operator.suffix, function(title, blurb) {
+					var newBlurb = '[' + operator.operator + ':' + (blurb || '');
+					for (var index = 0; index < operator.operands.length; index++) {
+						if (index > 0) {
+							newBlurb += ',';
+						}
+						var operand = operator.operands[index];
+						if (operand.indirect) {
+							newBlurb += '{' + utils.abridge(operand.text) + '}';
+						} else if (operand.variable) {
+							newBlurb += '<' + utils.abridge(operand.text) + '>';
+						} else {
+							newBlurb += '[' + utils.abridge(operand.text) + ']';
+						}
 					}
-				}
+					callback(title, newBlurb + ']');
+				}, options);
 			}
 		}
 	}
@@ -45,28 +49,24 @@ exports.relink = function(filterParseTree, fromTitle, toTitle, options) {
 			var settings = options.settings.getConfig('suffixes')[operator.operator];
 			var operatorChanged = false;
 			if (settings) {
-				for (var index = 0; index < operator.suffixes.length; index++) {
-					var handler = settings[index+1];
-					if (handler) {
-						var value = operator.suffixes[index][0];
-						var entry = handler.relink(value, fromTitle, toTitle, options);
-						if (entry) {
-							if (entry.output) {
+				var handler = settings[1];
+				if (handler) {
+					var entry = handler.relink(operator.suffix, fromTitle, toTitle, options);
+					if (entry) {
+						if (entry.output) {
+							if (entry.output.search(/[\[\{<\/]/) < 0) {
 								output.changed = true;
 								operatorChanged = true;
-								operator.suffixes[index][0] = entry.output;
+								operator.suffix = entry.output;
+							} else {
+								entry.impossible = true;
 							}
-							if (entry.impossible) {
-								output.impossible = true;
-							}
+						}
+						if (entry.impossible) {
+							output.impossible = true;
 						}
 					}
 				}
-			}
-			if (operatorChanged) {
-				operator.suffix = operator.suffixes.map(function(afix) {
-					return afix.join(',');
-				}).join(':');
 			}
 		}
 	}
