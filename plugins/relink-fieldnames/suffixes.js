@@ -3,7 +3,7 @@ title: $:/plugins/flibbles/relink-fieldnames/suffixes.js
 module-type: relinkfilter
 type: application/javascript
 
-Handles reporting of filter operators.
+Handles reporting/relinking of filter operator suffixes using a hidden whitelist.
 
 \*/
 
@@ -19,21 +19,7 @@ exports.report = function(filterParseTree, callback, options) {
 			var settings = options.settings.getConfig('suffixes')[operator.operator];
 			if (settings) {
 				settings[1].report(operator.suffix, function(title, blurb) {
-					var newBlurb = '[' + operator.operator + ':' + (blurb || '');
-					for (var index = 0; index < operator.operands.length; index++) {
-						if (index > 0) {
-							newBlurb += ',';
-						}
-						var operand = operator.operands[index];
-						if (operand.indirect) {
-							newBlurb += '{' + utils.abridge(operand.text) + '}';
-						} else if (operand.variable) {
-							newBlurb += '<' + utils.abridge(operand.text) + '>';
-						} else {
-							newBlurb += '[' + utils.abridge(operand.text) + ']';
-						}
-					}
-					callback(title, newBlurb + ']');
+					callback(title, '[' + operator.operator + ':' + (blurb || '') + utils.blurbOperands(operator) + ']');
 				}, options);
 			}
 		}

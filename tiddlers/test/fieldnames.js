@@ -407,6 +407,7 @@ it('handles operator suffixes', function() {
 	testText("{{{ A [contains:from[text]] }}}", true, ['{{{[contains:[text]]}}}'], {to: "to", wiki: wiki});
 	testText("{{{ A [contains:from[text]] }}}", true, ['{{{[contains:[text]]}}}'], {to: "to there", wiki: wiki});
 	testText("{{{ A [contains:from[text]] }}}", true, ['{{{[contains:[text]]}}}'], {to: "to,there", wiki: wiki});
+	testText("{{{ A [contains:from[text]] }}}", true, ['{{{[contains:[text]]}}}'], {to: "to:there", wiki: wiki});
 	// Multiple operands
 	testText("{{{ A [contains:from[text],<other>] }}}", true, ['{{{[contains:[text],<other>]}}}'], {to: "to", wiki: wiki});
 	// Very long operands are truncated
@@ -419,6 +420,8 @@ it('handles operator suffixes', function() {
 	// Can have weird suffix types like lists
 	testText("{{{ A [myref:from!!field[x]] }}}", true, ['{{{[myref:!!field[x]]}}}'], {from: "from", wiki: wiki});
 	testText("{{{ A [myref:tid!!from[x]] }}}", true, ['{{{[myref:tid!![x]]}}}'], {from: "from", wiki: wiki});
+	// Tests brackets are safe
+	testText("{{{ A [contains:from[text]] }}}", "<$list filter=' A [contains:to}}}there[text]] '/>", ['{{{[contains:[text]]}}}'], {to: "to}}}there", wiki: wiki});
 	// Ultimate test: suffix and operands
 	testText("{{{ A [contains:from[from]] }}}", true, ['{{{[contains:from[]]}}}', '{{{[contains:[from]]}}}'], {to: "to", wiki: wiki});
 	// Reserved keywords
@@ -436,6 +439,30 @@ it('handles operator suffixes', function() {
 	testText("{{{ A [contains:from[text]] }}}", false, ['{{{[contains:[text]]}}}'], {to: "to<there", wiki: wiki});
 	testText("{{{ A [contains:from[text]] }}}", false, ['{{{[contains:[text]]}}}'], {to: "to{there", wiki: wiki});
 	testText("{{{ A [contains:from[text]] }}}", false, ['{{{[contains:[text]]}}}'], {to: "to/there", wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(4);
+});
+
+it('handles field name filter operators', function() {
+	testText("{{{ A [from[value]] }}}", true, ['{{{[field:[value]]}}}']);
+	testText("{{{ A [from[value]] }}}", true, ['{{{[field:[value]]}}}'], {to: "A weird' but \"legal\" ]title"});
+	testText("{{{ A [from[value]] }}}", "{{{ A [field:addprefix[value]] }}}", ['{{{[field:[value]]}}}'], {to: 'addprefix'});
+	testText("{{{ A [from[value]] }}}", "{{{ A [field:to:there[value]] }}}", ['{{{[field:[value]]}}}'], {to: 'to:there'});
+	testText("{{{ A [addprefix[value]] }}}", false, undefined, {from: 'addprefix'});
+	// Ultimate test
+	const wiki = getWiki();
+	wiki.addTiddler(utils.fieldConf("from"));
+	testText("{{{ A [from[from]] }}}", true, ['{{{[from[]]}}}', '{{{[field:[from]]}}}'], {wiki: wiki});
+	// Ignores reserved fieldnames
+	testText("{{{ A [text[value]] }}}", false, undefined);
+	utils.spyFailures(spyOn);
+	testText("{{{ A [from[value]] }}}", false, ['{{{[field:[value]]}}}'], {to: "text"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	// Handles errors
+	utils.failures.calls.reset();
+	testText("{{{ A [from[value]] }}}", false, ['{{{[field:[value]]}}}'], {to: "to[there"});
+	testText("{{{ A [from[value]] }}}", false, ['{{{[field:[value]]}}}'], {to: "to<there"});
+	testText("{{{ A [from[value]] }}}", false, ['{{{[field:[value]]}}}'], {to: "to{there"});
+	testText("{{{ A [from[value]] }}}", false, ['{{{[field:[value]]}}}'], {to: "to/there"});
 	expect(utils.failures).toHaveBeenCalledTimes(4);
 });
 

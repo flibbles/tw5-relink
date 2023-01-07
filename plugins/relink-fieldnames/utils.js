@@ -34,3 +34,21 @@ exports.isValidFieldName = function(field) {
 	return $tw.utils.isValidFieldName(field)
 		&& (capitalizationAllowed || !/[A-Z]/.test(field));
 };
+
+exports.blurbOperands = function(operator) {
+	var string = ''
+	for (var index = 0; index < operator.operands.length; index++) {
+		if (index > 0) {
+			string += ',';
+		}
+		var operand = operator.operands[index];
+		if (operand.indirect) {
+			string += '{' + exports.abridge(operand.text) + '}';
+		} else if (operand.variable) {
+			string += '<' + exports.abridge(operand.text) + '>';
+		} else {
+			string += '[' + exports.abridge(operand.text) + ']';
+		}
+	}
+	return string;
+};

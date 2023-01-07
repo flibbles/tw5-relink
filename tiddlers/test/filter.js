@@ -213,11 +213,16 @@ it('field:title operator', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.operatorConf("field:title", "reference"),
-		utils.operatorConf("title", "title")]);
+		utils.operatorConf("title", "title"),
+		utils.fieldConf("myfield"),
+		utils.fieldConf("addprefix")]); // addprefix is an existing operator that's not whitelisted
 	testFilter("A [field:title[from here]] B", true, ['filt: [field:title[]]'], {wiki: wiki});
 	testFilter("A [!field:title[from here]] B", true, ['filt: [!field:title[]]'], {wiki: wiki});
 	testFilter("[title:randomsuffix[from here]]", true, ['filt: [:randomsuffix[]]'], {wiki: wiki});
 	testFilter("A [tag[something]!field:title[from here]] B", true, ['filt: [!field:title[]]'], {wiki: wiki});
+	testFilter("[[A]myfield[from here]]", true, ['filt: [myfield[]]'], {wiki: wiki});
+	// This one shouldn't do anything because addprefix is an actual operator
+	testFilter("[[A]addprefix[from here]]", false, undefined, {wiki: wiki});
 });
 
 it('list type operator', function() {
