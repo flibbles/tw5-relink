@@ -7,9 +7,9 @@ $button/setField: fieldname
 $checkbox/field: fieldname
 $edit-text/field: fieldname
 $edit/field: fieldname
-$fields/exclude: list
-$fields/include: list
-$jsontiddler/exclude: list
+$fields/exclude: fieldnamelist
+$fields/include: fieldnamelist
+$jsontiddler/exclude: fieldnamelist
 $radio/field: fieldname
 $range/field: fieldname
 $reveal/stateField: fieldname

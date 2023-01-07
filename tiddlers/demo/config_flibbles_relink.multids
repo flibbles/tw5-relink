@@ -7,4 +7,4 @@ fields/example-title: title
 fields/example-wikitext: wikitext
 fields/Frodo: list
 macros/ul/tag: title
-fields/relink.showcase: list
+fields/relink.showcase: fieldnamelist

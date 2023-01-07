@@ -276,6 +276,24 @@ it('can handle filter operators', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it('can handle fieldnamelists', function() {
+	const wiki = getWiki();
+	wiki.addTiddler(utils.operatorConf("fields", "fieldnamelist"));
+	testText("{{{ [fields[other from else]] }}}", true, ['{{{[fields[]]}}}'], {wiki: wiki});
+	// Placeholders can take place
+	testText("{{{ [fields[other from else]] }}}",
+	         utils.placeholder('fieldnamelist-1', 'other [[to there]] else') + "{{{ [fields<relink-fieldnamelist-1>] }}}", ['{{{[fields[]]}}}'], {wiki: wiki, to: "to there"});
+	// Reserved fieldnames
+	testText("{{{ [fields[other text else]] }}}", false, undefined, {wiki: wiki, from: 'text'});
+	utils.spyFailures(spyOn);
+	testText("{{{ [fields[other from else]] }}}", false, ['{{{[fields[]]}}}'], {wiki: wiki, from: 'from', to: "text"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	// Handles failure of internal list format
+	utils.failures.calls.reset();
+	testText("{{{ [fields[other from else]] }}}", false, ['{{{[fields[]]}}}'], {wiki: wiki, to: "to]] there"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+});
+
 it('can handle transcludes', function() {
 	testText("{{tid!!from}}", true, ['{{tid!!}}']);
 	testText("{{tid!!from}}", "<$tiddler tiddler=tid><$transclude tiddler=tid field=t|o/></$tiddler>", ['{{tid!!}}'], {to: "t|o"});

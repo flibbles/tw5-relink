@@ -1,5 +1,5 @@
 /*\
-title: $:/plugins/flibbles/relink-fieldnames/fieldtype.js
+title: $:/plugins/flibbles/relink-fieldnames/fieldtypes/fieldname.js
 module-type: relinkfieldtype
 type: application/javascript
 
@@ -10,7 +10,7 @@ it ignores any titles that appear on the field name blacklist.
 
 exports.name = 'fieldname';
 
-var utils = require("./utils.js");
+var utils = require("../utils.js");
 
 exports.report = function(value, callback, options) {
 	if (!utils.isReserved(value, options)) {

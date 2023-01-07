@@ -2,7 +2,7 @@ title: $:/config/flibbles/relink/operators/
 
 each: fieldname
 eachday: fieldname
-fields: list
+fields: fieldnamelist
 get: fieldname
 has: fieldname
 listed: fieldname
