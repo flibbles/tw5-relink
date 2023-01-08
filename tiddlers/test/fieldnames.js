@@ -32,7 +32,7 @@ it('updates the visibility settings', function() {
 		$tw.wiki.getTiddler("$:/config/flibbles/relink-titles/lookup/patterns"),
 		{title: settingFrom, text: "hide"}]);
 	expect(utils.getReport(settingFrom, wiki).from)
-		.toEqual(["title: $:/config/*/Visibility/..."]);
+		.toEqual(["title: $:/config/EditTemplateFields/Visibility/..."]);
 	wiki.renameTiddler("from", "to");
 	expect(wiki.tiddlerExists(settingFrom)).toBe(false);
 	expect(wiki.tiddlerExists(settingTo)).toBe(true);

@@ -231,10 +231,10 @@ it('handles patterns with multiple placeholders', function() {
 		{title: "A-other-from-other-C", text: "matches something"},
 		{title: "from"},
 		{title: "other"}]);
-	expect(utils.getReport('A-from-from-from-C', wiki)).toEqual({from: ['title: A-...-*-...-C']});
+	expect(utils.getReport('A-from-from-from-C', wiki)).toEqual({from: ['title: A-...-from-...-C']});
 	expect(utils.getReport('A-from-from-other-C', wiki)).toEqual({});
 	expect(utils.getReport('A-other-from-from-C', wiki)).toEqual({});
-	expect(utils.getReport('A-other-from-other-C', wiki)).toEqual({other: ['title: A-...-*-...-C']});
+	expect(utils.getReport('A-other-from-other-C', wiki)).toEqual({other: ['title: A-...-from-...-C']});
 	wiki.renameTiddler('from', 'to');
 	expect(wiki.tiddlerExists('A-from-from-from-C')).toBe(false);
 	expect(wiki.tiddlerExists('A-to-from-to-C')).toBe(true);
@@ -287,9 +287,9 @@ it('allows wildcards', function() {
 		{title: "prefix-dog-from", text: "anything"},
 		{title: "prefix--from", text: "anything"},
 		{title: "from"}]);
-	expect(utils.getReport('prefix-cat-from', wiki)).toEqual({from: ['title: prefix-*-...']});
-	expect(utils.getReport('prefix-dog-from', wiki)).toEqual({from: ['title: prefix-*-...']});
-	expect(utils.getReport('prefix--from', wiki)).toEqual({from: ['title: prefix-*-...']});
+	expect(utils.getReport('prefix-cat-from', wiki)).toEqual({from: ['title: prefix-cat-...']});
+	expect(utils.getReport('prefix-dog-from', wiki)).toEqual({from: ['title: prefix-dog-...']});
+	expect(utils.getReport('prefix--from', wiki)).toEqual({from: ['title: prefix--...']});
 	wiki.renameTiddler('from', 'to');
 	expect(wiki.tiddlerExists('prefix-cat-from')).toBe(false);
 	expect(wiki.tiddlerExists('prefix-cat-to')).toBe(true);
@@ -306,7 +306,7 @@ it('updating config tiddler text too', function() {
 		patterns("$(currentTiddler)$-$(*)$"),
 		{title: "from-suffix", text: "Link to [[from]]"},
 		{title: "from"}]);
-	expect(utils.getReport('from-suffix', wiki)).toEqual({from: ['[[from]]', 'title: ...-*']});
+	expect(utils.getReport('from-suffix', wiki)).toEqual({from: ['[[from]]', 'title: ...-suffix']});
 	wiki.renameTiddler('from', 'to');
 	expect(wiki.tiddlerExists('from-suffix')).toBe(false);
 	expect(wiki.tiddlerExists('to-suffix')).toBe(true);
@@ -321,10 +321,10 @@ it('earlier rules take precedent', function() {
 		{title: "from-from"},
 		{title: "else-from"}]);
 	expect(utils.getReport('from-from', wiki)).toEqual({
-		from: ['title: ...-from', 'title: *-...']});
+		from: ['title: ...-from', 'title: from-...']});
 	expect(utils.getReport('else-from', wiki)).toEqual({
 		else: ['title: ...-from'],
-		from: ['title: *-...']});
+		from: ['title: else-...']});
 	wiki.renameTiddler('from', 'to');
 	expect(wiki.tiddlerExists('from-from')).toBe(false);
 	expect(wiki.tiddlerExists('to-from')).toBe(true);
@@ -339,8 +339,8 @@ it('matches multiple wildcards', function() {
 		{title: "cats-from-dogs", text: "anything"},
 		{title: "cats-from-from-dogs", text: "anything"},
 		{title: "from"}]);
-	expect(utils.getReport('cats-from-dogs', wiki)).toEqual({from: ['title: *-...-*']});
-	expect(utils.getReport('cats-from-from-dogs', wiki)).toEqual({from: ['title: *-...-*']});
+	expect(utils.getReport('cats-from-dogs', wiki)).toEqual({from: ['title: cats-...-dogs']});
+	expect(utils.getReport('cats-from-from-dogs', wiki)).toEqual({from: ['title: cats-from-...-dogs']});
 	wiki.renameTiddler('from', 'to');
 	expect(wiki.tiddlerExists('cats-from-dogs')).toBe(false);
 	expect(wiki.tiddlerExists('cats-to-dogs')).toBe(true);

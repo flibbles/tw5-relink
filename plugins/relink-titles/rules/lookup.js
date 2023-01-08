@@ -26,19 +26,18 @@ exports.report = function(targetTitle, callback, options) {
 	var patterns = getPatterns(options.wiki);
 	for (var i = 0; i < patterns.length; i++) {
 		var pattern = patterns[i];
+		var index = 0;
 		var results = match(pattern, targetTitle);
 		if (results) {
-			if (!pattern.blurb) {
-				// We'll only ever need one blurb, so store it
-				pattern.blurb = pattern.string.replace(anyMatcher, function(match) {
-					if (match === "$(*)$") {
-						return "*";
-					} else { // must be "$(currentTiddler)$"
-						return "...";
-					}
-				});
-			}
-			callback(results.title, pattern.blurb);
+			var blurb = pattern.string.replace(anyMatcher, function(match) {
+				index++;
+				if (match === "$(*)$") {
+					return results[index];
+				} else { // must be "$(currentTiddler)$"
+					return "...";
+				}
+			});
+			callback(results.title, blurb);
 		}
 	}
 };
