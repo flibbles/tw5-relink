@@ -100,6 +100,33 @@ it('title operator', function() {
 	testFilter("A ~[!title[from here]] B", true, ['filt: ~[![]]'], {wiki: wiki});
 });
 
+it('contains operator', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.fieldConf('tags', 'list'),
+		utils.fieldConf('mytitle'),
+		utils.fieldConf('contains', 'reference'),
+		utils.fieldConf('myfilter', 'filter'),
+		utils.fieldConf('myreference', 'reference'),
+		utils.fieldConf('list', 'list')]);
+	// It doesn't relink implicit list unless list is added
+	testFilter("A [contains[from here]] B", false);
+	testFilter("A [contains[from here]] B", true, ['filt: [contains[]]'], {wiki: wiki});
+	testFilter("A [contains:list[from here]] B", true, ['filt: [contains:list[]]'], {wiki: wiki});
+	testFilter("A [contains:tags[from here]] B", true, ['filt: [contains:tags[]]'], {wiki: wiki});
+	// title fields don't work with contains. Ignore.
+	testFilter("A [contains:mytitle[from here]] B", false, undefined, {wiki: wiki});
+	// references aren't meant to work with contains either
+	testFilter("A [contains:myreference[from here]] B", false, undefined, {wiki: wiki});
+	// Filters aren't supposed to be used, but conceivably they could be
+	testFilter("A [contains:myfilter[from here]] B", true, ['filt: [contains:myfilter[]]'], {wiki: wiki});
+	testFilter("A [contains:none[from here]] B", false, undefined, {wiki: wiki});
+	// This makes sure that the fieldConf('contains') we added doesn't
+	// get mistaken as a field operator. Contains is an existing filter
+	// operator. It's never a field operator.
+	testFilter("A [contains[from here!!title]] B", false, undefined, {wiki: wiki});
+});
+
 it('malformed', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('tag'));

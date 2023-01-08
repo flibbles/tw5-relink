@@ -460,6 +460,15 @@ it('handles operator suffixes', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(4);
 });
 
+it('can handle "contains" operators', function() {
+	const prefix = "$:/config/flibbles/relink/suffixes/";
+	const wiki = getWiki();
+	wiki.addTiddlers([
+		utils.fieldConf('from', 'list'),
+		$tw.wiki.getTiddler(prefix + 'contains')]);
+	testText("{{{ [contains:from[from]] }}}", true, ['{{{[contains:from[]]}}}', '{{{[contains:[from]]}}}'], {wiki: wiki});
+});
+
 it('handles field name filter operators', function() {
 	testText("{{{ A [from[value]] }}}", true, ['{{{[field:[value]]}}}']);
 	testText("{{{ A [from[value]] }}}", true, ['{{{[field:[value]]}}}'], {to: "A weird' but \"legal\" ]title"});

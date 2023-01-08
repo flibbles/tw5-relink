@@ -5,6 +5,7 @@ Handles reporting of filter operators.
 \*/
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
+var titleHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/title");
 var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
 
 exports.name = "operators";
@@ -89,11 +90,23 @@ exports.relink = function(filterParseTree, fromTitle, toTitle, options) {
 };
 
 // Returns the relinker needed for a given operator, or returns undefined.
+// This method should really be broken into three modules called relinkfilteroperator
 function fieldType(context, operator, index, options) {
 	var op = operator.operator,
 		suffix = operator.suffix,
 		rtn = (suffix && context.getOperator(op + ':' + suffix, index))
 		   || context.getOperator(op, index);
+	if (!rtn && op === 'contains' && index == 1) {
+		// The 'contains' operator gets special handling
+		suffix = suffix || 'list';
+		var handler = context.getFields()[suffix];
+		if (handler && (handler.name === 'list' || handler.name === 'filter')) {
+			// Contains uses the title handler, but only if it's
+			// searching a 'list' or 'filter' field.
+			return titleHandler;
+		}
+
+	}
 	if (!rtn && index == 1) {
 		// maybe it's a field operator?
 		rtn = (op === 'field' && context.getFields()[suffix])
