@@ -26,7 +26,7 @@ exports.relink = function(value, fromTitle, toTitle, options) {
 	var entry;
 	if (!utils.isReserved(fromTitle, options)) {
 		entry = listModule.relink(value, fromTitle, toTitle, options);
-		if (entry.output && utils.isReserved(toTitle, options)) {
+		if (entry && entry.output && utils.isReserved(toTitle, options)) {
 			// The list updated, but we can't actaully update to this new title
 			return {impossible: true};
 		}

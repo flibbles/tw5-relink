@@ -1,5 +1,5 @@
 /*\
-title: $:/plugins/flibbles/relink-fieldnames/suffixes.js
+title: $:/plugins/flibbles/relink-fieldnames/filters/suffixes.js
 module-type: relinkfilter
 type: application/javascript
 
@@ -7,7 +7,7 @@ Handles reporting/relinking of filter operator suffixes using a hidden whitelist
 
 \*/
 
-var utils = require("./utils.js");
+var utils = require("../utils.js");
 
 exports.name = "suffixes";
 

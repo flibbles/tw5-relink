@@ -1,5 +1,5 @@
 /*\
-title: $:/plugins/flibbles/relink-fieldnames/fieldOperators.js
+title: $:/plugins/flibbles/relink-fieldnames/filters/field.js
 module-type: relinkfilter
 type: application/javascript
 
@@ -7,9 +7,9 @@ Handles reporting/relinking of shorthand [[field:{field}[]] operators.
 
 \*/
 
-var utils = require("./utils.js");
+var utils = require("../utils.js");
 
-exports.name = "fieldoperators";
+exports.name = "field";
 
 exports.report = function(filterParseTree, callback, options) {
 	var operators = options.wiki.getFilterOperators();

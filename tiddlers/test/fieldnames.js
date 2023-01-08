@@ -280,6 +280,7 @@ it('can handle fieldnamelists', function() {
 	const wiki = getWiki();
 	wiki.addTiddler(utils.operatorConf("fields", "fieldnamelist"));
 	testText("{{{ [fields[other from else]] }}}", true, ['{{{[fields[]]}}}'], {wiki: wiki});
+	testText("{{{ [fields[other else]] }}}", false, undefined, {wiki: wiki});
 	// Placeholders can take place
 	testText("{{{ [fields[other from else]] }}}",
 	         utils.placeholder('fieldnamelist-1', 'other [[to there]] else') + "{{{ [fields<relink-fieldnamelist-1>] }}}", ['{{{[fields[]]}}}'], {wiki: wiki, to: "to there"});
@@ -467,6 +468,56 @@ it('can handle "contains" operators', function() {
 		utils.fieldConf('from', 'list'),
 		$tw.wiki.getTiddler(prefix + 'contains')]);
 	testText("{{{ [contains:from[from]] }}}", true, ['{{{[contains:from[]]}}}', '{{{[contains:[from]]}}}'], {wiki: wiki});
+});
+
+it('can handle "search" operators', function() {
+	// default report
+	const report = ["{{{[search:[x]]}}}"];
+	const invertReport = ["{{{[search:-[x]]}}}"];
+	// First test that reporting operands works fine
+	const string = "This is an excessively long value to have as a field.";
+	testText("{{{ [search:from["+string+"]] }}}", true, ['{{{[search:['+string.substr(0,maxLength)+'...]]}}}']);
+	testText("{{{ [search:from<"+string+">] }}}", true, ['{{{[search:<'+string.substr(0,maxLength)+'...>]}}}']);
+	testText("{{{ [search:from{"+string+"}] }}}", true, ['{{{[search:{'+string.substr(0,maxLength)+'...}]}}}']);
+	// location in suffix
+	testText("{{{ [search:cat,from,love[x]] }}}", true, report);
+	testText("{{{ [search:cat:from[x]] }}}", false);
+	testText("{{{ [search:from:literal,some[x]] }}}", true, ['{{{[search::literal,some[x]]}}}']);
+	testText("{{{ [search:-from[x]] }}}", true, invertReport);
+	testText("{{{ [search:-cat,from[x]] }}}", true, invertReport);
+	// Not there at all
+	testText("{{{ [search[x]] }}}", false);
+	testText("{{{ [search::literal[x]] }}}", false);
+	// asterisk and minus are okay in some circumstances
+	testText("{{{ [search:cat,from[x]] }}}", true, report, {to: '-to'});
+	testText("{{{ [search:cat,from[x]] }}}", true, report, {to: '*'});
+	testText("{{{ [search:from[x]] }}}", true, report, {to: '*to'});
+	testText("{{{ [search:*from[x]] }}}", true, report, {from: '*from'});
+	testText("{{{ [search:*[x]] }}}", false, undefined, {from: '*'});
+	testText("{{{ [search:cat,*[x]] }}}", true, report, {from: '*'});
+	testText("{{{ [search:-from[x]] }}}", false, undefined, {from: '-from'});
+	testText("{{{ [search:cat,-from[x]] }}}", true, report, {from: '-from'});
+	testText("{{{ [search:--from[x]] }}}", true, invertReport, {from: '-from'});
+	testText("{{{ [search:-from[x]] }}}", true, invertReport, {to: '-to'});
+	testText("{{{ [search:-*[x]] }}}", true, invertReport, {from: '*'});
+	testText("{{{ [search:-from[x]] }}}", true, invertReport, {to: '*'});
+	// Reserved field names
+	testText("{{{ [search:text[x]] }}}", false, undefined, {from: 'text', wiki: getWiki()});
+	utils.spyFailures(spyOn);
+	function testFail(input, expected, report, options) {
+		utils.failures.calls.reset();
+		testText(input, expected, report, options);
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+	};
+	testFail("{{{ [search:from[x]] }}}", false, report, {to: 'text', wiki: getWiki()});
+	testFail("{{{ [search:from[x]] }}}", false, report, {to: 't,o'});
+	testFail("{{{ [search:from[x]] }}}", false, report, {to: 't:o'});
+	testFail("{{{ [search:from[x]] }}}", false, report, {to: 't[o'});
+	testFail("{{{ [search:from[x]] }}}", false, report, {to: 't<o'});
+	testFail("{{{ [search:from[x]] }}}", false, report, {to: 't{o'});
+	testFail("{{{ [search:from[x]] }}}", false, report, {to: 't/o'});
+	testFail("{{{ [search:from[x]] }}}", false, report, {to: '-to'});
+	testFail("{{{ [search:from[x]] }}}", false, report, {to: '*'});
 });
 
 it('handles field name filter operators', function() {
