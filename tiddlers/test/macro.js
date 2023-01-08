@@ -393,6 +393,10 @@ it('$macrocall', function() {
 	testText("<$macrocall Btitle='from here' />", false, undefined);
 	// unmanaged macros shouldn't cause problems either
 	testText("<$macrocall $name=none value='from here' />", false, undefined);
+	// leaves other attributes alone
+	// Unreported Issue: Relink would change unrelated macro parameters too.
+	// if they came after something that got relinked.
+	testText("<$macrocall $name=test Btitle='from here' other=<<anything>> />", true, ['<<test Btitle />']);
 });
 
 it('$macrocall imposssibles', function() {

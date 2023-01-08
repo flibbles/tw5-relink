@@ -93,6 +93,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			case 'macro':
 				if (attr.output) {
 					quotedValue = attr.output;
+				} else {
+					quotedValue = undefined;
 				}
 				// Else If output isn't set, this wasn't ever changed
 				break;
