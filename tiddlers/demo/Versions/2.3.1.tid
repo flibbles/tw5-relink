@@ -1,0 +1,6 @@
+created: 20230108171504382
+
+\rules except wikilink
+
+* Fixed issue where all macro attributes that came after a relinked attribute would be set to the same value the relinked attribute was set to.
+* Updated the Relink-title blurb for lookup rules to be more helpful.
