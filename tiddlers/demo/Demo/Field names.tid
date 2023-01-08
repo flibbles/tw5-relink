@@ -1,4 +1,4 @@
-description: Optionally, //Relink// can update the names of any fields which match the name of the Relinked tiddler. This will also update any corresponding configuration that field has in the //Relink// whitelist.
+description: Optionally, //Relink// can update the names of any fields which match the name of the Relinked tiddler. This will also update any places where that tiddler's title was being used as a field, such as in indirect references, filters, to even its own entry in the //Relink// whitelist.
 relink.showcase: title type Frodo
 Frodo: [[Hairy feet]] [[Short stature]] Frodo
 tags: Demo Supplemental

@@ -1,0 +1,21 @@
+created: 20230108024056377
+
+\rules except wikilink
+
+Previous release of //Relink-Fieldnames// did not cover a lot of bases which I hadn't thought of at the time. Now it does.
+
+* Now has whitelists several widget attributes, macro parameters, and filter operands as a special types that ship with the supplementary plugin: the `fieldname` and `fieldnamelist` types. They behave like `title` and `list` except that they respect the reserved field name blacklist.
+* Can now relink the field of transclusions and indirect attributes/operands. i.e. `{{tiddler!!fromTitle}}` can relink to `{{tiddler!!toTitle}}` now.
+* Can now update attribute names of widgets that use dynamic attributes corresponding to tiddler fields. I.E. `<$action-setfield fromTiddler=value />` will now update if ''fromTiddler'' changes.
+* Can now update suffixes of certain filter operators that correspond to fields. I.E. `[search:fromField[...]]`.
+* Can now relink shorthand filter operators corresponding to fields. I.E. `[fromField[]]` will relink if ''fromField'' renames.
+* Can now relink the `[search[]]` operator and its annoyingly unique suffix of fields and flags.
+
+Some changes concern core //Relink// itself.
+
+* //Relink// now handles widgets that use dynamic attributes corresponding to tiddler fields. For example, will now detect ''fromTiddler'' inside of `<$action-setfield whiteListedField=fromTidder />`. It does this using a whitelist which isn't exposed in the configuration because of how esoteric these use cases are.
+* Macrocall filter operands are now supported. I.E. `[prefix<myMacro fromTitle>]`. This is a feature that snuck in after I made //Relink//, and thus it went unnoticed until now.
+* Whitelisting for the `<$genesis>` widget attributes.
+* The `<$macrocall>` widget now has a custom blurb unlike other widgets which is more concise and useful.
+* Support for the `[contains[]]` widget's operand, which needs relinking only if the suffix corresponds to a whitelisted tiddler list field.
+* Fix for issue #43: The orphan operator would not report tiddlers should have been added to the list since the last operator call.
