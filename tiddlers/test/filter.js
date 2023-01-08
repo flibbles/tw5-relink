@@ -127,6 +127,17 @@ it('contains operator', function() {
 	testFilter("A [contains[from here!!title]] B", false, undefined, {wiki: wiki});
 });
 
+it('filter filter operators', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.operatorConf('filter', 'filter'));
+	testFilter("A +[filter['from here']]", true, ['filt: +[filter[]]'], {wiki: wiki});
+	testFilter("A +[filter[from here]]", false, undefined, {wiki: wiki});
+	testFilter("A +[filter[from]]", true, ['filt: +[filter[]]'], {from: 'from', to: 'to', wiki: wiki});
+	utils.spyFailures(spyOn);
+	testFilter("A +[filter[from]]", false, ['filt: +[filter[]]'], {from: 'from', wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+});
+
 it('malformed', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('tag'));
