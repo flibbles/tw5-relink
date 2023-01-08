@@ -1,0 +1,6 @@
+tags: Types Supplemental
+title: Markdown
+
+This type functions in many ways like the Wikitext type, only instead of Wikitext, it's markdown. This type only really makes sense for fields and macros.
+
+{{$:/core/images/warning}} ''Warning:'' This type is only present in the <<link-to-tab Plugins "Plugins/Markdown" "Markdown supplemental plugin">>

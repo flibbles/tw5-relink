@@ -1,3 +1,0 @@
-title: Templates/Demo-button
-
-<$list filter="[<currentTab>tag[Supplemental]]">{{$:/core/images/new-button}}</$list><$transclude tiddler=<<currentTab>> field="caption" />

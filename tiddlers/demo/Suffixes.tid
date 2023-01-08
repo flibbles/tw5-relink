@@ -1,0 +1,7 @@
+title: Suffixes
+
+//Relink-Fieldnames// can update the suffixes of filter operators as well. It does so through a whitelist, but since this a more esoteric behavior, the whitelist isn't exposed in the <<link-to-config-tab caption:"//Relink// configuration panel">>.
+
+However, the whitelist can be modified by adding system tiddlers with the prefix `$:/config/flibbles/relink/suffixes/` with text values corresponding to the suffixes [[type|Types]].
+
+''For example:'' If the system tiddler `$:/config/flibbles/relink/suffixes/myoperator` had a text value of `title`, then filters such as `[myoperator:fromtitle[]]` would relink if ''fromtitle'' were renamed.

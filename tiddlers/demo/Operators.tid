@@ -34,4 +34,9 @@ Thus, the filter `[myop[myTitle],[myTitle!!field]]` will update both operands if
 
 `myop/1` => `title` is equivalent to `myop` => `title` since the first operand is the default operand. However, defining both `myop` and `myop/1` is unsupported and results in undefined behavior.
 
+!!! Relinking Suffixes
+
+//Relink// is also capable of relinking operator suffixes through its <<link-to-tab Plugins "Plugins/Fieldnames" "Fieldnames supplemental plugin">>. That feature is [[detailed here|Suffixes]].
+
+
 <<link-to-tab Demo Demo/Filters Demo>>

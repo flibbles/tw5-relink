@@ -17,5 +17,5 @@ Change the tiddler ''[[Frodo]]'' down below to see how these examples react.
 	tabsList="[[Demo]tagging[]!tag[Supplemental]] [[Demo]tagging[]tag[Supplemental]]"
 	default="Demo/Links"
 	template="Templates/Demo"
-	buttonTemplate="Templates/Demo-button"
+	buttonTemplate="Templates/Button"
 />

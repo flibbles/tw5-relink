@@ -1,0 +1,6 @@
+tags: Types Supplemental
+title: Fieldnamelist
+
+This type is identical to the List type, except that it refuses to report or relink any title which correspond to built-in tiddlers fields, like `tags` or `text` or `module-type`.
+
+{{$:/core/images/warning}} ''Warning:'' This type is only present in the <<link-to-tab Plugins "Plugins/Fieldnames" "Fieldnames supplemental plugin">>
