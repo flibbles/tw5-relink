@@ -75,21 +75,23 @@ exports.report = function(text, callback, options) {
 		caption = em[2],
 		prefix = em[1],
 		isImage = (prefix === '!'),
+		hash = isImage ? em[3].trim() : '#',
 		link = em[4],
-		hash = '#';
-	if (prefix) {
-		hash = '';
-	}
+		hasHash = em[3].lastIndexOf('#') >= 0;
 	this.parser.pos = em.index + em[1].length + caption.length + em[0].length + 2;
 	if (!isImage) {
 		markdown.report(caption, function(title, blurb) {
 			callback(title, prefix + '[' + (blurb || '') + '](' + hash + link + ')');
 		}, options);
 	}
-	if (isImage !== (em[3].lastIndexOf('#') >= 0)) {
+	if (isImage || hasHash) {
 		var safeCaption = utils.abridge(caption);
 		try {
-			callback(decodeURIComponent(link), em[1] + '[' + safeCaption + '](' + hash + ')');
+			var decodedLink = decodeURIComponent(link);
+			// If the link doesn't have a hash, it can't have any escaping
+			if (hasHash || (decodedLink === link)) {
+				callback(decodedLink, em[1] + '[' + safeCaption + '](' + hash + ')');
+			}
 		} catch (e) {
 			// It must be a malformed link. Not our problem.
 			// Just move on.
@@ -123,16 +125,25 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 	// I don't know why internal images links don't use the '#', but links
 	// do, but that's just how it is.
-	if (isImage !== (em[3].lastIndexOf('#') >=0)) {
-		try {
-			if (decodeURIComponent(link) === fromTitle) {
+	// image lines can have the '#' or not. Though if they do, they can't
+	// have any escaping.
+	var hasHash = em[3].lastIndexOf('#') >= 0;
+	try {
+		var decodedLink = decodeURIComponent(link);
+		if (hasHash || (isImage && (decodedLink === link))) {
+			if (decodedLink === fromTitle) {
 				link = utils.encodeLink(toTitle);
+				if (link !== toTitle && !hasHash) {
+					// If this is an image without a hash, and the title
+					// required any escaping at all, then we need to add one.
+					em[3] = (em[3] || '') + '#';
+				}
 				modified = true;
 			}
-		} catch (e) {
-			// It must be a malformed link. Not our problem.
-			// Keep going in case the caption needs relinking.
 		}
+	} catch (e) {
+		// It must be a malformed link. Not our problem.
+		// Keep going in case the caption needs relinking.
 	}
 	if (modified) {
 		// This way preserves whitespace

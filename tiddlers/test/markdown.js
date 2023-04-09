@@ -51,14 +51,15 @@ it('markdown links', function() {
 	test("[here](#<$link to='from here'/>)", process, ['<$link to />'], {from: 'from here'});
 });
 
-it('markdown images', function() {
+it('markdown images before revamp', function() {
 	const options = {from: 'from.png', to: 'to.png'};
 	test("Image: ![caption](from.png)", process, ['![caption]()'], options);
-	test("Image: ![caption](#from.png)", ignore, undefined, options);
 	// tooltips
 	test("Image: ![caption](from.png 'tooltip')", process, ['![caption]()'], options);
 	test("Image: ![caption](from.png 'bob\\'s tooltip')", process, ['![caption]()'], options);
-	test("![c](from%20here 'tooltip')", "![c](to%20there 'tooltip')", ['![c]()'], {from: 'from here', to: 'to there'});
+	test("![c](from 'tooltip')", "![c](#to%20there 'tooltip')", ['![c]()'], {from: 'from', to: 'to there'});
+	// Without the '#", escaping entities don't work
+	test("![c](from%20here 'tooltip')", ignore, undefined, {from: 'from here'});
 	// whitespace
 	test("Image: ![caption](  from.png  )", process, ['![caption]()'], options);
 	test("Image: ![caption](\nfrom.png\n)", process, ['![caption]()'], options);
@@ -66,6 +67,22 @@ it('markdown images', function() {
 	// can be first and last thing in body
 	test("![caption](from.png)", process, ['![caption]()'], options);
 	test("![c](from.png)![c](from.png)", process, ['![c]()', '![c]()'], options);
+});
+
+it('markdown images after markdown 6.2.6 revamp', function() {
+	const options = {from: 'from.png', to: 'to.png'};
+	test("Image: ![caption](#from.png)", process, ['![caption](#)'], options);
+	// tooltips
+	test("Image: ![caption](#from.png 'tooltip')", process, ['![caption](#)'], options);
+	test("Image: ![caption](#from.png 'bob\\'s tooltip')", process, ['![caption](#)'], options);
+	test("![c](#from%20here 'tooltip')", "![c](#to%20there 'tooltip')", ['![c](#)'], {from: 'from here', to: 'to there'});
+	// whitespace
+	test("Image: ![caption](  #from.png  )", process, ['![caption](#)'], options);
+	test("Image: ![caption](\n#from.png\n)", process, ['![caption](#)'], options);
+	test("Image: ![caption](\n#from.png\n)", process, ['![caption](#)'], options);
+	// can be first and last thing in body
+	test("![caption](#from.png)", process, ['![caption](#)'], options);
+	test("![c](#from.png)![c](#from.png)", process, ['![c](#)', '![c](#)'], options);
 });
 
 it('links with tricky characters', function() {
@@ -323,17 +340,25 @@ it("footnotes", function() {
 	test("[Long\r\nmulti\r\nline\r\ncaption]: #from", process, ["[Long multi line...]:"]);
 });
 
-it("footnotes for images", function() {
+it("footnotes for images before v5.2.6 revamp", function() {
 	test("[1]: from.png", process, ['[1]:'], {from: "from.png", to: "to.png", fromType: "image/png"});
-	// Still relinks in case someone wants to just link to an image instead of embed it
+	test("[1]: from.png", "[1]: #to%20there.png", ['[1]:'], {from: "from.png", to: "to there.png", fromType: "image/png"});
+	test("[1]: from%20here.png", ignore, undefined, {from: "from here.png", fromType: "image/png"});
+});
+
+it("footnotes for images after v5.2.6 markdown revamp", function() {
 	test("[1]: #from.png", process, ['[1]:'], {from: "from.png", to: "to.png", fromType: "image/png"});
-	test("[1]:  from%20here.png", "[1]:  to%20there.png", ['[1]:'], {from: "from here.png", to: "to there.png", fromType: "image/png"});
+	test("[1]:  #from%20here.png", "[1]:  #to%20there.png", ['[1]:'], {from: "from here.png", to: "to there.png", fromType: "image/png"});
 
 	// types
-	test("[1]: from.svg", process, ['[1]:'], {from: "from.svg", to: "to.svg", fromType: "image/svg+xml"});
-	test("[1]: from.jpg", process, ['[1]:'], {from: "from.jpg", to: "to.jpg", fromType: "image/jpeg"});
-	test("[1]: from.gif", process, ['[1]:'], {from: "from.gif", to: "to.gif", fromType: "image/gif"});
-	test("[1]: from.ico", process, ['[1]:'], {from: "from.ico", to: "to.ico", fromType: "image/x-icon"});
+	test("[1]: #from.svg", process, ['[1]:'], {from: "from.svg", to: "to.svg", fromType: "image/svg+xml"});
+	test("[1]: #from.jpg", process, ['[1]:'], {from: "from.jpg", to: "to.jpg", fromType: "image/jpeg"});
+	test("[1]: #from.gif", process, ['[1]:'], {from: "from.gif", to: "to.gif", fromType: "image/gif"});
+	test("[1]: #from.ico", process, ['[1]:'], {from: "from.ico", to: "to.ico", fromType: "image/x-icon"});
+});
+
+it('gracefully handles malformed footnotes', function() {
+	test("[caption]: #from%", ignore, undefined, {from: "from%"});
 });
 
 /* INCOMPLETE PARSING: I'm skipping these because updating the captions here
