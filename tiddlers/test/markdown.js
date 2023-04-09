@@ -79,7 +79,13 @@ it('links with tricky characters', function() {
 	var parser = wiki.parseTiddler("test");
 	var node = parser.tree[0];
 	while (node.type !== 'link') {
-		node = node.children[0];
+		var i;
+		for (i = 0; i < node.children.length; i++) {
+			if (node.children[i].type !== "text") {
+				break;
+			}
+		}
+		node = node.children[i];
 	}
 	expect(node.attributes.to.value).toEqual(theBeast);
 	// Now, can I rename away from that monster link?
@@ -265,16 +271,16 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 	};
 	parseAndWiki("[Caption](#from) [[from]]", "[Caption](#from) [[to there]]",
 	             ['[[from]]'],
-	             "[Caption](#from) from", "Caption [[from]]");
+	             "[Caption](#from) from", "\nCaption [[from]]\n\n");
 	// the codeblock rule
 	parseAndWiki("    <$link to='from'>C</$link>",
 	             "    <$link to='to there'>C</$link>",
 	             ['<$link to />'],
-	             "C", "<$link to='from'>C</$link>");
+	             "C", "\n<$link to='from'>C</$link>\n\n");
 	parseAndWiki("T\n \n    <$link to='from'>C</$link>",
 	             "T\n \n    <$link to='to there'>C</$link>",
 	             ['<$link to />'],
-	             "T\n \n    C", "T<$link to='from'>C</$link>");
+	             "T\n \n    C", "\nT\n\n<$link to='from'>C</$link>\n\n");
 });
 
 it("footnotes", function() {
