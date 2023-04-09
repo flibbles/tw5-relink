@@ -1,13 +1,13 @@
 /*\
 module-type: relinkmarkdownrule
-title: $:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext/codeinline.js
+title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/markdowntext/codeinline.js
 type: application/javascript
 
 Handles markdown `code` and ``code``.
 
 \*/
 
-var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
+var utils = require("$:/plugins/flibbles/relink-markdown/utils/markdown");
 
 exports.name = "codeinline";
 exports.types = {inline: true};

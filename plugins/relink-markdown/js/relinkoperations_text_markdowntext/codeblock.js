@@ -1,6 +1,6 @@
 /*\
 module-type: relinkmarkdownrule
-title: $:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext/codeblock.js
+title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/markdowntext/codeblock.js
 type: application/javascript
 
 ```javascript
@@ -9,7 +9,7 @@ code
 
 \*/
 
-var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
+var utils = require("$:/plugins/flibbles/relink-markdown/utils/markdown");
 
 exports.name = "codeblock";
 exports.types = {inline: true};

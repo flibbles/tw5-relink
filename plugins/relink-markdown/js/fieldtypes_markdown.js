@@ -1,6 +1,6 @@
 /*\
 module-type: relinkfieldtype
-title: $:/plugins/flibbles/relink/js/fieldtypes/markdown.js
+title: $:/plugins/flibbles/relink-markdown/fieldtypes/markdown.js
 type: application/javascript
 
 This relinks tiddlers which contain markdown. It tries to be agnostic to
@@ -10,7 +10,7 @@ whichever markdown plugin you're using.
 
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
 var wikitextHandler = require("$:/plugins/flibbles/relink/js/utils.js").getType('wikitext');
-var utils = require("$:/plugins/flibbles/relink/js/utils/markdown.js");
+var utils = require("$:/plugins/flibbles/relink-markdown/utils/markdown.js");
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")['text/vnd.tiddlywiki'];
 
 function MarkdownWalker(text, options) {

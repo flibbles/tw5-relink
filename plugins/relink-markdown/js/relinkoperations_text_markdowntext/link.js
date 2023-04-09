@@ -1,6 +1,6 @@
 /*\
 module-type: relinkmarkdownrule
-title: $:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext/link.js
+title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/markdowntext/link.js
 type: application/javascript
 
 Handles markdown links
@@ -9,7 +9,7 @@ Handles markdown links
 
 \*/
 
-var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
+var utils = require("$:/plugins/flibbles/relink-markdown/utils/markdown");
 var markdown = require("$:/plugins/flibbles/relink/js/utils").getType('markdown');
 
 exports.name = "markdownlink";

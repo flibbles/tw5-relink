@@ -440,7 +440,6 @@ it("lists", function() {
 
 describe("tiddlywiki/markdown plugin", function() {
 
-var mdParser = require("$:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext.js")["text/x-markdown"];
 var pragmaTitle = "$:/config/markdown/renderWikiTextPragma";
 var switchTitle = "$:/config/markdown/renderWikiText";
 var defaultPragma = $tw.wiki.getTiddlerText(pragmaTitle);

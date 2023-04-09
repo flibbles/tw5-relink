@@ -1,5 +1,5 @@
 /*\
-title: $:/plugins/flibbles/relink/js/relinkoperations/text/markdowntext/markdownrulebase.js
+title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/markdowntext/markdownrulebase.js
 type: application/javascript
 module-type: global
 
@@ -12,7 +12,7 @@ Base class for markdown parser rules
 /*global $tw: false */
 "use strict";
 
-var utils = require("$:/plugins/flibbles/relink/js/utils/markdown");
+var utils = require("$:/plugins/flibbles/relink-markdown/utils/markdown");
 
 var MarkdownRuleBase = function() {};
 
