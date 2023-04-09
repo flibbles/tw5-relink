@@ -88,6 +88,11 @@ it('links with tricky characters', function() {
 	expect(utils.getText('test', wiki)).toBe('[Caption](#to)');
 });
 
+// See issue #45
+it('handles UTF characters gracefully', function() {
+	test("[c](#from)", true, ['[c](#)'], {to: "文字"});
+});
+
 it('links with #', function() {
 	test("[c](#%23pound)", "[c](#to%20there)", ['[c](#)'], {from: "#pound", to: 'to there'});
 	test("[c](#pound)", ignore, undefined, {from: "#pound"});
@@ -241,12 +246,12 @@ it("impossible caption changes", function() {
 	var to = "t}}x";
 	utils.spyFailures(spyOn);
 	// Fails because inner wikitext can't change on its own
-	testFails("[<$link to={{from}}/>](#from)", "[<$link to={{from}}/>](#"+encodeURIComponent(to)+")", ['[<$link to={{}} />](#from)', '[<$link to={{fro...](#)'], {from: "from", to: to});
+	testFails("[<$link to={{from}}/>](#from)", "[<$link to={{from}}/>](#"+to+")", ['[<$link to={{}} />](#from)', '[<$link to={{fro...](#)'], {from: "from", to: to});
 	testFails("[<$link to='from' tag={{from}} />](#else)", "[<$link to='"+to+"' tag={{from}} />](#else)", ['[<$link to />](#else)', '[<$link tag={{}} />](#else)'], {from: "from", to: to});
 
 	// Fails because caption would be illegal
-	testFails("[{{from}}](#from)", "[{{from}}](#brack%5Bet)", ['[{{}}](#from)', '[{{from}}](#)'], {from: "from", to: "brack[et"});
-	testFails("[{{from}}](#from)", "[{{from}}](#brack%5Det)", ['[{{}}](#from)', '[{{from}}](#)'], {from: "from", to: "brack]et"});
+	testFails("[{{from}}](#from)", "[{{from}}](#brack[et)", ['[{{}}](#from)', '[{{from}}](#)'], {from: "from", to: "brack[et"});
+	testFails("[{{from}}](#from)", "[{{from}}](#brack]et)", ['[{{}}](#from)', '[{{from}}](#)'], {from: "from", to: "brack]et"});
 });
 
 it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
@@ -530,7 +535,7 @@ it("won't make placeholders with default markdown settings", function() {
 		 text: "<$link to='from here' />[C](#from%20here)"}]);
 	utils.spyFailures(spyOn);
 	wiki.renameTiddler('from here', "to 'there\"");
-	expect(utils.getText('test', wiki)).toBe("<$link to='from here' />[C](#to%20'there%22)");
+	expect(utils.getText('test', wiki)).toBe("<$link to='from here' />[C](#to%20'there\")");
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 

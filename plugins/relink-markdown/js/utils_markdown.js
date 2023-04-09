@@ -9,6 +9,8 @@ Methods used in markdown parsing.
 
 // tiddlywiki/markdown can't handle having these characters escaped, so we
 // need to unescape them.
+// But we're unescaping everything except '%' and ' ' so this list isn't used.
+/*
 var problemChars = {
 	"23": "#",
 	"24": "$",
@@ -22,33 +24,39 @@ var problemChars = {
 	"3F": "?",
 	"40": "@",
 };
+*/
 
 exports.encodeLink = function(title) {
-	var encoded = encodeURIComponent(title),
-		balance = 0;
-	encoded = encoded.replace(/[\(\)]/g, function(p) {
-		if (p === '(') {
+	var balance = 0,
+		encoded = title.replace(/[\(\) %\\]/g, function(p) {
+		switch (p) {
+		case '(':
 			if (balance >=1) {
 				return '%28';
-			} else {
-				balance++;
 			}
-		} else {
+			balance++;
+			break;
+		case ')':
 			if (balance <= 0) {
 				return '%29';
 			}
 			balance--;
+			break;
+		case '%':
+			return '%25';
+		case ' ':
+			return '%20';
+		case '\\':
+			return '%5C';
 		}
 		return p;
 	});
+	// If there were open parenthesis without closes, we need to escape them.
 	while (balance--) {
 		var i = encoded.lastIndexOf('(');
 		encoded = encoded.substr(0, i) + '%28' + encoded.substr(i+1);
 	}
-	// tiddlywiki/markdown can't handle these characters escaped
-	return encoded.replace(/%([0-9A-F]{2})/g, function(str, code) {
-		return problemChars[code] || str;
-	});
+	return encoded;
 };
 
 // Returns index of next paragraph, or -1
