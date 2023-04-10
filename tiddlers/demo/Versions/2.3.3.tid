@@ -1,0 +1,5 @@
+created: 20230410031749392
+
+\rules except wikilink
+
+* Added support for the text/markdown MIME type, because the tiddlywiki markdown plugin added support for it too.
