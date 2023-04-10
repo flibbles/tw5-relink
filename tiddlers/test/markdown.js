@@ -20,7 +20,7 @@ function test(text, expected, report, options) {
 	}
 	wiki.addTiddlers([
 		utils.attrConf('$link', 'to'),
-		{title: 'test', text: text, type: options.type || 'text/x-markdown'},
+		{title: 'test', text: text, type: options.type || 'text/markdown'},
 		{title: options.from, type: options.fromType || 'text/vnd.tiddlywiki'}]);
 	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
 	wiki.renameTiddler(options.from, options.to);
@@ -49,6 +49,10 @@ it('markdown links', function() {
 	test("[here](#from) content)", process, ['[here](#)']);
 	// The space inside it flags it as not a markdown link
 	test("[here](#<$link to='from here'/>)", process, ['<$link to />'], {from: 'from here'});
+});
+
+it('links with the text/x-markdown type', function() {
+	test("[Caption](#from)", process, ['[Caption](#)'], {type: 'text/x-markdown'});
 });
 
 it('markdown images before revamp', function() {
@@ -91,7 +95,7 @@ it('links with tricky characters', function() {
 
 	var theBeast = "!@#$%^&*() {}|:\"<>?-=[]\\;',./`~¡™£¢∞§¶•ªº–≠“‘«…æ≤≥÷œ∑®´´†\¨ˆøπ˙∆˚¬åß∂ƒ©Ω≈ç√∫˜µ";
 	const wiki = new $tw.Wiki();
-	var results = utils.relink({text: "[Caption](#from)", type: "text/x-markdown"}, {from: "from", to: theBeast, target: "test", wiki: wiki});
+	var results = utils.relink({text: "[Caption](#from)", type: "text/markdown"}, {from: "from", to: theBeast, target: "test", wiki: wiki});
 	// I don't care what the raw text looks like. I want to know that the link points to the right place.
 	var parser = wiki.parseTiddler("test");
 	var node = parser.tree[0];
@@ -283,7 +287,7 @@ it("doesn't affect relinking or parsing of text/vnd.tiddlywiki", function() {
 		var output, wiki = new $tw.Wiki();
 		output = wiki.renderText("text/plain", "text/vnd.tiddlywiki", input);
 		expect(output).toEqual(wikitext);
-		output = wiki.renderText("text/plain", "text/x-markdown", input);
+		output = wiki.renderText("text/plain", "text/markdown", input);
 		expect(output).toEqual(markdown);
 	};
 	parseAndWiki("[Caption](#from) [[from]]", "[Caption](#from) [[to there]]",
@@ -479,7 +483,7 @@ function testPragma(text, expected, pragma, switchValue) {
 	if (switchValue !== undefined) {
 		wiki.addTiddler({title: switchTitle, text: switchValue});
 	}
-	wiki.addTiddler({title: 'test', text: text, type: 'text/x-markdown'})
+	wiki.addTiddler({title: 'test', text: text, type: 'text/markdown'})
 	wiki.renameTiddler('from here', 'to there');
 	expect(utils.getText('test', wiki)).toBe(expected);
 };
@@ -531,7 +535,7 @@ it("wikitextPragma with multiple pragma", function() {
 it("wikitextPragma doesn't impact nested wikitext", function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
-		{title: 'test', text: '<$list emptyMessage="[[from]]" />\n[[from]]\n[caption](#from)', type: 'text/x-markdown'},
+		{title: 'test', text: '<$list emptyMessage="[[from]]" />\n[[from]]\n[caption](#from)', type: 'text/markdown'},
 		pragma('\\rules only html'),
 		utils.attrConf('$list', 'emptyMessage', 'wikitext')]);
 	expect(utils.getReport('test', wiki)).toEqual({from: ['<$list emptyMessage="[[from]]" />', '[caption](#)']});
@@ -561,7 +565,7 @@ it("won't make placeholders with default markdown settings", function() {
 	wiki.addTiddlers([
 		{title: pragmaTitle, text: defaultPragma},
 		utils.attrConf('$link', 'to'),
-		{title: 'test', type: 'text/x-markdown',
+		{title: 'test', type: 'text/markdown',
 		 text: "<$link to='from here' />[C](#from%20here)"}]);
 	utils.spyFailures(spyOn);
 	wiki.renameTiddler('from here', "to 'there\"");
