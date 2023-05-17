@@ -61,3 +61,5 @@ toc-tabbed-internal-nav/selectedTiddler: title
 toc-tabbed-internal-nav/unselectedText: wikitext
 toc-tabbed-internal-nav/missingText: wikitext
 toc-tabbed-internal-nav/template: title
+
+translink/title: title
