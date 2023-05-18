@@ -1,0 +1,6 @@
+created: 20230518003304679
+
+\rules except wikilink
+
+* Updated overridden core tiddler EditTemplate/title so that Relink doesn't clobber the upcoming text direction feature.
+* Added `translink` to the macro whitelist.
