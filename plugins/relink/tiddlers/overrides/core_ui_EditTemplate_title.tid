@@ -2,15 +2,13 @@ tags: $:/tags/EditTemplate
 title: $:/core/ui/EditTemplate/title
 
 \whitespace trim
-<$edit-text field="draft.title" class="tc-titlebar tc-edit-texteditor" focus="true" tabindex={{$:/config/EditTabIndex}}/>
-
-<$reveal state="!!draft.title" type="nomatch" text={{!!draft.of}} tag="div">
+<$edit-text field="draft.title" class="tc-titlebar tc-edit-texteditor" focus={{{ [{$:/config/AutoFocus}match[title]then[true]] ~[[false]] }}} tabindex={{$:/config/EditTabIndex}} cancelPopups="yes" dir={{$:/config/DefaultTextDirection}}/>
 
 <$vars pattern="""[\|\[\]{}]""" bad-chars="""`| [ ] { }`""">
 
 <$list filter="[all[current]regexp:draft.title<pattern>]" variable="listItem">
 
-<div class="tc-message-box">
+<div class="tc-message-box" dir={{$:/config/DefaultTextDirection}}>
 
 {{$:/core/images/warning}}&#32;{{$:/language/EditTemplate/Title/BadCharacterWarning}}
 
@@ -20,11 +18,13 @@ title: $:/core/ui/EditTemplate/title
 
 </$vars>
 
+<$reveal state="!!draft.title" type="nomatch" text={{!!draft.of}} tag="div" dir={{$:/config/DefaultTextDirection}}>
+
 <$list filter="[{!!draft.title}!is[missing]]" variable="listItem">
 
 <div class="tc-message-box">
 
-{{$:/core/images/warning}}&#32;{{$:/language/EditTemplate/Title/Exists/Prompt}}
+{{$:/core/images/warning}}&#32;{{$:/language/EditTemplate/Title/Exists/Prompt}}:&#32;<$link to={{!!draft.title}} />
 
 </div>
 
