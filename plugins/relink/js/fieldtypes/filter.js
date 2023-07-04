@@ -51,7 +51,7 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 		}
 	}
 	if (changed) {
-		builder = assembleFilterString(parseTree, filter, options);
+		var builder = assembleFilterString(parseTree, filter, options);
 		results.output = builder.results();
 		results.impossible = results.impossible || builder.impossible;
 		return results;

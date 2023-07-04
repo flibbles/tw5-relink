@@ -54,7 +54,7 @@ ImportContext.prototype._compileList = function(titleList) {
 				if (parseTreeNode.relink) {
 					for (var macroName in parseTreeNode.relink) {
 						var parameters = parseTreeNode.relink[macroName];
-						for (paramName in parameters) {
+						for (var paramName in parameters) {
 							this.addSetting(this.wiki, macroName, paramName, parameters[paramName], titleList[i]);
 						}
 					}

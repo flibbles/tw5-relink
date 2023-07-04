@@ -151,7 +151,7 @@ function reportAttribute(parser, attribute, callback, options) {
 		ptr = text.indexOf("<<", ptr);
 		var end = attribute.value.end;
 		var macro = attribute.value;
-		oldValue = attribute.value;
+		var oldValue = attribute.value;
 		macrocall.reportAttribute(parser, macro, function(title, blurb) {
 			callback(title, '[img ' + attribute.name + '=' + blurb + ']');
 		}, options);
@@ -199,7 +199,7 @@ function relinkAttribute(parser, attribute, builder, fromTitle, toTitle, options
 		ptr = text.indexOf("<<", ptr);
 		var end = attribute.value.end;
 		var macro = attribute.value;
-		oldValue = attribute.value;
+		var oldValue = attribute.value;
 		var macroEntry = macrocall.relinkAttribute(parser, macro, text, fromTitle, toTitle, options);
 		if (macroEntry !== undefined) {
 			if (macroEntry.impossible) {

@@ -20,7 +20,7 @@ exports.name = ['transcludeinline', 'transcludeblock'];
 exports.report = function(text, callback, options) {
 	var m = this.match,
 		refString = $tw.utils.trim(m[1]),
-		ref = parseTextReference(refString);
+		ref = parseTextReference(refString),
 		template = $tw.utils.trim(m[2]);
 	for (var operator in referenceOperators) {
 		referenceOperators[operator].report(ref, function(title, blurb) {
@@ -82,7 +82,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 // I have my own because the core one is deficient for my needs.
 function parseTextReference(textRef) {
 	// Separate out the title, field name and/or JSON indices
-	var reTextRef = /^([\w\W]*?)(?:!!(\S[\w\W]*)|##(\S[\w\W]*))?$/g;
+	var reTextRef = /^([\w\W]*?)(?:!!(\S[\w\W]*)|##(\S[\w\W]*))?$/g,
 		match = reTextRef.exec(textRef),
 		result = {};
 	if(match) {
