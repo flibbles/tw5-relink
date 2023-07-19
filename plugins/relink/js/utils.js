@@ -25,7 +25,27 @@ exports.getModulesByTypeAsHashmap = function(moduleType, nameField) {
 			}
 		}
 	});
-	return results;
+	// We've got to sort these so that behavior is consistent across different
+	// versions of TiddlyMap, whose module return order depends on version...
+	return sortModules(results);
+};
+
+function sortModules(moduleMap) {
+	var keys = Object.keys(moduleMap);
+	var sortedResults = Object.create(null);
+	keys.sort();
+	for (var i = 0; i < keys.length; i++) {
+		var key = keys[i];
+		if (moduleMap[key].after
+		&& moduleMap[key].after.some(function(requirement) { return !sortedResults[requirement]})) {
+			// Not all requirements have been met yet.
+			$tw.utils.pushTop(keys, key);
+			i--;
+		} else {
+			sortedResults[key] = moduleMap[key];
+		}
+	}
+	return sortedResults;
 };
 
 exports.getTiddlerRelinkReferences = function(wiki, title, context) {

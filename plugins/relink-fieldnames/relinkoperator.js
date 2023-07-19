@@ -13,6 +13,8 @@ Updates the field names if they correspond to the renamed tiddler.
 
 exports.name = 'field-names';
 
+exports.after = ['fields'];
+
 var utils = require("./utils.js");
 
 var configPrefix = "$:/config/flibbles/relink/fields/";

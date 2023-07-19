@@ -66,14 +66,14 @@ it("works for macros", function() {
 
 it("filters by plugin if supplied", function() {
 	var wiki = utils.addPlugin("testPlugin", [
-		utils.macroConf("test", "plugin", "filter"),
-		utils.macroConf("test", "override", "filter")]);
+		utils.macroConf("test", "override", "filter"),
+		utils.macroConf("test", "plugin", "filter")]);
 	wiki.addTiddlers([
 		utils.macroConf("test", "user"),
 		utils.macroConf("test", "override")]);
 	// Overrides continue to show up as their plugin versions
 	test(wiki, ["macros/test/user"]);
-	test(wiki, ["macros/test/plugin", "macros/test/override"],"testPlugin");
+	test(wiki, ["macros/test/override", "macros/test/plugin"],"testPlugin");
 });
 
 it("source and type for missing keys", function() {

@@ -11,6 +11,8 @@ var utils = require("../utils.js");
 
 exports.name = "field";
 
+exports.after = ['operators'];
+
 exports.report = function(filterParseTree, callback, options) {
 	var operators = options.wiki.getFilterOperators();
 	for (var i = 0; i < filterParseTree.length; i++) {

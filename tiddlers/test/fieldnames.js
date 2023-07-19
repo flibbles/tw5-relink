@@ -168,7 +168,6 @@ it("can relink a tiddler with itself as a field", function() {
 	const wiki = getWiki();
 	const to = "to]] val";
 	const fromConf = utils.fieldConf("from", "list");
-	const toConf = utils.fieldConf(to, "list");
 	wiki.addTiddlers([
 		{title: 'test', from: "Content contains from"},
 		{title: 'from'},
@@ -303,14 +302,14 @@ it('can handle transcludes', function() {
 });
 
 it('can handle transcludes where both title and field changed', function() {
-	testText("{{from!!from}}", true, ['{{!!from}}', '{{from!!}}']);
-	testText("{{from!!from}}", "<$tiddler tiddler=t!!o>{{!!t!!o}}</$tiddler>", ['{{!!from}}', '{{from!!}}'], {to: "t!!o"});
+	testText("{{from!!from}}", true, ['{{from!!}}', '{{!!from}}']);
+	testText("{{from!!from}}", "<$tiddler tiddler=t!!o>{{!!t!!o}}</$tiddler>", ['{{from!!}}', '{{!!from}}'], {to: "t!!o"});
 	// One final hard test
 	var to = "t!!'o\"";
 	const wiki = getWiki();
 	wiki.addTiddler(utils.attrConf("$tiddler", "tiddler"));
-	testText("{{from!!from}}", utils.placeholder(1,to) + "<$tiddler tiddler=<<relink-1>>>{{!!"+to+"}}</$tiddler>", ['{{!!from}}', '{{from!!}}'], {to: to, wiki: wiki});
-	testText("{{from!!from}}", "<$tiddler tiddler=}o><$transclude tiddler=}o field=}o/></$tiddler>", ['{{!!from}}', '{{from!!}}'], {to: "}o"});
+	testText("{{from!!from}}", utils.placeholder(1,to) + "<$tiddler tiddler=<<relink-1>>>{{!!"+to+"}}</$tiddler>", ['{{from!!}}', '{{!!from}}'], {to: to, wiki: wiki});
+	testText("{{from!!from}}", "<$tiddler tiddler=}o><$transclude tiddler=}o field=}o/></$tiddler>", ['{{from!!}}', '{{!!from}}'], {to: "}o"});
 });
 
 it('can handle indirect references', function() {
@@ -324,11 +323,11 @@ it('can handle indirect references', function() {
 });
 
 it('can handle indirect references where title and field change', function() {
-	testText("<$w a={{from!!from}}/>", true, ['<$w a={{!!from}} />', '<$w a={{from!!}} />']);
+	testText("<$w a={{from!!from}}/>", true, ['<$w a={{from!!}} />', '<$w a={{!!from}} />']);
 	utils.spyFailures(spyOn);
-	testText("<$w a={{from!!from}}/>", false, ['<$w a={{!!from}} />', '<$w a={{from!!}} />'], {to: "t}o"});
+	testText("<$w a={{from!!from}}/>", false, ['<$w a={{from!!}} />', '<$w a={{!!from}} />'], {to: "t}o"});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
-	testText("<$w a={{from!!from}}/>", "<$w a={{from!!from}}/>", ['<$w a={{!!from}} />', '<$w a={{from!!}} />'], {to: "t!!o"});
+	testText("<$w a={{from!!from}}/>", "<$w a={{from!!from}}/>", ['<$w a={{from!!}} />', '<$w a={{!!from}} />'], {to: "t!!o"});
 	expect(utils.failures).toHaveBeenCalledTimes(2);
 });
 
