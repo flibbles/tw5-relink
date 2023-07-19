@@ -4,6 +4,8 @@ Handles all element attribute values. Most widget relinking happens here.
 
 \*/
 
+'use strict';
+
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 var refHandler = relinkUtils.getType('reference');
 var filterHandler = relinkUtils.getType('filter');
@@ -22,7 +24,6 @@ exports.report = function(element, parser, callback, options) {
 		if (nextEql < 0 || nextEql > attr.end) {
 			continue;
 		}
-		var entry;
 		switch (attr.type) {
 		case "string":
 			for (var operatorName in attributeOperators) {
@@ -31,6 +32,9 @@ exports.report = function(element, parser, callback, options) {
 				if (handler) {
 					handler.report(attr.value, function(title, blurb) {
 						if (operator.formBlurb) {
+							if (blurb) {
+								blurb = '"' + blurb + '"';
+							}
 							callback(title, operator.formBlurb(element, attr, blurb, options));
 						} else if (blurb) {
 							callback(title, element.tag + ' ' + attributeName + '="' + blurb + '"');
@@ -43,20 +47,47 @@ exports.report = function(element, parser, callback, options) {
 			}
 			break;
 		case "indirect":
-			entry = refHandler.report(attr.textReference, function(title, blurb) {
+			refHandler.report(attr.textReference, function(title, blurb) {
 				callback(title, element.tag + ' ' + attributeName + '={{' + (blurb || '') + '}}');
 			}, options);
 			break;
 		case "filtered":
-			entry = filterHandler.report(attr.filter, function(title, blurb) {
+			filterHandler.report(attr.filter, function(title, blurb) {
 				callback(title, element.tag + ' ' + attributeName + '={{{' + blurb + '}}}');
 			}, options);
 			break;
 		case "macro":
 			var macro = attr.value;
-			entry = macrocall.report(options.settings, macro, function(title, blurb) {
+			macrocall.report(options.settings, macro, function(title, blurb) {
+				// TODO: wrap callback again to reduce all this redundancy
 				callback(title, element.tag + ' ' + attributeName + '=<<' + blurb + '>>');
 			}, options);
+			break;
+		case "substituted":
+			var filterRegex = /\$\{([\S\s]+?)\}\$/g, filter;
+			while (filter = filterRegex.exec(attr.rawValue)) {
+				filterHandler.report(filter[1], function(title, blurb) {
+					callback(title, element.tag + ' ' + attributeName + '=`${' + blurb + '}$`');
+				}, options);
+			}
+			for (var operatorName in attributeOperators) {
+				var operator = attributeOperators[operatorName];
+				var handler = operator.getHandler(element, attr, options);
+				if (handler) {
+					handler.report(attr.rawValue, function(title, blurb) {
+						// Only consider titles without substitutions.
+						if (!hasSubstitutions(title)) {
+							if (operator.formBlurb) {
+								blurb = '`' + (blurb || '') + '`';
+								callback(title, operator.formBlurb(element, attr, blurb, options));
+							} else {
+								callback(title, element.tag + ' ' + attributeName + '=`' + (blurb || '') + '`');
+							}
+						}
+					}, options);
+					break;
+				}
+			}
 			break;
 		}
 	}
@@ -74,7 +105,8 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			attr.valueless = true;
 			continue;
 		}
-		var entry;
+		// TODO: This = undefined wasn't here before. Does it have to be?
+		var entry = undefined;
 		switch (attr.type) {
 		case 'string':
 			for (var operatorName in attributeOperators) {
@@ -87,7 +119,6 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 						attr.handler = handler.name;
 						changed = true;
 					}
-					break;
 				}
 			}
 			break;
@@ -113,6 +144,48 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 				attr.value = entry.output;
 				changed = true;
 			}
+			break;
+		case 'substituted':
+			var newValue = attr.rawValue.replace(/\$\{([\S\s]+?)\}\$/g, function(match, filter) {
+				var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, options);
+				if (filterEntry) {
+					if (filterEntry.output) {
+						// The only }$ should be the one at the very end
+						if (filterEntry.output.indexOf("}$") < 0) {
+							changed = true;
+							return '${' + filterEntry.output + '}$';
+						} else {
+							impossible = true;
+						}
+					}
+					if (filterEntry.impossible) {
+						impossible = true;
+					}
+				}
+				return match;
+			});
+			attr.rawValue = newValue;
+			if (!hasSubstitutions(fromTitle)) {
+				for (var operatorName in attributeOperators) {
+					var operator = attributeOperators[operatorName];
+					var handler = operator.getHandler(element, attr, options);
+					if (handler) {
+						entry = handler.relink(attr.rawValue, fromTitle, toTitle, options);
+						if (entry && entry.output) {
+							if (hasSubstitutions(toTitle)) {
+								// If we relinked, but the toTitle can't be in
+								// a substition, then we must fail instead.
+								entry.impossible = true;
+							} else {
+								attr.rawValue = entry.output;
+								attr.handler = handler.name;
+								changed = true;
+							}
+						}
+					}
+				}
+			}
+			break;
 		}
 		if (entry && entry.impossible) {
 			impossible = true;
@@ -121,4 +194,10 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 	if (changed || impossible) {
 		return {output: changed, impossible: impossible};
 	}
+};
+
+function hasSubstitutions(title) {
+	if (/\$\(\w+\)\$/.test(title)) {
+		return true;
+	} else return (/\$\{[\S\s]+?\}\$/.test(title));
 };

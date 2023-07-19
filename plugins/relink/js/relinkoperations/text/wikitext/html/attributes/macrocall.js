@@ -20,7 +20,7 @@ exports.formBlurb = function(element, attribute, blurb, options) {
 	var nameAttr = element.attributes["$name"];
 	var newBlurb = '<' + nameAttr.value + ' ' + attribute.name;
 	if (blurb) {
-		newBlurb += '="' + blurb + '"';
+		newBlurb += '=' + blurb;
 	}
 	return newBlurb;
 };
