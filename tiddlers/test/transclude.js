@@ -91,7 +91,7 @@ it('from titles with curlies', function() {
 });
 
 it('ignores malformed transcludes', function() {
-	testText("{{from here||}}", false, undefined);
+	testText("{{from here|}}", false, undefined);
 });
 
 it('rightly judges unpretty', function() {
