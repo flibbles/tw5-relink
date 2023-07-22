@@ -79,6 +79,27 @@ function getInfoFromRule(rule) {
 		};
 		macroInfo.params = parseParams(match[2], offset+macroInfo.start);
 	}
+	// post v5.3.0 changed it so name and param aren't used, but we still use
+	// them. Maybe I should migrate so that I don't either, and that it's
+	// orderedAttributes and $variable that I use.
+	if (macroInfo.name === undefined) {
+		macroInfo.name = macroInfo.attributes["$variable"].value;
+		macroInfo.params = macroInfo.orderedAttributes.slice(1);
+		var index = 0;
+		for (var i = 0; i < macroInfo.params.length; i++) {
+			var param = macroInfo.params[i];
+			if (param.name === index.toString()) {
+				// Swap out the param with one that doesn't have a name.
+				macroInfo.params[i] = {
+					start: param.start,
+					end: param.end,
+					type: param.type,
+					value: param.value
+				};
+				index++;
+			}
+		}
+	}
 	return macroInfo;
 };
 
