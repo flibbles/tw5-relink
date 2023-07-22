@@ -51,6 +51,12 @@ it('transcludes', function() {
 	testText("{{title||from here}}", true, ['{{title||}}'], {to: "to##there"});
 });
 
+it('parameters', function() {
+	testText("{{from here|param}}", true, ['{{|param}}']);
+	testText("{{from here||template|param}}", true, ['{{||template|param}}']);
+	testText("{{from here!!text||template|param}}", true, ['{{!!text||template|param}}']);
+	testText("{{tiddler!!text||from here|param}}", true, ['{{tiddler!!text|||param}}']);
+});
 
 it('default', function() {
 	const wiki = new $tw.Wiki();

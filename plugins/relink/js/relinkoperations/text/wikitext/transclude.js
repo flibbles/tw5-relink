@@ -21,18 +21,26 @@ exports.report = function(text, callback, options) {
 	var m = this.match,
 		refString = $tw.utils.trim(m[1]),
 		ref = parseTextReference(refString),
-		template = $tw.utils.trim(m[2]);
+		template = $tw.utils.trim(m[2]),
+		params = m[3];
 	for (var operator in referenceOperators) {
 		referenceOperators[operator].report(ref, function(title, blurb) {
 			blurb = blurb || "";
 			if (template) {
 				blurb += '||' + template;
 			}
+			if (params) {
+				blurb += '|' + params;
+			}
 			callback(title, "{{" + blurb + "}}");
 		}, options);
 	}
 	if (template) {
-		callback(template, '{{' + refString + '||}}');
+		var templateBlurb = refString + '||';
+		if (params) {
+			templateBlurb += '|' + params;
+		}
+		callback(template, '{{' + templateBlurb + '}}');
 	}
 	this.parser.pos = this.matchRegExp.lastIndex;
 };
@@ -41,6 +49,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.match,
 		reference = parseTextReference(m[1]),
 		template = m[2],
+		params = m[3],
 		entry = undefined,
 		impossible = false,
 		modified = false;
@@ -62,7 +71,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		modified = true;
 	}
 	if (modified) {
-		var output = this.makeTransclude(this.parser, reference, template);
+		var output = this.makeTransclude(this.parser, reference, template, params);
 		if (output) {
 			// Adding any newline that might have existed is
 			// what allows this relink method to work for both
@@ -100,7 +109,7 @@ function parseTextReference(textRef) {
 /** This converts a reference and a template into a string representation
  *  of a transclude.
  */
-exports.makeTransclude = function(parser, reference, template) {
+exports.makeTransclude = function(parser, reference, template, params) {
 	var rtn;
 	if (!canBePrettyTemplate(template)) {
 		var widget = utils.makeWidget(parser, '$transclude', {
@@ -117,14 +126,14 @@ exports.makeTransclude = function(parser, reference, template) {
 		var transclude;
 		if (canBePrettyField(reference.field)) {
 			var reducedRef = {field: reference.field, index: reference.index};
-			transclude = prettyTransclude(reducedRef, template);
+			transclude = prettyTransclude(reducedRef, template, params);
 		} else {
 			transclude = utils.makeWidget(parser, "$transclude", {tiddler: $tw.utils.trim(reference.title), field: reference.field});
 		}
 		rtn = utils.makeWidget(parser, '$tiddler', {tiddler: $tw.utils.trim(reference.title)}, transclude);
 	} else {
 		// This block takes care of 99% of all cases
-		rtn = prettyTransclude(reference, template);
+		rtn = prettyTransclude(reference, template, params);
 	}
 	return rtn;
 };
@@ -141,7 +150,7 @@ function canBePrettyTemplate(value) {
 	return !value || (value.indexOf('}') < 0 && value.indexOf('{') < 0 && value.indexOf('|') < 0);
 };
 
-function prettyTransclude(textReference, template) {
+function prettyTransclude(textReference, template, params) {
 	if (typeof textReference !== "string") {
 		textReference = refHandler.toString(textReference);
 	}
@@ -149,8 +158,10 @@ function prettyTransclude(textReference, template) {
 		textReference = '';
 	}
 	if (template !== undefined) {
-		return "{{"+textReference+"||"+template+"}}";
-	} else {
-		return "{{"+textReference+"}}";
+		textReference += "||" + template;
 	}
+	if (params) {
+		textReference += "|" + params;
+	}
+	return "{{"+textReference+"}}";
 };
