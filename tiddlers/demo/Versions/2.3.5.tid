@@ -1,0 +1,12 @@
+created: 20230722132104177
+
+\rules except wikilink
+
+* Fixed Relink so it functions with pre-existing features in TiddlyWiki v5.3.0. New features are not fully implemented yet.
+* attribute substitution IS implemented (i.e. ``attribute=`some $(substutition)$` />``), but that's it.
+* Limited support for transclusion parameters (i.e. ``{{myTiddler|parameter}}``). Until I support `\parameters`, this can't be fully supported, but it'll work for 99% of people.
+
+''Not implemented yet''
+
+* `\procedure`, `\function`, and `\widget` are not supported yet.
+* Everything to do with the `\parameters` is unimplemented. I grow faint just thinking about how I'm supposed to implement that.
