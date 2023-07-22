@@ -380,7 +380,7 @@ it('mixed failure and replacement with macro attributes', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
-it('substition attributes', function() {
+(utils.atLeastVersion("5.3.0")? it: xit)('substitution attributes', function() {
 	const wiki = new $tw.Wiki();
 	function testFail() {
 		utils.failures.calls.reset();

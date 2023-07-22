@@ -51,7 +51,7 @@ it('transcludes', function() {
 	testText("{{title||from here}}", true, ['{{title||}}'], {to: "to##there"});
 });
 
-fit('parameters', function() {
+(utils.atLeastVersion("5.3.0")? it: xit)('parameters', function() {
 	testText("{{from here|param}}", true, ['{{|param}}']);
 	testText("{{from here||template|param}}", true, ['{{||template|param}}']);
 	testText("{{from here!!text||template|param}}", true, ['{{!!text||template|param}}']);
