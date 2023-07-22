@@ -59,7 +59,6 @@ exports.report = function(element, parser, callback, options) {
 		case "macro":
 			var macro = attr.value;
 			macrocall.report(options.settings, macro, function(title, blurb) {
-				// TODO: wrap callback again to reduce all this redundancy
 				callback(title, element.tag + ' ' + attributeName + '=<<' + blurb + '>>');
 			}, options);
 			break;
