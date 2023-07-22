@@ -51,11 +51,16 @@ it('transcludes', function() {
 	testText("{{title||from here}}", true, ['{{title||}}'], {to: "to##there"});
 });
 
-it('parameters', function() {
+fit('parameters', function() {
 	testText("{{from here|param}}", true, ['{{|param}}']);
 	testText("{{from here||template|param}}", true, ['{{||template|param}}']);
 	testText("{{from here!!text||template|param}}", true, ['{{!!text||template|param}}']);
 	testText("{{tiddler!!text||from here|param}}", true, ['{{tiddler!!text|||param}}']);
+	const to = "curly {}";
+	testText("{{from here##index||Template|param}}.", "<$tiddler tiddler='"+to+"'>{{##index||Template|param}}</$tiddler>.", ['{{##index||Template|param}}'], {to: to});
+	testText("{{from here##index|param}}.", "<$tiddler tiddler='"+to+"'>{{##index|param}}</$tiddler>.", ['{{##index|param}}'], {to: to});
+	// TODO: parameters for tiddlers is a thing I need to support
+	//testText("{{||from here|param}}.", "<$transclude tiddler='"+to+"' />.", ['{{|||param}}'], {to: to});
 });
 
 it('default', function() {
