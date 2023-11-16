@@ -26,7 +26,6 @@ function testText(text, expected, report, options) {
 	]);
 	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
 	utils.failures.calls.reset();
-	var fields = Object.assign({text: text}, options.fields);
 	wiki.renameTiddler(options.from, options.to, options);
 	expect(utils.getText('test', wiki)).toEqual(expected);
 	expect(utils.failures).toHaveBeenCalledTimes(options.fails || 0);
