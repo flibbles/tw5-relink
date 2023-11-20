@@ -12,7 +12,7 @@ E.G.
 
 var utils = require("test/utils");
 
-describe("macrodef", function() {
+describe("procedure", function() {
 
 function testText(text, expected, report, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);
@@ -45,6 +45,14 @@ it('parameters', function() {
 	testText("\\procedure macro(  field:'value',  here   ) [[from here]]", true, ["\\procedure macro() [[from here]]"]);
 });
 
-//TODO: Single line vs multiline
+it('multiline', function() {
+	testText("\\procedure macro()\n[[from here]]\n\\end", true, ["\\procedure macro() [[from here]]"]);
+});
+
+/*
+it('parameters can be relinked', function() {
+	testText("\\define proc(A) content\n\\relink proc A\n<<proc 'from here'>>", true, ['<<proc A>>']);
+});
+*/
 
 });
