@@ -8,14 +8,23 @@ As in: \relink macroName macroParam:macroType ...
 
 var utils = require("test/utils");
 
+// TODO: Add report testing, because it's not happening
 function testText(text, expected, options) {
-	[text, expected, options] = utils.prepArgs(text, expected, options);
-	var fields = Object.assign({text: text}, options.fields);
+	options = Object.assign({from: 'from here', to: 'to there'}, options);
 	utils.failures.calls.reset();
-	var results = utils.relink(fields, options);
-	expect(results.tiddler.fields.text).toEqual(expected);
+	const wiki = options.wiki || new $tw.Wiki();
+	if (expected === true) {
+		expected = text.split(options.from).join(options.to);
+	} else if (expected === false) {
+		expected = text;
+	}
+	wiki.addTiddlers(
+		[Object.assign({title: 'test', text: text}, options.fields)]);
+	wiki.addTiddlers(utils.setupTiddlers());
+	//expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+	wiki.renameTiddler(options.from, options.to, options);
+	expect(utils.getText('test', wiki)).toEqual(expected);
 	expect(utils.failures).toHaveBeenCalledTimes(options.fails || 0);
-	return results;
 };
 
 describe("inlinedef", function() {
@@ -28,29 +37,29 @@ beforeEach(function() {
 it('linedef macros', function() {
 	var wiki = new $tw.Wiki();
 	// local
-	testText("\\relink test field:title\n<<test field: 'from here'>>");
+	testText("\\relink test field:title\n<<test field: 'from here'>>", true);
 	// imported
 	wiki.addTiddler({title: "import", text: "\\relink test field:title"});
-	testText("\\import import\n<<test field: 'from here'>>", {wiki: wiki});
+	testText("\\import import\n<<test field: 'from here'>>", true, {wiki: wiki});
 	// global
 	wiki = new $tw.Wiki();
 	wiki.addTiddler({
 		title: "global",
 		text: "\\relink global field:title",
 		tags: "$:/tags/Macro"});
-	testText("<<global field: 'from here'>>", {wiki: wiki});
-	testText("<$macrocall $name=global field='from here' />", {wiki: wiki});
+	testText("<<global field: 'from here'>>", true, {wiki: wiki});
+	testText("<$macrocall $name=global field='from here' />", true, {wiki: wiki});
 });
 
 it('parses strange syntax', function() {
 	var wiki = new $tw.Wiki();
-	testText("\\relink  test  field : title \n<<test field: 'from here'>>");
-	testText("\\relink test field : title \r\n<<test field: 'from here'>>");
-	testText("\\relink t$_-s f-_1D: title\n<<t$_-s f-_1D: 'from here'>>");
+	testText("\\relink  test  field : title \n<<test field: 'from here'>>", true);
+	testText("\\relink test field : title \r\n<<test field: 'from here'>>", true);
+	testText("\\relink t$_-s f-_1D: title\n<<t$_-s f-_1D: 'from here'>>", true);
 });
 
 it('parses multiple parameters in one declaration', function() {
-	testText("\\relink test filt:filter ref:reference\n<<test ref: 'from here##i' filt: '[tag[from here]]'>>");
+	testText("\\relink test filt:filter ref:reference\n<<test ref: 'from here##i' filt: '[tag[from here]]'>>", true);
 });
 
 it("doesn't prevent macros from importing", function() {
@@ -65,7 +74,7 @@ it("doesn't register for events too late", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: "import", tags: "$:/tags/Macro",
 		text: "\\define register(field) a\n\\relink register field"});
-	testText("<<register 'from here'>>", {wiki: wiki});
+	testText("<<register 'from here'>>", true, {wiki: wiki});
 });
 
 it('handles illegal type', function() {
@@ -73,7 +82,7 @@ it('handles illegal type', function() {
 	wiki.addTiddler({title: "$:/plugins/flibbles/relink/language/Error/UnrecognizedType", text: "Type: <<type>>"});
 	var text = "\\relink test field: illegal \n<<test field: 'from here'>>";
 	// Ignores the illegal rule
-	testText(text, {wiki: wiki, ignored: true});
+	testText(text, false, {wiki: wiki});
 	// Renders a warning
 	var plain = wiki.renderText("text/plain", "text/vnd.tiddlywiki",text);
 	expect(plain).toEqual("Type: illegal");
@@ -101,20 +110,20 @@ it("doesn't pick up inlinedefs not at head of tiddler", function() {
 
 it('handles default type of title', function() {
 	var wiki = new $tw.Wiki();
-	testText("\\relink test field\n<<test field: 'from here'>>");
-	testText("\\relink test   field   \n<<test field: 'from here'>>");
-	testText("\\relink test other field\n<<test field: 'from here'>>");
-	testText("\\relink test other:title field\n<<test field: 'from here'>>");
+	testText("\\relink test field\n<<test field: 'from here'>>", true);
+	testText("\\relink test   field   \n<<test field: 'from here'>>", true);
+	testText("\\relink test other field\n<<test field: 'from here'>>", true);
+	testText("\\relink test other:title field\n<<test field: 'from here'>>", true);
 });
 
 it('handles default type of something else', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: "$:/config/flibbles/relink/settings/default-type",
 		text: "reference"});
-	testText("\\relink t f\n<<t f: 'from here!!F'>>", {wiki: wiki});
+	testText("\\relink t f\n<<t f: 'from here!!F'>>", true, {wiki: wiki});
 	wiki.addTiddler({title: "$:/config/flibbles/relink/settings/default-type",
 		text: "wikitext"});
-	testText("\\relink t f\n<<t f: '[[link|from here]]'>>", {wiki: wiki});
+	testText("\\relink t f\n<<t f: '[[link|from here]]'>>", true, {wiki: wiki});
 });
 
 it('can accumulate vertically', function() {
@@ -123,34 +132,34 @@ it('can accumulate vertically', function() {
 		utils.macroConf("test", "ref", "reference"),
 		{title: "global", text: "\\relink test filt:filter", tags: "$:/tags/Macro"}
 	]);
-	testText("\\relink test list:list\n<<test ref: 'from here!!F' filt: '[tag[from here]]' list:'[[from here]]'>>",
+	testText("\\relink test list:list\n<<test ref: 'from here!!F' filt: '[tag[from here]]' list:'[[from here]]'>>", true,
 	         {wiki: wiki});
 });
 
 it('can accumulate horizontally', function() {
-	testText("\\relink test list:list\n\\relink test field\n<<test list:'[[from here]]' field:'from here'>>");
+	testText("\\relink test list:list\n\\relink test field\n<<test list:'[[from here]]' field:'from here'>>", true);
 });
 
 it('linedef macros update appropriately', async function() {
 	var wiki = new $tw.Wiki();
 	// First, force everything to instantiate
-	testText("<<test 'from here'>>", {wiki: wiki, ignored: true});
+	testText("<<test 'from here'>>", false, {wiki: wiki});
 
 	// Add a macro def and relink declaration,
 	// and ensure macros update
 	wiki.addTiddler({title: "macro", text: "\\define test(field) $field$\n\\relink test field:title", tags: "$:/tags/Macro"});
 	await utils.flush();
-	testText("<<test field:'from here'>>", {wiki: wiki});
+	testText("<<test field:'from here'>>", true, {wiki: wiki});
 
 	// Next we modify an existing macro, and test it.
 	wiki.addTiddler({title: "macro", text: "\\define test(field) $field$\n\\relink test field:reference", tags: "$:/tags/Macro"});
 	await utils.flush();
-	testText("<<test field:'from here!!stuff'>>", {wiki: wiki});
+	testText("<<test field:'from here!!stuff'>>", true, {wiki: wiki});
 
 	// Next we remove an existing macro, and ensure it's gone.
 	wiki.deleteTiddler("macro");
 	await utils.flush();
-	testText("<<test field:'from here!!stuff'>>", {ignored: true, wiki: wiki});
+	testText("<<test field:'from here!!stuff'>>", false, {wiki: wiki});
 });
 
 it("linedef macros don't cling to outdated global defs", async function() {
@@ -162,10 +171,10 @@ it("linedef macros don't cling to outdated global defs", async function() {
 	wiki.addTiddler(utils.macroConf("test", "field"));
 	wiki.addTiddler({title: "A", text: "\\relink test other", tags: "$:/tags/Macro"});
 	await utils.flush();
-	testText("<<test field:'from here' other:'from here'>>", {wiki: wiki});
+	testText("<<test field:'from here' other:'from here'>>", true, {wiki: wiki});
 	wiki.addTiddler(utils.macroConf("test", "field", "reference"));
 	await utils.flush();
-	testText("<<test field:'from here!!stuff'>>", {wiki: wiki});
+	testText("<<test field:'from here!!stuff'>>", true, {wiki: wiki});
 });
 
 it("linedef macros don't parse too much", function() {
