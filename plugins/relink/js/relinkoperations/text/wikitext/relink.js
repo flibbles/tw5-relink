@@ -32,7 +32,7 @@ exports.parse = function() {
 	var error = undefined;
 	var rtn = [];
 	var self = this;
-	this.interpretSettings(function(macro, parameter, type) {
+	interpretSettings(this, function(macro, parameter, type) {
 		macroName = macro;
 		if (type && !utils.getType(type)) {
 			error = language.getString("text/plain", "Error/UnrecognizedType",
@@ -67,21 +67,29 @@ exports.parse = function() {
 	return rtn;
 };
 
+exports.report = function(text, callback, options) {
+	operate(this, options);
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var parser = this.parser;
+	operate(this, options);
+};
+
+function operate(rule, options) {
+	var parser = rule.parser;
 	var currentTiddler = parser.context.widget.variables.currentTiddler.value;
-	parser.pos = this.matchRegExp.lastIndex;
-	this.interpretSettings(function(macro, parameter, type) {
+	parser.pos = rule.matchRegExp.lastIndex;
+	interpretSettings(rule, function(macro, parameter, type) {
 		options.settings.addSetting(parser.wiki, macro, parameter, type, currentTiddler);
 	});
 	// Return nothing, because this rule is ignored by the parser
 	return undefined;
 };
 
-exports.interpretSettings = function(block) {
-	var paramString = this.match[2];
+function interpretSettings(rule, block) {
+	var paramString = rule.match[2];
 	if (paramString !== "") {
-		var macro = this.match[1];
+		var macro = rule.match[1];
 		var reParam = /\s*([A-Za-z0-9\-_]+)(?:\s*:\s*([^\s]+))?/mg;
 		var paramMatch = reParam.exec(paramString);
 		while (paramMatch) {
