@@ -68,10 +68,27 @@ it('relinks inside definition', function() {
 	testText("\\function filt()\n[tag[from here]]\n\\end\nContent", true, ['\\function filt() [tag[]]']);
 });
 
-it('parameters', function() {
+it('parameters in macrocall form', function() {
 	testText("\\function filt(A B) content\n\\relink filt A\n<<filt 'from here'>>", true, ['<<filt A>>']);
 	testText("\\function filt(A B) content\n\\relink filt B\n<<filt 'from here'>>", false, undefined);
 	testText("\\function filt(A) content\n\\relink filt A:reference\n<<filt 'from here!!field'>>", true, ['<<filt A: "!!field">>']);
+});
+
+it('parameters in filter form', function() {
+	testText("\\function .test(A) Content\n\\relink .test A:reference\n<$list filter='[.test[from here!!text]]' />", true, ['<$list filter="[.test[!!text]]" />']);
+	testText("\\function .test(A) Content\n\\relink .test A:reference\n<$link to={{{ [.test[from here!!text]] }}} />", true, ['<$link to={{{[.test[!!text]]}}} />']);
+	testText("\\function .test(A) Content\n\\relink .test A:reference\n{{{ [.test[from here!!text]] }}}", true, ['{{{[.test[!!text]]}}}']);
+	testText("\\function .test(A) Content\n\\relink .test A:reference\n\\define macro(B) --$B$--\n\\relink macro B:filter\n <<macro '[.test[from here!!text]]'>>", true, ['<<macro B: "[.test[!!text]]">>']);
+	// Different order parameters
+	testText("\\function .test(A B) Content\n\\relink .test B\n{{{ [.test[from here],[from here]] }}}",
+	         "\\function .test(A B) Content\n\\relink .test B\n{{{ [.test[from here],[to there]] }}}", ['{{{[.test,[]]}}}']);
+});
+
+it('does not crash with irregular parameter relink settings', function() {
+	testText("\\function .test() Content\n\\relink .test A:reference\n<$list filter='[.test[from here!!text]]' />", false);
+	testText("\\function .test(A) Content\n\\relink .test A:reference\n<$list filter='[.test[X],[from here!!text]]' />", false);
+	testText("\\function .test(A) Content\n\\relink .test B:reference\n<$list filter='[.test[from here!!text]]' />", false);
+	testText("\\function .test(A) Content\n\\relink .wrong A:reference\n<$list filter='[.test[from here!!text]]' />", false);
 });
 
 });

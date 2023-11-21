@@ -87,6 +87,28 @@ WidgetContext.prototype.getAttribute = function(elementName) {
 	return this.parent.getAttribute(elementName);
 };
 
+WidgetContext.prototype.getOperator = function(name, index) {
+	if (name.indexOf('.') >= 0) {
+		// This is potentially a \function, look in macros for it.
+		var macroSettings = this.getMacro(name);
+		if (macroSettings) {
+			//Make sure that it's actually a macro definition
+			var def = this.getMacroDefinition(name);
+			if (def) {
+				if (def.isFunctionDefinition) {
+					// Minus one because operator indices are 1 indexed,
+					// but parameters as we store them are not.
+					var param = def.params[index - 1];
+					return param && macroSettings[param.name];
+				}
+				// If it's not a filter, abort all.
+				return undefined;
+			}
+		}
+	}
+	return this.parent.getOperator(name, index);
+};
+
 /**Returns the deepest descendant of the given widget.
  */
 WidgetContext.prototype.getBottom = function(widget) {
