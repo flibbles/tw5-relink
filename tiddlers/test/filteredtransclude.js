@@ -85,6 +85,13 @@ it('pretty but tricky', function() {
 	         {from: "from", to: "close}curly"});
 });
 
+it('handles macro parameters inside', function() {
+	testText("\\define macro(A) --$A$--\n\\relink macro A\n{{{ [<macro 'from here'>] }}}", true, ['{{{[<macro A>]}}}']);
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "global", text: "\\define macro(A) --$A$--\n\\relink macro A", tags: "$:/tags/Macro"});
+	testText("{{{ [<macro 'from here'>] }}}", true, ['{{{[<macro A>]}}}'], {wiki: wiki});
+});
+
 it('prefers widget or placeholder', function() {
 	// If filtered transclude uses the parseInBraces method, then the filter
 	// will make a placeholder so that it can be contained in braces, but

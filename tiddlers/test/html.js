@@ -228,6 +228,8 @@ it('supports filter attribute values', function() {
 	testText("<$link to={{{[[from here]]}}}/>", true, ['<$link to={{{}}} />']);
 	testText("<$link to=   {{{[[from here]]}}}    />", true, ['<$link to={{{}}} />']);
 	testText("<$link to={{{[[from here]]}}}/>", true, ['<$link to={{{}}} />'], {to: "to {}there"});
+	// Local macros inside of filtered attributes
+	testText("\\define macro(A) --$A$--\n\\relink macro A\n<$link to={{{ [<macro 'from here'>] }}} />", true, ['<$link to={{{[<macro A>]}}} />']);
 });
 
 it('can find recently imported variables in attributes', function() {
@@ -354,6 +356,7 @@ it('filter attributes', function() {
 	         ['<$list filter />', '<$list filter="[tag[]]" />'], {wiki: wiki});
 	testText('<$list nothing="A [[from here]] B" />', false,
 	         undefined, {wiki: wiki});
+	testText('\\define macro(A) --$A$--\n\\relink macro A\n<$list filter="[<macro \'from here\'>]" />', true, ['<$list filter="[<macro A>]" />'], {wiki: wiki});
 });
 
 it('mixed failure with string and reference attributes', function() {
