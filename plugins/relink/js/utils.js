@@ -5,7 +5,7 @@ Utility methods for relink.
 
 \*/
 
-var macroFilter =  "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]]";
+var macroFilter =  "[[$:/core/ui/PageMacros]] [all[shadows+tiddlers]tag[$:/tags/Macro]!has[draft.of]] [all[shadows+tiddlers]tag[$:/tags/Global]!has[draft.of]]";
 
 /**This works nearly identically to $tw.modules.getModulesByTypeAsHashmap
  * except that this also takes care of migrating V1 relink modules.

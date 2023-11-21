@@ -50,6 +50,16 @@ it('linedef macros', function() {
 	testText("<$macrocall $name=global field='from here' />", true, ["<<global field />"], {wiki: wiki});
 });
 
+it('supports $:/tags/Global as well', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({
+		title: "global",
+		text: "\\define global(x field) Content\n\\relink global field:title",
+		tags: "$:/tags/Global"});
+	testText("<<global field: 'from here'>>", true, ["<<global field>>"], {wiki: wiki});
+	testText("<<global x 'from here'>>", true, ["<<global field>>"], {wiki: wiki});
+});
+
 it('parses strange syntax', function() {
 	var wiki = new $tw.Wiki();
 	testText("\\relink  test  field : title \n<<test field: 'from here'>>", true, ["<<test field>>"]);
