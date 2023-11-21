@@ -23,16 +23,14 @@ exports.report = function(text, callback, options) {
 	var endMatch = getBodyMatch(text, this.parser.pos, m[5]);
 	if (endMatch) {
 		var value = endMatch[2],
-			handler = utils.getType(getActiveType(name, m[3]) || 'wikitext');
-		if (handler) {
-			var entry = handler.report(value, function(title, blurb) {
-				var macroStr = '\\procedure ' + name + '()';
-				if (blurb) {
-					macroStr += ' ' + blurb;
-				}
-				callback(title, macroStr);
-			}, options);
-		}
+			handler = getHandler(m[1]);
+		var entry = handler.report(value, function(title, blurb) {
+			var macroStr = '\\' + m[1] + ' ' + name + '()';
+			if (blurb) {
+				macroStr += ' ' + blurb;
+			}
+			callback(title, macroStr);
+		}, options);
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
 };
@@ -50,18 +48,11 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var endMatch = getBodyMatch(text, this.parser.pos, multiline);
 	if (endMatch) {
 		var value = endMatch[2],
-			type = getActiveType(name, params),
-			handler = utils.getType(type || 'wikitext');
-		if (handler) {
-			// If this is an active relink placeholder, then let's remember it
-			if (type && options.placeholder) {
-				options.placeholder.registerExisting(name, value);
-			}
-			// Relink the contents
-			entry = handler.relink(value, fromTitle, toTitle, options);
-			if (entry && entry.output) {
-				entry.output = m[0] + endMatch[1] + entry.output + endMatch[0];
-			}
+		handler = getHandler(m[1]);
+		// Relink the contents
+		entry = handler.relink(value, fromTitle, toTitle, options);
+		if (entry && entry.output) {
+			entry.output = m[0] + endMatch[1] + entry.output + endMatch[0];
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
@@ -93,11 +84,6 @@ function getBodyMatch(text, pos, isMultiline) {
 	return match;
 };
 
-function getActiveType(macroName, parameters) {
-	var placeholder = /^relink-(?:(\w+)-)?\d+$/.exec(macroName);
-	// normal macro or special placeholder?
-	if (placeholder && parameters === '') {
-		return placeholder[1] || 'title';
-	}
-	return undefined;
+function getHandler(macroType) {
+	return utils.getType(macroType === "function"? "filter": "wikitext");
 };
