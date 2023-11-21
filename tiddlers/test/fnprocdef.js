@@ -89,6 +89,51 @@ it('parameters in macrocall form', function() {
 	testText("\\widget $widg(A B) content\n\\relink $widg B\n<<$widg 'from here'>>", false, undefined);
 });
 
+it('local parameters in widget form', function() {
+	testText("\\widget $my.widg(A) content\n\\relink $my.widg A:reference\n<$my.widg A='from here!!text' />", true, ['<$my.widg A="!!text" />']);
+	// no period should not work
+	testText("\\widget $mywidg(A) content\n\\relink $mywidg A:reference\n<$mywidg A='from here!!text' />", false);
+	// no dollar sign should not work
+	testText("\\widget my.widg(A) content\n\\relink my.widg A:reference\n<my.widg A='from here!!text' />", false);
+	// no \relink should not work
+	testText("\\widget $my.widg(A) content\n<$my.widg A='from here!!text' />", false);
+	// no \widget should not work
+	testText("\\procedure $my.widg(A) content\n\\relink $my.widg A:reference\n<$my.widg A='from here!!text' />", false);
+	testText("\\define $my.widg(A) content\n\\relink $my.widg A:reference\n<$my.widg A='from here!!text' />", false);
+	testText("\\function $my.widg(A) content\n\\relink $my.widg A:reference\n<$my.widg A='from here!!text' />", false);
+	// no definition at all should not work
+	testText("\\relink $my.widg A:reference\n<$my.widg A='from here!!text' />", false);
+	// overridden should not work
+	testText("\\widget $my.widg(A) content\n\\procedure $my.widg(A) content\n\\relink $my.widg A:reference\n<$my.widg A='from here!!text' />", false);
+	// but overriding something else SHOULD
+	testText("\\procedure $my.widg(A) content\n\\widget $my.widg(A) content\n\\relink $my.widg A:reference\n<$my.widg A='from here!!text' />", true, ['<$my.widg A="!!text" />']);
+});
+
+it('global parameters in widget form', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({
+		title: "global",
+		text: "\\widget $my.widg(A) content\n\\relink $my.widg A:reference",
+		tags: "$:/tags/Global"});
+	testText("<$my.widg A='from here!!text' />", true, ['<$my.widg A="!!text" />'], {wiki: wiki});
+});
+
+it('whitelisted attributes in widget form', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.attrConf("$my.widg", "A", "reference"),
+		{ title: "global", text: "\\widget $my.widg(A) content", tags: "$:/tags/Global"}]);
+	testText("<$my.widg A='from here!!text' />", true, ['<$my.widg A="!!text" />'], {wiki: wiki});
+});
+
+it('whitelisted parameters in macrocall form', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.macroConf("$my.widg", "A", "reference"),
+		{ title: "global", text: "\\widget $my.widg(A) content", tags: "$:/tags/Global"}]);
+	testText("<<$my.widg A:'from here!!text' >>", true, ['<<$my.widg A: "!!text">>'], {wiki: wiki});
+});
+
 });
 
 });

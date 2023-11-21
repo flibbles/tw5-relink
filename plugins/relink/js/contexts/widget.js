@@ -71,6 +71,22 @@ WidgetContext.prototype.getMacro = function(macroName) {
 	return theseSettings || parentSettings;
 };
 
+WidgetContext.prototype.getAttribute = function(elementName) {
+	if (elementName.charAt(0) == '$' && elementName.indexOf('.') >= 0) {
+		// This is potentially a \widget, look in macros for it.
+		var macroSettings = this.getMacro(elementName);
+		if (macroSettings) {
+			// Make sure that it's actually a widget definition
+			var def = this.getMacroDefinition(elementName);
+			if (def) {
+				// We found a definition, but if it's not a widget, abort all.
+				return (def.isWidgetDefinition)? macroSettings: undefined;
+			}
+		}
+	}
+	return this.parent.getAttribute(elementName);
+};
+
 /**Returns the deepest descendant of the given widget.
  */
 WidgetContext.prototype.getBottom = function(widget) {
