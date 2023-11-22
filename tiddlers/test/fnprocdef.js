@@ -91,6 +91,37 @@ it('does not crash with irregular parameter relink settings', function() {
 	testText("\\function .test(A) Content\n\\relink .wrong A:reference\n<$list filter='[.test[from here!!text]]' />", false);
 });
 
+it('parameters in [function[]] form', function() {
+	testText("\\function test(A) Content\n\\relink test A\n{{{ [function[test],[from here]] }}}", true, ['{{{[function[test],[]]}}}']);
+	testText("\\function test(A) Content\n\\relink test A:reference\n{{{ [function[test],[from here!!text]] }}}", true, ['{{{[function[test],[!!text]]}}}']);
+	testText("\\function test(A B) Content\n\\relink test B\n{{{ [function[test],[X],[from here]] }}}", true, ['{{{[function[test],,[]]}}}']);
+	// No relink instructions
+	testText("\\function test(A) Content\n{{{ [function[test],[from here]] }}}", false);
+	// No function definition
+	testText("\\relink test A\n{{{ [function[test],[from here]] }}}", false);
+	// Not a text-based macro name
+	testText("\\function test(A) Content\n\\relink test A\n{{{ [function<test>,[from here]] }}}", false);
+	testText("\\function test(A) Content\n\\relink test A\n{{{ [function{test},[from here]] }}}", false);
+	testText("\\function test(A) Content\n\\relink test A\n{{{ [function{test},[from here]] }}}", false);
+	// Not a function
+	testText("\\procedure test(A) Content\n\\relink test A\n{{{ [function[test],[from here]] }}}", false);
+	testText("\\widget test(A) Content\n\\relink test A\n{{{ [function[test],[from here]] }}}", false);
+	testText("\\define test(A) Content\n\\relink test A\n{{{ [function[test],[from here]] }}}", false);
+	testText("\\function test(A) Content\n\\define test(A) Content\n\\relink test A\n{{{ [function[test],[from here]] }}}", false);
+	// Not a text-based parameter
+	testText("\\function test(A) Content\n\\relink test A\n{{{ [function[test],<from here>] }}}", false);
+	testText("\\function test(A) Content\n\\relink test A:list\n{{{ [function[test],{from and this}] }}}", false, undefined, {from: "from", to: "to"});
+	// More arguments supplied than defined
+	testText("\\function test(A) Content\n\\relink test A\n{{{ [function[test],[X],[from here]] }}}", false);
+});
+
+it('parameters in [function[]] are ugly', function() {
+	const to = "to]there";
+	testText("\\function test(A) Content\n\\relink test A\n{{{ [function[test],[from here]] }}}",
+	         utils.placeholder(1, to) + "\\function test(A) Content\n\\relink test A\n{{{ [function[test],<relink-1>] }}}",
+	         ['{{{[function[test],[]]}}}'], {to: "to]there"});
+});
+
 });
 
 /******** WIDGET ********/
