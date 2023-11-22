@@ -1,0 +1,14 @@
+created: 20230722132104177
+
+\rules except wikilink
+
+* Implemented a little more of v5.3.x features. In this case, the `\widget`, `\function`, and `\procedure` should now be fully implemented.
+* Switched all external links in readme, configuration, etc to use target=_blank, so they open the external links in a new tab.
+* Relink now looks at definitions in <<tag $:/tags/Global>> as well as <<tag $:/tags/Macro>>.
+* Corrected issue where the parameters of locally defined and relink-ready macros were not being reported.
+* Corrected issue where filteredtranscludes would not report uses of locally-defined macros.
+
+''Not implemented yet''
+
+* `\parameters` and `<$parameters>` remain entirely unimplemented.
+* Probably some esoteric uses of `<$transclude/>` which were introduced in v5.3.0.
