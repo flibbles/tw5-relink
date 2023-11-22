@@ -12,7 +12,7 @@ E.G.
 
 var utils = require("test/utils");
 
-describe("fnprocdef", function() {
+(utils.atLeastVersion('5.3.0')? describe : xdescribe)("fnprocdef", function() {
 
 function testText(text, expected, report, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);
