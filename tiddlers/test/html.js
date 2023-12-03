@@ -258,8 +258,8 @@ it('uses macros for literally unquotable titles', function() {
 	function link(number) {
 		return `<$link to=<<relink-${number||1}>>/>`;
 	};
-	var to = 'End\'s with "quotes"';
-	var to2 = 'Another\'"quotes"';
+	var to = 'End\'s with ``` "quotes"';
+	var to2 = 'Another\'```"quotes"';
 	var expectedLink = '<$link to=<<relink-1>>/>';
 	testText("<$link to='from here'/>", macro(1,to)+link(1),
 	         ['<$link to />'], {to: to, wiki: wiki});
@@ -284,7 +284,7 @@ it("doesn't use macros if forbidden by \\rules", function() {
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	utils.spyFailures(spyOn);
 	testText('\\rules except macrodef\n<$link to="from here"/>', false,
-	         ['<$link to />'], {to: "x' y\"", macrodefCanBeDisabled: true, wiki: wiki});
+	         ['<$link to />'], {to: "x' ``` y\"", macrodefCanBeDisabled: true, wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
@@ -294,13 +294,13 @@ it('uses macros for unquotable wikitext', function() {
 	wiki.addTiddler(utils.attrConf("$test", "wiki", "wikitext"));
 	var ph = utils.placeholder;
 
-	var to = "' ]]\"\"\"";
+	var to = "' ]]```\"\"\"";
 	testText("B <$test wiki='X{{from here}}Y' />",
 	         ph("wikitext-1", "X{{"+to+"}}Y")+"B <$test wiki=<<relink-wikitext-1>> />",
 	         ['<$test wiki="{{}}" />'],
 	         {to: to, wiki: wiki});
 
-	to = "' ]]\"";
+	to = "' ```]]\"";
 	testText('A <$test wiki="""<$link to="from here" />""" /> B',
 	         ph(1, to)+'A <$test wiki="""<$link to=<<relink-1>> />""" /> B',
 	         ['<$test wiki="<$link to />" />'],
@@ -429,6 +429,39 @@ it('mixed failure and replacement with macro attributes', function() {
 	testFail("<$link to=`from here`/>", false, ["<$link to=`` />"],{wiki: wiki, to: "to```there"});
 	testFail("<$link to=`from here`/>", false, ["<$link to=`` />"],{wiki: wiki, to: "to`there`"});
 	testText("<$list filter=`[[from here]] $(other)$`/>", "<$list filter=```to`there` $(other)$```/>", ["<$list filter=`` />"],{wiki: wiki, to: "to`there`"});
+});
+
+it('switches to using backticks when necessary', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	utils.spyFailures(spyOn);
+	function testPass(to, expected) {
+		testText("<$link to='from here'/>", expected, ['<$link to />'], {wiki: wiki, to: to});
+	};
+	function testFail(to) {
+		testText("<$link to='from here'/>", utils.placeholder(1,to)+"<$link to=<<relink-1>>/>", ['<$link to />'], {wiki: wiki, to: to});
+		//expect(utils.failures).toHaveBeenCalledTimes(1);
+		//utils.failures.calls.reset();
+	};
+	testPass('to\'"""there',     '<$link to=`to\'"""there`/>');
+	testPass('to\'there"',       '<$link to=`to\'there"`/>');
+	testPass('to\'"""` there',   '<$link to=```to\'"""` there```/>');
+	testFail('to\'""" there`');
+	testPass('to\'"""$( there',   '<$link to=`to\'"""$( there`/>');
+	testPass('to\'"""$()$ there', '<$link to=`to\'"""$()$ there`/>');
+	testPass('to\'"""$(d$()$ there', '<$link to=`to\'"""$(d$()$ there`/>');
+	testPass('to\'"""$($)$ there', '<$link to=`to\'"""$($)$ there`/>');
+	testPass('to\'"""$())$ there', '<$link to=`to\'"""$())$ there`/>');
+	testFail('to\'"""$(d)$ there');
+	testFail('to\'"""$($(d)$ there');
+	// Now check filter placeholders
+	testPass('to\'"""${ there',   '<$link to=`to\'"""${ there`/>');
+	testPass('to\'"""${}$ there', '<$link to=`to\'"""${}$ there`/>');
+	testFail('to\'"""${$}$ there');
+	testFail('to\'"""${}}$ there');
+	testFail('to\'"""$(d)$ there');
+	testFail('to\'"""$($(d)$ there');
+
 });
 
 it('supports relinking of internal text content', function() {

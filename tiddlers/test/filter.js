@@ -356,7 +356,7 @@ it('field failures', function() {
 	fails("[tag{from here!!field}]", "brackets}there", ['filt: [tag{!!field}]']);
 	// wikitext
 	fails("[wiki[transclude {{from here!!C}}]]", "A]]B", ['filt: [wiki[{{!!C}}]]']);
-	fails("[wiki[transclude {{from here}}]]", "A}} 'B\"", ['filt: [wiki[{{}}]]']);
+	fails("[wiki[transclude {{from here}}]]", "A}} 'B```\"", ['filt: [wiki[{{}}]]']);
 });
 
 it("field failures don't prevent from continuing", function() {

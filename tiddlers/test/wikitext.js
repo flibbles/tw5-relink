@@ -153,55 +153,53 @@ it('field failures without placeholdering', function() {
 		expect(utils.failures).toHaveBeenCalledTimes(fails);
 	};
 	// html
-	fails("A <$link to='from here' /> link", {ignored: true, to: "]] '\""});
+	fails("A <$link to='from here' /> link", {ignored: true, to: "]] ```'\""});
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf("$test", "wiki", "wikitext"));
 	fails('A <$test wiki="A {{from here}} B" />',
-	      {ignored: true, to: '\' ]]"""', wiki: wiki});
+	      {ignored: true, to: '\' ]]```"""', wiki: wiki});
 	fails('A <$test wiki="A {{from here}} B" />',
-	      {ignored: true, to: '\' ]]}}"""', wiki: wiki});
+	      {ignored: true, to: '\' ]]}}```"""', wiki: wiki});
 	// Transclude
-	fails("A {{from here}}", {ignored: true, to: "A}}B ]]'\""});
-	fails("A {{X||from here}}", {ignored: true, to: "A}}B ]]'\""});
-	fails("A {{A]]'\"||from here}}", {ignored: true, to: "A}}B"});
-	fails("A {{A!!in'dex\"||from here}}", {ignored: true, to: "A}}B"});
-	fails("A {{from here!!in'dex\"||from here}}", {ignored: true, to: "A}}U"});
+	fails("A {{from here}}", {ignored: true, to: "A}}B ```]]'\""});
+	fails("A {{X||from here}}", {ignored: true, to: "A}}B ```]]'\""});
+	fails("A {{A]]'```\"||from here}}", {ignored: true, to: "A}}B"});
+	fails("A {{A!!in'```dex\"||from here}}", {ignored: true, to: "A}}B"});
+	fails("A {{from here!!in'```dex\"||from here}}", {ignored: true, to: "A}}U"});
 	// Macrocalls
 	wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("test", "t"));
 	wiki.addTiddler(utils.macroConf("test", "wiki", "wikitext"));
 	fails("<<test t:'from here'>>", {ignored: true, to: "'A ]]B\"", wiki: wiki});
-	fails("<<test wiki:[[ <$link to='from here' /> ]]>>", {ignored: true, wiki: wiki, to: "']] \""});
+	fails("<<test wiki:[[ <$link to='from here' /> ]]>>", {ignored: true, wiki: wiki, to: "']]``` \""});
 	// Filters (the filter fails
 	fails("{{{[tag[from here]]}}}", {ignored: true, to: "A]G"});
 	fails("{{{'from here'}}}", {ignored: true, to: "A']]\""});
 	fails("{{{[list[from here]tag[from here]]}}}",
 	      "{{{[list[from here]tag[A!!G]]}}}", {to: "A!!G"});
 	// Filteredtransclude (the wikipattern fails, not the filter
-	fails("{{{A ||from here}}}", {ignored: true, to: "'A}}} ]]B\""});
+	fails("{{{A ||from here}}}", {ignored: true, to: "'A}}} ``` ]]B\""});
 	fails("{{{[tag[from here]] ||from here}}}",
 	      "{{{[tag[from here]] ||A]F}}}", {to: "A]F"});
-	fails("{{{A |Tooltip ']]\"||from here}}}", {ignored: true, to: "'A}}}B"});
+	fails("{{{A |Tooltip ']]```\"||from here}}}", {ignored: true, to: "'A}}}B"});
 	// Wikilink
-	fails("Link FromHere.", {ignored: true, from: "FromHere", to:"']] \""});
+	fails("Link FromHere.", {ignored: true, from: "FromHere", to:"']] ```\""});
 	// Prettylinks
-	fails("A [[from here]] link", {ignored: true, to: "'A]]B \""});
-	fails("A [[Caption|from here]] link", {ignored: true, to: "'A]]B \""});
+	fails("A [[from here]] link", {ignored: true, to: "'A]]B ```\""});
+	fails("A [[Caption|from here]] link", {ignored: true, to: "'A]]B ```\""});
 	utils.monkeyPatch(wikitextUtils, "shorthandPrettylinksSupported", () => false, function() {
 		fails("A [[from here]] link", {ignored: true, to: "A]]B"});
 	});
-	fails("A [[B'// \"\"\"|from here]] link", {ignored: true, to: "to]]there"});
-		// This one would have required placeholdering twice
-	fails("A [[B'// \"\"\"|from here]] link", {ignored: true, to: "to]]' there\""});
+	fails("A [[B'// ```\"\"\"|from here]] link", {ignored: true, to: "to]]there"});
 	// Images
-	fails("[img[from here]]", {ignored: true, to: "']] \""});
+	fails("[img[from here]]", {ignored: true, to: "']] ```\""});
 		// Tricky case. Even though we can't placeholder, we should
 		// still be able to downgrade images into widgets.
 	fails("[img[from here]]", "<$image source=A]]B/>", {fails: 0, to: "A]]B"});
 	fails("[img height={{from here!!height}} [from here]]",
-	      "[img height={{']] \"!!height}} [from here]]",
-	      {ignored: true, to: "']] \""});
-	fails("[img height={{from here!!height}} [from here]]", {ignored: true, to: "']]}} \"", fails: 1});
+	      "[img height={{']] ```\"!!height}} [from here]]",
+	      {ignored: true, to: "']] ```\""});
+	fails("[img height={{from here!!height}} [from here]]", {ignored: true, to: "']]}} ```\"", fails: 1});
 	// Macrodefs
 	fails("\\define macro()\n[[from here]]", {fails: 0});
 	fails("\\define relink-filter-1() [tag[from here]]\nBody", {ignored: true, to: "A]]R"});

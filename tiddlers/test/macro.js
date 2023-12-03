@@ -180,7 +180,7 @@ it('unquotable titles', function() {
 
 it('unquotable wikitext', function() {
 	// wikitext takes care of placeholding itself when it can.
-	var to = "' ]]}}\"";
+	var to = "' ``` ]]}}\"";
 	var macro = utils.placeholder;
 	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>",
 	         macro(1, to)+"X<<test Ewiki: 'T <$link to=<<relink-1>> />'>>",

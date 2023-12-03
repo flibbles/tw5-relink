@@ -163,7 +163,7 @@ it("respects \\rules", function() {
 });
 
 it('Detects globally defined placeholder macros', function() {
-	const to = "' ]]\"";
+	const to = "' ```]]\"";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: "macros", text: "\\define relink-1() Dummy\nBody", tags: "$:/tags/Macro"},
@@ -174,7 +174,7 @@ it('Detects globally defined placeholder macros', function() {
 });
 
 it('Detects imported placeholder macros', function() {
-	const to = "' ]]\"";
+	const to = "' ```]]\"";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.attrConf('$link', 'to'),
@@ -195,8 +195,8 @@ it('tracks different placeholder categories separately', function() {
 	// This is super tricky, but this used to trick Relink into using a
 	// filter placeholder for both, when it should be using a wikitext
 	// placeholder for the second.
-	wiki.renameTiddler('from here', '\'\"\"\" middle');
-	wiki.renameTiddler('\'\"\"\" middle', 'to ]] there');
+	wiki.renameTiddler('from here', '\'\"\"\" ```middle');
+	wiki.renameTiddler('\'\"\"\" ```middle', 'to ]] there');
 	expect(utils.getText('test', wiki)).toBe("\\define relink-filter-1() A 'to ]] there'\n\\define relink-wikitext-1() A <$link to='to ]] there'/>\n<$list filter=<<relink-filter-1>> emptyMessage=<<relink-wikitext-1>> />");
 });
 

@@ -61,7 +61,7 @@ it('unpretty with caption', function() {
 });
 
 it('unpretty and without caption', function() {
-	const unquotable =  "very' bad]]title\"";
+	const unquotable =  "very' ``` bad]]title\"";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	// without a caption, we have to go straight to placeholders weird,
@@ -112,7 +112,7 @@ it('has dangerous caption content', function() {
 });
 
 it('has dangerous and unquotable caption content', function() {
-	const caption = 'Misty\'s "{{crabshack}}"';
+	const caption = 'Misty\'s ``` "{{crabshack}}"';
 	const wiki = new $tw.Wiki();
 	const expected = utils.placeholder("plaintext-1", caption)+"<$link to=to]]there><$text text=<<relink-plaintext-1>>/></$link>";
 	wiki.addTiddler({title: 'test', text: "[["+caption+"|from here]]"});
@@ -130,7 +130,7 @@ it('unquotable and unpretty', function() {
 	// We also have to go to to placeholders if title doesn't work for
 	// prettylinks or widgets.
 	var text = "Link to [[caption|from here]].";
-	var to = 'Has apost\' [[bracks]] and "quotes"';
+	var to = 'Has apost\' ``` [[bracks]] and "quotes"';
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	testText(text,
@@ -151,7 +151,7 @@ it('unquotable and unpretty', function() {
 
 it('unquotable when $link is customized', function() {
 	const wiki = new $tw.Wiki();
-	const to = 'Has apost\' [[bracks]] and "quotes"';
+	const to = 'Has apost\' ``` [[bracks]] and "quotes"';
 	wiki.addTiddler(utils.attrConf('$link', 'to', 'reference'));
 	testText('[[caption|from here]]',
 	         utils.placeholder('reference-1', to) +
@@ -160,7 +160,7 @@ it('unquotable when $link is customized', function() {
 });
 
 it('unquotable when $link is not set', function() {
-	const to = 'Has apost\' [[bracks]] and "quotes"';
+	const to = 'Has apost\' ``` [[bracks]] and "quotes"';
 	testText('[[caption|from here]]',
 	         utils.placeholder('plaintext-1', to) +
 	         "<$link to=<<relink-plaintext-1>>>caption</$link>",

@@ -97,7 +97,7 @@ it('broken', function() {
 });
 
 it('makes placeholders', function() {
-	var tricky = "bad' titles]]\"";
+	var tricky = "bad' ``` titles]]\"";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	testText('Before\n\n$$$text/vnd.tiddlywiki\n<$link to="from here" />\n$$$\nAfter',
@@ -106,7 +106,7 @@ it('makes placeholders', function() {
 });
 
 it('respects existing placeholders', function() {
-	var tricky = "bad' titles]]\"\"\"";
+	var tricky = "bad' ``` titles]]\"\"\"";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	wiki.addTiddler(utils.attrConf('$button', 'set', 'reference'));

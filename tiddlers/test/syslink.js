@@ -53,7 +53,7 @@ it('rules pragma', function() {
 });
 
 it('tricky cases', function() {
-	var tricky = "bad' title]]\"";
+	var tricky = "bad' ``` title]]\"";
 	testText("A $:/sys/link please",
 	         utils.placeholder(1,tricky)+"A <$link to=<<relink-1>>/> please",
 	         ['~$:/sys/link'], {from: '$:/sys/link', to: tricky});

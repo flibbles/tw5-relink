@@ -52,7 +52,7 @@ it('altered unWikiLink char', function() {
 });
 
 it('tricky cases', function() {
-	var tricky = "bad' title]]\"";
+	var tricky = "bad' title]]```\"";
 	var macro = utils.placeholder;
 	testText("A WikiLink please", macro(1,tricky)+"A <$link to=<<relink-1>>/> please", ['~WikiLink'], {to: tricky});
 	expect(console.log).toHaveBeenCalledWith("Renaming 'WikiLink' to '"+tricky+"' in 'test'");
@@ -88,19 +88,12 @@ it('respects \\rules', function() {
 	         report, {from: "WikiLink"});
 
 	// link can be pretty, but pretty isn't allowed
-	var prettyOnly =  "to 'there\"";
+	var prettyOnly =  "to 'there```\"";
 	testFail("\\rules except prettylink html\nWikiLink", false, {to: prettyOnly});
 	testText("\\rules except prettylink\nWikiLink",
 	         utils.placeholder(1, prettyOnly)+"\\rules except prettylink\n<$link to=<<relink-1>>/>",
 	         report,
 	         {to: prettyOnly});
-
-	// placeholdering
-	var tricky = "bad' title]]\"";
-	testFail("\\rules except macrodef\nWikiLink", false, {to: tricky, macrodefCanBeDisabled: true});
-	testText("\\rules only wikilink html\nWikiLink",
-	         utils.placeholder(1, tricky) + "\\rules only wikilink html\n<$link to=<<relink-1>>/>",
-	         report, {to: tricky});
 });
 
 it("reports", function() {

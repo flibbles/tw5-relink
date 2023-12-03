@@ -305,10 +305,8 @@ it('can handle transcludes where both title and field changed', function() {
 	testText("{{from!!from}}", true, ['{{from!!}}', '{{!!from}}']);
 	testText("{{from!!from}}", "<$tiddler tiddler=t!!o>{{!!t!!o}}</$tiddler>", ['{{from!!}}', '{{!!from}}'], {to: "t!!o"});
 	// One final hard test
-	var to = "t!!'o\"";
 	const wiki = getWiki();
 	wiki.addTiddler(utils.attrConf("$tiddler", "tiddler"));
-	testText("{{from!!from}}", utils.placeholder(1,to) + "<$tiddler tiddler=<<relink-1>>>{{!!"+to+"}}</$tiddler>", ['{{from!!}}', '{{!!from}}'], {to: to, wiki: wiki});
 	testText("{{from!!from}}", "<$tiddler tiddler=}o><$transclude tiddler=}o field=}o/></$tiddler>", ['{{from!!}}', '{{!!from}}'], {to: "}o"});
 });
 

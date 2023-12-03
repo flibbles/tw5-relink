@@ -62,7 +62,7 @@ it("image respects \\rules", function() {
 	};
 	testFails("\\rules except html\n[img[from here]]", "to]there");
 	testFails("\\rules only image macrodef\n[img[from here]]", "to]there");
-	testFails("\\rules except macrodef\n[img[from here]]", '"F]] \'"', {macrodefCanBeDisabled: true});
+	testFails("\\rules except macrodef\n[img[from here]]", '"F]] ```\'"', {macrodefCanBeDisabled: true});
 });
 
 it("indirect attributes", function() {
@@ -175,7 +175,7 @@ it("unpretty source", function() {
 it("unpretty source and bad widget", function() {
 	const title = '"F]]\'"'
 	testText("Image [img[Description|from here]] end",
-	         "\\define relink-1() "+title+"\nImage <$image tooltip=Description source=<<relink-1>>/> end",
+	         "Image <$image tooltip=Description source=`"+title+"`/> end",
 	         ['[img[Description]]'],
 	         {to: title});
 	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+title+"' in 'test'");

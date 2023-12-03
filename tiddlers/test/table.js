@@ -130,7 +130,7 @@ it('handles errors', function() {
 });
 
 it('unpretty', function() {
-	var tricky = "bad' titles]]\"";
+	var tricky = "bad' ``` titles]]\"";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	testText('| test |[[from here]]|',
