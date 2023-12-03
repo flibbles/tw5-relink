@@ -119,6 +119,15 @@ exports.containsPlaceholders = function(string) {
 	return false;
 };
 
+var whitelist = ["", "'", '"', '"""'];
+var choices = {
+	"": function(v) {return !/([\/\s<>"'=])/.test(v) && v.length > 0; },
+	"'": function(v) {return v.indexOf("'") < 0; },
+	'"': function(v) {return v.indexOf('"') < 0; },
+	'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';},
+};
+var _backticksSupported;
+
 /**Finds an appropriate quote mark for a given value.
  *
  *Tiddlywiki doesn't have escape characters for attribute values. Instead,
@@ -129,15 +138,16 @@ exports.containsPlaceholders = function(string) {
  * return: Returns the wrapped value, or undefined if it's impossible to wrap
  */
 exports.wrapAttributeValue = function(value, preference) {
-	var whitelist = ["", "'", '"', '"""', '`', '```'];
-	var choices = {
-		"": function(v) {return !/([\/\s<>"'=])/.test(v) && v.length > 0; },
-		"'": function(v) {return v.indexOf("'") < 0; },
-		'"': function(v) {return v.indexOf('"') < 0; },
-		'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';},
-		'`': function(v) {return v.indexOf('`') < 0 && !exports.containsPlaceholders(v); },
-		'```': function(v) {return v.indexOf('```') < 0 && v[v.length-1] != '`' && !exports.containsPlaceholders(v);}
-	};
+	if (_backticksSupported === undefined) {
+		var test = $tw.wiki.renderText("text/plain", "text/vnd.tiddlywiki", "<$link to=`test`/>");
+		_backticksSupported = (test === "test");
+		if (_backticksSupported) {
+			// add in support for the backtick to the lists
+			whitelist.push('`', '```');
+			choices['`'] = function(v) {return v.indexOf('`') < 0 && !exports.containsPlaceholders(v); };
+			choices['```'] = function(v) {return v.indexOf('```') < 0 && v[v.length-1] != '`' && !exports.containsPlaceholders(v);};
+		}
+	}
 	if (choices[preference] && choices[preference](value)) {
 		return wrap(value, preference);
 	}

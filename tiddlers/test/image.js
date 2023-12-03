@@ -173,9 +173,9 @@ it("unpretty source", function() {
 });
 
 it("unpretty source and bad widget", function() {
-	const title = '"F]]\'"'
+	const title = '"F]]```\'"'
 	testText("Image [img[Description|from here]] end",
-	         "Image <$image tooltip=Description source=`"+title+"`/> end",
+	         "\\define relink-1() "+title+"\nImage <$image tooltip=Description source=<<relink-1>>/> end",
 	         ['[img[Description]]'],
 	         {to: title});
 	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+title+"' in 'test'");

@@ -443,25 +443,29 @@ it('switches to using backticks when necessary', function() {
 		//expect(utils.failures).toHaveBeenCalledTimes(1);
 		//utils.failures.calls.reset();
 	};
-	testPass('to\'"""there',     '<$link to=`to\'"""there`/>');
-	testPass('to\'there"',       '<$link to=`to\'there"`/>');
-	testPass('to\'"""` there',   '<$link to=```to\'"""` there```/>');
-	testFail('to\'""" there`');
-	testPass('to\'"""$( there',   '<$link to=`to\'"""$( there`/>');
-	testPass('to\'"""$()$ there', '<$link to=`to\'"""$()$ there`/>');
-	testPass('to\'"""$(d$()$ there', '<$link to=`to\'"""$(d$()$ there`/>');
-	testPass('to\'"""$($)$ there', '<$link to=`to\'"""$($)$ there`/>');
-	testPass('to\'"""$())$ there', '<$link to=`to\'"""$())$ there`/>');
-	testFail('to\'"""$(d)$ there');
-	testFail('to\'"""$($(d)$ there');
-	// Now check filter placeholders
-	testPass('to\'"""${ there',   '<$link to=`to\'"""${ there`/>');
-	testPass('to\'"""${}$ there', '<$link to=`to\'"""${}$ there`/>');
-	testFail('to\'"""${$}$ there');
-	testFail('to\'"""${}}$ there');
-	testFail('to\'"""$(d)$ there');
-	testFail('to\'"""$($(d)$ there');
-
+	if (utils.atLeastVersion("5.3.0")) {
+		testPass('to\'"""there',     '<$link to=`to\'"""there`/>');
+		testPass('to\'there"',       '<$link to=`to\'there"`/>');
+		testPass('to\'"""` there',   '<$link to=```to\'"""` there```/>');
+		testFail('to\'""" there`');
+		testPass('to\'"""$( there',   '<$link to=`to\'"""$( there`/>');
+		testPass('to\'"""$()$ there', '<$link to=`to\'"""$()$ there`/>');
+		testPass('to\'"""$(d$()$ there', '<$link to=`to\'"""$(d$()$ there`/>');
+		testPass('to\'"""$($)$ there', '<$link to=`to\'"""$($)$ there`/>');
+		testPass('to\'"""$())$ there', '<$link to=`to\'"""$())$ there`/>');
+		testFail('to\'"""$(d)$ there');
+		testFail('to\'"""$($(d)$ there');
+		// Now check filter placeholders
+		testPass('to\'"""${ there',   '<$link to=`to\'"""${ there`/>');
+		testPass('to\'"""${}$ there', '<$link to=`to\'"""${}$ there`/>');
+		testFail('to\'"""${$}$ there');
+		testFail('to\'"""${}}$ there');
+		testFail('to\'"""$(d)$ there');
+		testFail('to\'"""$($(d)$ there');
+	} else {
+		// In old versions, just make sure the backticks aren't being used
+		testFail('to\'"""there');
+	}
 });
 
 it('supports relinking of internal text content', function() {
