@@ -397,16 +397,16 @@ it('mixed failure and replacement with macro attributes', function() {
 		utils.macroConf('tag', 'tag'),
 		utils.macroConf('tabs', 'tabsList', 'filter')]);
 	utils.spyFailures(spyOn);
-	testText("<$link to=`from here`/>", true, ["<$link to=`` />"],{wiki: wiki});
+	testText("<$link to=`from here`/>", true, ["<$link to />"],{wiki: wiki});
 	testText("<$list filter=`[tag[from here]]`/>", true, ["<$list filter=`[tag[]]` />"],{wiki: wiki});
-	testText("<$macrocall $name=tag tag=`from here`/>", true, ["<<tag tag=`` />"],{wiki: wiki});
+	testText("<$macrocall $name=tag tag=`from here`/>", true, ["<<tag tag />"],{wiki: wiki});
 	testText("<$macrocall $name=tabs tabsList=`[tag[from here]]`/>", true, ["<<tabs tabsList=`[tag[]]` />"],{wiki: wiki});
 	// Presents of substition in titles
 	testText("<$link to=`$(from)$`/>", false, undefined, {wiki: wiki, from: "from"});
 	testText("<$link to=`$(from)$`/>", false, undefined, {wiki: wiki, from: "$(from)$"});
 	testText("<$link to=`from $(here)$`/>", false, undefined, {wiki: wiki, from: "from $(here)$"});
-	testFail("<$link to=`from here`/>", false, ["<$link to=`` />"], {wiki: wiki, to: "to $(there)$"});
-	testFail("<$link to=`from here`/>", false, ["<$link to=`` />"], {wiki: wiki, to: "$(to)$"});
+	testFail("<$link to=`from here`/>", false, ["<$link to />"], {wiki: wiki, to: "to $(there)$"});
+	testFail("<$link to=`from here`/>", false, ["<$link to />"], {wiki: wiki, to: "$(to)$"});
 	// Presents of embedded filters in titles
 	testText("<$link to=`${from}$`/>", false, undefined, {wiki: wiki, from: "${from}$"});
 	testText("<$text text=`${[[from here]]}$ ${[tag[from here]]}$`/>", true, ["<$text text=`${}$` />", "<$text text=`${[tag[]]}$` />"], {wiki: wiki});
@@ -418,16 +418,16 @@ it('mixed failure and replacement with macro attributes', function() {
 	         {wiki: wiki, from: "from", to: "to}$there"});
 	testFail("<$text text=`${[tag{from here}]}$`/>", false, ["<$text text=`${[tag{}]}$` />"], {wiki: wiki, to: "to}there"});
 	// Not quite substitution in titles
-	testText("<$link to=`from)$(here`/>", true, ["<$link to=`` />"],{wiki: wiki, from: "from)$(here", to: "to)$(there"});
-	testText("<$link to=`$(from here)$`/>", true, ["<$link to=`` />"],{wiki: wiki, from: "$(from here)$"});
+	testText("<$link to=`from)$(here`/>", true, ["<$link to />"],{wiki: wiki, from: "from)$(here", to: "to)$(there"});
+	testText("<$link to=`$(from here)$`/>", false, undefined, {wiki: wiki, from: "$(from here)$"});
 	// Presents of substition near titles
 	testText("<$list filter=`[[from here]] $(sub)$`/>", true, ["<$list filter=`` />"], {wiki: wiki});
 	// backticks in value
-	testText("<$link to=```from`here```/>", "<$link to=`to there`/>", ["<$link to=`` />"],{wiki: wiki, from: "from`here"});
-	testText("<$link to=`from here`/>", "<$link to=```to`there```/>", ["<$link to=`` />"],{wiki: wiki, to: "to`there"});
-	testText("<$link to=`from here`/>", "<$link to=```to``there```/>", ["<$link to=`` />"],{wiki: wiki, to: "to``there"});
-	testFail("<$link to=`from here`/>", false, ["<$link to=`` />"],{wiki: wiki, to: "to```there"});
-	testFail("<$link to=`from here`/>", false, ["<$link to=`` />"],{wiki: wiki, to: "to`there`"});
+	testText("<$link to=```from`here```/>", "<$link to=`to there`/>", ["<$link to />"],{wiki: wiki, from: "from`here"});
+	testText("<$link to=`from here`/>", "<$link to=```to`there```/>", ["<$link to />"],{wiki: wiki, to: "to`there"});
+	testText("<$link to=`from here`/>", "<$link to=```to``there```/>", ["<$link to />"],{wiki: wiki, to: "to``there"});
+	testFail("<$link to=`from here`/>", false, ["<$link to />"],{wiki: wiki, to: "to```there"});
+	testFail("<$link to=`from here`/>", false, ["<$link to />"],{wiki: wiki, to: "to`there`"});
 	testText("<$list filter=`[[from here]] $(other)$`/>", "<$list filter=```to`there` $(other)$```/>", ["<$list filter=`` />"],{wiki: wiki, to: "to`there`"});
 });
 

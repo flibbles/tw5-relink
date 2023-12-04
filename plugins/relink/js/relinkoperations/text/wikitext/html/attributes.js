@@ -7,6 +7,7 @@ Handles all element attribute values. Most widget relinking happens here.
 'use strict';
 
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
+var utils = require('../utils.js');
 var refHandler = relinkUtils.getType('reference');
 var filterHandler = relinkUtils.getType('filter');
 var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
@@ -75,12 +76,15 @@ exports.report = function(element, parser, callback, options) {
 				if (handler) {
 					handler.report(attr.rawValue, function(title, blurb) {
 						// Only consider titles without substitutions.
-						if (!hasSubstitutions(title)) {
+						if (!utils.containsPlaceholders(title)) {
+							blurb = (utils.containsPlaceholders(attr.rawValue) || blurb)? '`' + blurb + '`': '';
 							if (operator.formBlurb) {
-								blurb = '`' + (blurb || '') + '`';
 								callback(title, operator.formBlurb(element, attr, blurb, options));
 							} else {
-								callback(title, element.tag + ' ' + attributeName + '=`' + (blurb || '') + '`');
+								if (blurb) {
+									blurb = '=' + blurb;
+								}
+								callback(title, element.tag + ' ' + attributeName + blurb);
 							}
 						}
 					}, options);
@@ -164,14 +168,14 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 				return match;
 			});
 			attr.rawValue = newValue;
-			if (!hasSubstitutions(fromTitle)) {
+			if (!utils.containsPlaceholders(fromTitle)) {
 				for (var operatorName in attributeOperators) {
 					var operator = attributeOperators[operatorName];
 					var handler = operator.getHandler(element, attr, options);
 					if (handler) {
 						entry = handler.relink(attr.rawValue, fromTitle, toTitle, options);
 						if (entry && entry.output) {
-							if (hasSubstitutions(toTitle)) {
+							if (utils.containsPlaceholders(toTitle)) {
 								// If we relinked, but the toTitle can't be in
 								// a substition, then we must fail instead.
 								entry.impossible = true;
@@ -193,10 +197,4 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 	if (changed || impossible) {
 		return {output: changed, impossible: impossible};
 	}
-};
-
-function hasSubstitutions(title) {
-	if (/\$\(\w+\)\$/.test(title)) {
-		return true;
-	} else return (/\$\{[\S\s]+?\}\$/.test(title));
 };
