@@ -121,7 +121,7 @@ exports.containsPlaceholders = function(string) {
 
 var whitelist = ["", "'", '"', '"""'];
 var choices = {
-	"": function(v) {return !/([\/\s<>"'=])/.test(v) && v.length > 0; },
+	"": function(v) {return !/([\/\s<>"'`=])/.test(v) && v.length > 0; },
 	"'": function(v) {return v.indexOf("'") < 0; },
 	'"': function(v) {return v.indexOf('"') < 0; },
 	'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';},

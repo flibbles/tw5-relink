@@ -111,6 +111,52 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		// TODO: This = undefined wasn't here before. Does it have to be?
 		var entry = undefined;
 		switch (attr.type) {
+		case 'substituted':
+			if (utils.containsPlaceholders(attr.rawValue)) {
+				var newValue = attr.rawValue.replace(/\$\{([\S\s]+?)\}\$/g, function(match, filter) {
+					var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, options);
+					if (filterEntry) {
+						if (filterEntry.output) {
+							// The only }$ should be the one at the very end
+							if (filterEntry.output.indexOf("}$") < 0) {
+								changed = true;
+								return '${' + filterEntry.output + '}$';
+							} else {
+								impossible = true;
+							}
+						}
+						if (filterEntry.impossible) {
+							impossible = true;
+						}
+					}
+					return match;
+				});
+				attr.rawValue = newValue;
+				if (!utils.containsPlaceholders(fromTitle)) {
+					for (var operatorName in attributeOperators) {
+						var operator = attributeOperators[operatorName];
+						var handler = operator.getHandler(element, attr, options);
+						if (handler) {
+							entry = handler.relink(attr.rawValue, fromTitle, toTitle, options);
+							if (entry && entry.output) {
+								if (utils.containsPlaceholders(toTitle)) {
+									// If we relinked, but the toTitle can't be in
+									// a substition, then we must fail instead.
+									entry.impossible = true;
+								} else {
+									attr.rawValue = entry.output;
+									attr.handler = handler.name;
+									changed = true;
+								}
+							}
+						}
+					}
+				}
+				break;
+			}
+			// no break. turn it into a string and try to work with it
+			attr.value = attr.rawValue;
+			attr.type = 'string';
 		case 'string':
 			for (var operatorName in attributeOperators) {
 				var operator = attributeOperators[operatorName];
@@ -146,47 +192,6 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 				attr.output = macrocall.reassemble(entry.output, parser.source, options);
 				attr.value = entry.output;
 				changed = true;
-			}
-			break;
-		case 'substituted':
-			var newValue = attr.rawValue.replace(/\$\{([\S\s]+?)\}\$/g, function(match, filter) {
-				var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, options);
-				if (filterEntry) {
-					if (filterEntry.output) {
-						// The only }$ should be the one at the very end
-						if (filterEntry.output.indexOf("}$") < 0) {
-							changed = true;
-							return '${' + filterEntry.output + '}$';
-						} else {
-							impossible = true;
-						}
-					}
-					if (filterEntry.impossible) {
-						impossible = true;
-					}
-				}
-				return match;
-			});
-			attr.rawValue = newValue;
-			if (!utils.containsPlaceholders(fromTitle)) {
-				for (var operatorName in attributeOperators) {
-					var operator = attributeOperators[operatorName];
-					var handler = operator.getHandler(element, attr, options);
-					if (handler) {
-						entry = handler.relink(attr.rawValue, fromTitle, toTitle, options);
-						if (entry && entry.output) {
-							if (utils.containsPlaceholders(toTitle)) {
-								// If we relinked, but the toTitle can't be in
-								// a substition, then we must fail instead.
-								entry.impossible = true;
-							} else {
-								attr.rawValue = entry.output;
-								attr.handler = handler.name;
-								changed = true;
-							}
-						}
-					}
-				}
 			}
 			break;
 		}

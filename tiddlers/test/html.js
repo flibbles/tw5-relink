@@ -383,7 +383,7 @@ it('mixed failure and replacement with macro attributes', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
-(utils.atLeastVersion("5.3.0")? it: xit)('substitution attributes', function() {
+(utils.atLeastVersion("5.3.0")? it: xit)('substitution attributes without substitution', function() {
 	const wiki = new $tw.Wiki();
 	function testFail() {
 		utils.failures.calls.reset();
@@ -397,38 +397,72 @@ it('mixed failure and replacement with macro attributes', function() {
 		utils.macroConf('tag', 'tag'),
 		utils.macroConf('tabs', 'tabsList', 'filter')]);
 	utils.spyFailures(spyOn);
-	testText("<$link to=`from here`/>", true, ["<$link to />"],{wiki: wiki});
-	testText("<$list filter=`[tag[from here]]`/>", true, ["<$list filter=`[tag[]]` />"],{wiki: wiki});
-	testText("<$macrocall $name=tag tag=`from here`/>", true, ["<<tag tag />"],{wiki: wiki});
-	testText("<$macrocall $name=tabs tabsList=`[tag[from here]]`/>", true, ["<<tabs tabsList=`[tag[]]` />"],{wiki: wiki});
+	testText("<$link to=`from here`/>", "<$link to='to there'/>", ["<$link to />"],{wiki: wiki});
+	testText("<$list filter=`[tag[from here]]`/>", "<$list filter='[tag[to there]]'/>", ["<$list filter=`[tag[]]` />"],{wiki: wiki});
+	testText("<$macrocall $name=tag tag=`from here`/>", "<$macrocall $name=tag tag='to there'/>", ["<<tag tag />"],{wiki: wiki});
+	testText("<$macrocall $name=tabs tabsList=`[tag[from here]]`/>", "<$macrocall $name=tabs tabsList='[tag[to there]]'/>", ["<<tabs tabsList=`[tag[]]` />"],{wiki: wiki});
 	// Presents of substition in titles
 	testText("<$link to=`$(from)$`/>", false, undefined, {wiki: wiki, from: "from"});
 	testText("<$link to=`$(from)$`/>", false, undefined, {wiki: wiki, from: "$(from)$"});
 	testText("<$link to=`from $(here)$`/>", false, undefined, {wiki: wiki, from: "from $(here)$"});
-	testFail("<$link to=`from here`/>", false, ["<$link to />"], {wiki: wiki, to: "to $(there)$"});
-	testFail("<$link to=`from here`/>", false, ["<$link to />"], {wiki: wiki, to: "$(to)$"});
 	// Presents of embedded filters in titles
 	testText("<$link to=`${from}$`/>", false, undefined, {wiki: wiki, from: "${from}$"});
 	testText("<$text text=`${[[from here]]}$ ${[tag[from here]]}$`/>", true, ["<$text text=`${}$` />", "<$text text=`${[tag[]]}$` />"], {wiki: wiki});
 	testText("<$text text=`${[[from here]] [tag[from here]]}$`/>", true, ["<$text text=`${}$` />", "<$text text=`${[tag[]]}$` />"], {wiki: wiki});
 	testText("<$text text=`${from}$`/>", true, ["<$text text=`${}$` />"], {wiki: wiki, from: "from", to: "to}}}there"});
+	testFail("<$text text=`${[tag{from here}]}$`/>", false, ["<$text text=`${[tag{}]}$` />"], {wiki: wiki, to: "to}there"});
+	// Not quite substitution in titles
+	testText("<$link to=`$(from here)$`/>", false, undefined, {wiki: wiki, from: "$(from here)$"});
+	// backticks in value
+	testText("<$link to=`from here`/>", "<$link to='to```there'/>", ["<$link to />"],{wiki: wiki, to: "to```there"});
+	testText("<$link to=`from here`/>", "<$link to='to`there`'/>", ["<$link to />"],{wiki: wiki, to: "to`there`"});
+	// substitutions in value
+	testText("<$link to=`from here`/>", "<$link to=to$(d)$there/>", ["<$link to />"],{wiki: wiki, to: "to$(d)$there"});
+	testText("<$link to=`from here`/>", "<$link to='to${d}$ there'/>", ["<$link to />"],{wiki: wiki, to: "to${d}$ there"});
+});
+
+(utils.atLeastVersion("5.3.0")? it: xit)('substitution attributes with actual substitution', function() {
+	const wiki = new $tw.Wiki();
+	utils.spyFailures(spyOn);
+	function testFail() {
+		utils.failures.calls.reset();
+		testText.apply(this, arguments);
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+	};
+	wiki.addTiddlers([
+		utils.attrConf('$link', 'to'),
+		utils.attrConf('$list', 'filter', 'filter'),
+		utils.operatorConf('tag'),
+		utils.macroConf('tag', 'tag'),
+		utils.macroConf('tabs', 'tabsList', 'filter')]);
 	testFail("<$list filter=`${from}$ from`/>",
 	         "<$list filter=`${from}$ to}$there`/>",
 	         ["<$list filter=`${}$` />", "<$list filter=`` />"],
 	         {wiki: wiki, from: "from", to: "to}$there"});
-	testFail("<$text text=`${[tag{from here}]}$`/>", false, ["<$text text=`${[tag{}]}$` />"], {wiki: wiki, to: "to}there"});
+	// backticks in new title
+	testText("<$list filter=`$(var)$ from`/>", true, ["<$list filter=`` />"],{wiki: wiki, from: 'from', to: "to"});
+	testText("<$list filter=`$(var)$ from`/>", "<$list filter=```$(var)$ to``there```/>", ["<$list filter=`` />"],{wiki: wiki, from: 'from', to: "to``there"});
+	testText("<$list filter=```$(var)$ from`here```/>", "<$list filter=`$(var)$ to`/>", ["<$list filter=`` />"],{wiki: wiki, from: "from`here", to: "to"});
+	// substitutions in new title
+	testText("<$list filter=`$(var)$ from`/>", false, ["<$list filter=`` />"],{wiki: wiki, from: 'from', to: "t$(d)$o"});
+	testText("<$list filter=`$(var)$ from`/>", false, ["<$list filter=`` />"],{wiki: wiki, from: 'from', to: "t${d}$o"});
 	// Not quite substitution in titles
-	testText("<$link to=`from)$(here`/>", true, ["<$link to />"],{wiki: wiki, from: "from)$(here", to: "to)$(there"});
-	testText("<$link to=`$(from here)$`/>", false, undefined, {wiki: wiki, from: "$(from here)$"});
+	testText("<$list filter=`$(var)$ from)$(here`/>", true, ["<$list filter=`` />"],{wiki: wiki, from: "from)$(here", to: "to)$(there"});
 	// Presents of substition near titles
 	testText("<$list filter=`[[from here]] $(sub)$`/>", true, ["<$list filter=`` />"], {wiki: wiki});
-	// backticks in value
-	testText("<$link to=```from`here```/>", "<$link to=`to there`/>", ["<$link to />"],{wiki: wiki, from: "from`here"});
-	testText("<$link to=`from here`/>", "<$link to=```to`there```/>", ["<$link to />"],{wiki: wiki, to: "to`there"});
-	testText("<$link to=`from here`/>", "<$link to=```to``there```/>", ["<$link to />"],{wiki: wiki, to: "to``there"});
-	testFail("<$link to=`from here`/>", false, ["<$link to />"],{wiki: wiki, to: "to```there"});
-	testFail("<$link to=`from here`/>", false, ["<$link to />"],{wiki: wiki, to: "to`there`"});
+	// TODO: Uncomment this once I remove placeholders
+	//testFail("<$link to=`from here`/>", false, ["<$link to />"],{wiki: wiki, to: "to`\"\"\"'there`"});
 	testText("<$list filter=`[[from here]] $(other)$`/>", "<$list filter=```to`there` $(other)$```/>", ["<$list filter=`` />"],{wiki: wiki, to: "to`there`"});
+});
+
+// TODO: Uncomment this test too once placeholders are removed
+(utils.atLeastVersion("5.3.0")? xit: xit)('strange edgecase with substitution', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler( utils.attrConf('$list', 'filter', 'filter') );
+	// Strange edge case with backtics
+	utils.spyFailures(spyOn);
+	testText("<$list filter='a$(b from'/>", false, ["<$list filter />"], {wiki: wiki, from: "from", to: "to)$'\"\"\"there"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('switches to using backticks when necessary', function() {

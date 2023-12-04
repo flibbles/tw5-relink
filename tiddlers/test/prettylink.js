@@ -100,7 +100,7 @@ it('has dangerous caption content', function() {
 
 	// requires <$text>
 	wraps("Unsafe//caption", "<$text text='Unsafe//caption'/>");
-	wraps("back`tick", "<$text text=back`tick/>");
+	wraps("back`tick", "<$text text='back`tick'/>");
 	wraps("Unsafe<$link>", "<$text text='Unsafe<$link>'/>");
 	// This one is tricky. That close link will close the widget we must
 	// wrap the link in, but on its own, it renders same as plaintext.
