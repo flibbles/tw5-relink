@@ -15,12 +15,8 @@ exports.makeWidget = function(parser, tag, attributes, body) {
 		if (value !== undefined) {
 			var quoted = exports.wrapAttributeValue(value);
 			if (!quoted) {
-				if (!parser.options.placeholder) {
-					// It's not possible to make this widget
-					return undefined;
-				}
-				var category = getPlaceholderCategory(parser.context, tag, attr);
-				quoted = '<<' + parser.placeholder.getPlaceholderFor(value, category) + '>>';
+				// It's not possible to make this widget
+				return undefined;
 			}
 			string += ' ' + attr + '=' + quoted;
 		}
@@ -31,23 +27,6 @@ exports.makeWidget = function(parser, tag, attributes, body) {
 		string += '/>';
 	}
 	return string;
-};
-
-function getPlaceholderCategory(context, tag, attribute) {
-	var element = context.getAttribute(tag);
-	var rule = element && element[attribute];
-	// titles go to relink-\d
-	// plaintext goes to relink-plaintext-\d
-	// because titles are way more common, also legacy
-	if (rule === undefined) {
-		return 'plaintext';
-	} else {
-		rule = rule.fields.text;
-		if (rule === 'title') {
-			rule = undefined;
-		}
-		return rule;
-	}
 };
 
 exports.makePrettylink = function(parser, title, caption) {
@@ -65,13 +44,6 @@ exports.makePrettylink = function(parser, title, caption) {
 		}
 	} else if (exports.shorthandPrettylinksSupported(parser.wiki)) {
 		output = exports.makeWidget(parser, '$link', {to: title});
-	} else if (parser.context.allowWidgets() && parser.placeholder) {
-		// If we don't have a caption, we must resort to
-		// placeholders anyway to prevent link/caption desync
-		// from later relinks.
-		// It doesn't matter whether the tiddler is quotable.
-		var ph = parser.placeholder.getPlaceholderFor(title);
-		output = "<$link to=<<"+ph+">>><$text text=<<"+ph+">>/></$link>";
 	}
 	return output;
 };

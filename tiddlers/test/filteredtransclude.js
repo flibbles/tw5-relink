@@ -154,16 +154,16 @@ it('unpretty and unquotable', function() {
 		utils.attrConf('$list', 'template'),
 		utils.attrConf('$list', 'filter', 'filter')]);
 	var weird = 'a\'|" ``` """x';
-	// This test is commented out because I'm not sure I want this to be the
-	// expected behavior. It seems like it'd be cleaner to placeholder the
-	// title inside of the filter rather than placeholdering the entire filter.
-	//testText(`{{{[[from here]]}}}`, ph(1,weird) + "<$list filter='[<relink-1>]'/>", ['{{{}}}'], {to: weird, wiki: wiki});
 	testText("{{{[title[from here]]}}}",
 	         ph(1, "bad[]title")+"{{{[title<relink-1>]}}}",
 	         ['{{{}}}'], {to: 'bad[]title', wiki: wiki});
 	var tooltip = '"tooltips\'s```"';
-	testText("{{{Title||from here}}}", ph(1,weird) + "<$list filter=Title template=<<relink-1>>/>", ['{{{Title||}}}'], {to: weird, wiki: wiki});
-	testText("{{{Title|"+tooltip+"||from here}}}", ph("plaintext-1",tooltip) + "<$list filter=Title tooltip=<<relink-plaintext-1>> template=bar|bar/>", ['{{{Title||}}}'], {to: 'bar|bar', wiki: wiki});
+	utils.spyFailures(spyOn);
+	testText("{{{Title||from here}}}", false, ['{{{Title||}}}'], {to: weird, wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	utils.failures.calls.reset();
+	testText("{{{Title|"+tooltip+"||from here}}}", false, ['{{{Title||}}}'], {to: 'bar|bar', wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 });

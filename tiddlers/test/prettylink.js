@@ -64,29 +64,24 @@ it('unpretty and without caption', function() {
 	const unquotable =  "very' ``` bad]]title\"";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
-	// without a caption, we have to go straight to placeholders weird,
-	// or we might desync the link with its caption with later name changes.
-	testText("Link to [[from here]].",
-	         utils.placeholder(1,unquotable) +
-	         "Link to <$link to=<<relink-1>>/>.",
-	         ['[[from here]]'], {to: unquotable, wiki: wiki});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+unquotable+"' in 'test'");
 	testText("Link to [[from here]].", "Link to <$link to=A]]B/>.",
 	         ['[[from here]]'], {to: "A]]B", wiki: wiki});
 	testText("Link to [[from here]].", "Link to <$link to=A|B/>.",
 	         ['[[from here]]'], {to: "A|B", wiki: wiki});
+	utils.spyFailures(spyOn);
+	testText("Link to [[from here]].", false, ['[[from here]]'], {to: unquotable, wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('unpretty, without caption, and pre 5.1.20', function() {
-	// without a caption, we have to go straight to placeholders in <5.1.20,
+	// without a caption, we have to fail in <5.1.20,
 	// It doesn't fill in <$link to="tiddler" /> with the caption of
 	// "tiddler". Also, we must placeholder both caption and "to", or else
 	// we might desync the link with its caption with later name changes.
 	spyOn(wikitextUtils, 'shorthandPrettylinksSupported').and.returnValue(false);
-	testText("Link [[from here]].",
-			 utils.placeholder(1, "to [bracks]") +
-			 "Link <$link to=<<relink-1>>><$text text=<<relink-1>>/></$link>.",
-			 ['[[from here]]'], {to: "to [bracks]"});
+	utils.spyFailures(spyOn);
+	testText("Link [[from here]].", false, ['[[from here]]'], {to: "to [bracks]"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('has dangerous caption content', function() {
@@ -111,60 +106,27 @@ it('has dangerous caption content', function() {
 	         ['[[D<!--]]'], {to: "to]]there"});
 });
 
-it('has dangerous and unquotable caption content', function() {
-	const caption = 'Misty\'s ``` "{{crabshack}}"';
-	const wiki = new $tw.Wiki();
-	const expected = utils.placeholder("plaintext-1", caption)+"<$link to=to]]there><$text text=<<relink-plaintext-1>>/></$link>";
-	wiki.addTiddler({title: 'test', text: "[["+caption+"|from here]]"});
-	wiki.renameTiddler('from here', 'to]]there');
-	expect(utils.getText('test', wiki)).toBe(expected);
-	// That caption is plaintext. It shouldn't be alterable.
-	wiki.renameTiddler(caption, 'something else');
-	expect(utils.getText('test', wiki)).toBe(expected);
-	// It's also not treated as wikitext
-	wiki.renameTiddler('crabshack', 'clambake');
-	expect(utils.getText('test', wiki)).toBe(expected);
-});
-
 it('unquotable and unpretty', function() {
 	// We also have to go to to placeholders if title doesn't work for
 	// prettylinks or widgets.
-	var text = "Link to [[caption|from here]].";
-	var to = 'Has apost\' ``` [[bracks]] and "quotes"';
+	const to = 'Has apost\' ``` [[bracks]] and "quotes"';
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
-	testText(text,
-	         utils.placeholder(1, to) +
-	         "Link to <$link to=<<relink-1>>>caption</$link>.",
-	         ['[[caption]]'], {to: to, wiki: wiki});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test'");
-
 	utils.spyFailures(spyOn);
-	// If rules disable macrodef, then don't placeholder
-	testText("\\rules except macrodef\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true, wiki: wiki});
-	expect(utils.failures).toHaveBeenCalledTimes(1);
-
-	utils.failures.calls.reset();
-	testText("\\rules only prettylink html\n" + text, false, ['[[caption]]'], {to: to, macrodefCanBeDisabled: true, wiki: wiki});
+	testText("Link to [[caption|from here]].", false, ['[[caption]]'], {to: to, wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
-it('unquotable when $link is customized', function() {
+it('unquotable when $link is customized or unset', function() {
 	const wiki = new $tw.Wiki();
 	const to = 'Has apost\' ``` [[bracks]] and "quotes"';
 	wiki.addTiddler(utils.attrConf('$link', 'to', 'reference'));
-	testText('[[caption|from here]]',
-	         utils.placeholder('reference-1', to) +
-	         "<$link to=<<relink-reference-1>>>caption</$link>",
-	         ['[[caption]]'], {to: to, wiki: wiki});
-});
-
-it('unquotable when $link is not set', function() {
-	const to = 'Has apost\' ``` [[bracks]] and "quotes"';
-	testText('[[caption|from here]]',
-	         utils.placeholder('plaintext-1', to) +
-	         "<$link to=<<relink-plaintext-1>>>caption</$link>",
-	         ['[[caption]]'], {to: to});
+	utils.spyFailures(spyOn);
+	testText('[[caption|from here]]', false, ['[[caption]]'], {to: to, wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	utils.failures.calls.reset();
+	testText('[[caption|from here]]', false, ['[[caption]]'], {to: to});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('respects rules', function() {

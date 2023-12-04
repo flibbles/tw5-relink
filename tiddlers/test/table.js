@@ -130,12 +130,12 @@ it('handles errors', function() {
 });
 
 it('unpretty', function() {
-	var tricky = "bad' ``` titles]]\"";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
-	testText('| test |[[from here]]|',
-	         utils.placeholder(1, tricky)+'| test |<$link to=<<relink-1>>/>|',
-	         ['|[[from here]]|'], {to: tricky, wiki: wiki});
+	utils.spyFailures(spyOn);
+	testText('| test |[[from here]]|', false,
+	         ['|[[from here]]|'], {to: "bad' ``` titles]]\"", wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 });

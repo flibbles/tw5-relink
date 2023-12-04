@@ -53,10 +53,10 @@ it('rules pragma', function() {
 });
 
 it('tricky cases', function() {
-	var tricky = "bad' ``` title]]\"";
-	testText("A $:/sys/link please",
-	         utils.placeholder(1,tricky)+"A <$link to=<<relink-1>>/> please",
-	         ['~$:/sys/link'], {from: '$:/sys/link', to: tricky});
+	utils.spyFailures(spyOn);
+	testText("A $:/sys/link please", false, ["~$:/sys/link"],
+	         {from: '$:/sys/link', to: "bad' ``` title]]\""});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 });
