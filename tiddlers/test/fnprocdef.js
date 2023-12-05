@@ -92,7 +92,7 @@ it('does not crash with irregular parameter relink settings', function() {
 });
 
 it('parameters in [function[]] form', function() {
-	testText("\\function test(A) Content\n\\relink test A\n{{{ [function[test],[from here]] }}}", true, ['{{{[function[test],[]]}}}']);
+	testText("\\function func(A) Content\n\\relink func A\n{{{ [function[func],[from here]] }}}", true, ['{{{[function[func],[]]}}}']);
 	testText("\\function test(A) Content\n\\relink test A:reference\n{{{ [function[test],[from here!!text]] }}}", true, ['{{{[function[test],[!!text]]}}}']);
 	testText("\\function test(A B) Content\n\\relink test B\n{{{ [function[test],[X],[from here]] }}}", true, ['{{{[function[test],,[]]}}}']);
 	// No relink instructions
