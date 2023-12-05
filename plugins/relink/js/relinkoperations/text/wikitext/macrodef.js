@@ -23,7 +23,7 @@ exports.report = function(text, callback, options) {
 	var endMatch = getBodyMatch(text, this.parser.pos, m[3]);
 	if (endMatch) {
 		var value = endMatch[2],
-			handler = utils.getType(getActiveType(name, m[2]) || 'wikitext');
+			handler = getActiveHandler(name, m[2]);
 		if (handler) {
 			var entry = handler.report(value, function(title, blurb) {
 				var macroStr = '\\define ' + name + '()';
@@ -50,13 +50,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var endMatch = getBodyMatch(text, this.parser.pos, multiline);
 	if (endMatch) {
 		var value = endMatch[2],
-			type = getActiveType(name, params),
-			handler = utils.getType(type || 'wikitext');
+			handler = getActiveHandler(name, params);
 		if (handler) {
-			// If this is an active relink placeholder, then let's remember it
-			if (type && options.placeholder) {
-				options.placeholder.registerExisting(name, value);
-			}
 			// Relink the contents
 			entry = handler.relink(value, fromTitle, toTitle, options);
 			if (entry && entry.output) {
@@ -93,11 +88,15 @@ function getBodyMatch(text, pos, isMultiline) {
 	return match;
 };
 
-function getActiveType(macroName, parameters) {
+/**This returns the handler to use for a macro
+ * By default, we treat them like wikitext, but Relink used to make funky
+ * little macros as placeholders. If we find one of those, we need to return
+ * the correct handler for what that placeholder represented.
+ */
+function getActiveHandler(macroName, parameters) {
 	var placeholder = /^relink-(?:(\w+)-)?\d+$/.exec(macroName);
 	// normal macro or special placeholder?
-	if (placeholder && parameters === '') {
-		return placeholder[1] || 'title';
-	}
-	return undefined;
+	return utils.getType((placeholder && parameters === '')?
+		(placeholder[1] || 'title'):
+		'wikitext');
 };
