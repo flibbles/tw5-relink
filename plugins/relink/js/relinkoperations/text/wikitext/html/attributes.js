@@ -189,7 +189,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			var macro = attr.value;
 			entry = macrocall.relink(options.settings, macro, parser.source, fromTitle, toTitle, false, options);
 			if (entry && entry.output) {
-				attr.output = macrocall.reassemble(entry.output, parser.source, options);
+				attr.output = macrocall.reassemble(entry, parser.source, options);
 				attr.value = entry.output;
 				changed = true;
 			}

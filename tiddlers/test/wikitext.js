@@ -170,7 +170,7 @@ it('field failures without placeholdering', function() {
 	wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("test", "t"));
 	wiki.addTiddler(utils.macroConf("test", "wiki", "wikitext"));
-	fails("<<test t:'from here'>>", {ignored: true, to: "'A ]]B\"", wiki: wiki});
+	fails("<<test t:'from here'>>", {ignored: true, to: "'A ```]]B\"", wiki: wiki});
 	fails("<<test wiki:[[ <$link to='from here' /> ]]>>", {ignored: true, wiki: wiki, to: "']]``` \""});
 	// Filters (the filter fails
 	fails("{{{[tag[from here]]}}}", {ignored: true, to: "A]G"});

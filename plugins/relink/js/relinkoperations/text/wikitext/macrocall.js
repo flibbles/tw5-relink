@@ -38,7 +38,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 	var entry = macrocall.relink(this.parser.context, macroInfo, text, fromTitle, toTitle, mayBeWidget, options);
 	if (entry && entry.output) {
-		entry.output = macroToString(entry.output, text, names, options);
+		entry.output = macroToString(entry, text, names, this.parser, options);
+		if (entry.output === undefined) {
+			entry.impossible = true;
+		}
 	}
 	return entry;
 };
@@ -51,7 +54,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 exports.relinkAttribute = function(parser, macro, text, fromTitle, toTitle, options) {
 	var entry = macrocall.relink(parser.context, macro, text, fromTitle, toTitle, false, options);
 	if (entry && entry.output) {
-		entry.output = macrocall.reassemble(entry.output, text, options);
+		entry.output = macrocall.reassemble(entry, text, options);
 	}
 	return entry;
 };
@@ -105,7 +108,7 @@ function getInfoFromRule(rule) {
 
 function mustBeAWidget(macro) {
 	for (var i = 0; i < macro.params.length; i++) {
-		if (macro.params[i].type === "macro") {
+		if (macrocall.wrapParameterValue(macro.params[i].value) === undefined) {
 			return true;
 		}
 	}
@@ -116,23 +119,49 @@ function mustBeAWidget(macro) {
  * it was parsed from, returns a new macro that maintains any syntactic
  * structuring.
  */
-function macroToString(macro, text, names, options) {
-	if (mustBeAWidget(macro)) {
-		var attrs = [];
-		for (var i = 0; i < macro.params.length; i++) {
-			var p = macro.params[i];
-			var val;
-			if (p.newValue) {
-				val = p.newValue;
-			} else {
-				val = utils.wrapAttributeValue(p.value);
-			}
-			attrs.push(" "+names[i]+"="+val);
+function macroToString(entry, text, names, parser, options) {
+	var macro = entry.output;
+	if (mustBeAWidget(macro) && parser.context.allowWidgets()) {
+		var widgetString = macroToWidgetString(macro, names);
+		if (widgetString) {
+			// It worked! return it.
+			return widgetString;
 		}
-		return "<$macrocall $name="+utils.wrapAttributeValue(macro.name)+attrs.join('')+"/>";
-	} else {
-		return macrocall.reassemble(macro, text, options);
+		entry.impossible = true;
+		// Otherwise continue on and try macrocall anyways, despite failutes.
 	}
+	return macrocall.reassemble(entry, text, options);
+};
+
+function macroToWidgetString(macro, names) {
+	var attrs = [];
+	for (var i = 0; i < macro.params.length; i++) {
+		var p = macro.params[i];
+		var val;
+		if (p.newValue) {
+			val = p.newValue;
+		} else {
+			val = utils.wrapAttributeValue(p.value);
+		}
+		if (val !== undefined) {
+			var name = p.name;
+			if (name === undefined) {
+				if (names === undefined) {
+					// Oops. We've got to give up here. We can't resolve
+					// the name of one of the parameters.
+					return undefined;
+				} else {
+					name = names[i];
+				}
+			}
+			attrs.push(" "+name+"="+val);
+		} else {
+			// Oops. There's an attribute that can't be quoted. We need
+			// to abort.
+			return undefined;
+		}
+	}
+	return "<$macrocall $name="+utils.wrapAttributeValue(macro.name)+attrs.join('')+"/>";
 };
 
 function getParamNames(parser, macroName, params, options) {

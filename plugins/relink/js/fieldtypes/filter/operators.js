@@ -131,16 +131,18 @@ function relinkMacro(context, text, fromTitle, toTitle, options) {
 	var macro = $tw.utils.parseMacroInvocation(text, 0);
 	var entry = macrocall.relink(context, macro, text, fromTitle, toTitle, false, options);
 	if (entry && entry.output) {
-		var string = macrocall.reassemble(entry.output, text, options);
-		// We remove the surrounding brackets.
-		string = string.substring(2, string.length-2);
-		// And we make sure that no brackets remain
-		if (string.indexOf(">") >= 0) {
-			delete entry.output;
-			entry.impossible = true;
-		} else {
-			entry.output = string;
+		var string = macrocall.reassemble(entry, text, options);
+		if (string !== undefined) {
+			// We remove the surrounding brackets.
+			string = string.substring(2, string.length-2);
+			// And we make sure that no brackets remain
+			if (string.indexOf(">") < 0) {
+				entry.output = string;
+				return entry;
+			}
 		}
+		delete entry.output;
+		entry.impossible = true;
 	}
 	return entry;
 };

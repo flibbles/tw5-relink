@@ -99,21 +99,11 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, mayBeWidget,
 			continue;
 		}
 		var quote = utils.determineQuote(text, param);
-		var quoted = wrapParameterValue(entry.output, quote);
 		var newParam = $tw.utils.extend({}, param);
-		if (quoted === undefined) {
-			if (!mayBeWidget || !options.placeholder) {
-				macroEntry.impossible = true;
-				continue;
-			}
-			var ph = options.placeholder.getPlaceholderFor(entry.output,handler.name);
-			newParam.newValue = "<<"+ph+">>";
-			newParam.type = "macro";
-		} else {
-			newParam.start = newParam.end - (newParam.value.length + (quote.length*2));
-			newParam.value = entry.output;
-			newParam.newValue = quoted;
-		}
+		newParam.start = newParam.end - (newParam.value.length + (quote.length*2));
+		newParam.value = entry.output;
+		newParam.quote = quote;
+		newParam.modified = true;
 		outMacro.params[index] = newParam;
 		modified = true;
 	}
@@ -130,12 +120,18 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, mayBeWidget,
  * The text is the old text the macro was formed from. It's used to preserve
  * whitespace.
  */
-exports.reassemble = function(macro, text, options) {
+exports.reassemble = function(entry, text, options) {
+	var macro = entry.output;
 	var builder = new Rebuilder(text, macro.start);
 	for (var i = 0; i < macro.params.length; i++) {
 		var param = macro.params[i];
-		if (param.newValue) {
-			builder.add(param.newValue, param.start, param.end);
+		if (param.modified) {
+			var newValue = exports.wrapParameterValue(param.value, param.quote);
+			if (newValue === undefined) {
+				entry.impossible = true;
+			} else {
+				builder.add(newValue, param.start, param.end);
+			}
 		}
 	}
 	return builder.results(macro.end);
@@ -218,7 +214,7 @@ function indexOfParameterDef(context, macroName, paramName, options) {
  * These are more permissive. Allows brackets,
  * and slashes and '<' in unquoted values.
  */
-function wrapParameterValue(value, preference) {
+exports.wrapParameterValue = function(value, preference) {
 	var whitelist = ["", "'", '"', '[[', '"""'];
 	var choices = {
 		"": function(v) {return !/([\s>"'=])/.test(v); },

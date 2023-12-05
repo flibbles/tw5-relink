@@ -153,28 +153,27 @@ it('quotation of originalValue', function() {
 
 it('unquotable titles', function() {
 	var to = `to''[]there"`;
-	var ph = utils.placeholder;
 	testText("Macro <<test stuff 'from here'>>.",
-	         ph(1,to)+"Macro <$macrocall $name=test A=stuff Btitle=<<relink-1>>/>.",
+	         "Macro <$macrocall $name=test A=stuff Btitle=`"+to+"`/>.",
 	         ['<<test Btitle>>'], {to: to});
 	testText("<$link to=<<test stuff 'from here'>> />", false,
 	         ['<$link to=<<test Btitle>> />'], {fails: 1, to: to});
-
 	// This one is tricky because an unrelated attribute can't be quoted
 	// the way it was in a macro invocation
 	testText('X<<test A:g>t "from here">>Y',
-	         ph(1,to)+"X<$macrocall $name=test A='g>t' Btitle=<<relink-1>>/>Y",
+	         "X<$macrocall $name=test A='g>t' Btitle=`"+to+"`/>Y",
 	         ['<<test Btitle>>'], {to: to});
-
 	// Even if the toTitle is okay. It can make a list unquotable
 	var apos = "M[]'s";
 	testText('X<<test Clist: \'[[from here]] C"\'>>Y',
-	         ph("list-1",apos+' C"')+'X<$macrocall $name=test Clist=<<relink-list-1>>/>Y',
+	         'X<$macrocall $name=test Clist=`'+apos+' C"`/>Y',
 	         ['<<test Clist>>'], {to: apos});
-
-	// Empty attributes shouldn't get placeholdered, but should be quoted
+	// Without backtics, we'd even have to fail
+	testText('X<<test Clist: \'[[from here]] C"\'>>Y', false,
+	         ['<<test Clist>>'], {to: "```"+apos, fails: 1});
+	// Empty attributes remain, but should be quoted
 	testText('<<test Clist: "" Btitle:"from here">>',
-	         ph(1, to) + "<$macrocall $name=test Clist='' Btitle=<<relink-1>>/>",
+	         "<$macrocall $name=test Clist='' Btitle=`"+to+"`/>",
 	         ['<<test Btitle>>'], {to: to});
 });
 
@@ -189,7 +188,7 @@ it('unquotable wikitext', function() {
 	// but wikitext will still be wrapped if necessary
 	to = "' \"]]}}"; // This can be wrapped in triple-quotes
 	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>",
-	         macro("wikitext-1", 'T <$link to="""'+to+'""" />')+"X<$macrocall $name=test Ewiki=<<relink-wikitext-1>>/>",
+	         'X<$macrocall $name=test Ewiki=`T <$link to="""'+to+'""" />`/>',
 	         ['<<test Ewiki: "<$link to />">>'], {to: to});
 });
 
@@ -206,8 +205,6 @@ it('respects \\rules', function() {
 	testText("\\rules except html\n<<test Btitle:'from here'>>", false,
 	         ['<<test Btitle>>'],
 	         {to: to, fails: 1});
-	testText("\\rules except macrodef\n<<test Btitle:'from here'>>", false,
-	         ['<<test Btitle>>'], {to: to, fails: 1, macrodefCanBeDisabled: true});
 });
 
 it('undefined macros', function() {
@@ -224,7 +221,7 @@ it('undefined macros', function() {
 	testText("<<undef 'from here'>>", false, undefined, {wiki: wiki, fails: 1});
 	var to = `to''[]there"`;
 	testText("<<undef param:'from here'>>",
-	         utils.placeholder(1,to)+"<$macrocall $name=undef param=<<relink-1>>/>",
+	         "<$macrocall $name=undef param=`"+to+"`/>",
 	         ['<<undef param>>'], {wiki: wiki, to: to});
 	// Relink CAN resolve the argument, since it's named, but it needs to
 	// convert into a widget, which it can't do unless ALL arguments can
@@ -242,7 +239,7 @@ it('undefined macros', function() {
 });
 
 it("undefined macros, multiple active parameters", function() {
-	var to = `to''[]there"`;
+	var to = 'to\'\'[]there"';
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.macroConf("undef", "param", "title"),
@@ -368,10 +365,10 @@ it('slashes in macro name', function() {
 	// unquoted attribute
 	// Also, it might goof up our settings system
 	var wiki = new $tw.Wiki();
-	var to = `to''[]there"`;
+	var to = 'to\'\'[]there"';
 	wiki.addTiddler(utils.macroConf("non/attr", "param", "title"));
 	testText('X<<non/attr param:"from here">>Y',
-	         utils.placeholder(1,to)+"X<$macrocall $name='non/attr' param=<<relink-1>>/>Y",
+	         "X<$macrocall $name='non/attr' param=`"+to+"`/>Y",
 	         ['<<non/attr param>>'], {to: to, wiki: wiki});
 });
 
