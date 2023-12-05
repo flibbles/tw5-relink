@@ -72,16 +72,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				var quote = relinkUtils.determineQuote(text, attr);
 				quotedValue = utils.wrapAttributeValue(attr.value, quote)
 				if (quotedValue === undefined) {
-					// The value was unquotable. We need to make
-					// a macro in order to replace it.
-					if (!options.placeholder) {
-						// but we can't...
-						widgetEntry.impossible = true;
-						continue;
-					} else {
-						var value = options.placeholder.getPlaceholderFor(attr.value,attr.handler)
-						quotedValue = "<<"+value+">>";
-					}
+					widgetEntry.impossible = true;
+					continue;
 				}
 				break;
 			case 'indirect':

@@ -252,32 +252,13 @@ it('bad names in filtered attribute values', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
-it('uses macros for literally unquotable titles', function() {
+it('handles failure for string attributes', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
-	var macro = utils.placeholder;
-	function link(number) {
-		return `<$link to=<<relink-${number||1}>>/>`;
-	};
-	var to = 'End\'s with ``` "quotes"';
-	var to2 = 'Another\'```"quotes"';
-	var expectedLink = '<$link to=<<relink-1>>/>';
-	testText("<$link to='from here'/>", macro(1,to)+link(1),
-	         ['<$link to />'], {to: to, wiki: wiki});
-	testText("Before <$link to='from here'/> After",
-	         macro(1,to)+"Before "+link(1)+" After",
-	         ['<$link to />'], {to: to, wiki: wiki});
-	// It'll prefer triple-quotes, but it should still resort to macros.
-	testText('<$link to="""from here"""/>', macro(1,to)+link(1),
-	         ['<$link to />'], {to: to, wiki: wiki});
-	// Only one macro is made, even when multiple instances occur
-	testText("<$link to='from here'/><$link to='from here'/>",
-	         macro(1,to)+link(1)+link(1),
-	         ['<$link to />', '<$link to />'], {to: to, wiki: wiki});
-	// If the first placeholder is taken, take the next
-	testText(macro(1,to)+link(1)+"<$link to='from here'/>",
-	         macro(2,to2)+macro(1,to)+link(1)+link(2),
-	         ['<$link to />'], {to: to2, wiki: wiki});
+	utils.spyFailures(spyOn);
+	testText("<$link to='from here'/>", false,
+	         ['<$link to />'], {to:  'End\'s with ``` "quotes"', wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it("doesn't use macros if forbidden by \\rules", function() {
@@ -287,25 +268,6 @@ it("doesn't use macros if forbidden by \\rules", function() {
 	testText('\\rules except macrodef\n<$link to="from here"/>', false,
 	         ['<$link to />'], {to: "x' ``` y\"", macrodefCanBeDisabled: true, wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
-});
-
-it('uses macros for unquotable wikitext', function() {
-	const wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.attrConf('$link', 'to'));
-	wiki.addTiddler(utils.attrConf("$test", "wiki", "wikitext"));
-	var ph = utils.placeholder;
-
-	var to = "' ]]```\"\"\"";
-	testText("B <$test wiki='X{{from here}}Y' />",
-	         ph("wikitext-1", "X{{"+to+"}}Y")+"B <$test wiki=<<relink-wikitext-1>> />",
-	         ['<$test wiki="{{}}" />'],
-	         {to: to, wiki: wiki});
-
-	to = "' ```]]\"";
-	testText('A <$test wiki="""<$link to="from here" />""" /> B',
-	         ph(1, to)+'A <$test wiki="""<$link to=<<relink-1>> />""" /> B',
-	         ['<$test wiki="<$link to />" />'],
-	         {to: to, wiki: wiki});
 });
 
 it('detects when internal list uses macros', function() {
@@ -472,9 +434,9 @@ it('switches to using backticks when necessary', function() {
 		testText("<$link to='from here'/>", expected, ['<$link to />'], {wiki: wiki, to: to});
 	};
 	function testFail(to) {
-		testText("<$link to='from here'/>", utils.placeholder(1,to)+"<$link to=<<relink-1>>/>", ['<$link to />'], {wiki: wiki, to: to});
-		//expect(utils.failures).toHaveBeenCalledTimes(1);
-		//utils.failures.calls.reset();
+		testText("<$link to='from here'/>", false, ['<$link to />'], {wiki: wiki, to: to});
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+		utils.failures.calls.reset();
 	};
 	if (utils.atLeastVersion("5.3.0")) {
 		testPass('to\'"""there',     '<$link to=`to\'"""there`/>');

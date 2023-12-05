@@ -178,14 +178,19 @@ it('unquotable titles', function() {
 });
 
 it('unquotable wikitext', function() {
-	// wikitext takes care of placeholding itself when it can.
+	// wikitext fails when it's too complicated.
 	var to = "' ``` ]]}}\"";
 	var macro = utils.placeholder;
+	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>", false,
+	         ['<<test Ewiki: "<$link to />">>'], {to: to, fails: 1});
+
+	// but wikitext will still be wrapped if it can
+	to = "' ``` \"}}"; // This can be wrapped in triple-quotes
 	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>",
-	         macro(1, to)+"X<<test Ewiki: 'T <$link to=<<relink-1>> />'>>",
+	         'X<<test Ewiki: [[T <$link to="""'+to+'""" />]]>>',
 	         ['<<test Ewiki: "<$link to />">>'], {to: to});
 
-	// but wikitext will still be wrapped if necessary
+	// Will downgrade to a widget if necessary
 	to = "' \"]]}}"; // This can be wrapped in triple-quotes
 	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>",
 	         'X<$macrocall $name=test Ewiki=`T <$link to="""'+to+'""" />`/>',

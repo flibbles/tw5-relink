@@ -146,42 +146,4 @@ it("respects \\rules", function() {
 	testText("\\rules except macrodef\n" + macro("list-1", "from"), false, undefined, {from: 'from'});
 });
 
-it('Detects globally defined placeholder macros', function() {
-	const to = "' ```]]\"";
-	const wiki = new $tw.Wiki();
-	wiki.addTiddlers([
-		{title: "macros", text: "\\define relink-1() Dummy\nBody", tags: "$:/tags/Macro"},
-		utils.attrConf('$link', 'to')]);
-	testText("<$link to='from here' />\n<$text text=<<relink-1>> />",
-	         macro(2, to) + "<$link to=<<relink-2>> />\n<$text text=<<relink-1>> />",
-	         ['<$link to />'], {wiki: wiki, to: to});
-});
-
-it('Detects imported placeholder macros', function() {
-	const to = "' ```]]\"";
-	const wiki = new $tw.Wiki();
-	wiki.addTiddlers([
-		utils.attrConf('$link', 'to'),
-		{title: "import", text: "\\define relink-1() D\nBody"}]);
-	testText("\\import import\n<$link to='from here' />",
-	         macro(2, to) + "\\import import\n<$link to=<<relink-2>> />",
-	         ['<$link to />'],
-	         {wiki: wiki, to: to});
-});
-
-it('tracks different placeholder categories separately', function() {
-	const wiki = new $tw.Wiki();
-	wiki.addTiddlers([
-		utils.attrConf('$list', 'emptyMessage', 'wikitext'),
-		utils.attrConf('$list', 'filter', 'filter'),
-		utils.operatorConf('title'),
-		{title: 'test', text: '<$list filter="A [[from here]]" emptyMessage="A [[from here]]" />'}]);
-	// This is super tricky, but this used to trick Relink into using a
-	// filter placeholder for both, when it should be using a wikitext
-	// placeholder for the second.
-	wiki.renameTiddler('from here', '\'\"\"\" ```middle');
-	wiki.renameTiddler('\'\"\"\" ```middle', 'to ]] there');
-	expect(utils.getText('test', wiki)).toBe("\\define relink-filter-1() A 'to ]] there'\n\\define relink-wikitext-1() A <$link to='to ]] there'/>\n<$list filter=<<relink-filter-1>> emptyMessage=<<relink-wikitext-1>> />");
-});
-
 });

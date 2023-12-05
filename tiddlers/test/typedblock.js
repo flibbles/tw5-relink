@@ -96,25 +96,6 @@ it('broken', function() {
 	testText('$$$text/plain d\n{{from here}}\n$$$', true, ['{{}}']);
 });
 
-it('makes placeholders', function() {
-	var tricky = "bad' ``` titles]]\"";
-	const wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.attrConf('$link', 'to'));
-	testText('Before\n\n$$$text/vnd.tiddlywiki\n<$link to="from here" />\n$$$\nAfter',
-	         'Before\n\n$$$text/vnd.tiddlywiki\n'+utils.placeholder(1, tricky)+'<$link to=<<relink-1>> />\n$$$\nAfter',
-	         ['<$link to />'], {to: tricky, wiki: wiki});
-});
-
-it('respects existing placeholders', function() {
-	var tricky = "bad' ``` titles]]\"\"\"";
-	const wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.attrConf('$link', 'to'));
-	wiki.addTiddler(utils.attrConf('$button', 'set', 'reference'));
-	testText('\\define relink-1() Anything\n\n$$$text/vnd.tiddlywiki\n<$link to="from here" />\n<<relink-1>>\n$$$\n<$button set="from here!!field" />\nAfter',
-	         utils.placeholder('reference-1', tricky+'!!field') + '\\define relink-1() Anything\n\n$$$text/vnd.tiddlywiki\n'+utils.placeholder(2, tricky)+'<$link to=<<relink-2>> />\n<<relink-1>>\n$$$\n<$button set=<<relink-reference-1>> />\nAfter',
-	         ['<$link to />', '<$button set="!!field" />'], {to: tricky, wiki: wiki});
-});
-
 it('updates placeholders', function() {
 	testText('Before\n\n$$$text/vnd.tiddlywiki\n\\define relink-1() from here\n\n<<relink-1>>\n$$$\nAfter', true, ['\\define relink-1()']);
 });
