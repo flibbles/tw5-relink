@@ -150,7 +150,7 @@ it('respects \\rules', function() {
 	utils.spyFailures(spyOn);
 	function fails(to, text, expected, report) {
 		utils.failures.calls.reset();
-		testText(text, expected, report, {to: to, macrodefCanBeDisabled: true});
+		testText(text, expected, report, {to: to});
 		expect(utils.failures).toHaveBeenCalledTimes(1);
 	};
 	fails("curly {}", "\\rules except html\n{{from here}}", false, ['{{}}']);

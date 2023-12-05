@@ -266,7 +266,7 @@ it("doesn't use macros if forbidden by \\rules", function() {
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	utils.spyFailures(spyOn);
 	testText('\\rules except macrodef\n<$link to="from here"/>', false,
-	         ['<$link to />'], {to: "x' ``` y\"", macrodefCanBeDisabled: true, wiki: wiki});
+	         ['<$link to />'], {to: "x' ``` y\"", wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 

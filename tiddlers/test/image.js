@@ -62,7 +62,7 @@ it("image respects \\rules", function() {
 	};
 	testFails("\\rules except html\n[img[from here]]", "to]there");
 	testFails("\\rules only image macrodef\n[img[from here]]", "to]there");
-	testFails("\\rules except macrodef\n[img[from here]]", '"F]] ```\'"', {macrodefCanBeDisabled: true});
+	testFails("\\rules except macrodef\n[img[from here]]", '"F]] ```\'"');
 });
 
 it("indirect attributes", function() {

@@ -15,8 +15,7 @@ var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")['te
 
 function MarkdownWalker(text, options) {
 	this.wiki = options.wiki;
-	this.options = Object.create(options);
-	this.options.macrodefCanBeDisabled = true;
+	this.options = options;
 	if(!this.mdInlineRuleClasses) {
 		MarkdownWalker.prototype.mdInlineRuleClasses = $tw.modules.createClassesFromModules("relinkmarkdownrule","inline",$tw.MarkdownRuleBase);
 	}
