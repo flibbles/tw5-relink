@@ -33,7 +33,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var names = getParamNames(this.parser, macroInfo.name, macroInfo.params, options);
 	if (names === undefined) {
 		// Needed the definition, and couldn't find it. So if a single
-		// parameter needs to placeholder, just fail.
+		// parameter doesn't work, just fail.
 		mayBeWidget = false;
 	}
 	var entry = macrocall.relink(this.parser.context, macroInfo, text, fromTitle, toTitle, mayBeWidget, options);

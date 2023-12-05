@@ -175,11 +175,9 @@ it("unpretty source", function() {
 
 it("unpretty source and bad widget", function() {
 	const title = '"F]]```\'"'
-	testText("Image [img[Description|from here]] end",
-	         "\\define relink-1() "+title+"\nImage <$image tooltip=Description source=<<relink-1>>/> end",
-	         ['[img[Description]]'],
-	         {to: title});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+title+"' in 'test'");
+	utils.spyFailures(spyOn);
+	testText("Image [img[Description|from here]] end", false, ['[img[Description]]'], {to: title});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 
 });
 

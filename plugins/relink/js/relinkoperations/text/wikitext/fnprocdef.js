@@ -1,10 +1,7 @@
 /*\
 module-type: relinkwikitextrule
 
-Handles pragma macro definitions. Except we only update placeholder macros
-that we may have previously install.
-
-\define relink-?() Tough title
+Handles pragma function/procedure/widget definitions.
 
 \*/
 
