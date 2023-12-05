@@ -65,8 +65,6 @@ exports.relink = function(filterParseTree, fromTitle, toTitle, options) {
 									var entry = handler.relink(operand.text, fromTitle, toTitle, options);
 									if (entry) {
 										if (entry.output) {
-											// TODO: What's this line about?
-											operand.handler = handler.name;
 											output.changed = true;
 											operand.text = entry.output;
 										}

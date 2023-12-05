@@ -108,7 +108,6 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			attr.valueless = true;
 			continue;
 		}
-		// TODO: This = undefined wasn't here before. Does it have to be?
 		var entry = undefined;
 		switch (attr.type) {
 		case 'substituted':
