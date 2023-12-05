@@ -559,8 +559,7 @@ it("wikitext switch", function() {
 	testPragma(link, mdonly, undefined, "false");
 });
 
-it("won't make placeholders with default markdown settings", function() {
-	// because default markdown settings prohibit macrodefs at all.
+it("failures in wikitext don't stop markdown relinking", function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: pragmaTitle, text: defaultPragma},

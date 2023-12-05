@@ -180,7 +180,6 @@ it('unquotable titles', function() {
 it('unquotable wikitext', function() {
 	// wikitext fails when it's too complicated.
 	var to = "' ``` ]]}}\"";
-	var macro = utils.placeholder;
 	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>", false,
 	         ['<<test Ewiki: "<$link to />">>'], {to: to, fails: 1});
 
@@ -231,7 +230,6 @@ it('undefined macros', function() {
 	// Relink CAN resolve the argument, since it's named, but it needs to
 	// convert into a widget, which it can't do unless ALL arguments can
 	// be named (which you can't do without the macro definition).
-	// ALSO: it shouldn't make a placeholder if there's no point.
 	testText("<<undef something param:'from here'>> [[from here]]",
 	         "<<undef something param:'from here'>> [[A] '\"]]",
 	         ['<<undef param>>', '[[from here]]'],

@@ -137,11 +137,9 @@ it('field', function() {
 });
 
 /** This tests that given pieces of wikitext will fail if they're executed
- *  in a wikitext field other than 'text'. In other words, it's testing that
- *  code that would otherwise request placeholders can handle it if it's
- *  not allowed.
+ *  in a wikitext field other than 'text'. Maybe these tests aren't needed??
  */
-it('field failures without placeholdering', function() {
+it('failures in non-text fields', function() {
 	function fails(text, expected, options) {
 		[text, expected, options] = utils.prepArgs(text, expected, options);
 		utils.failures.calls.reset();
@@ -193,8 +191,7 @@ it('field failures without placeholdering', function() {
 	fails("A [[B'// ```\"\"\"|from here]] link", {ignored: true, to: "to]]there"});
 	// Images
 	fails("[img[from here]]", {ignored: true, to: "']] ```\""});
-		// Tricky case. Even though we can't placeholder, we should
-		// still be able to downgrade images into widgets.
+	// Tricky case. We should still be able to downgrade images into widgets.
 	fails("[img[from here]]", "<$image source=A]]B/>", {fails: 0, to: "A]]B"});
 	fails("[img height={{from here!!height}} [from here]]",
 	      "[img height={{']] ```\"!!height}} [from here]]",

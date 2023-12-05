@@ -24,7 +24,19 @@ function testText(text, expected, report, options) {
 	expect(utils.getText('test', wiki)).toEqual(expected);
 };
 
-const macro = utils.placeholder;
+/**Returns the placeholder pragma
+ *
+ * There are times when Relink can't relink in place, so it has to resort
+ * to using macros. This is the macro pattern.
+ */
+function macro(number, value, multiline, newline) {
+	newline = newline || '\n'
+	if (multiline) {
+		return `\\define relink-${number}()${newline}${value}${newline}\\end${newline}`;
+	} else {
+		return `\\define relink-${number}() ${value}${newline}`;
+	}
+};
 
 describe("placeholders", function() {
 

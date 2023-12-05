@@ -92,13 +92,6 @@ it('handles macro parameters inside', function() {
 	testText("{{{ [<macro 'from here'>] }}}", true, ['{{{[<macro A>]}}}'], {wiki: wiki});
 });
 
-it('prefers widget or placeholder', function() {
-	// If filtered transclude uses the parseInBraces method, then the filter
-	// will make a placeholder so that it can be contained in braces, but
-	// that's more drastic than just downgrading to a list.
-	testText("{{{from}}}", "<$list filter=to}}}here/>", ['{{{}}}'], {from: "from", to: "to}}}here"});
-});
-
 it('rightly judges unpretty', function() {
 	function testUnpretty(to) {
 		testText("Test: {{{from}}} inline",
@@ -106,6 +99,7 @@ it('rightly judges unpretty', function() {
 		         ['{{{}}}'],
 		         {from: "from", to: to});
 	};
+	testUnpretty("Curly}}}Closers");
 	// Two curlies seems like an odd number, but it's what the inline rule
 	// looks for since after two, it may include that width information
 	// This WOULD work if it wasn't a filtered transclude.
@@ -148,7 +142,6 @@ it('unpretty (\\rules prohibit widgets)', function() {
 });
 
 it('unpretty and unquotable', function() {
-	var ph = utils.placeholder;
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.attrConf('$list', 'template'),

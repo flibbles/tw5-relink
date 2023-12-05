@@ -76,8 +76,7 @@ it('unpretty and without caption', function() {
 it('unpretty, without caption, and pre 5.1.20', function() {
 	// without a caption, we have to fail in <5.1.20,
 	// It doesn't fill in <$link to="tiddler" /> with the caption of
-	// "tiddler". Also, we must placeholder both caption and "to", or else
-	// we might desync the link with its caption with later name changes.
+	// "tiddler".
 	spyOn(wikitextUtils, 'shorthandPrettylinksSupported').and.returnValue(false);
 	utils.spyFailures(spyOn);
 	testText("Link [[from here]].", false, ['[[from here]]'], {to: "to [bracks]"});
@@ -107,8 +106,6 @@ it('has dangerous caption content', function() {
 });
 
 it('unquotable and unpretty', function() {
-	// We also have to go to to placeholders if title doesn't work for
-	// prettylinks or widgets.
 	const to = 'Has apost\' ``` [[bracks]] and "quotes"';
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));

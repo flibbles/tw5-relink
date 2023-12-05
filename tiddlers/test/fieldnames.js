@@ -282,7 +282,7 @@ it('can handle fieldnamelists', function() {
 	testText("{{{ [fields[other else]] }}}", false, undefined, {wiki: wiki});
 	// Reserved fieldnames
 	testText("{{{ [fields[other text else]] }}}", false, undefined, {wiki: wiki, from: 'text'});
-	// Placeholders can take place
+	// List can't use brackets inside operators. Fail
 	utils.spyFailures(spyOn);
 	testText("{{{ [fields[other from else]] }}}", false, ['{{{[fields[]]}}}'], {wiki: wiki, to: "to there"});
 	expect(utils.failures).toHaveBeenCalledTimes(1);

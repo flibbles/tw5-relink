@@ -96,7 +96,7 @@ it('broken', function() {
 	testText('$$$text/plain d\n{{from here}}\n$$$', true, ['{{}}']);
 });
 
-it('updates placeholders', function() {
+it('updates old-style relink placeholders', function() {
 	testText('Before\n\n$$$text/vnd.tiddlywiki\n\\define relink-1() from here\n\n<<relink-1>>\n$$$\nAfter', true, ['\\define relink-1()']);
 });
 

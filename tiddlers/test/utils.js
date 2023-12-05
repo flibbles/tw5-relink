@@ -150,20 +150,6 @@ exports.addPlugin = function(pluginName, tiddlers, options) {
 	return wiki;
 };
 
-/**Returns the placeholder pragma
- *
- * There are times when Relink can't relink in place, so it has to resort
- * to using macros. This is the macro pattern.
- */
-exports.placeholder = function(number, value, multiline, newline) {
-	newline = newline || '\n'
-	if (multiline) {
-		return `\\define relink-${number}()${newline}${value}${newline}\\end${newline}`;
-	} else {
-		return `\\define relink-${number}() ${value}${newline}`;
-	}
-};
-
 exports.attrConf = function(element, attribute, type) {
 	var prefix = "$:/config/flibbles/relink/attributes/";
 	if (type === undefined) {

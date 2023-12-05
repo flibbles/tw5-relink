@@ -72,7 +72,6 @@ it('failure casese', function() {
 		}
 		testText(input, false, report, options);
 	};
-	var ph = utils.placeholder;
 	var to = "bad[]name";
 	testFail("\\import [tag[from here]prefix[A]]\n", ['\\import [tag[]]'], to);
 	to = "worse[]\"\"\'\'name";

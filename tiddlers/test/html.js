@@ -240,7 +240,6 @@ it('can find recently imported variables in attributes', function() {
 });
 
 it('bad names in filtered attribute values', function() {
-	var ph = utils.placeholder;
 	var to = "brack}}}s";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('tag'));
@@ -411,13 +410,11 @@ it('mixed failure and replacement with macro attributes', function() {
 	testText("<$list filter=`$(var)$ from)$(here`/>", true, ["<$list filter=`` />"],{wiki: wiki, from: "from)$(here", to: "to)$(there"});
 	// Presents of substition near titles
 	testText("<$list filter=`[[from here]] $(sub)$`/>", true, ["<$list filter=`` />"], {wiki: wiki});
-	// TODO: Uncomment this once I remove placeholders
-	//testFail("<$link to=`from here`/>", false, ["<$link to />"],{wiki: wiki, to: "to`\"\"\"'there`"});
+	testFail("<$link to=`from here`/>", false, ["<$link to />"],{wiki: wiki, to: "to`\"\"\"'there`"});
 	testText("<$list filter=`[[from here]] $(other)$`/>", "<$list filter=```to`there` $(other)$```/>", ["<$list filter=`` />"],{wiki: wiki, to: "to`there`"});
 });
 
-// TODO: Uncomment this test too once placeholders are removed
-(utils.atLeastVersion("5.3.0")? xit: xit)('strange edgecase with substitution', function() {
+(utils.atLeastVersion("5.3.0")? it: xit)('strange edgecase with substitution', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler( utils.attrConf('$list', 'filter', 'filter') );
 	// Strange edge case with backtics

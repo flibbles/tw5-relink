@@ -52,7 +52,6 @@ it('altered unWikiLink char', function() {
 });
 
 it('tricky cases', function() {
-	var macro = utils.placeholder;
 	utils.spyFailures(spyOn);
 	testText("A WikiLink now", false, ['~WikiLink'], {to: "bad' title]]```\""});
 	expect(utils.failures).toHaveBeenCalledTimes(1);

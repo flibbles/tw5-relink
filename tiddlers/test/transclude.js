@@ -156,7 +156,6 @@ it('respects \\rules', function() {
 	fails("curly {}", "\\rules except html\n{{from here}}", false, ['{{}}']);
 	fails("curly {}", "\\rules except html\n{{||from here}}", false, ['{{||}}']);
 	fails("curly {}", "\\rules except html\n{{from here||template}}", false, ['{{||template}}']);
-	// Tries to placeholder
 	var to = "{}' \"";
 	fails(to, "\\rules except html\n{{from here}} [[from here]]",
 	          "\\rules except html\n{{from here}} [["+to+"]]",
