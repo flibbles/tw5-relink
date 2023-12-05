@@ -88,10 +88,11 @@ it("filtered attributes", function() {
 	wiki.addTiddler(utils.operatorConf('tag'));
 	testText("[img width={{{[[from here]] [tag[from here]]}}} [s]]", true, ['[img width={{{}}}]', '[img width={{{[tag[]]}}}]'], {wiki: wiki});
 	testText("[img width  =  {{{  [tag[from here]]   }}} [s]]", true, ['[img width={{{[tag[]]}}}]'], {wiki: wiki});
-	testText("[img width={{{[tag[from here]]}}} [s]].",
-	         "\\define relink-1() A]B\n[img width={{{[tag<relink-1>]}}} [s]].",
-	         ['[img width={{{[tag[]]}}}]'], {to: "A]B", wiki: wiki});
 	utils.spyFailures(spyOn);
+	testText("[img width={{{[tag[from here]]}}} [s]].", false, ['[img width={{{[tag[]]}}}]'], {to: "A]B", wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+
+	utils.failures.calls.reset();
 	testText("[img width={{{[r{from here}]}}} [from here]]",
 			 "[img width={{{[r{from here}]}}} [A}}}B]]",
 			 ['[img width={{{[r{}]}}}]', '[img[]]'], {to:"A}}}B"});

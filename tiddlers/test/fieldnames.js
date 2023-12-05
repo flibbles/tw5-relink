@@ -267,10 +267,10 @@ it('can handle filter operators', function() {
 	const wiki = getWiki();
 	wiki.addTiddler(utils.operatorConf("has", "fieldname"));
 	testText("{{{ [has[from]] }}}", true, ['{{{[has[]]}}}'], {wiki: wiki});
-	testText("{{{ [has[from]] }}}",
-	         utils.placeholder('fieldname-1', 'to]]here')+"{{{ [has<relink-fieldname-1>] }}}",
-	         ['{{{[has[]]}}}'], {wiki: wiki, to: 'to]]here'});
 	utils.spyFailures(spyOn);
+	testText("{{{ [has[from]] }}}", false, ['{{{[has[]]}}}'], {wiki: wiki, to: 'to]]here'});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	utils.failures.calls.reset();
 	testText("{{{ [has[from]] }}}", false, ['{{{[has[]]}}}'], {wiki: wiki, to: 'title'});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
@@ -280,12 +280,14 @@ it('can handle fieldnamelists', function() {
 	wiki.addTiddler(utils.operatorConf("fields", "fieldnamelist"));
 	testText("{{{ [fields[other from else]] }}}", true, ['{{{[fields[]]}}}'], {wiki: wiki});
 	testText("{{{ [fields[other else]] }}}", false, undefined, {wiki: wiki});
-	// Placeholders can take place
-	testText("{{{ [fields[other from else]] }}}",
-	         utils.placeholder('fieldnamelist-1', 'other [[to there]] else') + "{{{ [fields<relink-fieldnamelist-1>] }}}", ['{{{[fields[]]}}}'], {wiki: wiki, to: "to there"});
 	// Reserved fieldnames
 	testText("{{{ [fields[other text else]] }}}", false, undefined, {wiki: wiki, from: 'text'});
+	// Placeholders can take place
 	utils.spyFailures(spyOn);
+	testText("{{{ [fields[other from else]] }}}", false, ['{{{[fields[]]}}}'], {wiki: wiki, to: "to there"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	utils.failures.calls.reset();
+	// Reserved fieldnames that fail
 	testText("{{{ [fields[other from else]] }}}", false, ['{{{[fields[]]}}}'], {wiki: wiki, from: 'from', to: "text"});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 	// Handles failure of internal list format
@@ -334,9 +336,9 @@ it('can handle operands of reference type', function() {
 	wiki.addTiddler(utils.operatorConf("list", "reference"));
 	testText('{{{ [list[tiddler!!from]] }}}', true, ['{{{[list[tiddler!!]]}}}'], {wiki: wiki});
 	testText('{{{ [list[tiddler!!from]] }}}', true, ['{{{[list[tiddler!!]]}}}'], {wiki: wiki, to: 't}o'});
-	testText('{{{ [list[tiddler!!from]] }}}',
-	         utils.placeholder('reference-1', 'tiddler!!t]o') + '{{{ [list<relink-reference-1>] }}}',
-	         ['{{{[list[tiddler!!]]}}}'], {wiki: wiki, to: 't]o'});
+	utils.spyFailures(spyOn);
+	testText('{{{ [list[tiddler!!from]] }}}', false, ['{{{[list[tiddler!!]]}}}'], {wiki: wiki, to: 't]o'});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('can handle transcludes in fields or attribute string values', function() {

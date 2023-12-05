@@ -41,29 +41,13 @@ it('executes and logs', function() {
 	expect(console.log).toHaveBeenCalledWith(`Renaming '${from}' to '${to}' in 'test'`);
 });
 
-it('increment to next available number', function() {
-	var to = "to[]this";
-	const wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.operatorConf('title'));
-	testText(
-		macro(1,"something")+"{{{[title[from here]]}}}",
-		macro(2,to)+macro(1,"something")+"{{{[title<relink-2>]}}}",
-		['{{{}}}'],
-		{to: to, wiki: wiki});
-});
-
 it('filter', function() {
 	// Works with the filter placeholders
 	const report = ['\\define relink-filter-1()'];
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('title'));
 	testText(macro("filter-1","[title[from here]]")+"Tiddler body", true, report, {wiki: wiki});
-	testText(
-		macro("filter-1","[title[from here]]")+"Tiddler body",
-		macro(1,"to[]this")+macro("filter-1","[title<relink-1>]")+"Tiddler body",
-		report,
-		{to: "to[]this", wiki: wiki});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to[]this' in 'test'");
+	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
 });
 
 it('list', function() {

@@ -117,9 +117,8 @@ it('parameters in [function[]] form', function() {
 
 it('parameters in [function[]] are ugly', function() {
 	const to = "to]there";
-	testText("\\function test(A) Content\n\\relink test A\n{{{ [function[test],[from here]] }}}",
-	         utils.placeholder(1, to) + "\\function test(A) Content\n\\relink test A\n{{{ [function[test],<relink-1>] }}}",
-	         ['{{{[function[test],[]]}}}'], {to: "to]there"});
+	testText("\\function test(A) Content\n\\relink test A\n{{{ [function[test],[from here]] }}}", false,
+	         ['{{{[function[test],[]]}}}'], {to: "to]there", fails: 1});
 });
 
 });

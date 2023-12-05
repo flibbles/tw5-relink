@@ -51,45 +51,38 @@ it('import pragma', function() {
 	testText('\\import [[from here]]', true, ['\\import']);
 });
 
-it('tricky downgrade', function() {
+it('tricky case', function() {
 	const to = "bad\"\"\'\'[]name";
-	testText("\\import [[from here]]\nstuff",
-	         utils.placeholder(1,to)+"\\import [<relink-1>]\nstuff",
-	         ['\\import'],
-	         {to: to});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test'");
+	utils.spyFailures(spyOn);
+	testText("\\import [[from here]]\nstuff", false, ['\\import'], {to: to});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
-it('resorts to placeholders when possible', function() {
+it('failure casese', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.operatorConf('tag'),
 		utils.operatorConf('list', 'reference'),
 		utils.operatorConf('wiki', 'wikitext')]);
+	utils.spyFailures(spyOn);
+	function testFail(input, report, toTitle, fromTitle) {
+		var options = {to: toTitle, wiki: wiki};
+		if (fromTitle) {
+			options.from = fromTitle;
+		}
+		testText(input, false, report, options);
+	};
 	var ph = utils.placeholder;
 	var to = "bad[]name";
-	testText("\\import [tag[from here]prefix[A]]\n",
-	         ph(1,to)+"\\import [tag<relink-1>prefix[A]]\n",
-	         ['\\import [tag[]]'], {to: to, wiki: wiki});
+	testFail("\\import [tag[from here]prefix[A]]\n", ['\\import [tag[]]'], to);
 	to = "worse[]\"\"\'\'name";
-	testText("\\import [[from here]]\n",
-	         ph(1,to)+"\\import [<relink-1>]\n",
-	         ['\\import'], {to: to, wiki: wiki});
-	testText("\\import from\n",
-	         ph(1,to)+"\\import [<relink-1>]\n",
-	         ['\\import'], {to: to, from: "from", wiki: wiki});
-	testText("\\import +'from here'\n",
-	         ph(1,to)+"\\import +[<relink-1>]\n",
-	         ['\\import +'], {to: to, wiki: wiki});
-	testText("\\import [![from here]]\n",
-	         ph(1,to)+"\\import [!<relink-1>]\n",
-	         ['\\import [![]]'], {to: to, wiki: wiki});
-	testText("\\import [list[from here!!field]]\n",
-	         ph("reference-1", "A]]B!!field")+"\\import [list<relink-reference-1>]\n",
-	         ['\\import [list[!!field]]'], {to: "A]]B", wiki: wiki});
-	testText("\\import [wiki[X {{from here}}]]\n",
-	         ph("wikitext-1","X {{"+to+"}}")+"\\import [wiki<relink-wikitext-1>]\n",
-	         ['\\import [wiki[{{}}]]'], {to: to, wiki: wiki});
+	// This one actually shouldn't have to fail
+	testFail("\\import [[from here]]\n", ['\\import'], to);
+	testFail("\\import from\n", ['\\import'], to, "from");
+	testFail("\\import +'from here'\n", ['\\import +'], to);
+	testFail("\\import [![from here]]\n", ['\\import [![]]'], to);
+	testFail("\\import [list[from here!!field]]\n", ['\\import [list[!!field]]'], "A]]B");
+	testFail("\\import [wiki[X {{from here}}]]\n", ['\\import [wiki[{{}}]]'], to);
 });
 
 it('handles failures', function() {

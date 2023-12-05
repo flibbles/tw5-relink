@@ -239,16 +239,17 @@ it('can find recently imported variables in attributes', function() {
 	         ['<<macro param />'], {wiki: wiki});
 });
 
-it('placeholders bad names in filtered attribute values', function() {
+it('bad names in filtered attribute values', function() {
 	var ph = utils.placeholder;
 	var to = "brack}}}s";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('tag'));
-	testText("<$w a={{{from}}}/>", ph(1,to) + "<$w a={{{[<relink-1>]}}}/>",
-	         ['<$w a={{{}}} />'], {from: "from", to: to});
-	testText("<$w a={{{[tag[from]]}}}/>",
-	         ph(1,to) + "<$w a={{{[tag<relink-1>]}}}/>",
-	         ['<$w a={{{[tag[]]}}} />'], {from: "from", to: to, wiki: wiki});
+	utils.spyFailures(spyOn);
+	testText("<$w a={{{from}}}/>", false, ['<$w a={{{}}} />'], {from: "from", to: to});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	utils.failures.calls.reset();
+	testText("<$w a={{{[tag[from]]}}}/>", false, ['<$w a={{{[tag[]]}}} />'], {from: "from", to: to, wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('uses macros for literally unquotable titles', function() {
@@ -312,11 +313,9 @@ it('detects when internal list uses macros', function() {
 	wiki.addTiddler(utils.attrConf('$list', 'filter', 'filter'));
 	wiki.addTiddler(utils.operatorConf('tag'));
 	var to = "bad[]name";
-	var r = testText("<$list filter='[tag[from here]]'/>",
-	                 utils.placeholder(1,to)+"<$list filter='[tag<relink-1>]'/>",
-	                 ['<$list filter="[tag[]]" />'],
-	                 {to: to, wiki: wiki});
-	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to '"+to+"' in 'test'");
+	utils.spyFailures(spyOn);
+	var r = testText("<$list filter='[tag[from here]]'/>", false, ['<$list filter="[tag[]]" />'], {to: to, wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('ignores blank attribute configurations', function() {

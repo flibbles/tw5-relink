@@ -154,11 +154,11 @@ it('unpretty and unquotable', function() {
 		utils.attrConf('$list', 'template'),
 		utils.attrConf('$list', 'filter', 'filter')]);
 	var weird = 'a\'|" ``` """x';
-	testText("{{{[title[from here]]}}}",
-	         ph(1, "bad[]title")+"{{{[title<relink-1>]}}}",
-	         ['{{{}}}'], {to: 'bad[]title', wiki: wiki});
-	var tooltip = '"tooltips\'s```"';
 	utils.spyFailures(spyOn);
+	testText("{{{[title[from here]]}}}", false, ['{{{}}}'], {to: 'bad[]title', wiki: wiki});
+	var tooltip = '"tooltips\'s```"';
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	utils.failures.calls.reset();
 	testText("{{{Title||from here}}}", false, ['{{{Title||}}}'], {to: weird, wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 	utils.failures.calls.reset();

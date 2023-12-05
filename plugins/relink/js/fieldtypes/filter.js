@@ -116,9 +116,6 @@ function assembleFilterString(parseTree, oldFilter, options) {
 					}
 					relinker.add(wrapped, p, end);
 					wordBarrierRequired = wrapped === text;
-				} else if (options.placeholder) {
-					var ph = options.placeholder.getPlaceholderFor(text);
-					relinker.add('[<' + ph + '>]', p, end);
 				} else {
 					relinker.impossible = true;
 				}
@@ -156,13 +153,8 @@ function assembleFilterString(parseTree, oldFilter, options) {
 						p = oldFilter.indexOf('[', p);
 						end = oldFilter.indexOf(']', p+1);
 						if (!canBePrettyOperand(operand.text) || (options.inBraces && operand.text.indexOf('}}}') >= 0)) {
-							if (options.placeholder) {
-								var ph = options.placeholder.getPlaceholderFor(operand.text, operand.handler);
-								wrapped = '<' + ph + '>';
-							} else {
-								skip = true;
-								relinker.impossible = true;
-							}
+							skip = true;
+							relinker.impossible = true;
 						} else {
 							wrapped = '[' + operand.text + ']';
 						}
