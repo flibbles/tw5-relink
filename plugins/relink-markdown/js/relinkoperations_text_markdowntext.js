@@ -17,7 +17,4 @@ var markdownHandler = require('$:/plugins/flibbles/relink/js/utils.js').getType(
 exports.type = "text/markdown";
 
 exports.report = markdownHandler.report;
-
-exports.relink = function(text, fromTitle, toTitle, options) {
-	return markdownHandler.relink(text, fromTitle, toTitle, options);
-};
+exports.relink = markdownHandler.relink;

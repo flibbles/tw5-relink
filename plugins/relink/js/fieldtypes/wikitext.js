@@ -176,10 +176,6 @@ exports.report = function(wikitext, callback, options) {
 function WikiRelinker(type, text, fromTitle, toTitle, options) {
 	this.fromTitle = fromTitle;
 	this.toTitle = toTitle;
-	this.placeholder = options.placeholder;
-	if (this.placeholder) {
-		this.placeholder.parser = this;
-	}
 	WikiWalker.call(this, type, text, options);
 };
 
