@@ -9,18 +9,16 @@ exports.name = "dummy-type";
 
 exports.aliases = ['old-dummy-type'];
 
+exports.report = function(text, callback, options) {
+	callback(text, "Dummy");
+	callback(text.toLowerCase(), "dummy");
+	callback(text.toUpperCase(), "DUMMY");
+};
+
 exports.relink = function(text, fromTitle, toTitle, options) {
 	// dummy will replaced fully-uppercased versions of fromTitle.
-	// This doesn't work unless the dummy surveyor gives the go-ahead
-	// on strings with the uppercase version of fromTitle.
 	if (text === fromTitle || text === fromTitle.toUpperCase()) {
-		var output = toTitle;
-		// If its defining tiddler has a prepend field, then prepend it
-		// to the output. This is to test fieldtype access to fields.
-		if (this.fields.prepend) {
-			output = this.fields.prepend + output;
-		}
-		return {output: output};
+		return {output: toTitle};
 	}
 	return undefined;
 };

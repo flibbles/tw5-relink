@@ -12,10 +12,6 @@ exports.generate = function(attributes, tiddler, key) {
 	var data = utils.getType(tiddler.fields.text.trim());
 	if (data) {
 		data.source = tiddler.fields.title;
-		// Secret feature. You can access a config tiddler's
-		// fields from inside the fieldtype handler. Cool
-		// tricks can be done with this.
-		data.fields = tiddler.fields;
 		var elem = root(key);
 		var attr = key.substr(elem.length+1);
 		attributes[elem] = attributes[elem] || Object.create(null);
