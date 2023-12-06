@@ -1,0 +1,12 @@
+created: 20231206024836654
+
+\rules except wikilink
+
+* Better implemented substitution attributes. They're better at recognizing potential problems if part of a title might be seen a placeholder.
+* Also, now using substitution as a potential quotation alternative if placeholders aren't present in the title.
+
+Also, I'm ''removing'' the feature where Relink would create placeholing macros as a means of handling tricky relinks. This feature was always overly complicated, and I think less than 1% of users have ever had need of it. And now that backtics can be used as quotation, the chances of these fill-in macros being needed has just reduced again to 1 out of 100 cases.
+
+The code, as a consequence, is easier to understand (and smaller actually with this release). This may be important because I'm considering the idea of discontinuing updates to Relink. TiddlyWiki is moving too fast for me. They're adding features left and right. Some good. Some bad. But either way, I'm not keeping up. I don't have as much time these days to keep Relink up to date. I haven't even finished matching v5.3.0, and already v5.3.2 is out with a slew of new syntax that would all need custom handling.
+
+Hopefully by simplifying Relink, people won't be afraid to add in the modules it needs themselves and offering Pull Requests. This is opensource software.

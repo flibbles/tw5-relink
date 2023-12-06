@@ -6,13 +6,11 @@ This page is meant for the developer so they don't forget what's left to do.
 * The plugin names shown on the whitelist tables are using the descriptions, not the names.
 * Filters could do a better job of renaming title-only entries. i.e. `{{{ [[MyTiddler]] }}}` would become `{{{ [<relink-1>] }}}` on tough renames.
 * Macros cached after encountering `<$importvariables>` should be popped after encountering `</$importvariables>`.
-* Document the filters included with //Relink//.
 * Write tests to confirm relink:references filter, and its interaction with the to-update filter.
 ** Also, ensure that relink:references works on input and isn't a generator. This may require creating [all[relinkable]]
 * Possible issue with `<$importvariables>` widgets being called whose attributes depend on macros defined immediately preceding the widget call. `\define macro() blah\n\n<$importvariables filter=<<blah>> >...`
 ** And I need to track variables set in `<$set>` even though those aren't ever involved in relinking. They may be part of an importvariables attribute value.
 * macrocall relinker rule doesn't do any logging.
-* Better respect for global rules settings when making placeholder or downgrade decisions.
 
 !!! Markdown
 
