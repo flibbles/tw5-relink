@@ -87,7 +87,7 @@ exports.report = function(text, callback, options) {
 	if (isImage || hasHash) {
 		var safeCaption = utils.abridge(caption);
 		try {
-			var decodedLink = decodeURIComponent(link);
+			var decodedLink = utils.decodeLink(link);
 			// If the link doesn't have a hash, it can't have any escaping
 			if (hasHash || (decodedLink === link)) {
 				callback(decodedLink, em[1] + '[' + safeCaption + '](' + hash + ')');
@@ -129,7 +129,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	// have any escaping.
 	var hasHash = em[3].lastIndexOf('#') >= 0;
 	try {
-		var decodedLink = decodeURIComponent(link);
+		var decodedLink = utils.decodeLink(link);
 		if (hasHash || (isImage && (decodedLink === link))) {
 			if (decodedLink === fromTitle) {
 				link = utils.encodeLink(toTitle);

@@ -26,7 +26,7 @@ exports.report = function(text, callback, options) {
 		entry;
 	this.parser.pos = m.index + m[0].length;
 	try {
-		decodedLink = decodeURIComponent(m[4]);
+		decodedLink = utils.decodeLink(m[4]);
 	} catch (e) {
 		// The link is malformed. Just skip it.
 		return;
@@ -43,7 +43,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		decodedLink;
 	this.parser.pos = m.index + m[0].length;
 	try {
-		decodedLink = decodeURIComponent(m[4]);
+		decodedLink = utils.decodeLink(m[4]);
 	} catch (e) {
 		// The link is malformed. Just skip it.
 		return;

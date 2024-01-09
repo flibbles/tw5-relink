@@ -115,6 +115,19 @@ it('links with tricky characters', function() {
 	expect(utils.getText('test', wiki)).toBe('[Caption](#to)');
 });
 
+// For issues #50
+it('links and footnotes with escaped parenthesis and backslashes', function() {
+	// links
+	test("[c](#Some\\(parens\\))", "[c](#to)", ['[c](#)'], {from: 'Some(parens)'});
+	test("[c](#Some\\\\extra\\\\(slashes))", "[c](#to)", ['[c](#)'], {from: 'Some\\extra\\(slashes)'});
+	test("[c](#EndSlash\\\\)", "[c](#to)", ['[c](#)'], {from: 'EndSlash\\'});
+	test("[c](#EndSlash\\\\)", "[c](#to)", ['[c](#)'], {from: 'EndSlash\\'});
+	// footnotes
+	test("[1]:#Some\\(paren\\)", "[1]:#to", ['[1]:'], {from: 'Some(paren)'});
+	test("[1]:#Malformed\\", false, undefined, {from: 'Malformed\\'});
+	test("[1]:#Wellformed\\\\", "[1]:#to", ['[1]:'], {from: 'Wellformed\\'});
+});
+
 // See issue #45
 it('handles UTF characters gracefully', function() {
 	test("[c](#from)", true, ['[c](#)'], {to: "文字"});

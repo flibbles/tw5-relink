@@ -59,6 +59,18 @@ exports.encodeLink = function(title) {
 	return encoded;
 };
 
+exports.decodeLink = function(link) {
+	var array = [];
+	var index = 0;
+	var slash;
+	while ((slash = link.indexOf('\\', index+1)) >= 0) {
+		array.push(link.substring(index,slash));
+		index = slash+1;
+	}
+	array.push(link.substr(index));
+	return decodeURIComponent(array.join(''));
+};
+
 // Returns index of next paragraph, or -1
 exports.indexOfParagraph = function(text, startPos) {
 	var regExp = /\n\s*\n/mg;
