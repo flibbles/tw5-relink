@@ -1,0 +1,5 @@
+created: 20240109160128939
+
+\rules except wikilink
+
+* Release for Relink-markdown only. Fixed issue where backslash-escaped parenthesis in markdown links were not getting reported or relinked.
