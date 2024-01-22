@@ -14,22 +14,25 @@ exports.report = function(text, callback, options) {
 	var setParseTreeNode = this.parse(),
 		m = this.match,
 		name = m[2];
-	this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
+	var context = this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, m[5]);
 	if (endMatch) {
 		var value = endMatch[2],
-			handler = getHandler(m[1]);
+			handler = getHandler(m[1]),
+			newOptions = Object.create(options);
+		newOptions.settings = context;
 		var entry = handler.report(value, function(title, blurb) {
 			var macroStr = '\\' + m[1] + ' ' + name + '()';
 			if (blurb) {
 				macroStr += ' ' + blurb;
 			}
 			callback(title, macroStr);
-		}, options);
+		}, newOptions);
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
+	context.parameterFocus = false;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -39,20 +42,23 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		name = m[2],
 		params = m[3],
 		multiline = m[5];
-	this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
+	var context = this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, multiline);
 	if (endMatch) {
 		var value = endMatch[2],
-		handler = getHandler(m[1]);
+			handler = getHandler(m[1]);
+			newOptions = Object.create(options);
+		newOptions.settings = context;
 		// Relink the contents
-		entry = handler.relink(value, fromTitle, toTitle, options);
+		entry = handler.relink(value, fromTitle, toTitle, newOptions);
 		if (entry && entry.output) {
 			entry.output = m[0] + endMatch[1] + entry.output + endMatch[0];
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
+	context.parameterFocus = false;
 	return entry;
 };
 

@@ -10,14 +10,25 @@ function VariableContext(parent, setParseTreeNode) {
 	this.parent = parent;
 	// Now create a new widget and attach it.
 	var attachPoint = parent.widget;
-	var setWidget = attachPoint.makeChildWidget(setParseTreeNode);
-	attachPoint.children.push(setWidget);
-	setWidget.computeAttributes();
-	setWidget.execute();
+	this.setWidget = attachPoint.makeChildWidget(setParseTreeNode);
+	attachPoint.children.push(this.setWidget);
+	this.setWidget.computeAttributes();
+	this.setWidget.execute();
 	// point our widget to bottom, where any other contexts would attach to
-	this.widget = this.getBottom(setWidget);
+	this.widget = this.getBottom(this.setWidget);
+	this.parameterFocus = true;
 };
 
 exports.variable = VariableContext;
 
 VariableContext.prototype = new WidgetContext();
+
+VariableContext.prototype.addParameter = function(parameter, index) {
+	if(this.parameterFocus) {
+		var name = this.setWidget.setName;
+		var data = this.setWidget.variables[name];
+		data.params[index] = {name: parameter};
+	} else if (this.parent) {
+		this.parent.addParameter(parameter, index);
+	}
+};

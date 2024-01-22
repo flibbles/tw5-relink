@@ -17,13 +17,15 @@ exports.report = function(text, callback, options) {
 	var setParseTreeNode = this.parse(),
 		m = this.match,
 		name = m[1];
-	this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
+	var context = this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, m[3]);
 	if (endMatch) {
 		var value = endMatch[2],
-			handler = getActiveHandler(name, m[2]);
+			handler = getActiveHandler(name, m[2]),
+			newOptions = Object.create(options);
+		newOptions.settings = context;
 		if (handler) {
 			var entry = handler.report(value, function(title, blurb) {
 				var macroStr = '\\define ' + name + '()';
@@ -31,10 +33,11 @@ exports.report = function(text, callback, options) {
 					macroStr += ' ' + blurb;
 				}
 				callback(title, macroStr);
-			}, options);
+			}, newOptions);
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
+	context.parameterFocus = false;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -44,22 +47,25 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		name = m[1],
 		params = m[2],
 		multiline = m[3];
-	this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
+	var context = this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, multiline);
 	if (endMatch) {
 		var value = endMatch[2],
-			handler = getActiveHandler(name, params);
+			handler = getActiveHandler(name, params),
+			newOptions = Object.create(options);
+		newOptions.settings = context;
 		if (handler) {
 			// Relink the contents
-			entry = handler.relink(value, fromTitle, toTitle, options);
+			entry = handler.relink(value, fromTitle, toTitle, newOptions);
 			if (entry && entry.output) {
 				entry.output = m[0] + endMatch[1] + entry.output + endMatch[0];
 			}
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
+	context.parameterFocus = false;
 	return entry;
 };
 
