@@ -505,5 +505,25 @@ it('supports widgets that support regexp matching fields to attrs', function() {
 	         ['<$action-deletefield myfield />'], {wiki: wiki});
 });
 
+it('supports messages using $action-sendmessage', function() {
+	const wiki = new $tw.Wiki();
+	const prefix = "$:/config/flibbles/relink/messages/";
+	wiki.addTiddlers([
+		utils.fieldConf("myfield"),
+		utils.fieldConf("$value"),
+		utils.fieldConf("myref", "reference"),
+		$tw.wiki.getTiddler(prefix + "tm-new-tiddler")]);
+	testText('<$button><$action-sendmessage $message=tm-new-tiddler title=T myfield="from here" />', true,
+	         ['<$action-sendmessage tm-new-tiddler myfield />'],
+	         {wiki: wiki});
+	testText('<$button><$action-sendmessage $message=tm-new-tiddler title=T myref="from here!!field" />', true,
+	         ['<$action-sendmessage tm-new-tiddler myref="!!field" />'],
+	         {wiki: wiki});
+	// These cases should not be touched
+	testText('<$button><$action-sendmessage $message={{tm-new-tiddler}} title=T myfield="from here" />', false, undefined, {wiki: wiki});
+	testText('<$button><$action-sendmessage $message=<<tm-new-tiddler>> title=T myfield="from here" />', false, undefined, {wiki: wiki});
+	testText('<$button><$action-sendmessage title=T myfield="from here" />', false, undefined, {wiki: wiki});
+	testText('<$button><$action-sendmessage title=T $value="from here" />', false, undefined, {wiki: wiki});
+});
 
 });
