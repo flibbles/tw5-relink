@@ -44,4 +44,10 @@ it('handles parameters on widgets', function() {
 	testText("\\widget $.test(old)\n<<param>>\n\\end\n\\parameters(param)\n\\relink $.test param\n<<$.test 'from here'>>", false);
 });
 
+it('handles the $parameters widget', function() {
+	testText("\\procedure test()\n<$parameters first=1 param=def />\n<<param>>\n\\end\n\\relink test param\n<<test 1 'from here'>>", true, ['<<test param>>']);
+	testText("\\procedure test()\n<$parameters $parseMode=mode param=def />\n<<param>>\n\\end\n\\relink test param\n<<test 'from here'>>", true, ['<<test param>>']);
+	testText("\\procedure test()\n<$parameters first=1 $$param=def />\n<<$param>>\n\\end\n\\relink test $param\n<<test 1 'from here'>>", true, ['<<test $param>>']);
+});
+
 });

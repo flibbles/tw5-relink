@@ -48,7 +48,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var endMatch = getBodyMatch(text, this.parser.pos, multiline);
 	if (endMatch) {
 		var value = endMatch[2],
-			handler = getHandler(m[1]);
+			handler = getHandler(m[1]),
 			newOptions = Object.create(options);
 		newOptions.settings = context;
 		// Relink the contents

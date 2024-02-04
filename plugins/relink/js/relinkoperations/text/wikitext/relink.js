@@ -90,7 +90,7 @@ function interpretSettings(rule, block) {
 	var paramString = rule.match[2];
 	if (paramString !== "") {
 		var macro = rule.match[1];
-		var reParam = /\s*([A-Za-z0-9\-_]+)(?:\s*:\s*([^\s]+))?/mg;
+		var reParam = /\s*([$A-Za-z0-9\-_]+)(?:\s*:\s*([^\s]+))?/mg;
 		var paramMatch = reParam.exec(paramString);
 		while (paramMatch) {
 			var parameter = paramMatch[1];
