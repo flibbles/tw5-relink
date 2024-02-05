@@ -1,0 +1,15 @@
+caption: {{$:/plugins/flibbles/relink-variables/language/TiddlerInfo/Caption}}
+tags: $:/tags/TiddlerInfo
+title: $:/plugins/flibbles/relink-variables/TiddlerInfo/References
+
+\define lingo-base() $:/plugins/flibbles/relink-variables/language/TiddlerInfo/
+\define filter() [all[current]relink:backreferences[]!title[$:/StoryList]!prefix[$:/temp/]sort[title]]
+\whitespace trim
+<$list filter="[subfilter<filter>first[]]">
+<<lingo Description>>
+</$list>
+<table class="tc-relink-references-table">
+<tbody>
+<$list filter=<<filter>> emptyMessage=<<lingo Empty>> variable="listItem" template="$:/plugins/flibbles/relink/ui/TiddlerInfo/ReferencesTemplate" />
+</tbody>
+</table>

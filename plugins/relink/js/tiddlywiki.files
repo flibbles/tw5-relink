@@ -165,6 +165,19 @@
 				},
 				"type": "application/javascript"
 			}
+		},
+		{
+			"path": "./utils/macrocall",
+			"filesRegExp": "^.*\\.js$",
+			"isTiddlerFile": true,
+			"fields": {
+				"module-type": "relinkmacrocall",
+				"title": {
+					"source": "filename",
+					"prefix": "$:/plugins/flibbles/relink/js/utils/macrocall/"
+				},
+				"type": "application/javascript"
+			}
 		}
 	]
 }
