@@ -23,6 +23,6 @@ function operate(rule, options) {
 	var attributes = parseTreeNode[0].orderedAttributes;
 	for (var i = 0; i < attributes.length; i++) {
 		var attribute = attributes[i].name;
-		parser.context.addParameter(attribute, i);
+		parser.context.addParameter(attribute);
 	}
 };

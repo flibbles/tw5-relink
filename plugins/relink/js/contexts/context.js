@@ -55,8 +55,8 @@ Context.prototype.hasImports = function(value) {
 	return this.parent.hasImports(value);
 };
 
-Context.prototype.addParameter = function(parameter, index) {
+Context.prototype.addParameter = function(parameter) {
 	if(this.parent) {
-		return this.parent.addParameter(parameter, index);
+		return this.parent.addParameter(parameter);
 	}
 };

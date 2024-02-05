@@ -23,12 +23,12 @@ exports.variable = VariableContext;
 
 VariableContext.prototype = new WidgetContext();
 
-VariableContext.prototype.addParameter = function(parameter, index) {
+VariableContext.prototype.addParameter = function(parameter) {
 	if(this.parameterFocus) {
 		var name = this.setWidget.setName;
 		var data = this.setWidget.variables[name];
-		data.params[index] = {name: parameter};
+		data.params.push({name: parameter});
 	} else if (this.parent) {
-		this.parent.addParameter(parameter, index);
+		this.parent.addParameter(parameter);
 	}
 };

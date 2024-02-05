@@ -28,20 +28,20 @@ beforeEach(function() {
 
 it('handles parameters on macros', function() {
 	testText("\\define test()\n\\parameters(param)\n<<param>>\n\\end\n\\relink test param\n<<test 'from here'>>", true, ['<<test param>>']);
-	testText("\\define test(old)\n\\parameters(param)\n<<param>>\n\\end\n\\relink test param\n<<test 'from here'>>", true, ['<<test param>>']);
-	testText("\\define test(old)\n<<param>>\n\\end\n\\parameters(param)\n\\relink test param\n<<test 'from here'>>", false);
+	testText("\\define test(old)\n\\parameters(param)\n<<param>>\n\\end\n\\relink test param\n<<test val 'from here'>>", true, ['<<test param>>']);
+	testText("\\define test()\n<<param>>\n\\end\n\\parameters(param)\n\\relink test param\n<<test 'from here'>>", false);
 });
 
 it('handles parameters on procedures', function() {
 	testText("\\procedure test()\n\\parameters(param)\n<<param>>\n\\end\n\\relink test param\n<<test 'from here'>>", true, ['<<test param>>']);
-	testText("\\procedure test(old)\n\\parameters(param)\n<<param>>\n\\end\n\\relink test param\n<<test 'from here'>>", true, ['<<test param>>']);
+	testText("\\procedure test(old)\n\\parameters(param)\n<<param>>\n\\end\n\\relink test param\n<<test val 'from here'>>", true, ['<<test param>>']);
 	testText("\\procedure test()\n<<param>>\n\\end\n\\parameters(param)\n\\relink test param\n<<test 'from here'>>", false);
 });
 
 it('handles parameters on widgets', function() {
 	testText("\\widget $.test()\n\\parameters(param)\n<<param>>\n\\end\n\\relink $.test param\n<<$.test 'from here'>>", true, ['<<$.test param>>']);
-	testText("\\widget $.test(old)\n\\parameters(param)\n<<param>>\n\\end\n\\relink $.test param\n<<$.test 'from here'>>", true, ['<<$.test param>>']);
-	testText("\\widget $.test(old)\n<<param>>\n\\end\n\\parameters(param)\n\\relink $.test param\n<<$.test 'from here'>>", false);
+	testText("\\widget $.test(old)\n\\parameters(param)\n<<param>>\n\\end\n\\relink $.test param\n<<$.test val 'from here'>>", true, ['<<$.test param>>']);
+	testText("\\widget $.test()\n<<param>>\n\\end\n\\parameters(param)\n\\relink $.test param\n<<$.test 'from here'>>", false);
 });
 
 it('handles the $parameters widget', function() {

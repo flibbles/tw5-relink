@@ -30,7 +30,7 @@ function processParameters(element, parser, options) {
 				continue;
 			}
 		}
-		parser.context.addParameter(attribute, index);
+		parser.context.addParameter(attribute);
 		++index;
 	}
 };
