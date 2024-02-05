@@ -67,7 +67,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var endOfFilter = this.terminateIfMatch.index;
 	while (true) {
 		if (filter) {
-			entry = filterRelinker.relink(filter, fromTitle, toTitle, options);
+			var entry = filterRelinker.relink(filter, fromTitle, toTitle, options);
 			if (entry) {
 				if (entry.output) {
 					if (entry.output.indexOf('%>') > 0) {

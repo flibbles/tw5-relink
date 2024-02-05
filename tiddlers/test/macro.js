@@ -398,13 +398,50 @@ it('$macrocall', function() {
 	testText("<$macrocall $name=test Btitle='from here' other=<<anything>> />", true, ['<<test Btitle />']);
 });
 
-it('$macrocall imposssibles', function() {
+it('$macrocall impossibles', function() {
 	testText("<$macrocall $name=test Clist=from />",
 	         "<$macrocall $name=test Clist=from />",
 	         ['<<test Clist />'],
 	         {from: "from", to: "t ]] o", fails: 1});
 	testText("<$macrocall $name=test Clist=from Btitle=from />",
 	         "<$macrocall $name=test Clist=from Btitle='t ]] o' />",
+	         ['<<test Clist />', '<<test Btitle />'],
+	         {from: "from", to: "t ]] o", fails: 1});
+});
+
+(utils.atLeastVersion('5.3.0') ? it : xit)('$transclude', function() {
+	testText("<$transclude $variable=test A=stuff Btitle='from here' Clist='[[from here]]' Dref='from here##index' />", true,
+	         ['<<test Btitle />', '<<test Clist />', '<<test Dref="##index" />']);
+	// not having $name shouldn't cause a crash
+	testText("<$transclude Btitle='from here' />", false, undefined);
+	// unmanaged macros shouldn't cause problems either
+	testText("<$transclude $variable=none value='from here' />", false, undefined);
+	// leaves other attributes alone
+	// Unreported Issue: Relink would change unrelated macro parameters too.
+	// if they came after something that got relinked.
+	testText("<$transclude $variable=test Btitle='from here' other=<<anything>> />", true, ['<<test Btitle />']);
+});
+
+(utils.atLeastVersion('5.3.0') ? it : xit)('$transclude and $reserved attributes', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.macroConf("test", "$title"),
+		utils.macroConf("test", "$mode"),
+		{title: "testMacro", tags: "$:/tags/Macro",
+		 text: "\\procedure test($title, $mode) stuff\n"}]);
+	testText("<$transclude $variable=test $$title='from here' />", true, ['<<test $title />'], {wiki: wiki});
+	testText("<$transclude $variable=test $title='from here' />", false, undefined, {wiki: wiki});
+	testText("<$transclude $variable=test title='from here' />", false, undefined, {wiki: wiki});
+	testText("<$transclude $variable=test $$mode='from here' />", true, ['<<test $mode />'], {wiki: wiki});
+	testText("<$transclude $variable=test $mode='from here' />", false, undefined, {wiki: wiki});
+});
+(utils.atLeastVersion('5.3.0') ? it : xit)('$transclude impossibles', function() {
+	testText("<$transclude $variable=test Clist=from />",
+	         "<$transclude $variable=test Clist=from />",
+	         ['<<test Clist />'],
+	         {from: "from", to: "t ]] o", fails: 1});
+	testText("<$transclude $variable=test Clist=from Btitle=from />",
+	         "<$transclude $variable=test Clist=from Btitle='t ]] o' />",
 	         ['<<test Clist />', '<<test Btitle />'],
 	         {from: "from", to: "t ]] o", fails: 1});
 });
