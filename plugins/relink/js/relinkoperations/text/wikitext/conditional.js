@@ -22,15 +22,17 @@ exports.report = function(text, callback, options) {
 	this.parser.pos = this.terminateIfMatch.index + this.terminateIfMatch[0].length;
 	var ex;
 	var filter = this.parser.source.substring(match.index + match[0].length, this.terminateIfMatch.index);
-	do {
-		filterRelinker.report(filter, function(title, blurb) {
-			if (blurb) {
-				blurb = keyword + blurb + ' %>';
-			} else {
-				blurb = keyword + '%>';
-			}
-			callback(title, blurb);
-		}, options);
+	while (true) {
+		if (filter) {
+			filterRelinker.report(filter, function(title, blurb) {
+				if (blurb) {
+					blurb = keyword + blurb + ' %>';
+				} else {
+					blurb = keyword + '%>';
+				}
+				callback(title, blurb);
+			}, options);
+		}
 		var hasLineBreak = doubleLineBreakAtPos(this.parser);
 		// Parse the body looking for else or endif
 		if (hasLineBreak) {
@@ -47,41 +49,36 @@ exports.report = function(text, callback, options) {
 				continue;
 			} else if (ex.match[2] === "else") {
 				reEndString = "\\<\\%\\s*(endif)\\s*\\%\\>";
+				filter = null;
 				continue;
 			}
 		}
 		break;
-	} while (true);
-	var hasLineBreak = doubleLineBreakAtPos(this.parser);
-	// Parse the body looking for else or endif
-	if (hasLineBreak) {
-		ex = this.parser.parseBlocksTerminatedExtended(reEndString);
-	} else {
-		var reEnd = new RegExp(reEndString,"mg");
-		ex = this.parser.parseInlineRunTerminatedExtended(reEnd,{eatTerminator: true});
 	}
-	/*
-	if (!$tw.utils.isLinkExternal(link)) {
-		callback(link, '[[' + text + ']]');
-	}
-	this.parser.pos = this.matchRegExp.lastIndex;
-	*/
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var conditionEntry = {};
 	var builder = new Rebuilder(text, this.match.index);
-	var match = this.match;
 	var reEndString = "\\<\\%\\s*(endif)\\s*\\%\\>|\\<\\%\\s*(else)\\s*\\%\\>|\\<\\%\\s*(elseif)\\s+([\\s\\S]+?)\\%\\>";
 	this.parser.pos = this.terminateIfMatch.index + this.terminateIfMatch[0].length;
 	var ex;
-	var filter = this.parser.source.substring(match.index + match[0].length, this.terminateIfMatch.index);
+	var filter = this.parser.source.substring(this.match.index + this.match[0].length, this.terminateIfMatch.index);
 	var endOfFilter = this.terminateIfMatch.index;
-	do {
+	while (true) {
 		if (filter) {
 			entry = filterRelinker.relink(filter, fromTitle, toTitle, options);
-			if (entry !== undefined && entry.output) {
-				builder.add(entry.output, endOfFilter - filter.length, endOfFilter);
+			if (entry) {
+				if (entry.output) {
+					if (entry.output.indexOf('%>') > 0) {
+						builder.impossible = true;
+					} else {
+						builder.add(entry.output, endOfFilter - filter.length, endOfFilter);
+					}
+				}
+				if (entry.impossible) {
+					builder.impossible = true;
+				}
 			}
 		}
 		var hasLineBreak = doubleLineBreakAtPos(this.parser);
@@ -94,13 +91,17 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		}
 		for (var i = 0; i < ex.tree.length; i++) {
 			var child = ex.tree[i];
-			builder.add(child.output, child.start, child.end);
+			if (child.output) {
+				builder.add(child.output, child.start, child.end);
+			}
+			if (child.impossible) {
+				builder.impossible = true;
+			}
 		}
 		if (ex.match) {
-			match = ex.match;
 			if (ex.match[3] === "elseif") {
 				filter = ex.match[4];
-				endOfFilter = match.index + match[0].length - 2;
+				endOfFilter = ex.match.index + ex.match[0].length - 2;
 				continue;
 			} else if (ex.match[2] === "else") {
 				filter = null;
@@ -109,7 +110,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 		}
 		break;
-	} while (true);
+	}
 	if (builder.changed() || builder.impossible) {
 		conditionEntry = {
 			output: builder.results(this.parser.pos),
