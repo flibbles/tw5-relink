@@ -78,6 +78,10 @@ WikiWalker.prototype.parseInlineRunUnterminated = function(options) {
 };
 
 WikiWalker.prototype.parseInlineRunTerminated = function(terminatorRegExp,options) {
+    return this.parseInlineRunTerminatedExtended(terminatorRegExp,options).tree;
+};
+
+WikiWalker.prototype.parseInlineRunTerminatedExtended = function(terminatorRegExp,options) {
 	var entries = [];
 	options = options || {};
 	terminatorRegExp.lastIndex = this.pos;
@@ -90,7 +94,10 @@ WikiWalker.prototype.parseInlineRunTerminated = function(terminatorRegExp,option
 				if (options.eatTerminator) {
 					this.pos += terminatorMatch[0].length;
 				}
-				return entries;
+				return {
+					match: terminatorMatch,
+					tree: entries
+				};
 			}
 		}
 		if (inlineRuleMatch) {
@@ -104,7 +111,7 @@ WikiWalker.prototype.parseInlineRunTerminated = function(terminatorRegExp,option
 		}
 	}
 	this.pos = this.sourceLength;
-	return entries;
+	return {tree: entries};
 
 };
 
