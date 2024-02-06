@@ -25,8 +25,14 @@ exports.report = function(element, parser, callback, options) {
 	default:
 		return;
 	}
-	var name = element.attributes[nameAttr].value;
-	callback(utils.prefix + name, element.tag);
+	var nameAttr = element.attributes[nameAttr];
+	if (nameAttr) {
+		var name = nameAttr.value;
+		var def = options.settings.getMacroDefinition(name);
+		if (def) {
+			callback(utils.prefix + def.tiddler + ' ' + name, element.tag);
+		}
+	}
 };
 
 exports.relink = function(element, parser, fromTitle, toTitle, options) {
@@ -41,17 +47,22 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 	default:
 		return;
 	}
-	var cleanFrom = utils.removePrefix(fromTitle);
-	if (cleanFrom !== null) {
-		var attr = element.attributes[nameAttr];
-		var name = attr.value;
-		if (name === cleanFrom) {
-			var cleanTo = utils.removePrefix(toTitle);
-			if (!cleanTo) {
-				return {impossible: true};
+	var attr = element.attributes[nameAttr];
+	if (attr) {
+		var cleanFrom = utils.removePrefix(fromTitle);
+		if (cleanFrom !== null) {
+			var name = attr.value;
+			var def = options.settings.getMacroDefinition(name);
+			if (def) {
+				if (cleanFrom === def.tiddler + ' ' + name) {
+					var cleanTo = utils.removePrefix(toTitle, def.tiddler);
+					if (!cleanTo) {
+						return {impossible: true};
+					}
+					attr.value = cleanTo;
+					return {output: true};
+				}
 			}
-			attr.value = cleanTo;
-			return {output: true};
 		}
 	}
 };

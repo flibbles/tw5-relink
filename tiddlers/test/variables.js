@@ -23,14 +23,14 @@ function testText(text, expected, report, options) {
 		expected = text;
 	}
 	wiki.addTiddler({title: 'test', text: text});
-	wiki.addTiddler({title: 'global', tags: "$:/tags/global", text: "\\procedure " + options.from + "() content"});
-	var prefix = variablePrefix;
+	wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\procedure " + options.from + "() content"});
+	var prefix = variablePrefix + "global ";
 	expect(utils.getReport('test', wiki)[prefix + options.from]).toEqual(report);
 	wiki.renameTiddler(prefix + options.from, prefix + options.to, options);
 	expect(utils.getText('test', wiki)).toEqual(expected);
 };
 
-fdescribe('variables', function() {
+describe('variables', function() {
 
 beforeEach(function() {
 	spyOn(console, 'log');
@@ -41,6 +41,7 @@ it('$transclude', function() {
 	// The following don't replace
 	testText("<$transclude $variable={{from}} />", false);
 	testText("<$transclude $variable={{{from}}} />", false);
+	testText("<$transclude />", false);
 });
 
 });

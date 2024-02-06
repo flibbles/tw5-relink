@@ -10,7 +10,7 @@ function ImportContext(wiki, parent, filter) {
 	this.parent = parent;
 	this.wiki = wiki;
 	var importWidget = createImportWidget(filter, this.wiki, this.parent.widget);
-	this._compileList(importWidget.tiddlerList);
+	this._compileList(importWidget.tiddlerList, importWidget.variables);
 	// This only works if only one filter is imported
 	this.widget = this.getBottom(importWidget);
 	// Trickle this up, so that any containing tiddlercontext knows that this
@@ -45,12 +45,16 @@ function createImportWidget(filter, wiki, parent) {
 	return importWidget;
 };
 
-ImportContext.prototype._compileList = function(titleList) {
+ImportContext.prototype._compileList = function(titleList, variables) {
 	for (var i = 0; i < titleList.length; i++) {
 		var parser = this.wiki.parseTiddler(titleList[i]);
 		if (parser) {
 			var parseTreeNode = parser.tree[0];
 			while (parseTreeNode && parseTreeNode.type === "set") {
+				var variable = variables[parseTreeNode.attributes.name.value];
+				if(variable) {
+					variable.tiddler = titleList[i];
+				}
 				if (parseTreeNode.relink) {
 					for (var macroName in parseTreeNode.relink) {
 						var parameters = parseTreeNode.relink[macroName];
