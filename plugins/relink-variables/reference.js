@@ -1,5 +1,7 @@
 /*\
 module-type: relinkreference
+title: $:/plugins/flibbles/relink-variables/reference.js
+type: application/javascript
 
 This collects variable invocations from <<macrocalls>>
 \*/

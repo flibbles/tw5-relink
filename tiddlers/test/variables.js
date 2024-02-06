@@ -44,4 +44,24 @@ it('$transclude', function() {
 	testText("<$transclude />", false);
 });
 
+it('operator handles different tiddler texts', function() {
+	function test(text, expected) {
+		const wiki = new $tw.Wiki();
+		wiki.addTiddler({title: 'mytest', text: text});
+		expect(wiki.filterTiddlers("[[mytest]relink:variables[]]")).toEqual(expected);
+	};
+	test("\\define myA() Content\n\\procedure myB()\nContent\n\\end", ['myA', 'myB']);
+	test("\\define outer()\n\\define inner()\nInner\n\\end inner\n\\end outer\n", ['outer']);
+	// Can pick up $set widgets as well
+	test("<$set name=A value=stuff>\n\n<$set name=B value=other>\n\nContent\n</$set></$set>", ['A', 'B']);
+	test("<$let A=stuff>\n\nContent\n</$let>", []);
+	test("<$vars A=stuff>\n\nContent\n</$let>", []);
+	test("\\define myA() A\n\\define myB() B\n\\define myA() A\n", ['myA', 'myB', 'myA']);
+});
+
+it('operator handles non-tiddler input', function() {
+	const wiki = new $tw.Wiki();
+	expect(wiki.filterTiddlers("[[no-exist]relink:variables[]]")).toEqual([]);
+});
+
 });
