@@ -23,7 +23,7 @@ function testText(text, expected, report, options) {
 		expected = text;
 	}
 	wiki.addTiddler({title: 'test', text: text});
-	wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\procedure " + options.from + "() content"});
+	wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\procedure " + options.from + "(Atitle Bref Cfilter) content"});
 	var prefix = variablePrefix + "global ";
 	expect(utils.getReport('test', wiki)[prefix + options.from]).toEqual(report);
 	wiki.renameTiddler(prefix + options.from, prefix + options.to, options);
@@ -34,6 +34,13 @@ describe('variables', function() {
 
 beforeEach(function() {
 	spyOn(console, 'log');
+});
+
+// TODO: Test if the toTiddler isn't a legal macroname representative
+
+it('macrocall wikitext', function() {
+	testText("Begin <<from>> End", true, ['<<>>']);
+	testText("<<from content>>", true, ['<< content>>']);
 });
 
 it('$transclude', function() {

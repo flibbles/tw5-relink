@@ -14,7 +14,12 @@ exports.name = 'variables';
 exports.report = function(context, macro, callback, options) {
 	var def = options.settings.getMacroDefinition(macro.name);
 	if (def) {
-		callback(utils.prefix + def.tiddler + ' ' + macro.name, ' ');
+		var blurb = '';
+		for (var i = 0; i < macro.params.length; i++) {
+			var param = macro.params[i];
+			blurb += ' ' + param.value;
+		}
+		callback(utils.prefix + def.tiddler + ' ' + macro.name, blurb);
 	}
 };
 
@@ -27,7 +32,7 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 			if (!cleanTo) {
 				return {impossible: true};
 			}
-			macro.name = cleanTo;
+			macro.attributes['$variable'].value = cleanTo;
 			return {output: macro};
 		}
 	}

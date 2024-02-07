@@ -23,12 +23,7 @@ exports.report = function(text, callback, options) {
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var macroInfo = getInfoFromRule(this);
-	var managedMacro = this.parser.context.getMacro(macroInfo.name);
 	this.parser.pos = macroInfo.end;
-	if (!managedMacro) {
-		// We don't manage this macro. Bye.
-		return undefined;
-	}
 	var mayBeWidget = this.parser.context.allowWidgets();
 	var names = getParamNames(this.parser, macroInfo.name, macroInfo.params, options);
 	if (names === undefined) {

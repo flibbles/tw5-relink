@@ -25,10 +25,11 @@ exports.report = function(context, macro, callback, options) {
  * to be converted.
  */
 exports.relink = function(context, macro, text, fromTitle, toTitle, mayBeWidget, options) {
-	var entry = {};
+	var entry;
 	for (var operator in macrocallOperators) {
 		var results = macrocallOperators[operator].relink(context, macro, text, fromTitle, toTitle, options);
 		if (results) {
+			entry = {};
 			if (results.impossible) {
 				entry.impossible = true;
 			}
@@ -48,6 +49,11 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, mayBeWidget,
 exports.reassemble = function(entry, text, options) {
 	var macro = entry.output;
 	var builder = new Rebuilder(text, macro.start);
+	var varAttribute = macro.attributes && macro.attributes['$variable'];
+	if (varAttribute && varAttribute.value !== macro.name) {
+		// The name of the macro changed. Update it.
+		builder.add(varAttribute.value, macro.start + 2, macro.start + 2 + macro.name.length);
+	}
 	for (var i = 0; i < macro.params.length; i++) {
 		var param = macro.params[i];
 		if (param.modified) {
