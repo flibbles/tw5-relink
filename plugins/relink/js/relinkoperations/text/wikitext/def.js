@@ -21,10 +21,9 @@ exports.report = function(text, callback, options) {
 	var endMatch = getBodyMatch(this.parser.source, this.parser.pos, definition.multiline);
 	if (endMatch) {
 		definition.body = endMatch[2];
-		var newOptions = Object.create(options);
-		newOptions.settings = context;
+		options.settings = context;
 		for (var operator in defOperators) {
-			defOperators[operator].report(definition, callback, newOptions);
+			defOperators[operator].report(definition, callback, options);
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
@@ -43,10 +42,9 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	var endMatch = getBodyMatch(this.parser.source, this.parser.pos, definition.multiline);
 	if (endMatch) {
 		definition.body = endMatch[2];
-		var newOptions = Object.create(options);
-		newOptions.settings = context;
+		options.settings = context;
 		for (var operator in defOperators) {
-			var result = defOperators[operator].relink(definition, fromTitle, toTitle, newOptions);
+			var result = defOperators[operator].relink(definition, fromTitle, toTitle, options);
 			if (result) {
 				entry = entry || {};
 				if (result.output) {

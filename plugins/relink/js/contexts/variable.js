@@ -7,6 +7,7 @@ This handles the context for variables. Either from $set, $vars, or \define
 var WidgetContext = require('./widget').widget;
 
 function VariableContext(parent, setParseTreeNode) {
+	var name = setParseTreeNode.attributes.name.value;
 	this.parent = parent;
 	// Now create a new widget and attach it.
 	var attachPoint = parent.widget;
@@ -14,6 +15,7 @@ function VariableContext(parent, setParseTreeNode) {
 	attachPoint.children.push(this.setWidget);
 	this.setWidget.computeAttributes();
 	this.setWidget.execute();
+	this.setWidget.variables[name].tiddler = parent.widget.getVariable('currentTiddler');
 	// point our widget to bottom, where any other contexts would attach to
 	this.widget = this.getBottom(this.setWidget);
 	this.parameterFocus = true;

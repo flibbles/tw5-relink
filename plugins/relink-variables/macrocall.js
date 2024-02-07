@@ -29,7 +29,7 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 		var def = options.settings.getMacroDefinition(macro.name);
 		if (def && (cleanFrom === def.tiddler + ' ' + macro.name)) {
 			var cleanTo = utils.removePrefix(toTitle, def.tiddler);
-			if (!cleanTo) {
+			if (!cleanTo || cleanTo.search(/[>"'=]/) >= 0) {
 				return {impossible: true};
 			}
 			macro.attributes['$variable'].value = cleanTo;

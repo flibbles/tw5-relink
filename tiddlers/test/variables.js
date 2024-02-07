@@ -41,11 +41,35 @@ beforeEach(function() {
 it('relinks actual definition', function() {
 	var prefix = variablePrefix + "test ";
 	var options = {prefix: prefix, noglobal: true};
-	testText('\\whitespace trim\n\\procedure from() C\n', true, undefined, options);
+	testText('\\whitespace trim\n\n\t\\procedure from() C\n', true, undefined, options);
 	// Whitespace preservation
-	testText('\\whitespace trim\n\\procedure from( arg ) C\n', true, undefined, options);
-	testText('\\whitespace trim\n\\procedure from(\n\targ\n) C\n', true, undefined, options);
-	testText('\\whitespace trim\n\\define from(\n\targ\n) C\n', true, undefined, options);
+	testText('\t\\procedure from( arg ) C\n', true, undefined, options);
+	testText('\\procedure from(\n\targ\n) C\n', true, undefined, options);
+	testText('\\define from(\n\targ\n) C\n', true, undefined, options);
+	testText('\\define\n\tfrom(\n\targ\n) C\n', true, undefined, options);
+	// Recrursive
+	testText('\\define from(arg) call-<<from>>\n', true, ['\\define from() <<>>'], options);
+	// Called later in same file
+	testText('\\define from(arg) content\n\n<<from>>\n', true, ['<<>>'], options);
+	// Nested methods are ignored
+	testText('\\define outer(arg)\n\\define from()  content\n<<outer>>\n\\end\n', false, undefined, options);
+	// Repeat macros
+	testText('\\define from(arg) first\n\\define from() second\nbody', true, undefined, options);
+	// Illegal names
+	utils.spyFailures(spyOn);
+	testText('\\define from(arg) first\nbody',
+	         false, undefined, Object.assign(options, {to: "to(this"}));
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	utils.failures.calls.reset();
+	testText('\\define from(arg) first\nbody',
+	         false, undefined, Object.assign(options, {to: "to this"}));
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	//Mixed failure and success
+	utils.failures.calls.reset();
+	testText('\\define from(arg) <<from>>\nbody',
+	         '\\define t>>o(arg) <<from>>\nbody',
+	         ['\\define from() <<>>'], Object.assign(options, {to: "t>>o"}));
+	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 // TODO: Test if the toTiddler isn't a legal macroname representative
@@ -59,10 +83,26 @@ it('relinks actual definition', function() {
 // TODO: Relinking locally defined macros should work.
 // TODO: Tiddlers with spaces in them
 // TODO: Test whitespace trim, cause it was broken before
+// TODO: $transclude $tiddler /> fails I think.
+// TODO: The //Relink// Missing panels is flooded with garbage
+// TODO: Disallow global <$set> bullshit
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
 	testText("<<from content>>", true, ['<< content>>']);
+});
+
+it('macrocall wikitext bad names', function() {
+	utils.spyFailures(spyOn);
+	function test(badName) {
+		utils.failures.calls.reset();
+		testText("<<from content>>", false, ['<< content>>'], {to: badName});
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+	};
+	test("to>this");
+	test("to\"this");
+	test("to'this");
+	test("to=this");
 });
 
 it('$transclude', function() {
