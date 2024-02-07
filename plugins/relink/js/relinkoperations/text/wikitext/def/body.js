@@ -47,5 +47,25 @@ function getBodyMatch(text, pos, isMultiline) {
 };
 
 function getHandler(macroType, macroName) {
-	return utils.getType(macroType === "function"? "filter": "wikitext");
+	var type;
+	switch (macroType) {
+	case "function":
+		type = "filter";
+		break;
+	case "define":
+		/**This returns the handler to use for a macro
+		 * By default, we treat them like wikitext, but Relink used to make
+		 * little macros as placeholders. If we find one, we must return
+		 * the correct handler for what that placeholder represented.
+		 */
+		var placeholder = /^relink-(?:(\w+)-)?\d+$/.exec(macroName);
+		// normal macro or special placeholder?
+		if (placeholder) {
+			type = placeholder[1] || 'title';
+			break;
+		}
+	default:
+		type = 'wikitext';
+	}
+	return utils.getType(type);
 };

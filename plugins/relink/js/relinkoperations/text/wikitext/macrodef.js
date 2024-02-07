@@ -10,6 +10,7 @@ that we may have previously install.
 
 var utils = require("$:/plugins/flibbles/relink/js/utils");
 var VariableContext = utils.getContext('variable');
+var defOperators = utils.getModulesByTypeAsHashmap('relinkdef', 'name');
 
 exports.name = "macrodef";
 
@@ -22,18 +23,10 @@ exports.report = function(text, callback, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, m[3]);
 	if (endMatch) {
-		var value = endMatch[2],
-			handler = getActiveHandler(name, m[2]),
-			newOptions = Object.create(options);
+		var newOptions = Object.create(options);
 		newOptions.settings = context;
-		if (handler) {
-			var entry = handler.report(value, function(title, blurb) {
-				var macroStr = '\\define ' + name + '()';
-				if (blurb) {
-					macroStr += ' ' + blurb;
-				}
-				callback(title, macroStr);
-			}, newOptions);
+		for (var operator in defOperators) {
+			defOperators[operator].report("define", name, endMatch[2], callback, newOptions);
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
