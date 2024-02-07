@@ -41,7 +41,7 @@ exports.report = function(context, macro, callback, options) {
 	}
 };
 
-exports.relink = function(context, macro, text, fromTitle, toTitle, mayBeWidget, options) {
+exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 	var managedMacro = context.getMacro(macro.name);
 	var modified = false;
 	if (!managedMacro) {

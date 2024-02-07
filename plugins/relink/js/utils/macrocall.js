@@ -25,9 +25,20 @@ exports.report = function(context, macro, callback, options) {
  * to be converted.
  */
 exports.relink = function(context, macro, text, fromTitle, toTitle, mayBeWidget, options) {
+	var entry = {};
 	for (var operator in macrocallOperators) {
-		return macrocallOperators[operator].relink(context, macro, text, fromTitle, toTitle, mayBeWidget, options);
+		var results = macrocallOperators[operator].relink(context, macro, text, fromTitle, toTitle, options);
+		if (results) {
+			if (results.impossible) {
+				entry.impossible = true;
+			}
+			if (results.output) {
+				macro = results.output;
+				entry.output = macro;
+			}
+		}
 	}
+	return entry;
 };
 
 /**Converts the macro object into a string, includes the <<..>>.

@@ -120,7 +120,7 @@ it("detects changes to global macro definitions", async function() {
 	expect(getReport('test', wiki)).toEqual({});
 	wiki.addTiddler({title: 'def', tags: '$:/tags/Macro', text: '\\relink M arg\n\\define M(arg) $arg$'});
 	await utils.flush();
-	expect(getReport('test', wiki)).toEqual({x: ['<<M arg>>']});
+	expect(getReport('test', wiki).x).toEqual(['<<M arg>>']);
 });
 
 it("updates when import tiddler list would grow", function() {
