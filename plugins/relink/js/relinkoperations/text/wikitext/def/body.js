@@ -22,9 +22,14 @@ exports.report = function(definition, callback, options) {
 
 exports.relink = function(definition, fromTitle, toTitle, options) {
 	var handler = getHandler(definition.type, definition.name);
+	var results;
 	if (handler) {
-		return handler.relink(definition.body, fromTitle, toTitle, options);
+		results = handler.relink(definition.body, fromTitle, toTitle, options);
+		if (results && results.output) {
+			definition.body = results.output;
+		}
 	}
+	return results;
 };
 
 // Return another match for the body, but tooled uniquely

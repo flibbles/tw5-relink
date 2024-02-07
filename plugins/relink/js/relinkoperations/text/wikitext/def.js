@@ -45,10 +45,19 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var newOptions = Object.create(options);
 		newOptions.settings = context;
 		for (var operator in defOperators) {
-			entry = defOperators[operator].relink(definition, fromTitle, toTitle, newOptions);
+			var result = defOperators[operator].relink(definition, fromTitle, toTitle, newOptions);
+			if (result) {
+				entry = entry || {};
+				if (result.output) {
+					entry.output = true;
+				}
+				if (result.impossible) {
+					entry.impossible = true;
+				}
+			}
 		}
 		if (entry && entry.output) {
-			entry.output = definition.signature + endMatch[1] + entry.output + endMatch[0];
+			entry.output = definition.signature + endMatch[1] + definition.body + endMatch[0];
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
