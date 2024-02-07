@@ -39,6 +39,7 @@ beforeEach(function() {
 // TODO: Test if the toTiddler isn't a legal macroname representative
 // TODO: Macros that call themselves
 // TODO: Macrodefs that are recursive
+// TODO: Nested macros don't get recognized or altered
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

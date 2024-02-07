@@ -7,17 +7,16 @@ var utils = require("$:/plugins/flibbles/relink/js/utils");
 
 exports.name = "body";
 
-exports.report = function(type, name, body, callback, options) {
-	var handler = getHandler(type, name),
-		newOptions = Object.create(options);
+exports.report = function(definition, callback, options) {
+	var handler = getHandler(definition.type, definition.name);
 	if (handler) {
-		var entry = handler.report(body, function(title, blurb) {
-			var macroStr = '\\' + type + ' ' + name + '()';
+		var entry = handler.report(definition.body, function(title, blurb) {
+			var macroStr = '\\' + definition.type + ' ' + definition.name + '()';
 			if (blurb) {
 				macroStr += ' ' + blurb;
 			}
 			callback(title, macroStr);
-		}, newOptions);
+		}, options);
 	}
 };
 

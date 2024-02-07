@@ -23,10 +23,15 @@ exports.report = function(text, callback, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, m[3]);
 	if (endMatch) {
+		var definition = {
+			type: "define",
+			name: name,
+			body: endMatch[2]
+		};
 		var newOptions = Object.create(options);
 		newOptions.settings = context;
 		for (var operator in defOperators) {
-			defOperators[operator].report("define", name, endMatch[2], callback, newOptions);
+			defOperators[operator].report(definition, callback, newOptions);
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
