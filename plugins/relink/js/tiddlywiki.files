@@ -115,6 +115,19 @@
 			}
 		},
 		{
+			"path": "./relinkoperations/text/wikitext/def",
+			"filesRegExp": "^.*\\.js$",
+			"isTiddlerFile": true,
+			"fields": {
+				"module-type": "relinkdef",
+				"title": {
+					"source": "filename",
+					"prefix": "$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/def/"
+				},
+				"type": "application/javascript"
+			}
+		},
+		{
 			"path": "./relinkoperations/text/wikitext/html",
 			"filesRegExp": "^.*\\.js$",
 			"isTiddlerFile": true,

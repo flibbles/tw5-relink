@@ -7,6 +7,7 @@ Handles pragma function/procedure/widget definitions.
 
 var utils = require("$:/plugins/flibbles/relink/js/utils");
 var VariableContext = utils.getContext('variable');
+var defOperators = utils.getModulesByTypeAsHashmap('relinkdef', 'name');
 
 exports.name = "fnprocdef";
 
@@ -19,17 +20,11 @@ exports.report = function(text, callback, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, m[5]);
 	if (endMatch) {
-		var value = endMatch[2],
-			handler = getHandler(m[1]),
-			newOptions = Object.create(options);
+		var newOptions = Object.create(options);
 		newOptions.settings = context;
-		var entry = handler.report(value, function(title, blurb) {
-			var macroStr = '\\' + m[1] + ' ' + name + '()';
-			if (blurb) {
-				macroStr += ' ' + blurb;
-			}
-			callback(title, macroStr);
-		}, newOptions);
+		for (var operator in defOperators) {
+			defOperators[operator].report(m[1], name, endMatch[2], callback, newOptions);
+		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
 	context.parameterFocus = false;
