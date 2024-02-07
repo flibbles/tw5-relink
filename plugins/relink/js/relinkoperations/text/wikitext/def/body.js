@@ -1,5 +1,6 @@
 /*\
 
+Takes care of relinking the bodies of definitions.
 
 \*/
 
@@ -30,31 +31,6 @@ exports.relink = function(definition, fromTitle, toTitle, options) {
 		}
 	}
 	return results;
-};
-
-// Return another match for the body, but tooled uniquely
-// m[1] = whitespace before body
-// m[2] = body
-// m.index + m[0].length -> end of match
-function getBodyMatch(text, pos, isMultiline) {
-	var whitespace,
-		valueRegExp;
-	if (isMultiline) {
-		valueRegExp = /\r?\n\\end[^\S\n\r]*(?:\r?\n|$)/mg;
-		whitespace = '';
-	} else {
-		valueRegExp = /(?:\r?\n|$)/mg;
-		var newPos = $tw.utils.skipWhiteSpace(text, pos);
-		whitespace = text.substring(pos, newPos);
-		pos = newPos;
-	}
-	valueRegExp.lastIndex = pos;
-	var match = valueRegExp.exec(text);
-	if (match) {
-		match[1] = whitespace;
-		match[2] = text.substring(pos, match.index);
-	}
-	return match;
 };
 
 function getHandler(macroType, macroName) {

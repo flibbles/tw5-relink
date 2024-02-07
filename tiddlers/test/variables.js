@@ -44,6 +44,7 @@ beforeEach(function() {
 // TODO: Whitespace preservation around macrodef and fnprocdef
 // TODO: Remove those "signatures' from the macrodef and fnprocdef files
 // TODO: todos sprinkled in the code
+// TODO: Relinking locally defined macros should work.
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

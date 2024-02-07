@@ -19,7 +19,7 @@ exports.relink = function(definition, fromTitle, toTitle, options) {
 	var cleanFrom = utils.removePrefix(fromTitle);
 	if (cleanFrom !== null) {
 		// Should I ask a widget for this definition instead?
-		var def = options.settings.getMacroDefinition(macro.name);
+		var def = options.settings.getMacroDefinition(definition.name);
 		if (def && (cleanFrom === def.tiddler + ' ' + definition.name)) {
 			var cleanTo = utils.removePrefix(toTitle, def.tiddler);
 			if (!cleanTo) {
