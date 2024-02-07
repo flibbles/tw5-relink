@@ -23,8 +23,10 @@ function testText(text, expected, report, options) {
 		expected = text;
 	}
 	wiki.addTiddler({title: 'test', text: text});
-	wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\procedure " + options.from + "(Atitle Bref Cfilter) content"});
-	var prefix = variablePrefix + "global ";
+	if (!options.noglobal) {
+		wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\procedure " + options.from + "(Atitle Bref Cfilter) content"});
+	}
+	var prefix = options.prefix || (variablePrefix + "global ");
 	expect(utils.getReport('test', wiki)[prefix + options.from]).toEqual(report);
 	wiki.renameTiddler(prefix + options.from, prefix + options.to, options);
 	expect(utils.getText('test', wiki)).toEqual(expected);
@@ -36,6 +38,16 @@ beforeEach(function() {
 	spyOn(console, 'log');
 });
 
+it('relinks actual definition', function() {
+	var prefix = variablePrefix + "test ";
+	var options = {prefix: prefix, noglobal: true};
+	testText('\\whitespace trim\n\\procedure from() C\n', true, undefined, options);
+	// Whitespace preservation
+	testText('\\whitespace trim\n\\procedure from( arg ) C\n', true, undefined, options);
+	testText('\\whitespace trim\n\\procedure from(\n\targ\n) C\n', true, undefined, options);
+	testText('\\whitespace trim\n\\define from(\n\targ\n) C\n', true, undefined, options);
+});
+
 // TODO: Test if the toTiddler isn't a legal macroname representative
 // TODO: Macros that call themselves
 // TODO: Macrodefs that are recursive
@@ -45,6 +57,8 @@ beforeEach(function() {
 // TODO: Remove those "signatures' from the macrodef and fnprocdef files
 // TODO: todos sprinkled in the code
 // TODO: Relinking locally defined macros should work.
+// TODO: Tiddlers with spaces in them
+// TODO: Test whitespace trim, cause it was broken before
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

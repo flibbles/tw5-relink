@@ -42,14 +42,25 @@ it('parameters', function() {
 	testText("\\define macro(  field:'value',  here   ) [[from here]]");
 });
 
-it('whitespace', function() {
+it('whitespace for single line', function() {
 	testText("\\define macro() [[from here]]");
+	testText("\\define macro(    ) [[from here]]");
+	testText("\\define macro(\n) [[from here]]");
 	testText("\\define macro() [[from here]]\n");
 	testText("\\define macro() [[from here]]\nText");
 	testText("\\define macro() [[from here]]\r\nText");
 	testText("\\define macro() [[from here]]\r\nText");
 	testText("\\define macro()    \t  [[from here]]\n");
 	testText("\\define\t\tmacro()    \t  [[from here]]\n");
+	testText("\\define\n\nmacro() [[from here]]\n");
+});
+
+it('whitespace for multi line', function() {
+	testText("\\define macro()   \n[[from here]]\n\\end");
+	testText("\\define macro(   )\n[[from here]]\n\\end");
+	testText("\\define\n\nmacro()\n[[from here]]\n\n\\end");
+	testText("\t\\define macro()   \n[[from here]]\n\t\\end");
+	testText("\\whitespace trim\n\t\\define macro()   \n[[from here]]\n\t\\end");
 });
 
 it('isolates its body from following text', function() {

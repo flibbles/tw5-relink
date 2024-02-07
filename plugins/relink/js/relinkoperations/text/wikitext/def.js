@@ -7,6 +7,7 @@ This is a generic def rule that manages both fnprocdef and macrodef.
 
 var utils = require("$:/plugins/flibbles/relink/js/utils");
 var VariableContext = utils.getContext('variable');
+var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var defOperators = utils.getModulesByTypeAsHashmap('relinkdef', 'name');
 
 exports.report = function(text, callback, options) {
@@ -56,13 +57,30 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				}
 			}
 		}
-		if (entry && entry.output) {
-			entry.output = definition.signature + endMatch[1] + definition.body + endMatch[0];
-		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
+		if (entry && entry.output) {
+			entry.output = reassembleSignature(definition, this.match[0]) + endMatch[1] + definition.body + endMatch[0];
+		}
 	}
 	context.parameterFocus = false;
 	return entry;
+};
+
+function reassembleSignature(definition, text) {
+	// Reconstruct the definition. Might be tricky because we need to preserve whitespace within the parameters.
+	var builder = new Rebuilder(text);
+	builder.add(definition.type, 1, text.search(/[^\w\\]/));
+	var pos = builder.index;
+	builder.add(definition.name, skipWhitespace(text, pos), text.indexOf('(', pos));
+	pos = builder.index;
+	if (definition.parameters) {
+		builder.add(definition.parameters, skipWhitespace(text, pos+1), text.indexOf(')'));
+	}
+	return builder.results();
+};
+
+function skipWhitespace(text, pos) {
+	return text.substr(pos).search(/\S/)+pos;
 };
 
 // Return another match for the body, but tooled uniquely

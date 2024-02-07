@@ -19,6 +19,6 @@ exports.createDefinition = function() {
 	return {
 		type: "define",
 		name: m[1],
-		signature: m[0],
+		parameters: m[2],
 		multiline: m[3]};
 };
