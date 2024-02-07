@@ -9,12 +9,15 @@ var utils = require("$:/plugins/flibbles/relink/js/utils");
 var VariableContext = utils.getContext('variable');
 var defOperators = utils.getModulesByTypeAsHashmap('relinkdef', 'name');
 
-exports.reportDefinition = function(text, definition, callback, options) {
+exports.report = function(text, callback, options) {
+	// fnprocdef and macrodef have their own implementations of createDefinition
+	// They create a modifiable object from the respective rule matches.
+	var definition = this.createDefinition();
 	var setParseTreeNode = this.parse();
 	var context = this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
-	var endMatch = getBodyMatch(text, this.parser.pos, definition.multiline);
+	var endMatch = getBodyMatch(this.parser.source, this.parser.pos, definition.multiline);
 	if (endMatch) {
 		definition.body = endMatch[2];
 		var newOptions = Object.create(options);
@@ -27,13 +30,16 @@ exports.reportDefinition = function(text, definition, callback, options) {
 	context.parameterFocus = false;
 };
 
-exports.relinkDefinition = function(text, definition, fromTitle, toTitle, options) {
+exports.relink = function(text, fromTitle, toTitle, options) {
+	// fnprocdef and macrodef have their own implementations of createDefinition
+	// They create a modifiable object from the respective rule matches.
+	var definition = this.createDefinition();
 	var setParseTreeNode = this.parse(),
 		entry,
 		context = this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
-	var endMatch = getBodyMatch(text, this.parser.pos, definition.multiline);
+	var endMatch = getBodyMatch(this.parser.source, this.parser.pos, definition.multiline);
 	if (endMatch) {
 		definition.body = endMatch[2];
 		var newOptions = Object.create(options);
