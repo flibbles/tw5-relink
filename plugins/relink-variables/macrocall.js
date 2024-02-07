@@ -7,33 +7,31 @@ Handles relinking of variables in <<macrocall>> format.
 
 \*/
 
-var utils = require("./utils.js");
+var utils = require("$:/plugins/flibbles/relink/js/utils.js");
+var varRelinker = utils.getType('variable');
 
 exports.name = 'variables';
 
 exports.report = function(context, macro, callback, options) {
-	var def = context.getMacroDefinition(macro.name);
-	if (def && def.tiddler) {
+	varRelinker.report(macro.name, function(title, blurb) {
 		var blurb = '';
+		var def = context.getMacroDefinition(macro.name);
 		for (var i = 0; i < macro.params.length; i++) {
 			var param = macro.params[i];
 			blurb += ' ' + param.value;
 		}
-		callback(utils.prefix + def.tiddler + ' ' + macro.name, blurb);
-	}
+		callback(title, blurb);
+	}, options);
 };
 
 exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
-	var cleanFrom = utils.removePrefix(fromTitle);
-	if (cleanFrom !== null) {
-		var def = context.getMacroDefinition(macro.name);
-		if (def && (cleanFrom === def.tiddler + ' ' + macro.name)) {
-			var cleanTo = utils.removePrefix(toTitle, def.tiddler);
-			if (!cleanTo || cleanTo.search(/[>"'=]/) >= 0) {
-				return {impossible: true};
-			}
-			macro.attributes['$variable'].value = cleanTo;
-			return {output: macro};
+	var entry = varRelinker.relink(macro.name, fromTitle, toTitle, options);
+	if (entry && entry.output) {
+		if (entry.output.search(/[>"'=]/) >= 0) {
+			return {impossible: true};
 		}
+		macro.attributes['$variable'].value = entry.output;
+		entry.output = macro;
 	}
+	return entry;
 };

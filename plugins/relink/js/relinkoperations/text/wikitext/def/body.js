@@ -11,13 +11,14 @@ exports.name = "body";
 exports.report = function(definition, callback, options) {
 	var handler = getHandler(definition.type, definition.name);
 	if (handler) {
+		var newOptions = Object.create(options);
 		var entry = handler.report(definition.body, function(title, blurb) {
 			var macroStr = '\\' + definition.type + ' ' + definition.name + '()';
 			if (blurb) {
 				macroStr += ' ' + blurb;
 			}
 			callback(title, macroStr);
-		}, options);
+		}, newOptions);
 	}
 };
 
@@ -25,7 +26,8 @@ exports.relink = function(definition, fromTitle, toTitle, options) {
 	var handler = getHandler(definition.type, definition.name);
 	var results;
 	if (handler) {
-		results = handler.relink(definition.body, fromTitle, toTitle, options);
+		var newOptions = Object.create(options);
+		results = handler.relink(definition.body, fromTitle, toTitle, newOptions);
 		if (results && results.output) {
 			definition.body = results.output;
 		}
