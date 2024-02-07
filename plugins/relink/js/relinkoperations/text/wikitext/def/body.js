@@ -20,6 +20,13 @@ exports.report = function(definition, callback, options) {
 	}
 };
 
+exports.relink = function(definition, fromTitle, toTitle, options) {
+	var handler = getHandler(definition.type, definition.name);
+	if (handler) {
+		return handler.relink(definition.body, fromTitle, toTitle, options);
+	}
+};
+
 // Return another match for the body, but tooled uniquely
 // m[1] = whitespace before body
 // m[2] = body

@@ -50,16 +50,18 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, multiline);
 	if (endMatch) {
-		var value = endMatch[2],
-			handler = getActiveHandler(name, params),
-			newOptions = Object.create(options);
+		var definition = {
+			type: "define",
+			name: name,
+			body: endMatch[2]
+		};
+		var newOptions = Object.create(options);
 		newOptions.settings = context;
-		if (handler) {
-			// Relink the contents
-			entry = handler.relink(value, fromTitle, toTitle, newOptions);
-			if (entry && entry.output) {
-				entry.output = m[0] + endMatch[1] + entry.output + endMatch[0];
-			}
+		for (var operator in defOperators) {
+			entry = defOperators[operator].relink(definition, fromTitle, toTitle, newOptions);
+		}
+		if (entry && entry.output) {
+			entry.output = m[0] + endMatch[1] + entry.output + endMatch[0];
 		}
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
@@ -90,17 +92,4 @@ function getBodyMatch(text, pos, isMultiline) {
 		match[2] = text.substring(pos, match.index);
 	}
 	return match;
-};
-
-/**This returns the handler to use for a macro
- * By default, we treat them like wikitext, but Relink used to make funky
- * little macros as placeholders. If we find one of those, we need to return
- * the correct handler for what that placeholder represented.
- */
-function getActiveHandler(macroName, parameters) {
-	var placeholder = /^relink-(?:(\w+)-)?\d+$/.exec(macroName);
-	// normal macro or special placeholder?
-	return utils.getType((placeholder && parameters === '')?
-		(placeholder[1] || 'title'):
-		'wikitext');
 };

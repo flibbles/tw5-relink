@@ -40,6 +40,8 @@ beforeEach(function() {
 // TODO: Macros that call themselves
 // TODO: Macrodefs that are recursive
 // TODO: Nested macros don't get recognized or altered
+// TODO: Macros in other files with the same name don't get changed
+// TODO: Whitespace preservation around macrodef and fnprocdef
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

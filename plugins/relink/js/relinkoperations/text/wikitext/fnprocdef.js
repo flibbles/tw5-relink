@@ -47,12 +47,16 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	this.parser.pos = this.matchRegExp.lastIndex;
 	var endMatch = getBodyMatch(text, this.parser.pos, multiline);
 	if (endMatch) {
-		var value = endMatch[2],
-			handler = getHandler(m[1]),
-			newOptions = Object.create(options);
+		var definition = {
+			type: m[1],
+			name: name,
+			body: endMatch[2]
+		};
+		var newOptions = Object.create(options);
 		newOptions.settings = context;
-		// Relink the contents
-		entry = handler.relink(value, fromTitle, toTitle, newOptions);
+		for (var operator in defOperators) {
+			entry = defOperators[operator].relink(definition, fromTitle, toTitle, newOptions);
+		}
 		if (entry && entry.output) {
 			entry.output = m[0] + endMatch[1] + entry.output + endMatch[0];
 		}
@@ -85,8 +89,4 @@ function getBodyMatch(text, pos, isMultiline) {
 		match[2] = text.substring(pos, match.index);
 	}
 	return match;
-};
-
-function getHandler(macroType) {
-	return utils.getType(macroType === "function"? "filter": "wikitext");
 };
