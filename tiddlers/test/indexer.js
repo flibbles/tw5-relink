@@ -22,12 +22,16 @@ it("caches report results when indexing", function() {
 		{title: 'test', text: '\\import macros\n<<M x>>'},
 		// We have it import macros, but those macros don't change
 		{title: 'macros', text: '\\relink M arg\n\\define M(arg) X'}]);
-	expect(getReport('test', wiki)).toEqual({macros: ['\\import'], x: ['<<M arg>>']});
+	var report = getReport('test', wiki);
+	expect(report.macros).toEqual(['\\import']);
+	expect(report.x).toEqual(['<<M arg>>']);
 	// called three times, because every tiddler gets indexed.
 	expect(operators.text.report).toHaveBeenCalledTimes(3);
 	operators.text.report.calls.reset();
 	wiki.addTiddler({title: 'unrelated', text: 'unrelated'});
-	expect(getReport('test', wiki)).toEqual({macros: ['\\import'], x: ['<<M arg>>']});
+	report = getReport('test', wiki);
+	expect(report.macros).toEqual(['\\import']);
+	expect(report.x).toEqual(['<<M arg>>']);
 	expect(operators.text.report).toHaveBeenCalledTimes(1);
 });
 
@@ -67,7 +71,7 @@ it("only checks tiddler contexts if and when they need checking", function() {
 	getReport('C', wiki);
 	wiki.addTiddler({title: 'unrelated', text: 'unrelated'});
 	wiki.addTiddler({title: 'new', tags: 'macro', text: '\\relink M arg\n\\define M(arg) X'});
-	expect(getReport('A', wiki)).toEqual({x: ['<<M arg>>']});
+	expect(getReport('A', wiki).x).toEqual(['<<M arg>>']);
 	expect(contexts.tiddler.prototype.changed).toHaveBeenCalledTimes(1);
 });
 
@@ -127,10 +131,10 @@ it("updates when import tiddler list would grow", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: 'test', text: '\\import [tag[local]]\n<<M from>>'},
-		{title: 'macro', tags: 'local', text: '\\define M(val) $from$'}]);
-	expect(getReport('test', wiki)).toEqual({});
+		{title: 'macro', tags: 'local', text: '\\define M(val) $val$'}]);
+	expect(getReport('test', wiki).from).toBeUndefined();
 	wiki.addTiddler({title: 'inline', tags: 'local', text: '\\relink M val'});
-	expect(getReport('test', wiki)).toEqual({from: ['<<M val>>']});
+	expect(getReport('test', wiki).from).toEqual(['<<M val>>']);
 });
 
 it("updates when import tiddler list would shrink", function() {

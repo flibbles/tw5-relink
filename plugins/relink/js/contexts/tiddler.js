@@ -20,6 +20,11 @@ exports.tiddler = TiddlerContext;
 
 TiddlerContext.prototype = new WidgetContext();
 
+TiddlerContext.prototype.getFocus = function() {
+	// Tiddler Contexts are the last possible focus when not embedded in contexts.
+	return this;
+};
+
 TiddlerContext.prototype.changed = function(changes) {
 	return this.widget && this.widget.refresh(changes);
 };

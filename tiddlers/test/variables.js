@@ -53,6 +53,9 @@ it('relinks actual definition', function() {
 	testText('\\define from(arg) content\n\n<<from>>\n', true, ['<<>>'], options);
 	// Nested methods are ignored
 	testText('\\define outer(arg)\n\\define from()  content\n<<outer>>\n\\end\n', false, undefined, options);
+	testText('\\define from(A)\n\\define from() inner\ncall-<<from>>\n\\end\n',
+	         '\\define to(A)\n\\define from() inner\ncall-<<from>>\n\\end\n',
+	         undefined, options);
 	// Repeat macros
 	testText('\\define from(arg) first\n\\define from() second\nbody', true, undefined, options);
 	// Illegal names
@@ -86,6 +89,7 @@ it('relinks actual definition', function() {
 // TODO: $transclude $tiddler /> fails I think.
 // TODO: The //Relink// Missing panels is flooded with garbage
 // TODO: Disallow global <$set> bullshit
+// TODO: Something is wrong with the collapsing fields in the whitelist
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

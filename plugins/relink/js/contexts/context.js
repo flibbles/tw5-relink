@@ -55,6 +55,12 @@ Context.prototype.hasImports = function(value) {
 	return this.parent.hasImports(value);
 };
 
+Context.prototype.getFocus = function() {
+	if (this.parent) {
+		return this.parent.getFocus();
+	}
+};
+
 Context.prototype.addParameter = function(parameter) {
 	if(this.parent) {
 		return this.parent.addParameter(parameter);
