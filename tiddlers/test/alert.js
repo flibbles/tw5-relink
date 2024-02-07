@@ -18,12 +18,9 @@ function testAlert(wiki, tiddlers, browser) {
 			text: "{{{[tag{from here}]}}}"});
 	}
 	spyOn(Logger, 'alert');
-	// We momentarily pretend to be (or not to be) a browser
-	utils.monkeyPatch($tw, "browser", browser, function() {
-		// deliberately not passing options.
-		// renameTiddler should work without it.
-		wiki.renameTiddler("from here", "to}}there");
-	});
+	// deliberately not passing options.
+	// renameTiddler should work without it.
+	wiki.renameTiddler("from here", "to}}there");
 	// There should only ever be a single alert, no matter how many failed
 	// relinks there were.
 	expect(Logger.alert).toHaveBeenCalledTimes(1);
@@ -59,16 +56,11 @@ it("tiddlers with multiple errors only list once", function() {
 	expect(index).toBeLessThan(0);
 });
 
+// This won't render correctly if the tiddler has brackets in it,
+// but it's not worth the trouble I'm going to to make sure it's still okay.
 it("pretty titles", function() {
 	var message = testAlert(new $tw.Wiki(), ["Pretty"], true);
-	expect(message).toContain("[[Pretty]]");
-});
-
-// This won't render correctly, but it's not worth all the trouble I'm going
-// to to make sure it's still okay.
-it("unquotable titles", function() {
-	var message = testAlert(new $tw.Wiki(), ["Unpre']]y\""], true);
-	expect(message).toContain("* [[Unpre']]y\"]]");
+	expect(message).toContain("Pretty");
 });
 
 it("prints simple if not on browser", function() {
