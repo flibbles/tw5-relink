@@ -1,0 +1,4 @@
+title: $:/config/flibbles/relink/attributes/
+
+$macrocall/$name: variable
+$transclude/$variable: variable

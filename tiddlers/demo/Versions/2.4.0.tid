@@ -7,5 +7,5 @@ Other features and fixes
 
 * Some tm-messages are now supported, specifically `tm-new-tiddler` with `$action-sendmessage`.
 * Conditionals (i.e. `<% if filter %>`) are now fully supported.
-* Added support for `<$transclude $variable />`
+* Full support for the new `<$transclude />`, not only for //Relink//-variables, but also by removing blindspots for new-style attributes like `$tiddler` and `$variable`, as well as
 * Fixed issue where `\whitespace trim` would cause following `\function` pragma not to relink properly.

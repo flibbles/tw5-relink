@@ -17,4 +17,5 @@ $select/field: fieldname
 $setvariable/field: fieldname
 $set/field: fieldname
 $transclude/field: fieldname
+$transclude/$field: fieldname
 $view/field: fieldname

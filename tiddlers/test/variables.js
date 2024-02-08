@@ -90,6 +90,7 @@ it('relinks actual definition', function() {
 // TODO: The //Relink// Missing panels is flooded with garbage
 // TODO: Disallow global <$set> bullshit
 // TODO: Something is wrong with the collapsing fields in the whitelist
+// TODO: $transclude blurb isn't neat like $macrocall
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
@@ -116,14 +117,14 @@ it('macro attributes', function() {
 
 it('$transclude', function() {
 	const wiki = new $tw.Wiki();
-	//wiki.addTiddler(utils.attrConf("$transclude", "$variable", "variable"));
-	testText("<$transclude $variable=from />", true, ['<$transclude />'], undefined, {wiki: wiki});
+	wiki.addTiddler(utils.attrConf("$transclude", "$variable", "variable"));
+	testText("<$transclude $variable=from />", true, ['<$transclude $variable />'], {wiki: wiki});
 	// The following don't replace
 	testText("<$transclude $variable={{from}} />", false, undefined, {wiki: wiki});
 	testText("<$transclude $variable={{{from}}} />", false, undefined, {wiki: wiki});
 	testText("<$transclude />", false, undefined, {wiki: wiki});
 	// Recursive
-	testText("<$transclude $variable=from Atitle=<<from>> />", true, ['<$transclude Atitle=<<>> />', '<$transclude />'], {wiki: wiki});
+	testText("<$transclude $variable=from Atitle=<<from>> />", true, ['<$transclude $variable />', '<$transclude Atitle=<<>> />'], {wiki: wiki});
 });
 
 it('operator handles different tiddler texts', function() {

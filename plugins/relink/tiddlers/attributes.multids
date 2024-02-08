@@ -79,7 +79,9 @@ $setmultiplevariables/$names: filter
 $setmultiplevariables/$values: filter
 $tiddler/tiddler: title
 $transclude/tiddler: title
+$transclude/$tiddler: title
 $transclude/subtiddler: title
+$transclude/$subtiddler: title
 $view/tiddler: title
 $view/subtiddler: title
 $wikify/text: wikitext
