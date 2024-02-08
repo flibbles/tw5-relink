@@ -87,9 +87,11 @@ it('overriding definitions in other files', function() {
 // TODO: The //Relink// Missing panels is flooded with garbage
 // TODO: Something is wrong with the collapsing fields in the whitelist
 // TODO: $transclude blurb isn't neat like $macrocall
-// TODO: \relink directives must update too
 // TODO: Enter key should work to confirm variable rename
 // TODO: Maybe move all the rules into the fieldType directory?
+// TODO: \\functions need to work in filters when explicitly called
+// TODO: \\functions need to work in filters when used with [function[]]
+// TODO: \\widgets need to work when called as widgets
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
@@ -125,6 +127,7 @@ it('$transclude', function() {
 	testText("<$transclude />", false, undefined, {wiki: wiki});
 	// Recursive
 	testText("<$transclude $variable=from Atitle=<<from>> />", true, ['<$transclude $variable />', '<$transclude Atitle=<<>> />'], {wiki: wiki});
+	//TODO: testText("<$transclude $variable=from Bwiki='<<from>>' />", true, ['<$transclude $variable />', '<<from Bwiki="<<>>" />'], {wiki: wiki});
 });
 
 it('updates whitelist', function() {
