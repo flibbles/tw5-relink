@@ -24,7 +24,8 @@ function testText(text, expected, report, options) {
 	}
 	wiki.addTiddler({title: 'test', text: text});
 	if (!options.noglobal) {
-		wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\procedure " + options.from + "(Atitle Bwiki Cfilter) content\n\\relink " + options.from + " Atitle Bwiki:wikitext Cfilter:filter\n"});
+		var defType = options.defType || 'procedure';
+		wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\" + defType + " " + options.from + "(Atitle Bwiki Cfilter) content\n\\relink " + options.from + " Atitle Bwiki:wikitext Cfilter:filter\n"});
 	}
 	var prefix = options.prefix || (variablePrefix + "global ");
 	expect(utils.getReport('test', wiki)[prefix + options.from]).toEqual(report);
@@ -128,6 +129,19 @@ it('$transclude', function() {
 	// Recursive
 	testText("<$transclude $variable=from Atitle=<<from>> />", true, ['<$transclude $variable />', '<$transclude Atitle=<<>> />'], {wiki: wiki});
 	testText("<$transclude $variable=from Bwiki='<<from>>' />", true, ['<$transclude $variable />', '<<from Bwiki="<<>>" />'], {wiki: wiki});
+});
+
+it('[function[]]', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.operatorConf('function', 'variable'),
+		utils.attrConf('$list', 'filter', 'filter')]);
+	var options = {defType: 'function', wiki: wiki};
+	testText("{{{ [[A]function[from]] }}}", true, ['{{{[function[]]}}}'], options);
+	testText("{{{ [[A]function[from],[],[<<from>>]] }}}", true, ['{{{[function[from],,[<<>>]]}}}', '{{{[function[]]}}}'], options);
+	// Works in other contexts
+	testText("<$list filter='[[A]function[from]]'/>", true, ['<$list filter="[function[]]" />'], options);
+	testText("<$text text={{{[[A]function[from]]}}}/>", true, ['<$text text={{{[function[]]}}} />'], options);
 });
 
 it('updates whitelist', function() {
