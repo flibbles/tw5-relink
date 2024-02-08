@@ -29,7 +29,6 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, mayBeWidget,
 	for (var operator in macrocallOperators) {
 		var results = macrocallOperators[operator].relink(context, macro, text, fromTitle, toTitle, options);
 		if (results) {
-			// TODO: Test this entry || {}. Without it, we shoudl fail
 			entry = entry || {};
 			if (results.impossible) {
 				entry.impossible = true;

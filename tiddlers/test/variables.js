@@ -24,7 +24,7 @@ function testText(text, expected, report, options) {
 	}
 	wiki.addTiddler({title: 'test', text: text});
 	if (!options.noglobal) {
-		wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\procedure " + options.from + "(Atitle Bref Cfilter) content"});
+		wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\procedure " + options.from + "(Atitle Bwiki Cfilter) content\n\\relink " + options.from + " Atitle Bwiki:wikitext Cfilter:filter\n"});
 	}
 	var prefix = options.prefix || (variablePrefix + "global ");
 	expect(utils.getReport('test', wiki)[prefix + options.from]).toEqual(report);
@@ -81,21 +81,17 @@ it('overriding definitions in other files', function() {
 });
 
 // TODO: Test if the toTiddler isn't a legal macroname representative
-// TODO: Whitespace preservation around macrodef and fnprocdef
-// TODO: Remove those "signatures' from the macrodef and fnprocdef files
-// TODO: todos sprinkled in the code
-// TODO: Relinking locally defined macros should work.
-// TODO: Tiddlers with spaces in them
 // TODO: Test whitespace trim, cause it was broken before
-// TODO: $transclude $tiddler /> fails I think.
 // TODO: The //Relink// Missing panels is flooded with garbage
 // TODO: Disallow global <$set> bullshit
 // TODO: Something is wrong with the collapsing fields in the whitelist
 // TODO: $transclude blurb isn't neat like $macrocall
+// TODO: \relink directives must update too
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
 	testText("<<from content>>", true, ['<< content>>']);
+	testText("<<from Bwiki: '<<from>>'>>", true, ['<<from Bwiki: "<<>>">>', '<< <<from>>>>']);
 });
 
 it('macrocall wikitext bad names', function() {
