@@ -89,7 +89,7 @@ function getBodyMatch(text, pos, isMultiline) {
 	var whitespace,
 		valueRegExp;
 	if (isMultiline) {
-		valueRegExp = /\r?\n\\end[^\S\n\r]*(?:\r?\n|$)/mg;
+		valueRegExp = /\r?\n[^\S\n\r]*\\end[^\S\n\r]*(?:\r?\n|$)/mg;
 		whitespace = '';
 	} else {
 		valueRegExp = /(?:\r?\n|$)/mg;

@@ -75,11 +75,12 @@ it('relinks actual definition', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it('overriding definitions in other files', function() {
+	testText('\\define else() In wrong file\n\n<<from>>', true, ['<<>>']);
+	testText('\\define from() In wrong file\n\n<<from>>', false, undefined);
+});
+
 // TODO: Test if the toTiddler isn't a legal macroname representative
-// TODO: Macros that call themselves
-// TODO: Macrodefs that are recursive
-// TODO: Nested macros don't get recognized or altered
-// TODO: Macros in other files with the same name don't get changed
 // TODO: Whitespace preservation around macrodef and fnprocdef
 // TODO: Remove those "signatures' from the macrodef and fnprocdef files
 // TODO: todos sprinkled in the code

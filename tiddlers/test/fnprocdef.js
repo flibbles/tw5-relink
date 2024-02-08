@@ -58,6 +58,29 @@ it('parameters can be relinked', function() {
 	testText("\\procedure proc(A B) content\n\\relink proc B\n<<proc 'from here'>>", false, undefined);
 });
 
+it('whitespace for single line', function() {
+	var report = ['\\procedure macro() [[from here]]'];
+	testText("\\procedure macro() [[from here]]", true, report);
+	testText("\\procedure macro(    ) [[from here]]", true, report);
+	testText("\\procedure macro(\n) [[from here]]", true, report);
+	testText("\\procedure macro() [[from here]]\n", true, report);
+	testText("\\procedure macro() [[from here]]\nText", true, report);
+	testText("\\procedure macro() [[from here]]\r\nText", true, report);
+	testText("\\procedure macro() [[from here]]\r\nText", true, report);
+	testText("\\procedure macro()    \t  [[from here]]\n", true, report);
+	testText("\\procedure\t\tmacro()    \t  [[from here]]\n", true, report);
+	testText("\\procedure\n\nmacro() [[from here]]\n", true, report);
+});
+
+it('whitespace for multi line', function() {
+	var report = ['\\procedure macro() [[from here]]'];
+	testText("\\procedure macro()   \n[[from here]]\n\\end", true, report);
+	testText("\\procedure macro(   )\n[[from here]]\n\\end", true, report);
+	testText("\\procedure\n\nmacro()\n[[from here]]\n\n\\end", true, report);
+	testText("\t\\procedure macro()   \n[[from here]]\n\t\\end", true, report);
+	testText("\\whitespace trim\n\t\\procedure macro()   \n[[from here]]\n\t\\end", true, report);
+});
+
 });
 
 /******** FUNCTION ********/
