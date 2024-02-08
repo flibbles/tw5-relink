@@ -52,6 +52,7 @@ exports.parse = function() {
 			},
 			children: [],
 			isRelinkDefinition: true,
+			isMacroDefinition: true,
 			relink: relink});
 	}
 	if (error) {
