@@ -109,12 +109,21 @@ it('macrocall wikitext bad names', function() {
 	test("to=this");
 });
 
+it('macro attributes', function() {
+	testText("<$text text=<<from>> />", true, ['<$text text=<<>> />']);
+	testText("<$text text=<<from   title >> />", true, ['<$text text=<< title>> />']);
+});
+
 it('$transclude', function() {
-	testText("<$transclude $variable=from />", true, ['<$transclude />']);
+	const wiki = new $tw.Wiki();
+	//wiki.addTiddler(utils.attrConf("$transclude", "$variable", "variable"));
+	testText("<$transclude $variable=from />", true, ['<$transclude />'], undefined, {wiki: wiki});
 	// The following don't replace
-	testText("<$transclude $variable={{from}} />", false);
-	testText("<$transclude $variable={{{from}}} />", false);
-	testText("<$transclude />", false);
+	testText("<$transclude $variable={{from}} />", false, undefined, {wiki: wiki});
+	testText("<$transclude $variable={{{from}}} />", false, undefined, {wiki: wiki});
+	testText("<$transclude />", false, undefined, {wiki: wiki});
+	// Recursive
+	testText("<$transclude $variable=from Atitle=<<from>> />", true, ['<$transclude Atitle=<<>> />', '<$transclude />'], {wiki: wiki});
 });
 
 it('operator handles different tiddler texts', function() {

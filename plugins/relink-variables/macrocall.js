@@ -30,6 +30,9 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 		if (entry.output.search(/[>"'=]/) >= 0) {
 			return {impossible: true};
 		}
+		if (!macro.attributes) {
+			macro.attributes = {"$variable": {}};
+		}
 		macro.attributes['$variable'].value = entry.output;
 		entry.output = macro;
 	}
