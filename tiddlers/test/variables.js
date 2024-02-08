@@ -90,9 +90,8 @@ it('overriding definitions in other files', function() {
 // TODO: $transclude blurb isn't neat like $macrocall
 // TODO: Enter key should work to confirm variable rename
 // TODO: Maybe move all the rules into the fieldType directory?
-// TODO: \\functions need to work in filters when explicitly called
-// TODO: \\functions need to work in filters when used with [function[]]
 // TODO: \\widgets need to work when called as widgets
+// TODO: The variable InfoPanel must detect impossible renames
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
@@ -142,6 +141,28 @@ it('[function[]]', function() {
 	// Works in other contexts
 	testText("<$list filter='[[A]function[from]]'/>", true, ['<$list filter="[function[]]" />'], options);
 	testText("<$text text={{{[[A]function[from]]}}}/>", true, ['<$text text={{{[function[]]}}} />'], options);
+});
+
+it('[direct call[]]', function() {
+	testText("{{{ [[A].from[]] }}}", true, ['{{{[]}}}'], {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [[A].from[].from[]] }}}", true, ['{{{[]}}}', '{{{[]}}}'], {defType: 'function', from: '.from', to: '.to'});
+	// Replaces operator and an operand
+	testText("{{{ [.from[],[<<.from>>]] }}}", true, ['{{{[.from,[<<>>]]}}}', '{{{[,[<<.from>>]]}}}'], {defType: 'function', from: '.from', to: '.to'});
+	// Better reporting
+	testText("{{{ [.from[value],<text>,{filter}] }}}", true, ['{{{[[value],<text>,{filter}]}}}'], {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [.from[],<>,{}] }}}", true, ['{{{[,<>,{}]}}}'], {defType: 'function', from: '.from', to: '.to'});
+	// Bad name changes
+	utils.spyFailures(spyOn);
+	function testFail(to) {
+		utils.failures.calls.reset();
+		testText("{{{ [.from[]] }}}", false, ['{{{[]}}}'], {defType: 'function', from: '.from', to: to});
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+	};
+	testFail('to');
+	testFail('.t[o');
+	testFail('.t{o');
+	testFail('.t<o');
+	testFail('.t/o');
 });
 
 it('updates whitelist', function() {

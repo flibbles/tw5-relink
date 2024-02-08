@@ -31,9 +31,11 @@ exports.report = function(filterParseTree, callback, options) {
 					}, options);
 				} else if (operand.variable) {
 					var macro = $tw.utils.parseMacroInvocation("<<"+operand.text+">>", 0);
-					macrocall.report(options.settings, macro, function(title, blurb) {
-						callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '<' + blurb + '>]');
-					}, options);
+					if (macro) {
+						macrocall.report(options.settings, macro, function(title, blurb) {
+							callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '<' + blurb + '>]');
+						}, options);
+					}
 					continue;
 				} else if (operand.text) {
 					var handler = fieldType(options.settings, operator, index, options)
@@ -126,7 +128,10 @@ function standaloneTitleRun(run) {
 function relinkMacro(context, text, fromTitle, toTitle, options) {
 	text = "<<" + text + ">>";
 	var macro = $tw.utils.parseMacroInvocation(text, 0);
-	var entry = macrocall.relink(context, macro, text, fromTitle, toTitle, false, options);
+	var entry;
+	if (macro) {
+		entry = macrocall.relink(context, macro, text, fromTitle, toTitle, false, options);
+	}
 	if (entry && entry.output) {
 		var string = macrocall.reassemble(entry, text, options);
 		if (string !== undefined) {

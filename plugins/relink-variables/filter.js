@@ -1,36 +1,68 @@
 /*\
-module-type: relinkfilteroperator
+module-type: relinkfilter
 title: $:/plugins/flibbles/relink-variables/filter.js
 type: application/javascript
 
-This filter operator returns the names of all variables which are exportable by this tiddler. It does not remove duplicates.
-
-[[myTiddler]relink:variables[]] -> variables in order of appearance
+Takes care of relinking functions used in filters (i.e. [my.func[]])
 
 \*/
 
-exports.variables = function(source, operator, options) {
-	var results = [];
-	source(function(tiddler, title) {
-		var parser = options.wiki.parseTiddler(title);
-		if (parser) {
-			// ptn stands for parseTreeNode
-			var ptn = parser.tree[0];
-			while (ptn && (
-			ptn.type === "set"
-			|| ptn.type === "parameters"
-			|| ptn.type === "setvariable")) {
-				if (!ptn.isRelinkDefinition
-				&& (ptn.isMacroDefinition
-			     || ptn.isFunctionDefinition
-			     || ptn.isProcedureDefinition
-			     || ptn.isWidgetDefinition)) {
-					var name = ptn.attributes.name.value;
-					results.push(name);
+var utils = require("$:/plugins/flibbles/relink/js/utils.js");
+var varRelinker = utils.getType('variable');
+
+exports.name = "variables";
+
+exports.report = function(filterParseTree, callback, options) {
+	forEachFunctionOperator(filterParseTree, function(operator) {
+		varRelinker.report(operator.operator, function(title, blurb) {
+			blurb = [];
+			for (var i = 0; i < operator.operands.length; i++) {
+				var operand = operator.operands[i];
+				if (operand.indirect) {
+					blurb.push('{' + operand.text + '}');
+				} else if (operand.variable) {
+					blurb.push('<' + operand.text + '>');
+				} else if (operand.text) {
+					blurb.push('[' + operand.text + ']');
+				} else {
+					blurb.push('');
 				}
-				ptn = ptn.children && ptn.children[0];
+			}
+			callback(title, '[' + blurb.join(',') + ']');
+		}, options);
+	});
+};
+
+exports.relink = function(filterParseTree, fromTitle, toTitle, options) {
+	var output = {};
+	forEachFunctionOperator(filterParseTree, function(operator) {
+		var entry = varRelinker.relink(operator.operator, fromTitle, toTitle, options);
+		if (entry) {
+			if (entry.output) {
+				if (entry.output.indexOf('.') < 0
+				|| entry.output.search(/[\[\{<\/]/) >= 0) {
+					output.impossible = true;
+				} else {
+					operator.operator = entry.output;
+					output.changed = true;
+				}
+			}
+			if (entry.impossible) {
+				output.impossible = true;
 			}
 		}
 	});
-	return results;
+	return output;
+};
+
+function forEachFunctionOperator(filterParseTree, method) {
+	for (var i = 0; i < filterParseTree.length; i++) {
+		var run = filterParseTree[i];
+		for (var j = 0; j < run.operators.length; j++) {
+			var operator = run.operators[j];
+			if (operator.operator.indexOf('.') >= 0) {
+				method(operator);
+			}
+		}
+	}
 };
