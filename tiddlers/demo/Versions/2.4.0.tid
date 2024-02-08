@@ -1,0 +1,11 @@
+created: 
+
+\rules except wikilink
+
+
+Other features and fixes
+
+* Some tm-messages are now supported, specifically `tm-new-tiddler` with `$action-sendmessage`.
+* Conditionals (i.e. `<% if filter %>`) are now fully supported.
+* Added support for `<$transclude $variable />`
+* Fixed issue where `\whitespace trim` would cause following `\function` pragma not to relink properly.
