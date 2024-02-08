@@ -18,7 +18,7 @@ exports.report = function(text, callback, options) {
 	var context = this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
-	var endMatch = getBodyMatch(this.parser.source, this.parser.pos, definition.multiline);
+	var endMatch = getBodyMatch(this.parser.source, this.parser.pos, definition);
 	if (endMatch) {
 		definition.body = endMatch[2];
 		options.settings = context
@@ -39,7 +39,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		context = this.parser.context = new VariableContext(this.parser.context, setParseTreeNode[0]);
 	// Parse set the pos pointer, but we don't want to skip the macro body.
 	this.parser.pos = this.matchRegExp.lastIndex;
-	var endMatch = getBodyMatch(this.parser.source, this.parser.pos, definition.multiline);
+	var endMatch = getBodyMatch(this.parser.source, this.parser.pos, definition);
 	if (endMatch) {
 		definition.body = endMatch[2];
 		options.settings = context;
@@ -85,11 +85,11 @@ function skipWhitespace(text, pos) {
 // m[1] = whitespace before body
 // m[2] = body
 // m.index + m[0].length -> end of match
-function getBodyMatch(text, pos, isMultiline) {
+function getBodyMatch(text, pos, definition) {
 	var whitespace,
 		valueRegExp;
-	if (isMultiline) {
-		valueRegExp = /\r?\n[^\S\n\r]*\\end[^\S\n\r]*(?:\r?\n|$)/mg;
+	if (definition.multiline) {
+		valueRegExp = new RegExp("\\r?\\n[^\\S\\n\\r]*\\\\end[^\\S\\n\\r]*(?:" + $tw.utils.escapeRegExp(definition.name) + ")?(?:\\r?\\n|$)", "mg");
 		whitespace = '';
 	} else {
 		valueRegExp = /(?:\r?\n|$)/mg;

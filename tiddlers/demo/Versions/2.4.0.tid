@@ -9,3 +9,4 @@ Other features and fixes
 * Conditionals (i.e. `<% if filter %>`) are now fully supported.
 * Full support for the new `<$transclude />`, not only for //Relink//-variables, but also by removing blindspots for new-style attributes like `$tiddler` and `$variable`, as well as
 * Fixed issue where `\whitespace trim` would cause following `\function` pragma not to relink properly.
+* Fixed issue where named pragma closers (i.e. `\end myMacro`) weren't recognized.

@@ -81,6 +81,20 @@ it('whitespace for multi line', function() {
 	testText("\\whitespace trim\n\t\\procedure macro()   \n[[from here]]\n\t\\end", true, report);
 });
 
+it('named \\end pragma', function() {
+	testText(`
+		\\procedure inner()
+		\\procedure nested()
+		{{from here!!nested}}
+		\\end nested
+		{{from here!!inner}}
+		\\end inner
+		{{from here!!outer}}`, true, [
+		'\\procedure inner() \\procedure nested() {{!!nested}}',
+		'\\procedure inner() {{!!inner}}',
+		'{{!!outer}}']);
+});
+
 });
 
 /******** FUNCTION ********/
