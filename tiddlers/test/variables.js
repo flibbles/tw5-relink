@@ -89,13 +89,15 @@ it('overriding definitions in other files', function() {
 // TODO: Order of configuration tabs is bad
 // TODO: $transclude blurb isn't neat like $macrocall
 // TODO: Maybe move all the rules into the fieldType directory?
-// TODO: \\widgets need to work when called as widgets
 // TODO: The variable InfoPanel must detect impossible renames
 // TODO: Fix link-to-tab for demo pages
 // TODO: If blurb attributes are too large, truncate
 // TODO: Variables in shadow tiddler should not be editable
 // TODO: Proper lingo for the TiddlerInfo panel
 // TODO: Change whitelist blurb from $ to |
+// TODO: TiddlerInfo panels need to be collapsable
+// TODO: Javascript macros
+// TODO: Better <<>> blurbs for named attributes.
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
@@ -155,6 +157,8 @@ it('[direct call[]]', function() {
 	// Better reporting
 	testText("{{{ [.from[value],<text>,{filter}] }}}", true, ['{{{[[value],<text>,{filter}]}}}'], {defType: 'function', from: '.from', to: '.to'});
 	testText("{{{ [.from[],<>,{}] }}}", true, ['{{{[,<>,{}]}}}'], {defType: 'function', from: '.from', to: '.to'});
+	// TODO: Calls without the period aren't picked up.
+	// TODO: Calls to variables that aren't functions aren't picked up.
 	// Bad name changes
 	utils.spyFailures(spyOn);
 	function testFail(to) {
@@ -167,6 +171,42 @@ it('[direct call[]]', function() {
 	testFail('.t{o');
 	testFail('.t<o');
 	testFail('.t/o');
+});
+
+it('updates widgets', function() {
+	testText("Content<$.from />After", true, ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
+	testText("<$.from/>", true, ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
+	testText("<$.from\n\n/>", true, ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
+	testText("Start<$.from>Content</$.from>End", true, ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
+	// attributes in blurb
+	testText("Content<$.from Atitle=value Bwiki={{ref}} Cfilter=<<macro>> Dwildcard={{{ filter }}} Esub=`sub`>Content</$.from>", true, ['< Atitle="value" Bwiki={{ref}} Cfilter=<<macro>> Dwildcard={{{filter}}} Esub=`sub` />'], {defType: "widget", from: "$.from", to: '$.to'})
+	// attributes change too
+	testText("Start<$.from Atitle=<<$.from>>>Content</$.from>End", true, ['<$.from Atitle=<<>> />', '< Atitle=<<$.from>> />'], {defType: 'widget', from: '$.from', to: '$.to'});
+	testText("Start<$.from Bwiki='<<$.from>>'>Content</$.from>End", true, ['<$.from Bwiki="<<>>" />', '< Bwiki="<<$.from>>" />'], {defType: 'widget', from: '$.from', to: '$.to'});
+	// Closing tags, or lack thereof.
+	testText("<$.from>Content", true, ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
+	testText("<$.from>Content</$.from></.$from>",
+	         "<$.to>Content</$.to></.$from>", ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
+	// This is a tricky case we don't actually handle.
+	// If that space at the end is missing, this fails.
+	testText("<$.from>\n\n```\nContent\n</$.from> ",
+	         "<$.to>\n\n```\nContent\n</$.from> ", ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
+	// Not actually a widget
+	testText("Content<$.from />After", false, undefined, {from: "$.from", to: '$.to'})
+	testText("Content<.from />After", false, undefined, {defType: "widget", from: ".from", to: '$.to'})
+	// Bad renames
+	utils.spyFailures(spyOn);
+	function testFail(to) {
+		utils.failures.calls.reset();
+		testText("Content<$.from />After", false, ['< />'], {defType: "widget", from: "$.from", to: to})
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+	};
+	testFail("$to");
+	testFail("t.o");
+	testFail("$t.o=");
+	testFail("$t./o");
+	testFail("$t.>o");
+	testFail("$t. o");
 });
 
 it('updates whitelist', function() {

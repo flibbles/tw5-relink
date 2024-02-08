@@ -33,11 +33,12 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	widgetEntry.attributes = Object.create(null);
 	widgetEntry.element = this.nextTag.tag;
 	var elem = this.nextTag;
+	var originalTag = elem.tag;
 	var changed = false;
 	var nestedOptions = Object.create(options);
 	nestedOptions.settings = this.parser.context;
 	for (var operator in htmlOperators) {
-		var entry = htmlOperators[operator].relink(this.nextTag, this.parser, fromTitle, toTitle, nestedOptions);
+		var entry = htmlOperators[operator].relink(elem, this.parser, fromTitle, toTitle, nestedOptions);
 		if (entry) {
 			if (entry.output) {
 				changed = true;
@@ -47,6 +48,11 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 		}
 	}
+	// We swap in the original tag in case it changed. We need the old tag
+	// to find the proper closing tag. Parsing must come after the htmlmodules
+	// because those might change the context for the inner body.
+	var newTag = elem.tag;
+	elem.tag = originalTag;
 	var tag = this.parse()[0];
 	if (tag.children) {
 		for (var i = 0; i < tag.children.length; i++) {
@@ -61,6 +67,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 	}
 	if (changed) {
 		var builder = new Rebuilder(text, elem.start);
+		builder.add(newTag, elem.start+1, getEndOfTag(elem, text));
 		for (var attributeName in elem.attributes) {
 			var attr = elem.attributes[attributeName];
 			var quotedValue;
@@ -126,10 +133,23 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				}
 			}
 		}
+		var closingTag = '</' + elem.tag + '>';
+		var startClosingTag = this.parser.pos - closingTag.length;
+		if (text.substring(startClosingTag, this.parser.pos) === closingTag) {
+			// Replace the closing tag in case the tag changed.
+			builder.add(newTag, startClosingTag + 2, this.parser.pos-1);
+		}
 		widgetEntry.output = builder.results(this.parser.pos);
 	}
 	if (widgetEntry.output || widgetEntry.impossible) {
 		return widgetEntry;
 	}
 	return undefined;
+};
+
+function getEndOfTag(element, text) {
+	var regExp = /[^a-zA-Z\-\$\.]/g;
+	regExp.lastIndex = element.start+1;
+	var match = regExp.exec(text);
+	return match.index;
 };

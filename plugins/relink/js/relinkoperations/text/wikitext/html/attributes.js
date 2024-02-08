@@ -155,7 +155,6 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			}
 			// no break. turn it into a string and try to work with it
 			attr.value = attr.rawValue;
-			attr.type = 'string';
 		case 'string':
 			for (var operatorName in attributeOperators) {
 				var operator = attributeOperators[operatorName];
@@ -167,6 +166,8 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 						attr.value = entry.output;
 						attr.handler = handler.name;
 						changed = true;
+						// Change it into a string if this was a substitution that had no substitutions
+						attr.type = 'string';
 					}
 				}
 			}

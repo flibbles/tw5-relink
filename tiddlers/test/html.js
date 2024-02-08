@@ -379,6 +379,8 @@ it('mixed failure and replacement with macro attributes', function() {
 	// substitutions in value
 	testText("<$link to=`from here`/>", "<$link to=to$(d)$there/>", ["<$link to />"],{wiki: wiki, to: "to$(d)$there"});
 	testText("<$link to=`from here`/>", "<$link to='to${d}$ there'/>", ["<$link to />"],{wiki: wiki, to: "to${d}$ there"});
+	// substitution in irrelevant attributes
+	testText("<$link to='from here' class=`myclass` />", true, ['<$link to />'], {wiki: wiki});
 });
 
 (utils.atLeastVersion("5.3.0")? it: xit)('substitution attributes with actual substitution', function() {
