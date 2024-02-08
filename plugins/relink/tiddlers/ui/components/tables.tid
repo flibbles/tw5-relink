@@ -4,7 +4,7 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 \whitespace trim
 
 <$list variable="render" filter="[relink:signatures<__plugin__>prefix<__category__>first[]]">
-<$set name="table-state" value=<<qualify """$:/state/flibbles/relink/tables/$title$""">>>
+<$vars table-state=<<qualify """$:/state/flibbles/relink/tables/$plugin$""">>>
 <tr><th class="tc-relink-header-plugin" colspan=<<column-count>> >
 <$reveal type="nomatch" state=<<table-state>> text="yes" default="""$default-table-state$""">
 <$button class="tc-btn-invisible tc-btn-dropdown" set=<<table-state>> setTo="yes">
@@ -30,7 +30,7 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 </$tiddler>
 </$vars>
 </$list>
-</$set>
+</$vars>
 </$list>
 \end
 
@@ -48,7 +48,10 @@ title: $:/plugins/flibbles/relink/ui/components/tables
 
 <$list
 	filter="[plugin-type[plugin]![$:/core]![$:/plugins/flibbles/relink]]">
-<$set name="subtitle" filter="[all[current]has[description]]" value="''{{!!name}}'':&#32;<$text text={{!!description}}/>" emptyValue="''{{!!name}}''" >
+<$set name="subtitle"
+	filter="[all[current]has[description]]"
+	value="''{{!!name}}'':&#32;<$text text={{!!description}}/>"
+	emptyValue="''{{!!name}}''" >
 <$macrocall $name=".make-table" title=<<subtitle>> plugin=<<currentTiddler>> />
 </$set>
 </$list>

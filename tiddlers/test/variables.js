@@ -86,7 +86,7 @@ it('overriding definitions in other files', function() {
 // TODO: Test if the toTiddler isn't a legal macroname representative
 // TODO: Test whitespace trim, cause it was broken before
 // TODO: The //Relink// Missing panels is flooded with garbage
-// TODO: Something is wrong with the collapsing fields in the whitelist
+// TODO: Order of configuration tabs is bad
 // TODO: $transclude blurb isn't neat like $macrocall
 // TODO: Enter key should work to confirm variable rename
 // TODO: Maybe move all the rules into the fieldType directory?
