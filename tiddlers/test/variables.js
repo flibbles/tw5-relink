@@ -86,6 +86,7 @@ it('overriding definitions in other files', function() {
 // TODO: Something is wrong with the collapsing fields in the whitelist
 // TODO: $transclude blurb isn't neat like $macrocall
 // TODO: \relink directives must update too
+// TODO: Enter key should work to confirm variable rename
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
@@ -121,6 +122,38 @@ it('$transclude', function() {
 	testText("<$transclude />", false, undefined, {wiki: wiki});
 	// Recursive
 	testText("<$transclude $variable=from Atitle=<<from>> />", true, ['<$transclude $variable />', '<$transclude Atitle=<<>> />'], {wiki: wiki});
+});
+
+it('updates whitelist', function() {
+	function test(paramName, paramType, report) {
+		const wiki = new $tw.Wiki();
+		var prefix = variablePrefix + 'global ';
+		var fromConf = utils.macroConf('from', paramName, paramType);
+		wiki.addTiddler(fromConf);
+		wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\procedure from("+paramName+") content\n"});
+		expect(utils.getReport(fromConf.title, wiki)[prefix + 'from']).toEqual([report]);
+		wiki.renameTiddler(prefix + 'from', prefix + 'to',
+		                   {from: 'from', to: 'to'});
+		var newConf = utils.macroConf('to', paramName, paramType);
+		expect(wiki.tiddlerExists(fromConf.title)).toBe(false);
+		expect(wiki.tiddlerExists(newConf.title)).toBe(true);
+		expect(wiki.getTiddlerText(newConf.title)).toBe(paramType);
+	}
+	test('Dwildcard', 'title', '$relink Dwildcard');
+	test('Efilter', 'filter', '$relink Efilter:filter');
+});
+
+it('does not update whitelist for local macros', function() {
+	const wiki = new $tw.Wiki();
+	var prefix = variablePrefix + 'local ';
+	var conf = utils.macroConf('from', 'param');
+	wiki.addTiddler(conf);
+	wiki.addTiddler({title: 'local', text: "\\procedure from(param) C\n"});
+	expect(utils.getReport(conf.title, wiki)[prefix + 'from']).toBeUndefined();
+	wiki.renameTiddler(prefix + 'from', prefix + 'to',
+					   {from: 'from', to: 'to'});
+	var newConf = utils.macroConf('to', 'param');
+	expect(wiki.tiddlerExists(conf.title)).toBe(true);
 });
 
 it('operator handles different tiddler texts', function() {

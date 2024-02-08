@@ -29,4 +29,3 @@ function dir(string) {
 		return string.substr(0, index);
 	}
 }
-
