@@ -83,7 +83,6 @@ it('overriding definitions in other files', function() {
 // TODO: Test if the toTiddler isn't a legal macroname representative
 // TODO: Test whitespace trim, cause it was broken before
 // TODO: The //Relink// Missing panels is flooded with garbage
-// TODO: Disallow global <$set> bullshit
 // TODO: Something is wrong with the collapsing fields in the whitelist
 // TODO: $transclude blurb isn't neat like $macrocall
 // TODO: \relink directives must update too
@@ -130,13 +129,21 @@ it('operator handles different tiddler texts', function() {
 		wiki.addTiddler({title: 'mytest', text: text});
 		expect(wiki.filterTiddlers("[[mytest]relink:variables[]]")).toEqual(expected);
 	};
+	// Works with all fnprocdef and macrodef types
+	test("\\define def() Content\n", ['def']);
+	test("\\procedure def() Content\n", ['def']);
+	test("\\function def() Content\n", ['def']);
+	test("\\widget $.def() Content\n", ['$.def']);
+	// Works with multiples
 	test("\\define myA() Content\n\\procedure myB()\nContent\n\\end", ['myA', 'myB']);
 	test("\\define outer()\n\\define inner()\nInner\n\\end inner\n\\end outer\n", ['outer']);
-	// Can pick up $set widgets as well
-	test("<$set name=A value=stuff>\n\n<$set name=B value=other>\n\nContent\n</$set></$set>", ['A', 'B']);
+	// If there are duplicates, then return duplicates in the order found
+	test("\\define myA() A\n\\define myB() B\n\\define myA() A\n", ['myA', 'myB', 'myA']);
+	// No <$set> stuff. It would only confuse users.
+	test("\\define myA() A\n<$set name=noB value=xx>\n", ['myA']);
+	// Doesn't pick up those other variable widgets either
 	test("<$let A=stuff>\n\nContent\n</$let>", []);
 	test("<$vars A=stuff>\n\nContent\n</$let>", []);
-	test("\\define myA() A\n\\define myB() B\n\\define myA() A\n", ['myA', 'myB', 'myA']);
 });
 
 it('operator handles non-tiddler input', function() {

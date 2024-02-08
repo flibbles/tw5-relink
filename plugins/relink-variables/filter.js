@@ -14,11 +14,14 @@ exports.variables = function(source, operator, options) {
 	source(function(tiddler, title) {
 		var parser = options.wiki.parseTiddler(title);
 		if (parser) {
-			var parseTreeNode = parser.tree[0];
-			while (parseTreeNode && parseTreeNode.type === "set") {
-				var name = parseTreeNode.attributes.name.value;
+			// ptn stands for parseTreeNode
+			var ptn = parser.tree[0];
+			while (ptn
+			&& ptn.type === "set"
+			&& (ptn.isMacroDefinition || ptn.isFunctionDefinition || ptn.isProcedureDefinition || ptn.isWidgetDefinition)) {
+				var name = ptn.attributes.name.value;
 				results.push(name);
-				parseTreeNode = parseTreeNode.children && parseTreeNode.children[0];
+				ptn = ptn.children && ptn.children[0];
 			}
 		}
 	});
