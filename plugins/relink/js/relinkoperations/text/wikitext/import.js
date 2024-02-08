@@ -26,7 +26,7 @@ exports.report = function(text, callback, options) {
 	}, options);
 	// Before we go, we need to actually import the variables
 	// it's calling for, and any /relink pragma
-	this.parser.context = new ImportContext(options.wiki, this.parser.context, filter);
+	options.settings = this.parser.context = new ImportContext(options.wiki, this.parser.context, filter);
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -44,7 +44,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 
 	// Before we go, we need to actually import the variables
 	// it's calling for, and any /relink pragma
-	this.parser.context = new ImportContext(options.wiki, this.parser.context, filter);
+	options.settings = this.parser.context = new ImportContext(options.wiki, this.parser.context, filter);
 
 	return entry;
 };

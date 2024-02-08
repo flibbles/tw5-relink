@@ -19,12 +19,22 @@ exports.report = function(value, callback, options) {
 	}
 };
 
+exports.reportForTitle = function(value, callback, defTitle) {
+	callback(utils.prefix + defTitle + ' ' + value);
+};
+
 exports.relink = function(value, fromTitle, toTitle, options) {
+	var def = options.settings.getMacroDefinition(value);
+	if (def) {
+		return this.relinkForTitle(value, fromTitle, toTitle, def.tiddler);
+	}
+};
+
+exports.relinkForTitle = function(value, fromTitle, toTitle, defTitle) {
 	var cleanFrom = utils.removePrefix(fromTitle);
 	if (cleanFrom !== null) {
-		var def = options.settings.getMacroDefinition(value);
-		if (def && (cleanFrom === def.tiddler + ' ' + value)) {
-			var cleanTo = utils.removePrefix(toTitle, def.tiddler);
+		if (cleanFrom === defTitle + ' ' + value) {
+			var cleanTo = utils.removePrefix(toTitle, defTitle);
 			if (!cleanTo) {
 				return {impossible: true};
 			}

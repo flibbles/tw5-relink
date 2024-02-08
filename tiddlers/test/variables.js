@@ -58,8 +58,8 @@ it('relinks actual definition', function() {
 	         undefined, options);
 	// Repeat macros
 	testText('\\define from(arg) first\n\\define from() second\nbody', true, undefined, options);
-	// Pragma can come before it
-	testText('\\relink this  B\n\\define from() V\n', true, undefined, options);
+	// Pragma can come before it. And relink as well, since there is no global
+	testText('\\relink from A\n\\define other() B\n\\define from(A) V\n', true, ['\\relink A'], options);
 	// Illegal names
 	utils.spyFailures(spyOn);
 	testText('\\define from(arg) first\nbody',
@@ -89,6 +89,7 @@ it('overriding definitions in other files', function() {
 // TODO: $transclude blurb isn't neat like $macrocall
 // TODO: \relink directives must update too
 // TODO: Enter key should work to confirm variable rename
+// TODO: Maybe move all the rules into the fieldType directory?
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
@@ -156,6 +157,27 @@ it('does not update whitelist for local macros', function() {
 					   {from: 'from', to: 'to'});
 	var newConf = utils.macroConf('to', 'param');
 	expect(wiki.tiddlerExists(conf.title)).toBe(true);
+});
+
+it('handles relink pragma when global exists', function() {
+	testText("\\relink from Atitle\nContent", true, ['\\relink Atitle']);
+	testText("\\define from(Atitle) $Atitle$\n\\relink from Atitle\nContent", false);
+	// It detects proceeding definitions
+	testText("\\relink from Atitle\n\\define from(Atitle) $Atitle$\nContent", false);
+	testText("\\relink from Atitle\n\n\n\t\\define from(Atitle) $Atitle$\nContent", false);
+	testText("\\relink from Atitle\n\\define\n\nfrom(Atitle) $Atitle$\nContent", false);
+	// It ignores earlier nested definitions
+	testText("\\define outer()\n\\define from(Atitle) $Atitle$\n\\end\n\\relink from Atitle\nContent",
+	         "\\define outer()\n\\define from(Atitle) $Atitle$\n\\end\n\\relink to Atitle\nContent",
+	         ['\\relink Atitle']);
+	// It ignores later nested definitions
+	testText("\\relink from Atitle\n\\define outer()\n\\define from(Atitle) $Atitle$\n\\end\nContent",
+	         "\\relink to Atitle\n\\define outer()\n\\define from(Atitle) $Atitle$\n\\end\nContent",
+	         ['\\relink Atitle']);
+	// If an unrelated definition is imported, it can block the global rename
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'import', text: '\\define from(Atitle) Imported'});
+	testText("\\import import\n\\relink from Atitle\nContent", false, undefined, {wiki: wiki});
 });
 
 it('operator handles different tiddler texts', function() {

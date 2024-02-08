@@ -10,13 +10,14 @@ It takes care of providing its own relink and report rules.
 
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 var language = require('$:/plugins/flibbles/relink/js/language.js');
+var pragmaOperators = utils.getModulesByTypeAsHashmap('relinkpragma', 'name');
 
 exports.name = "relink";
 exports.types = {pragma: true};
 
 exports.init = function(parser) {
 	this.parser = parser;
-	this.matchRegExp = /^\\relink[^\S\n]+([^(\s]+)([^\r\n]*)(\r?\n)?/mg;
+	this.matchRegExp = /^\\relink[^\S\r\n]+([^(\s]+)([^\r\n]*)(\r?\n)?/mg;
 };
 
 /**This makes the widget that the macro library will later parse to determine
@@ -69,10 +70,20 @@ exports.parse = function() {
 
 exports.report = function(text, callback, options) {
 	operate(this, options);
+	for (var operator in pragmaOperators) {
+		pragmaOperators[operator].report(this, callback, options);
+	}
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	operate(this, options);
+	var entry;
+	for (var operator in pragmaOperators) {
+		// Yes, this only handles one thing for now. I haven't bothered
+		// breaking up \relink into a modifiable type.
+		entry = pragmaOperators[operator].relink(this, fromTitle, toTitle, options);
+	}
+	return entry;
 };
 
 function operate(rule, options) {
