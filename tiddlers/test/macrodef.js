@@ -16,92 +16,83 @@ describe("macrodef", function() {
 
 beforeEach(function() {
 	spyOn(console, 'log');
-	utils.spyFailures(spyOn);
 });
 
-function testText(text, expected, options) {
-	[text, expected, options] = utils.prepArgs(text, expected, options);
-	utils.failures.calls.reset();
-	var results = utils.relink({text: text}, options);
-	expect(results.tiddler.fields.text).toEqual(expected);
-	expect(utils.failures).toHaveBeenCalledTimes(options.fails || 0);
-	return results;
+function testText(text, expected, report, options) {
+	options = Object.assign({from: 'from here', to: 'to there'}, options);
+	const wiki = options.wiki || new $tw.Wiki();
+	if (expected === true) {
+		expected = text.split(options.from).join(options.to);
+	} else if (expected === false) {
+		expected = text;
+	}
+	wiki.addTiddlers(
+		[Object.assign({title: 'test', text: text}, options.fields)]);
+	wiki.addTiddlers(utils.setupTiddlers());
+	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+	wiki.renameTiddler(options.from, options.to, options);
+	expect(utils.getText('test', wiki)).toEqual(expected);
 };
 
 it('sequential defs parse', function() {
-	testText("\\define macro() [[from here]]\n\\define other() {{from here}}");
-	testText("\\define macro() [[from]]\n\\define relink-list-1() from\n", {from: "from", to: "to"});
-	testText("\\define macro() [[from]]\n\n\n\\define relink-list-1() from", {from: "from", to: "to"});
+	testText("\\define macro() [[from here]]\n\\define other() {{from here}}", true, ['\\define macro() [[from here]]', '\\define other() {{}}']);
+	testText("\\define macro() [[from]]\n\\define relink-list-1() from\n", true, ['\\define macro() [[from]]', '\\define relink-list-1()'], {from: "from", to: "to"});
+	testText("\\define macro() [[from]]\n\n\n\\define relink-list-1() from", true, ['\\define macro() [[from]]', '\\define relink-list-1()'], {from: "from", to: "to"});
 	// multiline
-	testText("\\define macro()\nText\n\\end\n\\define other()\n[[from here]]\n\\end");
-	testText("\\define macro()\nText\n\\end  \n\n\n\\define other()\n[[from here]]\n\\end");
+	testText("\\define macro()\nText\n\\end\n\\define other()\n[[from here]]\n\\end", true, ['\\define other() [[from here]]']);
+	testText("\\define macro()\nText\n\\end  \n\n\n\\define other()\n[[from here]]\n\\end", true, ['\\define other() [[from here]]']);
 });
 
 it('parameters', function() {
-	testText("\\define macro(  field,  here   ) [[from here]]");
-	testText("\\define macro(  field:'value',  here   ) [[from here]]");
+	testText("\\define macro(  field,  here   ) [[from here]]", true, ['\\define macro() [[from here]]']);
+	testText("\\define macro(  field:'value',  here   ) [[from here]]", true, ['\\define macro() [[from here]]']);
 });
 
 it('whitespace for single line', function() {
-	testText("\\define macro() [[from here]]");
-	testText("\\define macro(    ) [[from here]]");
-	testText("\\define macro(\n) [[from here]]");
-	testText("\\define macro() [[from here]]\n");
-	testText("\\define macro() [[from here]]\nText");
-	testText("\\define macro() [[from here]]\r\nText");
-	testText("\\define macro() [[from here]]\r\nText");
-	testText("\\define macro()    \t  [[from here]]\n");
-	testText("\\define\t\tmacro()    \t  [[from here]]\n");
-	testText("\\define\n\nmacro() [[from here]]\n");
+	var report = ['\\define macro() [[from here]]'];
+	testText("\\define macro() [[from here]]", true, report);
+	testText("\\define macro(    ) [[from here]]", true, report);
+	testText("\\define macro(\n) [[from here]]", true, report);
+	testText("\\define macro() [[from here]]\n", true, report);
+	testText("\\define macro() [[from here]]\nText", true, report);
+	testText("\\define macro() [[from here]]\r\nText", true, report);
+	testText("\\define macro() [[from here]]\r\nText", true, report);
+	testText("\\define macro()    \t  [[from here]]\n", true, report);
+	testText("\\define\t\tmacro()    \t  [[from here]]\n", true, report);
+	testText("\\define\n\nmacro() [[from here]]\n", true, report);
 });
 
 it('whitespace for multi line', function() {
-	testText("\\define macro()   \n[[from here]]\n\\end");
-	testText("\\define macro(   )\n[[from here]]\n\\end");
-	testText("\\define\n\nmacro()\n[[from here]]\n\n\\end");
-	testText("\t\\define macro()   \n[[from here]]\n\t\\end");
-	testText("\\whitespace trim\n\t\\define macro()   \n[[from here]]\n\t\\end");
+	var report = ['\\define macro() [[from here]]'];
+	testText("\\define macro()  \r\n[[from here]]\r\n\\end\nContent", true, report);
+	testText("\\define macro()   \n[[from here]]\n\\end\nContent", true, report);
+	testText("\\define macro(   )\n[[from here]]\n\\end", true, report);
+	testText("\\define\n\nmacro()\n[[from here]]\n\n\\end", true, report);
+	testText("\t\\define macro()   \n[[from here]]\n\t\\end", true, report);
+	testText("\\whitespace trim\n\t\\define macro()   \n[[from here]]\n\t\\end", true, report);
 });
 
 it('isolates its body from following text', function() {
 	// Macrodefs isolate their body and process it alone.
-	testText("\\define macro() {{{\nfrom}}}", {from: "from", ignored: true});
+	testText("\\define macro() {{{\nfrom}}}", false, undefined, {from: "from"});
 });
 
 it("doesn't process macros after pragma", function() {
-	testText("Text\n\\define macro() {{{\nfrom}}}", {from: "from", to: "to"});
+	testText("Text\n\\define macro() {{{\nfrom}}}", true, ['{{{}}}'], {from: "from", to: "to"});
 });
 
 it('respects \\rules', function() {
+	var options = {from: "from", to: "to"};
 	// That filteredtransclude won't parse if the macro parsed first.
-	testText("\\rules except html\n\\define macro() {{{\nfrom}}}", {ignored: true});
-	testText("\\rules only macrodef\n\\define macro() {{{\nfrom}}}", {ignored: true});
+	testText("\\rules except html\n\\define macro() {{{\nfrom}}}", false, undefined, options);
+	testText("\\rules only macrodef\n\\define macro() {{{\nfrom}}}", false, undefined, options);
 	// Test that macrodef won't parse when told not to
-	testText("\\rules except macrodef\n\\define macro() {{{\nfrom}}}");
-	testText("\\rules only html\n\\define macro() {{{\nfrom}}}");
-});
-
-it("multiline and whitespace", function() {
-	testText("\\define macro()\n[[from here]]\n\\end");
-	testText("\\define macro()   \n[[from here]]\n\\end\nText");
-	testText("\\define macro()\t\n[[from here]]\n\\end  \nText");
-	testText("\\define macro()\r\n[[from here]]\r\n\\end");
+	testText("\\rules except macrodef\n\\define macro() {{{\nfrom}}}", true, ['{{{}}}'], options);
+	testText("\\rules only filteredtranscludeinline\n\\define macro() {{{\nfrom}}}", true, ['{{{}}}'], options);
 });
 
 it("broken macro", function() {
-	testText("\\define macro()\nContent\n[[from here]]\n");
-});
-
-it("reports", function() {
-	function test(text, expected) {
-		var wiki = new $tw.Wiki();
-		wiki.addTiddler({title: 'test', text: text});
-		expect(wiki.getTiddlerRelinkReferences('test')).toEqual(expected);
-	};
-	test("\\define macro() from\n", {});
-	test("\\define macro()  \n\n[[A]]\n\\end  \n[[B]]", {A: ["\\define macro() [[A]]"], B: ["[[B]]"]});
-	test("\\rules except macrodef\n\\define macro() [[A]]\n", {A: ['[[A]]']});
-	test("\\define\t\tmacro()    \t  [[T]]\n", {T: ['\\define macro() [[T]]']});
+	testText("\\define macro()\nContent\n[[from here]]\n", true, ['[[from here]]']);
 });
 
 });
