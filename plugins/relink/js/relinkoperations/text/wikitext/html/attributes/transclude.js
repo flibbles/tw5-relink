@@ -19,7 +19,7 @@ exports.getHandler = function(element, attribute, options) {
 		}
 		var nameAttr = element.attributes["$variable"];
 		if (nameAttr) {
-			var setting = options.settings.getMacro(nameAttr.value);
+			var setting = options.settings.getMacro(nameAttr.oldValue || nameAttr.value);
 			return setting && setting[name];
 		}
 	}

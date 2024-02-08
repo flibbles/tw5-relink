@@ -163,6 +163,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 				if (handler) {
 					entry = handler.relink(attr.value, fromTitle, toTitle, options);
 					if (entry && entry.output) {
+						attr.oldValue = attr.value;
 						attr.value = entry.output;
 						attr.handler = handler.name;
 						changed = true;

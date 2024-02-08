@@ -127,7 +127,7 @@ it('$transclude', function() {
 	testText("<$transclude />", false, undefined, {wiki: wiki});
 	// Recursive
 	testText("<$transclude $variable=from Atitle=<<from>> />", true, ['<$transclude $variable />', '<$transclude Atitle=<<>> />'], {wiki: wiki});
-	//TODO: testText("<$transclude $variable=from Bwiki='<<from>>' />", true, ['<$transclude $variable />', '<<from Bwiki="<<>>" />'], {wiki: wiki});
+	testText("<$transclude $variable=from Bwiki='<<from>>' />", true, ['<$transclude $variable />', '<<from Bwiki="<<>>" />'], {wiki: wiki});
 });
 
 it('updates whitelist', function() {
