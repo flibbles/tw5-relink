@@ -88,10 +88,14 @@ it('overriding definitions in other files', function() {
 // TODO: The //Relink// Missing panels is flooded with garbage
 // TODO: Order of configuration tabs is bad
 // TODO: $transclude blurb isn't neat like $macrocall
-// TODO: Enter key should work to confirm variable rename
 // TODO: Maybe move all the rules into the fieldType directory?
 // TODO: \\widgets need to work when called as widgets
 // TODO: The variable InfoPanel must detect impossible renames
+// TODO: Fix link-to-tab for demo pages
+// TODO: If blurb attributes are too large, truncate
+// TODO: Variables in shadow tiddler should not be editable
+// TODO: Proper lingo for the TiddlerInfo panel
+// TODO: Change whitelist blurb from $ to |
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

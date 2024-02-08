@@ -5,36 +5,45 @@ title: $:/plugins/flibbles/relink-variables/TiddlerInfo/References
 \whitespace trim
 
 <$vars
-	lingo-base="$:/plugins/flibbles/relink-variables/language/TiddlerInfo/">
+	lingo-base="$:/plugins/flibbles/relink-variables/language/TiddlerInfo/"
+	containingTiddler=<<currentTiddler>> >
 <$list filter="[all[current]relink:variables[]]" variable=variable emptyMessage=<<lingo Empty>>>
 <$tiddler tiddler={{{ [[$:/temp/flibbles/relink-variables/]addsuffix<currentTiddler>addsuffix[ ]addsuffix<variable>] }}}>
 <$list filter="[all[current]is[tiddler]]" emptyMessage="""\whitespace trim
 	<h2>
+	<$list variable='.relink-editable' filter="[<containingTiddler>is[tiddler]]">
 	<$button tooltip={{$:/language/Buttons/Edit/Hint}} aria-label={{$:/language/Buttons/Edit/Caption}} class=<<tv-config-toolbar-class>>>
 	<$action-createtiddler $basetitle=<<currentTiddler>> text=<<variable>> />
 	{{$:/core/images/edit-button}}
 	</$button>
+	&#32;
+	</$list>
 	<$text text=<<variable>> /></h2>""" >
 <$button tooltip={{$:/language/Buttons/Cancel/Hint}} aria-label={{$:/language/Buttons/Cancel/Caption}} class=<<tv-config-toolbar-class>>>
 <$action-deletetiddler $tiddler=<<currentTiddler>> />
 {{$:/core/images/cancel-button}}
 </$button>
 &#32;
-<$button
-	tooltip={{$:/language/Buttons/Save/Hint}}
-	aria-label={{$:/language/Buttons/Save/Caption}}
-	class=<<tv-config-toolbar-class>>
-	disabled={{{ [{!!text}!match[]!match<variable>!search:title:literal[ ]!search:title:literal[(]then[no]else[yes]] }}} >
-<<save-tiddler-actions>>
-{{$:/core/images/done-button}}
-<$action-sendmessage
-	$message="tm-relink-tiddler"
-	from=<<currentTiddler>>
-	to={{{ [all[current]removesuffix<variable>addsuffix{!!text}] }}} />
-<$action-deletetiddler $tiddler=<<currentTiddler>> />
-</$button>
-&#32;
-<$edit-text tiddler=<<currentTiddler>> tag=input focus=yes/>
+<$vars done-actions="""\whitespace trim
+	<$action-sendmessage
+		$message="tm-relink-tiddler"
+		from=<<currentTiddler>>
+		to={{{ [all[current]removesuffix<variable>addsuffix{!!text}] }}} />
+	<$action-deletetiddler $tiddler=<<currentTiddler>> />
+""">
+	<$keyboard actions=<<done-actions>> key=enter>
+	<$button
+		actions=<<done-actions>>
+		tooltip={{$:/language/Buttons/Save/Hint}}
+		aria-label={{$:/language/Buttons/Save/Caption}}
+		class=<<tv-config-toolbar-class>>
+		disabled={{{ [{!!text}!match[]!match<variable>!search:title:literal[ ]!search:title:literal[(]then[no]else[yes]] }}} >
+	{{$:/core/images/done-button}}
+	</$button>
+	&#32;
+	<$edit-text tiddler=<<currentTiddler>> tag=input focus=yes/>
+	</$keyboard>
+	</$vars>
 &#32;
 <$list variable=existing filter="[variables[]match{!!text}!match[]] -[<variable>]">
 This variable appears to already exist:
