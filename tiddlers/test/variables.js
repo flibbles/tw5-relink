@@ -58,6 +58,8 @@ it('relinks actual definition', function() {
 	         undefined, options);
 	// Repeat macros
 	testText('\\define from(arg) first\n\\define from() second\nbody', true, undefined, options);
+	// Pragma can come before it
+	testText('\\relink this  B\n\\define from() V\n', true, undefined, options);
 	// Illegal names
 	utils.spyFailures(spyOn);
 	testText('\\define from(arg) first\nbody',
@@ -172,6 +174,9 @@ it('operator handles different tiddler texts', function() {
 	test("\\define outer()\n\\define inner()\nInner\n\\end inner\n\\end outer\n", ['outer']);
 	// If there are duplicates, then return duplicates in the order found
 	test("\\define myA() A\n\\define myB() B\n\\define myA() A\n", ['myA', 'myB', 'myA']);
+	// other pragma doesn't get in the way
+	test("\\relink X p\n\\define myA() A\n", ['myA']);
+	test("\\parameters(X)\n\\define myA() A\n", ['myA']);
 	// No <$set> stuff. It would only confuse users.
 	test("\\define myA() A\n<$set name=noB value=xx>\n", ['myA']);
 	// Doesn't pick up those other variable widgets either

@@ -16,11 +16,17 @@ exports.variables = function(source, operator, options) {
 		if (parser) {
 			// ptn stands for parseTreeNode
 			var ptn = parser.tree[0];
-			while (ptn
-			&& ptn.type === "set"
-			&& (ptn.isMacroDefinition || ptn.isFunctionDefinition || ptn.isProcedureDefinition || ptn.isWidgetDefinition)) {
-				var name = ptn.attributes.name.value;
-				results.push(name);
+			while (ptn && (
+			ptn.type === "set"
+			|| ptn.type === "parameters"
+			|| ptn.type === "setvariable")) {
+				if (ptn.isMacroDefinition
+			    || ptn.isFunctionDefinition
+			    || ptn.isProcedureDefinition
+			    || ptn.isWidgetDefinition) {
+					var name = ptn.attributes.name.value;
+					results.push(name);
+				}
 				ptn = ptn.children && ptn.children[0];
 			}
 		}
