@@ -157,8 +157,11 @@ it('[direct call[]]', function() {
 	// Better reporting
 	testText("{{{ [.from[value],<text>,{filter}] }}}", true, ['{{{[[value],<text>,{filter}]}}}'], {defType: 'function', from: '.from', to: '.to'});
 	testText("{{{ [.from[],<>,{}] }}}", true, ['{{{[,<>,{}]}}}'], {defType: 'function', from: '.from', to: '.to'});
-	// TODO: Calls without the period aren't picked up.
-	// TODO: Calls to variables that aren't functions aren't picked up.
+	// Not actually function variables
+	testText("{{{ [.from[]] }}}", false, undefined, {from: '.from', to: '.to'});
+	testText("{{{ [from[]] }}}", false, undefined, {defType: 'function', from: 'from', to: '.to'});
+	// Unrelated stuff that doesn't exist doesn't crash
+	testText("{{{ [.else[]] }}}", false, undefined, {from: '.from', to: '.to'});
 	// Bad name changes
 	utils.spyFailures(spyOn);
 	function testFail(to) {
@@ -194,6 +197,8 @@ it('updates widgets', function() {
 	// Not actually a widget
 	testText("Content<$.from />After", false, undefined, {from: "$.from", to: '$.to'})
 	testText("Content<.from />After", false, undefined, {defType: "widget", from: ".from", to: '$.to'})
+	// Not actually a variable at all
+	testText("Content<$.else />After", false, undefined, {from: "$.from", to: '$.to'})
 	// Bad renames
 	utils.spyFailures(spyOn);
 	function testFail(to) {

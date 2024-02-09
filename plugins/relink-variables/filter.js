@@ -13,8 +13,8 @@ var varRelinker = utils.getType('variable');
 exports.name = "variables";
 
 exports.report = function(filterParseTree, callback, options) {
-	forEachFunctionOperator(filterParseTree, function(operator) {
-		varRelinker.report(operator.operator, function(title, blurb) {
+	forEachFunctionOperator(filterParseTree, options, function(operator, def) {
+		varRelinker.reportForTitle(operator.operator, function(title, blurb) {
 			blurb = [];
 			for (var i = 0; i < operator.operands.length; i++) {
 				var operand = operator.operands[i];
@@ -29,14 +29,14 @@ exports.report = function(filterParseTree, callback, options) {
 				}
 			}
 			callback(title, '[' + blurb.join(',') + ']');
-		}, options);
+		}, def.tiddler);
 	});
 };
 
 exports.relink = function(filterParseTree, fromTitle, toTitle, options) {
 	var output = {};
-	forEachFunctionOperator(filterParseTree, function(operator) {
-		var entry = varRelinker.relink(operator.operator, fromTitle, toTitle, options);
+	forEachFunctionOperator(filterParseTree, options, function(operator, def) {
+		var entry = varRelinker.relinkForTitle(operator.operator, fromTitle, toTitle, def.tiddler);
 		if (entry) {
 			if (entry.output) {
 				if (entry.output.indexOf('.') < 0
@@ -55,13 +55,16 @@ exports.relink = function(filterParseTree, fromTitle, toTitle, options) {
 	return output;
 };
 
-function forEachFunctionOperator(filterParseTree, method) {
+function forEachFunctionOperator(filterParseTree, options, method) {
 	for (var i = 0; i < filterParseTree.length; i++) {
 		var run = filterParseTree[i];
 		for (var j = 0; j < run.operators.length; j++) {
 			var operator = run.operators[j];
 			if (operator.operator.indexOf('.') >= 0) {
-				method(operator);
+				var def = options.settings.getMacroDefinition(operator.operator);
+				if (def && def.isFunctionDefinition) {
+					method(operator, def);
+				}
 			}
 		}
 	}
