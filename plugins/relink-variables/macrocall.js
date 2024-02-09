@@ -15,10 +15,9 @@ exports.name = 'variables';
 exports.report = function(context, macro, callback, options) {
 	varRelinker.report(macro.name, function(title, blurb, style) {
 		var blurb = '';
-		var def = context.getMacroDefinition(macro.name);
 		for (var i = 0; i < macro.params.length; i++) {
 			var param = macro.params[i];
-			blurb += ' ' + param.value;
+			blurb += ' ' + (param.name? param.name + ': ': '') + '"' + utils.abridgeString(param.value, 17) + '"';
 		}
 		callback(title, blurb, style);
 	}, options);

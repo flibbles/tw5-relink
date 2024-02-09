@@ -117,21 +117,27 @@ it('overriding definitions in other files', function() {
 // TODO: Change whitelist blurb from $ to |
 // TODO: TiddlerInfo panels need to be collapsable
 // TODO: Better <<>> blurbs for named attributes.
+// TODO: Abridgement in all variable reporting
 // TODO: Ensure getTiddlerRelink(Back)references return correct thing if empty
 // TODO: Make relink-titles soft in most cases
 // TODO: Whitelist references need better links
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
-	testText("<<from content>>", true, ['<< content>>']);
-	testText("<<from Bwiki: '<<from>>'>>", true, ['<<from Bwiki: "<<>>">>', '<< <<from>>>>']);
+	testText("<<from content>>", true, ['<< "content">>']);
+	testText("<<from Bwiki: '<<from>>'>>", true, ['<<from Bwiki: "<<>>">>', '<< Bwiki: "<<from>>">>']);
+	testText("B<<from Atitle:'title'>>", true, ['<< Atitle: "title">>']);
+	testText("B<<from 'title'>>", true, ['<< "title">>']);
+	testText("B<<from Bwiki: 'wiki' 'title'>>", true, ['<< Bwiki: "wiki" "title">>']);
+	// Abridges very long strings
+	testText("B<<from 'This is a very long string which should get truncated'>>", true, ['<< "This is a very ...">>']);
 });
 
 it('macrocall wikitext bad names', function() {
 	utils.spyFailures(spyOn);
 	function test(badName) {
 		utils.failures.calls.reset();
-		testText("<<from content>>", false, ['<< content>>'], {to: badName});
+		testText("<<from content>>", false, ['<< "content">>'], {to: badName});
 		expect(utils.failures).toHaveBeenCalledTimes(1);
 	};
 	test("to>this");
@@ -142,7 +148,7 @@ it('macrocall wikitext bad names', function() {
 
 it('macro attributes', function() {
 	testText("<$text text=<<from>> />", true, ['<$text text=<<>> />']);
-	testText("<$text text=<<from   title >> />", true, ['<$text text=<< title>> />']);
+	testText("<$text text=<<from   title >> />", true, ['<$text text=<< "title">> />']);
 });
 
 it('$transclude', function() {
