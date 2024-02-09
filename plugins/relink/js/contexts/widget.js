@@ -18,7 +18,23 @@ WidgetContext.prototype = new Context();
 
 WidgetContext.prototype.getMacroDefinition = function(variableName) {
 	// widget.variables is prototyped, so it looks up into all its parents too
-	return this.widget.variables[variableName] || $tw.macros[variableName];
+	var def = this.widget.variables[variableName];
+	if (!def) {
+		// It might be a javascript macro
+		def = $tw.macros[variableName];
+		if (def && !def.tiddler) {
+			// We haven't assigned associated tiddlers to these macros yet.
+			// That may be important for some installed supplemental plugins.
+			$tw.modules.forEachModuleOfType('macro', function(title, module) {
+				if (module.name) {
+					// For now, we just attach it directly to the definition
+					// It's easier, albeit a little sloppy.
+					$tw.macros[module.name].tiddler = title;
+				}
+			});
+		}
+	}
+	return def;
 };
 
 WidgetContext.prototype.addSetting = function(wiki, macroName, parameter, type, sourceTitle) {

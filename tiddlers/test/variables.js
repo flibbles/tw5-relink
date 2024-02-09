@@ -78,6 +78,16 @@ it('relinks actual definition', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it('detects and reports on javascript macros', function() {
+	const wiki = new $tw.Wiki();
+	const module = 'test/modules/macro-module.js'
+	wiki.addTiddlers([
+		$tw.wiki.getTiddler(module),
+		{title: 'test', text: '<<testmodulemacro>>'}]);
+	expect(utils.getReport('test', wiki)[variablePrefix + module + ' testmodulemacro']).toEqual(['<<>>']);
+	expect(wiki.filterTiddlers(`[[${module}]relink:variables[]]`)).toEqual(['testmodulemacro']);
+});
+
 it('fails when given illegal variable directive titles', function() {
 	const wiki = new $tw.Wiki();
 	const text =  "\\procedure from() content\nBody";
@@ -107,10 +117,10 @@ it('overriding definitions in other files', function() {
 // TODO: Proper lingo for the TiddlerInfo panel
 // TODO: Change whitelist blurb from $ to |
 // TODO: TiddlerInfo panels need to be collapsable
-// TODO: Javascript macros
 // TODO: Better <<>> blurbs for named attributes.
 // TODO: Ensure getTiddlerRelink(Back)references return correct thing if empty
 // TODO: Make relink-titles soft in most cases
+// TODO: Whitelist references need better links
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

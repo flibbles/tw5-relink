@@ -11,7 +11,7 @@ title: $:/plugins/flibbles/relink-variables/TiddlerInfo/References
 <$tiddler tiddler={{{ [[$:/temp/flibbles/relink-variables/]addsuffix<currentTiddler>addsuffix[ ]addsuffix<variable>] }}}>
 <$list filter="[all[current]is[tiddler]]" emptyMessage="""\whitespace trim
 	<h2>
-	<$list variable='.relink-editable' filter="[<containingTiddler>is[tiddler]]">
+	<$list variable='.relink-editable' filter="[<containingTiddler>is[tiddler]!type[application/javascript]]">
 	<$button tooltip={{$:/language/Buttons/Edit/Hint}} aria-label={{$:/language/Buttons/Edit/Caption}} class=<<tv-config-toolbar-class>>>
 	<$action-createtiddler $basetitle=<<currentTiddler>> text=<<variable>> />
 	{{$:/core/images/edit-button}}
