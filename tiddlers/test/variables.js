@@ -99,7 +99,6 @@ it('overriding definitions in other files', function() {
 	testText('\\define from() In wrong file\n\n<<from>>', false, undefined);
 });
 
-// TODO: Test whitespace trim, cause it was broken before
 // TODO: The //Relink// Missing panels is flooded with garbage
 // TODO: Order of configuration tabs is bad
 // TODO: $transclude blurb isn't neat like $macrocall
