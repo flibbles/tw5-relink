@@ -43,7 +43,7 @@ exports.report = function(element, parser, callback, options) {
 					blurb = "<<" + utils.abridge(parser.source.substring(macroStart+2, attr.end-2)) + ">>";
 					break;
 				}
-				callback(results[1], element.tag + ' =' + blurb);
+				callback(results[1], element.tag + ' =' + blurb, {soft: true});
 			}
 		}
 	}

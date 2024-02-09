@@ -13,7 +13,7 @@ exports.name = 'fieldname';
 exports.report = function(reference, callback, options) {
 	if (reference.field
 	&& !utils.isReserved(reference.field, options)) {
-		callback(reference.field, (reference.title || '') + "!!");
+		callback(reference.field, (reference.title || '') + "!!", {soft: true});
 	}
 };
 

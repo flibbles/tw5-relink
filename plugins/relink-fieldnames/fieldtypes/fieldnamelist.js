@@ -17,7 +17,7 @@ exports.report = function(value, callback, options) {
 	var list = $tw.utils.parseStringArray(value);
 	for (var i = 0; i < list.length; i++) {
 		if (!utils.isReserved(list[i], options)) {
-			callback(list[i]);
+			callback(list[i], undefined, {soft: true});
 		}
 	}
 };

@@ -12,9 +12,11 @@ exports.getTiddlerRelinkReferences = function(title, options) {
 	return refs && blurbs(refs, options && options.hard);
 };
 
-exports.getTiddlerRelinkBackreferences = function(title, options) {
+exports.getTiddlerRelinkBackreferences = function(title) {
 	var refs = utils.getIndexer(this).reverseLookup(title);
-	return blurbs(refs, options && options.hard);
+	// For now, I don't have the equivalent "hard" option because I'm not
+	// sure it has any value. May change this later.
+	return blurbs(refs);
 };
 
 exports.getRelinkableTitles = function() {

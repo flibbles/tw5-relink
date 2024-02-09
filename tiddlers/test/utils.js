@@ -206,9 +206,9 @@ exports.draft = function(fields) {
 
 /**Gets report on a given tiddler.
  */
-exports.getReport = function(title, wiki) {
+exports.getReport = function(title, wiki, options) {
 	wiki = wiki || $tw.wiki;
-	return wiki.getTiddlerRelinkReferences(title);
+	return wiki.getTiddlerRelinkReferences(title, options);
 };
 
 /**Gets back references on a given tiddler.

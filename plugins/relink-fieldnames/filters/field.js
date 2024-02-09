@@ -21,7 +21,7 @@ exports.report = function(filterParseTree, callback, options) {
 			var operator = run.operators[j];
 			if (!operators[operator.operator]
 			&& !utils.isReserved(operator.operator, options)) {
-				callback(operator.operator, "[field:" + utils.blurbOperands(operator) + "]");
+				callback(operator.operator, "[field:" + utils.blurbOperands(operator) + "]", {soft: true});
 			}
 		}
 	}

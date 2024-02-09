@@ -14,7 +14,7 @@ var utils = require("../utils.js");
 
 exports.report = function(value, callback, options) {
 	if (!utils.isReserved(value, options)) {
-		callback(value);
+		callback(value, undefined, {soft: true});
 	}
 };
 

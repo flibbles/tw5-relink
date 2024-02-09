@@ -22,7 +22,7 @@ exports.report = function(value, callback, options) {
 };
 
 exports.reportForTitle = function(value, callback, defTitle) {
-	callback(systemPrefix + defTitle + ' ' + value);
+	callback(systemPrefix + defTitle + ' ' + value, undefined, {soft: true});
 };
 
 exports.relink = function(value, fromTitle, toTitle, options) {

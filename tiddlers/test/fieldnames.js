@@ -58,11 +58,39 @@ it('reports only non-blacklisted tiddlers', function() {
 	expect(utils.getReport('test', wiki)).toEqual({ "exists": [": content"] });
 });
 
-it('reports missing tiddlers (for now)', function() {
+it('reports exclude fields when specified', function() {
 	const wiki = getWiki();
 	wiki.addTiddlers([
-		{title: 'test', missing: "content"}]);
-	expect(utils.getReport('test', wiki)).toEqual({ "missing": [": content"] });
+		{title: 'test', exists: "existing-content", missing: "missing-content"},
+		{title: "exists"}]);
+	expect(utils.getReport('test', wiki)).toEqual({
+		"exists": [": existing-content"],
+		"missing": [": missing-content"] });
+	expect(utils.getReport('test', wiki, {hard: true})).toEqual({});
+});
+
+it('reports exclude uses of fields when specified', function() {
+	const suffixesPrefix = "$:/config/flibbles/relink/suffixes/";
+	const fieldAttrPrefix = "$:/config/flibbles/relink/fieldattributes/";
+	function testSoft(text) {
+		const wiki = getWiki();
+		wiki.addTiddlers([
+			{title: 'test', text: text},
+			utils.operatorConf("has", "fieldname"),
+			$tw.wiki.getTiddler(suffixesPrefix + "contains"),
+			$tw.wiki.getTiddler(fieldAttrPrefix + "$action-createtiddler"),
+			utils.operatorConf("fields", "fieldnamelist")]);
+		expect(utils.getReport('test', wiki).from).not.toBeUndefined();
+		expect(utils.getReport('test', wiki, {hard: true})).toEqual({});
+	};
+	testSoft("{{{ [has[from]] }}}");
+	testSoft("{{{ [fields[from]] }}}");
+	testSoft("{{{ [contains:from[text]] }}}");
+	testSoft("{{{ [from[text]] }}}");
+	testSoft("{{{ [search:from[text]] }}}");
+	testSoft("{{{ [search:from[text]] }}}");
+	testSoft("<$action-createtiddler from=value />");
+	testSoft("<$text text={{!!from}} />");
 });
 
 it('reports field name and field value', function() {
