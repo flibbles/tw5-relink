@@ -55,9 +55,9 @@ exports.getTiddlerRelinkReferences = function(wiki, title, context) {
 	if (tiddler) {
 		try {
 			for (var relinker in getRelinkOperators()) {
-				getRelinkOperators()[relinker].report(tiddler, function(title, blurb) {
+				getRelinkOperators()[relinker].report(tiddler, function(title, blurb, style) {
 					references[title] = references[title] || [];
-					references[title].push(blurb || '');
+					references[title].push($tw.utils.extend({blurb: blurb || ''}, style));
 				}, options);
 			}
 		} catch (e) {

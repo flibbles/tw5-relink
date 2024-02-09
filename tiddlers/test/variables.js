@@ -112,6 +112,7 @@ it('overriding definitions in other files', function() {
 // TODO: TiddlerInfo panels need to be collapsable
 // TODO: Javascript macros
 // TODO: Better <<>> blurbs for named attributes.
+// TODO: Ensure getTiddlerRelink(Back)references return correct thing if empty
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
@@ -310,6 +311,12 @@ it('operator handles different tiddler texts', function() {
 it('operator handles non-tiddler input', function() {
 	const wiki = new $tw.Wiki();
 	expect(wiki.filterTiddlers("[[no-exist]relink:variables[]]")).toEqual([]);
+});
+
+it('missing operator does not list variable directive tiddlers', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'test', text: '\\define macro() A\n<<macro>> [[nonexist]]'});
+	expect(wiki.filterTiddlers("[[test]relink:references:hard[]]")).toEqual(['nonexist']);
 });
 
 });

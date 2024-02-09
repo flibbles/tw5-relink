@@ -37,6 +37,10 @@ exports.backreferences = function(source,operator,options) {
 
 exports.references = function(source,operator,options) {
 	var results = new LinkedList();
+	if (operator.suffix === 'hard') {
+		options = Object.create(options);
+		options.hard = true;
+	}
 	source(function(tiddler,title) {
 		var refs = options.wiki.getTiddlerRelinkReferences(title,options);
 		if (refs) {
