@@ -12,19 +12,24 @@ title: Macros/link-to-tab
 \end
 
 \relink link-to-config-tab caption:wikitext
-\define link-to-config-tab(configTab, caption)
+\procedure link-to-config-tab(configTab, caption)
+\whitespace trim
+<$vars
+	state-plugin-info='$:/state/plugin-info-706095000-$:/plugins/flibbles/relink---560620024'
+	state-whitelist-config='$:/state/tab--774707317'>
 <$button class="tc-btn-invisible tc-tiddlylink">
 <$action-setfield
-	$tiddler="$:/state/plugin-info--1931129592-$:/plugins/flibbles/relink---1659944808"
+	$tiddler=<<state-plugin-info>>
 	text="configuration" />
-<$list filter="[<__configTab__>!match[]]">
+<$list filter="[<configTab>!match[]]">
 <$action-setfield
-	$tiddler="$:/state/tab-1407883317"
-	text={{{[<__configTab__>addprefix[$:/plugins/flibbles/relink/ui/configuration/]is[shadow]else<__configTab__>]}}} />
+	$tiddler=<<state-whitelist-config>>
+	text={{{[<configTab>addprefix[$:/plugins/flibbles/relink/ui/configuration/]is[shadow]else<configTab>]}}} />
 </$list>
 <$action-navigate $to="$:/plugins/flibbles/relink" />
-$caption$
+<<caption>>
 </$button>
+</$vars>
 \end
 
 ''Hey!'' Edit this tiddler to see a real-use example of the `\relink` declaration pragma.

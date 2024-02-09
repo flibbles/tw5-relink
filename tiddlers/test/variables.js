@@ -102,7 +102,6 @@ it('overriding definitions in other files', function() {
 // TODO: $transclude blurb isn't neat like $macrocall
 // TODO: Maybe move all the rules into the fieldType directory?
 // TODO: The variable InfoPanel must detect impossible renames
-// TODO: Fix link-to-tab for demo pages
 // TODO: If blurb attributes are too large, truncate
 // TODO: Variables in shadow tiddler should not be editable
 // TODO: Proper lingo for the TiddlerInfo panel
