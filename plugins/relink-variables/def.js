@@ -23,13 +23,9 @@ exports.relink = function(definition, fromTitle, toTitle, options) {
 	if (tiddler) {
 		var entry = varRelinker.relinkForTitle(definition.name, fromTitle, toTitle, tiddler);
 		if (entry && entry.output) {
-			if (entry.output.indexOf(' ') >= 0
-			|| entry.output.indexOf('(') >= 0) {
-				return {impossible: true};
-			} else {
-				definition.name = entry.output;
-				return {output: true};
-			}
+			definition.name = entry.output;
+			entry.output = true;
 		}
+		return entry;
 	}
 };

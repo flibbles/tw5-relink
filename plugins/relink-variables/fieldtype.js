@@ -8,19 +8,19 @@ Except that this type points to a variable, not a tiddler.
 
 \*/
 
-var utils = require("./utils.js");
+var systemPrefix = "$:/temp/flibbles/relink-variables/";
 
 exports.name = 'variable';
 
 exports.report = function(value, callback, options) {
 	var def = options.settings.getMacroDefinition(value);
 	if (def && def.tiddler) {
-		callback(utils.prefix + def.tiddler + ' ' + value);
+		callback(systemPrefix + def.tiddler + ' ' + value);
 	}
 };
 
 exports.reportForTitle = function(value, callback, defTitle) {
-	callback(utils.prefix + defTitle + ' ' + value);
+	callback(systemPrefix + defTitle + ' ' + value);
 };
 
 exports.relink = function(value, fromTitle, toTitle, options) {
@@ -31,14 +31,14 @@ exports.relink = function(value, fromTitle, toTitle, options) {
 };
 
 exports.relinkForTitle = function(value, fromTitle, toTitle, defTitle) {
-	var cleanFrom = utils.removePrefix(fromTitle);
-	if (cleanFrom !== null) {
-		if (cleanFrom === defTitle + ' ' + value) {
-			var cleanTo = utils.removePrefix(toTitle, defTitle);
-			if (!cleanTo) {
-				return {impossible: true};
-			}
-			return {output: cleanTo};
+	var prefix = systemPrefix + defTitle + ' ';
+	if (fromTitle === prefix + value) {
+		if (toTitle.substr(0, prefix.length) !== prefix
+		|| toTitle.indexOf(' ', prefix.length) >= 0
+		|| toTitle.indexOf('(', prefix.length) >= 0) {
+			return {impossible: true};
+		} else {
+			return {output: toTitle.substr(prefix.length)};
 		}
 	}
 };
