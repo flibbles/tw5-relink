@@ -1,6 +1,7 @@
 caption: Field Names
 title: $:/plugins/flibbles/relink-fieldnames/reference
 tags: $:/tags/flibbles/relink/Configuration
+list-after: 
 
 \define label(arrow, setTo) <$reveal type="nomatch" state=<<table-state>> text="$setTo$" default="no"><$button class="tc-btn-invisible tc-btn-dropdown" set=<<table-state>> setTo="$setTo$">{{$arrow$}} ''<$link to=<<field>>/>''</$button> <span class="tc-relink-fieldnames-count">(<$text text={{{ [has<field>count[]] }}} />)</span></$reveal>
 

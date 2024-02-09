@@ -99,8 +99,6 @@ it('overriding definitions in other files', function() {
 	testText('\\define from() In wrong file\n\n<<from>>', false, undefined);
 });
 
-// TODO: The //Relink// Missing panels is flooded with garbage
-// TODO: Order of configuration tabs is bad
 // TODO: $transclude blurb isn't neat like $macrocall
 // TODO: Maybe move all the rules into the fieldType directory?
 // TODO: The variable InfoPanel must detect impossible renames
@@ -113,6 +111,7 @@ it('overriding definitions in other files', function() {
 // TODO: Javascript macros
 // TODO: Better <<>> blurbs for named attributes.
 // TODO: Ensure getTiddlerRelink(Back)references return correct thing if empty
+// TODO: Make relink-titles soft in most cases
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

@@ -1,6 +1,7 @@
 caption: {{$:/plugins/flibbles/relink-titles/language/Caption}}
 tags: $:/tags/flibbles/relink/Configuration
 title: $:/plugins/flibbles/relink-titles/configuration
+list-after: 
 
 \define lingo-base() $:/plugins/flibbles/relink-titles/language/
 \define prefix() $:/config/flibbles/relink-titles/relink/
