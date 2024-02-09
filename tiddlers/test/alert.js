@@ -63,7 +63,7 @@ it("pretty titles", function() {
 	expect(message).toContain("Pretty");
 });
 
-it("prints simple if not on browser", function() {
+if (!$tw.browser) it("prints simple if not on browser", function() {
 	// This block has nothing to do with the test.
 	// But if testAlert ends up running before the wikitext relinker
 	// instantiates, then it'll fail because the browser will think
@@ -76,10 +76,10 @@ it("prints simple if not on browser", function() {
 
 	var message = testAlert(new $tw.Wiki(), ["TidA", "Tid]]B"]);
 	expect(message).toContain("TidA");
-	expect(message.indexOf("[[TidA]]")).toBeLessThan(0);
+	expect(message).not.toContain("[[TidA]]");
 	expect(message).toContain("Tid]]B");
-	expect(message.indexOf("<$text")).toBeLessThan(0);
-	expect(message.indexOf("\\define")).toBeLessThan(0);
+	expect(message).not.toContain("<$text");
+	expect(message).not.toContain("\\define");
 });
 
 });
