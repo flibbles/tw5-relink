@@ -32,8 +32,8 @@ exports.getRelinkableTitles = function() {
 	})();
 };
 
-exports.getRelinkOrphans = function() {
-	return utils.getIndexer(this).orphans();
+exports.getRelinkOrphans = function(options) {
+	return utils.getIndexer(this).orphans(options);
 };
 
 function blurbs(refs, hardOnly) {

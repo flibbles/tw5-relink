@@ -85,12 +85,26 @@ Indexer.prototype.relinkLookup = function(fromTitle, toTitle, options) {
 };
 
 // Returns all tiddlers that don't have anything referencing it.
-Indexer.prototype.orphans = function() {
+Indexer.prototype.orphans = function(options) {
 	this._upkeep();
 	var results = [];
+	var ignoreList = (options && options.ignore) || [];
+	var ignoreMap = Object.create(null);
+	for (var i = 0; i < ignoreList.length; i++) {
+		ignoreMap[ignoreList[i]] = true;
+	}
 	for (var title in this.index) {
-		if (!this.backIndex[title]
-		|| Object.keys(this.backIndex[title]).length === 0) {
+		var index = this.backIndex[title];
+		var owned = false;
+		if (index) {
+			for (var key in index) {
+				if (!ignoreMap[key]) {
+					owned = true;
+					break;
+				}
+			}
+		}
+		if (!owned) {
 			results.push(title);
 		}
 	}

@@ -13,7 +13,7 @@ Returns all tiddlers which are not referenced in any way
 "use strict";
 
 exports.orphans = function(source,prefix,options) {
-	return options.wiki.getRelinkOrphans();
+	return options.wiki.getRelinkOrphans({ignore: ['$:/StoryList']});
 };
 
 })();

@@ -121,6 +121,8 @@ it('overriding definitions in other files', function() {
 // TODO: Ensure getTiddlerRelink(Back)references return correct thing if empty
 // TODO: Make relink-titles soft in most cases
 // TODO: Whitelist references need better links
+// TODO: Maybe be better about dealing with placeholders in titles?
+// TODO: Update documentation on wikimethods getRelinkTiddlerReferences and Orphans
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

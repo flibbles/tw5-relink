@@ -53,5 +53,14 @@ it('can find images', function() {
 
 });
 
+it('is still an orphan just because it is in the story list', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		utils.fieldConf('list', 'list'),
+		{title: "test"},
+		{title: "$:/StoryList", list: "test"}]);
+	expect(wiki.filterTiddlers("[relink:orphans[]!is[system]]")).toEqual(['test']);
+});
+
 });
 
