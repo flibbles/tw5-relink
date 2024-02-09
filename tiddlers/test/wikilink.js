@@ -97,7 +97,7 @@ it("reports", function() {
 	function test(expected) {
 		const wiki = new $tw.Wiki();
 		wiki.addTiddler({title: 'test', text: 'S WikiCat ~WikiDog %WikiPig E'});
-		expect(wiki.getTiddlerRelinkReferences('test')).toEqual(expected);
+		expect(utils.getReport('test', wiki)).toEqual(expected);
 	};
 	test({WikiCat: ['~WikiCat'], WikiPig: ['~WikiPig']});
 	utils.monkeyPatch($tw.config.textPrimitives, "unWikiLink", "%", function() {

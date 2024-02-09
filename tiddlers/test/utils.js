@@ -211,6 +211,13 @@ exports.getReport = function(title, wiki) {
 	return wiki.getTiddlerRelinkReferences(title);
 };
 
+/**Gets back references on a given tiddler.
+ */
+exports.getBackreferences = function(title, wiki) {
+	wiki = wiki || $tw.wiki;
+	return wiki.getTiddlerRelinkBackreferences(title);
+};
+
 /** Gets the text of a tiddler.
  */
 exports.getText = function(title, wiki) {

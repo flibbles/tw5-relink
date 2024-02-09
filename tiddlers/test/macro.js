@@ -31,10 +31,6 @@ function testText(text, expected, report, options) {
 	expect(utils.failures).toHaveBeenCalledTimes(options.fails || 0);
 };
 
-function reportText(wiki, title) {
-	return wiki.getTiddlerRelinkReferences(title);
-};
-
 function getText(wiki, title) {
 	return wiki.getTiddler(title).fields.text;
 };
@@ -477,7 +473,7 @@ it('does not bleed local contexts into other tiddlers', function() {
 		{title: '2', text: '<<macro A:from B:from>>'},
 		{title: '3', text: '\\relink macro B\n<<macro B:from>>'}
 	]);
-	expect(reportText(wiki, '2')).toEqual({from: ['<<macro A>>']});
+	expect(utils.getReport('2', wiki)).toEqual({from: ['<<macro A>>']});
 	wiki.renameTiddler('from', 'to');
 	expect(getText(wiki, '1')).toBe('\\relink macro B\n<<macro B:to>>');
 	expect(getText(wiki, '2')).toBe('<<macro A:to B:from>>');

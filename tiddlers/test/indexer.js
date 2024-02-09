@@ -244,19 +244,14 @@ it("does not goof and give wrong report if changes cached", function() {
 // BACK REFERENCES
 describe("back references", function() {
 
-function getBackrefs(title, wiki) {
-	wiki = wiki || $tw.wiki;
-	return wiki.getTiddlerRelinkBackreferences(title);
-};
-
 it("handles references to non-existent tiddlers", function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'A', text: '[[ghost]]'});
-	expect(getBackrefs('ghost', wiki)).toEqual({A: ['[[ghost]]']});
+	expect(utils.getBackreferences('ghost', wiki)).toEqual({A: ['[[ghost]]']});
 	wiki.addTiddler({title: 'ghost', text: '{{ghost}}'});
-	expect(getBackrefs('ghost', wiki)).toEqual({A: ['[[ghost]]'], ghost: ['{{}}']});
+	expect(utils.getBackreferences('ghost', wiki)).toEqual({A: ['[[ghost]]'], ghost: ['{{}}']});
 	wiki.deleteTiddler('ghost');
-	expect(getBackrefs('ghost', wiki)).toEqual({A: ['[[ghost]]']});
+	expect(utils.getBackreferences('ghost', wiki)).toEqual({A: ['[[ghost]]']});
 });
 
 it("still works without indexer", function() {
@@ -266,27 +261,27 @@ it("still works without indexer", function() {
 		{title: 'x', text: 'stuff'},
 		{title: 'A', text: '[[x]]'},
 		{title: 'B', text: '{{x}}'}]);
-	expect(getBackrefs('x', wiki)).toEqual({A: ['[[x]]'], B: ['{{}}']});
+	expect(utils.getBackreferences('x', wiki)).toEqual({A: ['[[x]]'], B: ['{{}}']});
 	// It calls each tiddler for indexing
 	expect(operators.text.report).toHaveBeenCalledTimes(3);
 	operators.text.report.calls.reset();
 
 	// If we spy and call again, results will still be cached.
-	expect(getBackrefs('x', wiki)).toEqual({A: ['[[x]]'], B: ['{{}}']});
+	expect(utils.getBackreferences('x', wiki)).toEqual({A: ['[[x]]'], B: ['{{}}']});
 	expect(operators.text.report).not.toHaveBeenCalled();
 
 	// If we remove something, the update properly propagates, but everything
 	// is indexed again.
 	wiki.deleteTiddler('A');
-	expect(getBackrefs('x', wiki)).toEqual({B: ['{{}}']});
+	expect(utils.getBackreferences('x', wiki)).toEqual({B: ['{{}}']});
 	expect(operators.text.report).toHaveBeenCalledTimes(2);
 });
 
 it("returns empty object for unreferenced tiddlers", function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'A', text: 'stuff'});
-	expect(getBackrefs('A', wiki)).toEqual({});
-	expect(getBackrefs('B', wiki)).toEqual({});
+	expect(utils.getBackreferences('A', wiki)).toEqual({});
+	expect(utils.getBackreferences('B', wiki)).toEqual({});
 });
 
 });

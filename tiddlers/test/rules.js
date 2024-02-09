@@ -16,10 +16,6 @@ function getText(wiki, title) {
 	return wiki.getTiddler(title).fields.text;
 };
 
-function reportText(wiki, title) {
-	return wiki.getTiddlerRelinkReferences(title);
-};
-
 it('prettylinks nested as macro arguments', function() {
 	// Turns out nested wikitext in macro parameters doesn't obey \rules
 	const wiki = new $tw.Wiki();
@@ -29,8 +25,8 @@ it('prettylinks nested as macro arguments', function() {
 		utils.macroConf('macro', 'text', 'wikitext')
 	]);
 
-	expect(reportText(wiki, 'yeslinks')).toEqual({from: ['<<macro text: "[[from]]">>', '[[from]]']});
-	expect(reportText(wiki, 'nolinks')).toEqual({from: ['<<macro text: "[[from]]">>']});
+	expect(utils.getReport('yeslinks', wiki)).toEqual({from: ['<<macro text: "[[from]]">>', '[[from]]']});
+	expect(utils.getReport('nolinks', wiki)).toEqual({from: ['<<macro text: "[[from]]">>']});
 
 	wiki.renameTiddler('from', 'to');
 	expect(getText(wiki, 'yeslinks')).toBe('<<macro text:"[[to]]">>\n[[to]]');
@@ -47,8 +43,8 @@ it('prettylinks nested as widget arguments', function() {
 		utils.attrConf('$list', 'emptyMessage', 'wikitext')
 	]);
 
-	expect(reportText(wiki, 'yeslinks')).toEqual({from: ['<$list emptyMessage="[[from]]" />', '[[from]]']});
-	expect(reportText(wiki, 'nolinks')).toEqual({from: ['<$list emptyMessage="[[from]]" />']});
+	expect(utils.getReport('yeslinks', wiki)).toEqual({from: ['<$list emptyMessage="[[from]]" />', '[[from]]']});
+	expect(utils.getReport('nolinks', wiki)).toEqual({from: ['<$list emptyMessage="[[from]]" />']});
 
 	wiki.renameTiddler('from', 'to');
 	expect(getText(wiki, 'yeslinks')).toBe('<$list filter="" emptyMessage="[[to]]"/>\n[[to]]');
@@ -67,8 +63,8 @@ it('widgets nested as macro arguments', function() {
 		utils.macroConf('macro', 'text', 'wikitext')
 	]);
 
-	expect(reportText(wiki, 'yesWidgets')).toEqual({from: ['<<macro text: "<$link to />">>', '<$link to />']});
-	expect(reportText(wiki, 'noWidgets')).toEqual({from: ['<<macro text: "<$link to />">>']});
+	expect(utils.getReport('yesWidgets', wiki)).toEqual({from: ['<<macro text: "<$link to />">>', '<$link to />']});
+	expect(utils.getReport('noWidgets', wiki)).toEqual({from: ['<<macro text: "<$link to />">>']});
 
 	utils.spyFailures(spyOn);
 	wiki.renameTiddler('from', 'to]]there');
@@ -104,8 +100,8 @@ it('doesn\'t impact macrodef blocks', function() {
 		{title: 'yes', text: '\\define link() [[from]]\n[[from]]'},
 		{title: 'no', text: '\\rules except prettylink\n\\define link() [[from]]\n[[from]]'}]);
 
-	expect(reportText(wiki, 'yes')).toEqual({from: ['\\define link() [[from]]', '[[from]]']});
-	expect(reportText(wiki, 'no')).toEqual({from: ['\\define link() [[from]]']});
+	expect(utils.getReport('yes', wiki)).toEqual({from: ['\\define link() [[from]]', '[[from]]']});
+	expect(utils.getReport('no', wiki)).toEqual({from: ['\\define link() [[from]]']});
 	wiki.renameTiddler('from', 'to');
 	expect(getText(wiki, 'yes')).toBe('\\define link() [[to]]\n[[to]]');
 	expect(getText(wiki, 'no')).toBe('\\rules except prettylink\n\\define link() [[to]]\n[[from]]');
@@ -119,8 +115,8 @@ it('doesn\'t impact filter operator wikitext', function() {
 		utils.operatorConf('text', 'wikitext'),
 		utils.attrConf('$list', 'filter', 'filter')]);
 
-	expect(reportText(wiki, 'yes')).toEqual({from: ['<$list filter="[text[{{}}]]" />', '{{}}']});
-	expect(reportText(wiki, 'no')).toEqual({from: ['<$list filter="[text[{{}}]]" />']});
+	expect(utils.getReport('yes', wiki)).toEqual({from: ['<$list filter="[text[{{}}]]" />', '{{}}']});
+	expect(utils.getReport('no', wiki)).toEqual({from: ['<$list filter="[text[{{}}]]" />']});
 	wiki.renameTiddler('from', 'to');
 	expect(getText(wiki, 'yes')).toBe('<$list filter="[text[{{to}}]]"/>\n{{to}}');
 	expect(getText(wiki, 'no')).toBe('\\rules except transcludeinline transcludeblock\n<$list filter="[text[{{to}}]]"/>\n{{from}}');

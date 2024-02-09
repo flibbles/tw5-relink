@@ -20,7 +20,7 @@ function testText(text, expected, options) {
 function testReport(text, expected) {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'test', text: text});
-	var refs = wiki.getTiddlerRelinkReferences('test');
+	var refs = utils.getReport('test', wiki);
 	expect(refs).toEqual(expected);
 };
 

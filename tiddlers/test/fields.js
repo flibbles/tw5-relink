@@ -233,7 +233,7 @@ it("doesn't report plugin's list, since they're used differently", function() {
 		utils.fieldConf('list', 'list'),
 		{title: 'test', list: 'readme'}
 	]);
-	expect(wiki.getTiddlerRelinkBackreferences('readme')).toEqual({test: ['list']});
+	expect(utils.getBackreferences('readme', wiki)).toEqual({test: ['list']});
 	utils.spyFailures(spyOn);
 	wiki.renameTiddler('readme', 'new');
 	expect(wiki.getTiddler('test').fields.list).toEqual(['new']);
@@ -250,7 +250,7 @@ it("does report plugin's tags, since they're not used differently", function() {
 		utils.fieldConf('tags', 'list'),
 		{title: 'test', tags: 'myTag'}
 	]);
-	expect(wiki.getTiddlerRelinkBackreferences('myTag')).toEqual({testPlugin: ['tags'], test: ['tags']});
+	expect(utils.getBackreferences('myTag', wiki)).toEqual({testPlugin: ['tags'], test: ['tags']});
 	utils.spyFailures(spyOn);
 	wiki.renameTiddler('myTag', 'new');
 	expect(wiki.getTiddler('test').fields.tags).toEqual(['new']);
