@@ -180,6 +180,15 @@ exports.getDefaultType = function(wiki) {
 	return fieldTypes[defaultType] ? defaultType : "title";
 };
 
+exports.abridgeString = function(string, length) {
+	if (typeof string === "string") {
+		length = length || 32;
+		string = string.replace(/\s+/g, " ").trim();
+		return (string.length > length)? string.substr(0, length-2) + "..." : string;
+	}
+	return string;
+};
+
 exports.touchModifyField = function(wiki) {
 	var tiddler = wiki.getTiddler("$:/config/flibbles/relink/touch-modify");
 	return tiddler && tiddler.fields.text.trim() === "yes";

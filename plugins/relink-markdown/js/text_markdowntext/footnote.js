@@ -1,6 +1,6 @@
 /*\
 module-type: relinkmarkdownrule
-title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/markdowntext/footnote.js
+title: $:/plugins/flibbles/relink-markdown/text/markdowntext/footnote.js
 type: application/javascript
 
 Handles markdown footnotes
@@ -32,7 +32,7 @@ exports.report = function(text, callback, options) {
 		return;
 	}
 	if (isActuallyLink(m, decodedLink, options)) {
-		callback(decodedLink, '[' + utils.abridge(m[1]) + ']:');
+		callback(decodedLink, '[' + utils.abridgeString(m[1], 17) + ']:');
 	}
 };
 

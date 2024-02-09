@@ -1,6 +1,6 @@
 /*\
 module-type: relinkmarkdownrule
-title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/markdowntext/codeinline.js
+title: $:/plugins/flibbles/relink-markdown/text/markdowntext/codeinline.js
 type: application/javascript
 
 Handles markdown `code` and ``code``.

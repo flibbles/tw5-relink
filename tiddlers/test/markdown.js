@@ -238,7 +238,7 @@ it("tricky captions", function() {
 	// and is hidden on anstosa/tw5-markdown
 	test("[](#from)", process, ['[](#)']);
 	test("[caption](#from)", process, ['[caption](#)']);
-	test("[\n](#from)", process, ['[ ](#)']);
+	test("[\n](#from)", process, ['[](#)']);
 	test("[\n\n](#from)", ignore);
 	// brackets
 	test("[mis]matched](#from)", ignore);

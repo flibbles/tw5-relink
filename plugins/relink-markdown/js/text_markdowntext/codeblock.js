@@ -1,6 +1,6 @@
 /*\
 module-type: relinkmarkdownrule
-title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/markdowntext/codeblock.js
+title: $:/plugins/flibbles/relink-markdown/text/markdowntext/codeblock.js
 type: application/javascript
 
 ```javascript

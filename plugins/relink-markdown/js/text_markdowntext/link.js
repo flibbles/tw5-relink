@@ -1,6 +1,6 @@
 /*\
 module-type: relinkmarkdownrule
-title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/markdowntext/link.js
+title: $:/plugins/flibbles/relink-markdown/text/markdowntext/link.js
 type: application/javascript
 
 Handles markdown links
@@ -10,7 +10,7 @@ Handles markdown links
 \*/
 
 var utils = require("$:/plugins/flibbles/relink-markdown/utils/markdown");
-var markdown = require("$:/plugins/flibbles/relink/js/utils").getType('markdown');
+var markdown = utils.getType('markdown');
 
 exports.name = "markdownlink";
 exports.types = {inline: true};
@@ -85,7 +85,7 @@ exports.report = function(text, callback, options) {
 		}, options);
 	}
 	if (isImage || hasHash) {
-		var safeCaption = utils.abridge(caption);
+		var safeCaption = utils.abridgeString(caption, 17);
 		try {
 			var decodedLink = utils.decodeLink(link);
 			// If the link doesn't have a hash, it can't have any escaping

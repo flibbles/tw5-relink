@@ -9,7 +9,6 @@ whichever markdown plugin you're using.
 \*/
 
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder.js");
-var coreUtils = require("$:/plugins/flibbles/relink/js/utils.js");
 var utils = require("$:/plugins/flibbles/relink-markdown/utils/markdown.js");
 var WikiParser = require("$:/core/modules/parsers/wikiparser/wikiparser.js")['text/vnd.tiddlywiki'];
 
@@ -129,7 +128,7 @@ MarkdownReporter.prototype.handleWikitext = function(startPos, end) {
 			var substr = this.source.substring(this.pos, end);
 
 			var pragma = config.wikitextPragma;
-			var wikitextHandler = coreUtils.getType('wikitext');
+			var wikitextHandler = utils.getType('wikitext');
 			var wikiEntry = wikitextHandler.report(pragma + substr, this.callback, this.options);
 		}
 	}
@@ -168,7 +167,7 @@ MarkdownRelinker.prototype.handleWikitext = function(startPos, end) {
 			var substr = this.source.substring(this.pos, end);
 
 			var pragma = config.wikitextPragma;
-			var wikitextHandler = coreUtils.getType('wikitext');
+			var wikitextHandler = utils.getType('wikitext');
 			var wikiEntry = wikitextHandler.relink(pragma + substr, this.fromTitle, this.toTitle, this.options);
 			if (wikiEntry != undefined) {
 				if (wikiEntry.impossible) {

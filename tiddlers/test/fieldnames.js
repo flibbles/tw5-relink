@@ -389,7 +389,7 @@ it('can rename widget attribute names', function() {
 	testText("<$action-createtiddler from={{value!!field}} />", true,
 	         ['<$action-createtiddler ={{value!!field}} />'], {wiki: wiki});
 	testText("<$action-createtiddler from={{{ [[value]get[field]] }}} />", true,
-	         ['<$action-createtiddler ={{{ [[value]get[field]] }}} />'], {wiki: wiki});
+	         ['<$action-createtiddler ={{{[[value]get[field]]}}} />'], {wiki: wiki});
 	testText("<$action-createtiddler from=<<value>> />", true,
 	         ['<$action-createtiddler =<<value>> />'], {wiki: wiki});
 	// Slightly trickier macrocall attribute name
@@ -412,7 +412,7 @@ it('can rename widget attribute names', function() {
 	         ['<$jsontiddler ={{{'+string.substr(0, maxLength)+'...}}} />'], {wiki: wiki});
 	// Newlines or tabs exist in value
 	testText('<$jsontiddler $from="""\n\tStart of a new line\n\tStart of another line""" />', true,
-	         ['<$jsontiddler =" Start of a new line Start of ..." />'], {wiki: wiki});
+	         ['<$jsontiddler ="Start of a new line Start of a..." />'], {wiki: wiki});
 	// Attribute name and value must change
 	testText("<$jsontiddler $hotfield='hotfield' />", true,
 	         ['<$jsontiddler $hotfield />', '<$jsontiddler ="hotfield" />'],

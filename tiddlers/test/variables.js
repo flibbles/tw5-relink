@@ -113,7 +113,6 @@ it('overriding definitions in other files', function() {
 // TODO: Maybe move all the rules into the fieldType directory?
 // TODO: The variable InfoPanel must detect impossible renames
 // TODO: If blurb attributes are too large, truncate
-// TODO: Variables in shadow tiddler should not be editable
 // TODO: Proper lingo for the TiddlerInfo panel
 // TODO: Change whitelist blurb from $ to |
 // TODO: TiddlerInfo panels need to be collapsable

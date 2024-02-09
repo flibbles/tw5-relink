@@ -26,6 +26,9 @@ var problemChars = {
 };
 */
 
+var utils = require("$:/plugins/flibbles/relink/js/utils.js");
+exports = module.exports = Object.create(utils);
+
 exports.encodeLink = function(title) {
 	var balance = 0,
 		encoded = title.replace(/[\(\) %\\]/g, function(p) {
@@ -117,19 +120,6 @@ exports.getSettings = function(wiki) {
 		wiki._markdownSettings = settings;
 	}
 	return wiki._markdownSettings;
-};
-
-// This is the maximum length a reported caption may be
-exports.captionLength = 15;
-
-/** Abridges a string to one that is more log-friendly.
- */
-exports.abridge = function(string) {
-	var safe = string.replace(/\s+/mg, ' ');
-	if (safe.length > this.captionLength) {
-		safe = safe.substr(0, this.captionLength) + "...";
-	}
-	return safe;
 };
 
 /**I don't actually use this, but I've kept the code around anyway.

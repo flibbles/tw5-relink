@@ -23,7 +23,7 @@ exports.report = function(tiddler, callback, options) {
 	var fields = tiddler.fields;
 	for (var field in fields) {
 		if (!utils.isReserved(field, options)) {
-			callback(field, ': ' + utils.abridge(fields[field]), {soft: true});
+			callback(field, ': ' + utils.abridgeString(fields[field]), {soft: true});
 		}
 	}
 };
@@ -60,8 +60,3 @@ exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 			{ impossible: true };
 	}
 };
-
-function abridge(string, length) {
-	return (string.length > length)? string.substr(0, length) + "..." : string;
-};
-

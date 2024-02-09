@@ -1,6 +1,6 @@
 /*\
 module-type: relinktext
-title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/markdowntext.js
+title: $:/plugins/flibbles/relink-markdown/text/markdowntext.js
 type: application/javascript
 
 This relinks tiddlers which contain markdown. It tries to be agnostic to

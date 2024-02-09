@@ -27,20 +27,20 @@ exports.report = function(element, parser, callback, options) {
 				var blurb;
 				switch (attr.type) { 
 				case "string":
-					blurb = '"' + utils.abridge(attr.value) + '"';
+					blurb = '"' + utils.abridgeString(attr.value) + '"';
 					break;
 				case "indirect":
 					blurb = "{{" + attr.textReference + "}}";
 					break;
 				case "filtered":
-					blurb = "{{{" + utils.abridge(attr.filter) + "}}}";
+					blurb = "{{{" + utils.abridgeString(attr.filter) + "}}}";
 					break;
 				case "macro":
 					// Find the equals
 					var equals = parser.source.indexOf("=", attr.start);
 					// Now that the macrostart after that equals
 					var macroStart = parser.source.indexOf("<", equals);
-					blurb = "<<" + utils.abridge(parser.source.substring(macroStart+2, attr.end-2)) + ">>";
+					blurb = "<<" + utils.abridgeString(parser.source.substring(macroStart+2, attr.end-2)) + ">>";
 					break;
 				}
 				callback(results[1], element.tag + ' =' + blurb, {soft: true});

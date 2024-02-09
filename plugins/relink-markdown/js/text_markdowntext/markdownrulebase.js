@@ -1,5 +1,5 @@
 /*\
-title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/markdowntext/markdownrulebase.js
+title: $:/plugins/flibbles/relink-markdown/text/markdowntext/markdownrulebase.js
 type: application/javascript
 module-type: global
 

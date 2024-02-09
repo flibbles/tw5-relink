@@ -1,6 +1,6 @@
 /*\
 module-type: relinktext
-title: $:/plugins/flibbles/relink-markdown/relinkoperations/text/x-markdowntext.js
+title: $:/plugins/flibbles/relink-markdown/text/x-markdowntext.js
 type: application/javascript
 
 same as "text/markdown", but for "text/x-markdown"

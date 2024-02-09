@@ -10,21 +10,15 @@ var docPrefix = "$:/language/Docs/Fields/";
 
 var whitelist = require('$:/plugins/flibbles/relink/js/utils.js').getContext('whitelist');
 
+var utils = require("$:/plugins/flibbles/relink/js/utils.js");
+exports = module.exports = Object.create(utils);
+
 whitelist.hotDirectories.push(docPrefix);
 
 exports.isReserved = function(field, options) {
 	var method = options.settings.getConfig("fieldnames").blacklist || function() { return true; };
 	return method(field);
 };
-
-exports.abridge = function(string, length) {
-	if (typeof string === "string") {
-		length = length || 30;
-		string = string.replace(/\s+/g, " ");
-		return (string.length > length)? string.substr(0, length) + "..." : string;
-	}
-	return string;
-}
 
 // Pre v5.2.0, this will be false. But we can't rely on utils.isValidFieldName
 // entirely, because it is forgiving about capitalization when we can't be.
@@ -43,11 +37,11 @@ exports.blurbOperands = function(operator) {
 		}
 		var operand = operator.operands[index];
 		if (operand.indirect) {
-			string += '{' + exports.abridge(operand.text) + '}';
+			string += '{' + exports.abridgeString(operand.text) + '}';
 		} else if (operand.variable) {
-			string += '<' + exports.abridge(operand.text) + '>';
+			string += '<' + exports.abridgeString(operand.text) + '>';
 		} else {
-			string += '[' + exports.abridge(operand.text) + ']';
+			string += '[' + exports.abridgeString(operand.text) + ']';
 		}
 	}
 	return string;
