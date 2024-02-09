@@ -137,22 +137,22 @@ function reportAttribute(parser, attribute, callback, options) {
 	} else if (attribute.type === "indirect") {
 		ptr = text.indexOf('{{', ptr);
 		var end = ptr + attribute.textReference.length + 4;
-		refHandler.report(attribute.textReference, function(title, blurb) {
-			callback(title, '[img ' + attribute.name + '={{' + (blurb || '') + '}}]');
+		refHandler.report(attribute.textReference, function(title, blurb, style) {
+			callback(title, '[img ' + attribute.name + '={{' + (blurb || '') + '}}]', style);
 		}, options);
 	} else if (attribute.type === "filtered") {
 		ptr = text.indexOf('{{{', ptr);
 		var end = ptr + attribute.filter.length + 6;
-		filterHandler.report(attribute.filter, function(title, blurb) {
-			callback(title, '[img ' + attribute.name + '={{{' + blurb + '}}}]');
+		filterHandler.report(attribute.filter, function(title, blurb, style) {
+			callback(title, '[img ' + attribute.name + '={{{' + blurb + '}}}]', style);
 		}, options);
 	} else if (attribute.type === "macro") {
 		ptr = text.indexOf("<<", ptr);
 		var end = attribute.value.end;
 		var macro = attribute.value;
 		var oldValue = attribute.value;
-		macrocall.reportAttribute(parser, macro, function(title, blurb) {
-			callback(title, '[img ' + attribute.name + '=' + blurb + ']');
+		macrocall.reportAttribute(parser, macro, function(title, blurb, style) {
+			callback(title, '[img ' + attribute.name + '=' + blurb + ']', style);
 		}, options);
 	}
 	return end;

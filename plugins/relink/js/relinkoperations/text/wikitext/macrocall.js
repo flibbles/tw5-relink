@@ -58,8 +58,8 @@ exports.relinkAttribute = function(parser, macro, text, fromTitle, toTitle, opti
  * Kept for backward compatibility reasons
  */
 exports.reportAttribute = function(parser, macro, callback, options) {
-	macrocall.report(parser.context, macro, function(title, blurb) {
-		callback(title, "<<" + blurb + ">>");
+	macrocall.report(parser.context, macro, function(title, blurb, style) {
+		callback(title, "<<" + blurb + ">>", style);
 	}, options);
 };
 

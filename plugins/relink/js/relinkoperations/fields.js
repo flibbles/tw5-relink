@@ -22,11 +22,11 @@ exports.report = function(tiddler, callback, options) {
 				// they actually point to, but let's not bother with that now
 				return;
 			}
-			handler.report(input, function(title, blurb) {
+			handler.report(input, function(title, blurb, style) {
 				if (blurb) {
-					callback(title, field + ': ' + blurb);
+					callback(title, field + ': ' + blurb, style);
 				} else {
-					callback(title, field);
+					callback(title, field, style);
 				}
 			}, options);
 		}

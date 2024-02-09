@@ -29,8 +29,8 @@ exports.report = function(text, callback, options) {
 			this.parser.pos++;
 			// Parse the caption
 			var oldCallback = this.parser.callback;
-			this.parser.callback = function(title, blurb) {
-				callback(title, '|' + blurb + '|c');
+			this.parser.callback = function(title, blurb, style) {
+				callback(title, '|' + blurb + '|c', style);
 			};
 			try {
 				this.parser.parseInlineRun(rowTermRegExp,{eatTerminator: true});
@@ -148,8 +148,8 @@ var processRow = function(rowType, callback) {
 			// Parse the cell
 			var oldCallback = this.parser.callback;
 			var reports = [];
-			this.parser.callback = function(title, blurb) {
-				reports.push(title, blurb);
+			this.parser.callback = function(title, blurb, style) {
+				reports.push(title, blurb, style);
 			};
 			try {
 				var output = this.parser.parseInlineRun(cellTermRegExp,{eatTerminator: true});
@@ -159,8 +159,8 @@ var processRow = function(rowType, callback) {
 				if(this.parser.source.substr(this.parser.pos - 2,1) === " ") { // spaceRight
 					suffix = ' |';
 				}
-				for (var i = 0; i < reports.length; i += 2) {
-					callback(reports[i], prefix + reports[i+1] + suffix + rowType);
+				for (var i = 0; i < reports.length; i += 3) {
+					callback(reports[i], prefix + reports[i+1] + suffix + rowType, reports[i+2]);
 				}
 			} finally {
 				this.parser.callback = oldCallback;

@@ -24,13 +24,13 @@ exports.report = function(text, callback, options) {
 	var filter = this.parser.source.substring(match.index + match[0].length, this.terminateIfMatch.index);
 	while (true) {
 		if (filter) {
-			filterRelinker.report(filter, function(title, blurb) {
+			filterRelinker.report(filter, function(title, blurb, style) {
 				if (blurb) {
 					blurb = keyword + blurb + ' %>';
 				} else {
 					blurb = keyword + '%>';
 				}
-				callback(title, blurb);
+				callback(title, blurb, style);
 			}, options);
 		}
 		var hasLineBreak = doubleLineBreakAtPos(this.parser);

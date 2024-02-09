@@ -80,8 +80,8 @@ exports.report = function(text, callback, options) {
 		hasHash = em[3].lastIndexOf('#') >= 0;
 	this.parser.pos = em.index + em[1].length + caption.length + em[0].length + 2;
 	if (!isImage) {
-		markdown.report(caption, function(title, blurb) {
-			callback(title, prefix + '[' + (blurb || '') + '](' + hash + link + ')');
+		markdown.report(caption, function(title, blurb, style) {
+			callback(title, prefix + '[' + (blurb || '') + '](' + hash + link + ')', style);
 		}, options);
 	}
 	if (isImage || hasHash) {

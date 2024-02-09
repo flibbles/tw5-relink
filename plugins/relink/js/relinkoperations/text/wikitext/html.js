@@ -21,8 +21,8 @@ exports.report = function(text, callback, options) {
 	var nestedOptions = Object.create(options);
 	nestedOptions.settings = this.parser.context;
 	for (var operator in htmlOperators) {
-		htmlOperators[operator].report(this.nextTag, this.parser, function(title, blurb) {
-			callback(title, '<' + blurb + ' />');
+		htmlOperators[operator].report(this.nextTag, this.parser, function(title, blurb, style) {
+			callback(title, '<' + blurb + ' />', style);
 		}, nestedOptions);
 	}
 	this.parse();

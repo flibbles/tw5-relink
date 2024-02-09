@@ -12,12 +12,12 @@ exports.report = function(definition, callback, options) {
 	var handler = getHandler(definition.type, definition.name);
 	if (handler) {
 		var newOptions = Object.create(options);
-		var entry = handler.report(definition.body, function(title, blurb) {
+		var entry = handler.report(definition.body, function(title, blurb, style) {
 			var macroStr = '\\' + definition.type + ' ' + definition.name + '()';
 			if (blurb) {
 				macroStr += ' ' + blurb;
 			}
-			callback(title, macroStr);
+			callback(title, macroStr, style);
 		}, newOptions);
 	}
 };

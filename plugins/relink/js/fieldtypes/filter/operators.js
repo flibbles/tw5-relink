@@ -26,25 +26,25 @@ exports.report = function(filterParseTree, callback, options) {
 					display += ',';
 				}
 				if (operand.indirect) {
-					refHandler.report(operand.text, function(title, blurb) {
-						callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '{' + (blurb || '') + '}]');
+					refHandler.report(operand.text, function(title, blurb, style) {
+						callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '{' + (blurb || '') + '}]', style);
 					}, options);
 				} else if (operand.variable) {
 					var macro = $tw.utils.parseMacroInvocation("<<"+operand.text+">>", 0);
 					if (macro) {
-						macrocall.report(options.settings, macro, function(title, blurb) {
-							callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '<' + blurb + '>]');
+						macrocall.report(options.settings, macro, function(title, blurb, style) {
+							callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '<' + blurb + '>]', style);
 						}, options);
 					}
 					continue;
 				} else if (operand.text) {
 					var handler = fieldType(options.settings, operator, index, options)
 					if (handler) {
-						handler.report(operand.text, function(title, blurb) {
+						handler.report(operand.text, function(title, blurb, style) {
 							if (blurb || !standaloneTitleRun(run)) {
-								callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '[' + (blurb || '') + ']]');
+								callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '[' + (blurb || '') + ']]', style);
 							} else {
-								callback(title, run.prefix);
+								callback(title, run.prefix, style);
 							}
 						}, options);
 					}

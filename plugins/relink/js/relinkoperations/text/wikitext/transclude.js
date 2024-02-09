@@ -24,7 +24,7 @@ exports.report = function(text, callback, options) {
 		template = $tw.utils.trim(m[2]),
 		params = m[3];
 	for (var operator in referenceOperators) {
-		referenceOperators[operator].report(ref, function(title, blurb) {
+		referenceOperators[operator].report(ref, function(title, blurb, style) {
 			blurb = blurb || "";
 			if (template) {
 				blurb += '||' + template;
@@ -32,7 +32,7 @@ exports.report = function(text, callback, options) {
 			if (params) {
 				blurb += '|' + params;
 			}
-			callback(title, "{{" + blurb + "}}");
+			callback(title, "{{" + blurb + "}}", style);
 		}, options);
 	}
 	if (template) {

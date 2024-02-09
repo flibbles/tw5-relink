@@ -31,16 +31,16 @@ exports.report = function(element, parser, callback, options) {
 				var operator = attributeOperators[operatorName];
 				var handler = operator.getHandler(element, attr, options);
 				if (handler) {
-					handler.report(attr.value, function(title, blurb) {
+					handler.report(attr.value, function(title, blurb, style) {
 						if (operator.formBlurb) {
 							if (blurb) {
 								blurb = '"' + blurb + '"';
 							}
-							callback(title, operator.formBlurb(element, attr, blurb, options));
+							callback(title, operator.formBlurb(element, attr, blurb, options), style);
 						} else if (blurb) {
-							callback(title, element.tag + ' ' + attributeName + '="' + blurb + '"');
+							callback(title, element.tag + ' ' + attributeName + '="' + blurb + '"', style);
 						} else {
-							callback(title, element.tag + ' ' + attributeName);
+							callback(title, element.tag + ' ' + attributeName, style);
 						}
 					}, options);
 					break;
@@ -48,43 +48,43 @@ exports.report = function(element, parser, callback, options) {
 			}
 			break;
 		case "indirect":
-			refHandler.report(attr.textReference, function(title, blurb) {
-				callback(title, element.tag + ' ' + attributeName + '={{' + (blurb || '') + '}}');
+			refHandler.report(attr.textReference, function(title, blurb, style) {
+				callback(title, element.tag + ' ' + attributeName + '={{' + (blurb || '') + '}}', style);
 			}, options);
 			break;
 		case "filtered":
-			filterHandler.report(attr.filter, function(title, blurb) {
-				callback(title, element.tag + ' ' + attributeName + '={{{' + blurb + '}}}');
+			filterHandler.report(attr.filter, function(title, blurb, style) {
+				callback(title, element.tag + ' ' + attributeName + '={{{' + blurb + '}}}', style);
 			}, options);
 			break;
 		case "macro":
 			var macro = attr.value;
-			macrocall.report(options.settings, macro, function(title, blurb) {
-				callback(title, element.tag + ' ' + attributeName + '=<<' + blurb + '>>');
+			macrocall.report(options.settings, macro, function(title, blurb, style) {
+				callback(title, element.tag + ' ' + attributeName + '=<<' + blurb + '>>', style);
 			}, options);
 			break;
 		case "substituted":
 			var filterRegex = /\$\{([\S\s]+?)\}\$/g, filter;
 			while (filter = filterRegex.exec(attr.rawValue)) {
-				filterHandler.report(filter[1], function(title, blurb) {
-					callback(title, element.tag + ' ' + attributeName + '=`${' + blurb + '}$`');
+				filterHandler.report(filter[1], function(title, blurb, style) {
+					callback(title, element.tag + ' ' + attributeName + '=`${' + blurb + '}$`', style);
 				}, options);
 			}
 			for (var operatorName in attributeOperators) {
 				var operator = attributeOperators[operatorName];
 				var handler = operator.getHandler(element, attr, options);
 				if (handler) {
-					handler.report(attr.rawValue, function(title, blurb) {
+					handler.report(attr.rawValue, function(title, blurb, style) {
 						// Only consider titles without substitutions.
 						if (!utils.containsPlaceholders(title)) {
 							blurb = (utils.containsPlaceholders(attr.rawValue) || blurb)? '`' + blurb + '`': '';
 							if (operator.formBlurb) {
-								callback(title, operator.formBlurb(element, attr, blurb, options));
+								callback(title, operator.formBlurb(element, attr, blurb, options), style);
 							} else {
 								if (blurb) {
 									blurb = '=' + blurb;
 								}
-								callback(title, element.tag + ' ' + attributeName + blurb);
+								callback(title, element.tag + ' ' + attributeName + blurb, style);
 							}
 						}
 					}, options);

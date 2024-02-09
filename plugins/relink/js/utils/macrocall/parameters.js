@@ -31,12 +31,12 @@ exports.report = function(context, macro, callback, options) {
 		var handler = managedMacro[managedArg];
 		var nestedOptions = Object.create(options);
 		nestedOptions.settings = context;
-		var entry = handler.report(param.value, function(title, blurb) {
+		var entry = handler.report(param.value, function(title, blurb, style) {
 			var rtn = managedArg;
 			if (blurb) {
 				rtn += ': "' + blurb + '"';
 			}
-			callback(title, macro.name + ' ' + rtn);
+			callback(title, macro.name + ' ' + rtn, style);
 		}, nestedOptions);
 	}
 };

@@ -13,14 +13,14 @@ var varRelinker = utils.getType('variable');
 exports.name = 'variables';
 
 exports.report = function(context, macro, callback, options) {
-	varRelinker.report(macro.name, function(title, blurb) {
+	varRelinker.report(macro.name, function(title, blurb, style) {
 		var blurb = '';
 		var def = context.getMacroDefinition(macro.name);
 		for (var i = 0; i < macro.params.length; i++) {
 			var param = macro.params[i];
 			blurb += ' ' + param.value;
 		}
-		callback(title, blurb);
+		callback(title, blurb, style);
 	}, options);
 };
 

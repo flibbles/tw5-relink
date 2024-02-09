@@ -14,7 +14,7 @@ exports.name = "variables";
 
 exports.report = function(filterParseTree, callback, options) {
 	forEachFunctionOperator(filterParseTree, options, function(operator, def) {
-		varRelinker.reportForTitle(operator.operator, function(title, blurb) {
+		varRelinker.reportForTitle(operator.operator, function(title, blurb, style) {
 			blurb = [];
 			for (var i = 0; i < operator.operands.length; i++) {
 				var operand = operator.operands[i];
@@ -28,7 +28,7 @@ exports.report = function(filterParseTree, callback, options) {
 					blurb.push('');
 				}
 			}
-			callback(title, '[' + blurb.join(',') + ']');
+			callback(title, '[' + blurb.join(',') + ']', style);
 		}, def.tiddler);
 	});
 };

@@ -15,8 +15,8 @@ exports.name = 'variables';
 
 exports.report = function(rule, callback, options) {
 	var defTiddler = resolveDefiningTiddler(rule, rule.match[1], options);
-	varRelinker.reportForTitle(rule.match[1], function(title, blurb) {
-		callback(title, "\\relink " + rule.match[2].trim());
+	varRelinker.reportForTitle(rule.match[1], function(title, blurb, style) {
+		callback(title, "\\relink " + rule.match[2].trim(), style);
 	}, defTiddler);
 };
 

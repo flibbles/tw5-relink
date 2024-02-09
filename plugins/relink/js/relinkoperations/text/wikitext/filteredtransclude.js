@@ -25,8 +25,8 @@ exports.report = function(text, callback, options) {
 		append = template ? '||' + template + '}}}' : '}}}';
 	var nestedOptions = Object.create(options);
 	nestedOptions.settings = this.parser.context;
-	filterHandler.report(filter, function(title, blurb) {
-		callback(title, '{{{' + blurb + append);
+	filterHandler.report(filter, function(title, blurb, style) {
+		callback(title, '{{{' + blurb + append, style);
 	}, nestedOptions);
 	if (template) {
 		callback(template, '{{{' + $tw.utils.trim(filter).replace(/\r?\n/mg, ' ') + '||}}}');

@@ -18,8 +18,8 @@ exports.report = function(filterParseTree, callback, options) {
 			var operator = run.operators[j];
 			var settings = options.settings.getConfig('suffixes')[operator.operator];
 			if (settings) {
-				settings[1].report(operator.suffix, function(title, blurb) {
-					callback(title, '[' + operator.operator + ':' + (blurb || '') + utils.blurbOperands(operator) + ']');
+				settings[1].report(operator.suffix, function(title, blurb, style) {
+					callback(title, '[' + operator.operator + ':' + (blurb || '') + utils.blurbOperands(operator) + ']', style);
 				}, options);
 			}
 		}

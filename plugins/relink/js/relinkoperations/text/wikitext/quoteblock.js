@@ -61,8 +61,8 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 function reportCite(parser, delimeter) {
 	var callback = parser.callback;
 	try {
-		parser.callback = function(title, blurb) {
-			return callback(title, delimeter + " " + blurb);
+		parser.callback = function(title, blurb, style) {
+			return callback(title, delimeter + " " + blurb, style);
 		};
 		parser.parseInlineRun(/(\r?\n)/mg);
 	} finally {

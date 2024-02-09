@@ -33,8 +33,8 @@ exports.report = function(tiddler, callback, options) {
 	var cache = getCache(options),
 		rules = cache.rules;
 	for (var i = 0; i < rules.length; i++) {
-		rules[i].report(tiddler.fields.title, function(title, blurb) {
-			callback(title, blurb ? ('title: ' + blurb) : 'title');
+		rules[i].report(tiddler.fields.title, function(title, blurb, style) {
+			callback(title, blurb ? ('title: ' + blurb) : 'title', style);
 		}, options);
 	}
 };

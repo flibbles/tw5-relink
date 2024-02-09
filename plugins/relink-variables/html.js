@@ -16,7 +16,7 @@ exports.report = function(element, parser, callback, options) {
 	if (element.tag.indexOf('.') >= 0 && element.tag[0] === '$') {
 		var def = options.settings.getMacroDefinition(element.tag);
 		if (def && def.isWidgetDefinition) {
-			varRelinker.reportForTitle(element.tag, function(title, blurb) {
+			varRelinker.reportForTitle(element.tag, function(title, blurb, style) {
 				blurb = '';
 				var attrs = element.orderedAttributes;
 				for (var i = 0; i < attrs.length; i++) {
@@ -40,7 +40,7 @@ exports.report = function(element, parser, callback, options) {
 						break;
 					}
 				}
-				callback(title, blurb);
+				callback(title, blurb, style);
 			}, def.tiddler);
 		}
 	}

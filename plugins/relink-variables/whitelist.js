@@ -18,11 +18,11 @@ exports.report = function(tiddler, callback, options) {
 		var key = title.substr(prefix.length);
 		var name = dir(key);
 		var macroParam = key.substr(name.length+1);
-		varRelinker.report(name, function(title, blurb) {
+		varRelinker.report(name, function(title, blurb, style) {
 			var defaultType = utils.getDefaultType(options.wiki);
 			var type = tiddler.fields.text;
 			var affix = type === defaultType? '': ':' + type;
-			callback(title, "$relink " + macroParam + affix);
+			callback(title, "$relink " + macroParam + affix, style);
 		}, options);
 	}
 };

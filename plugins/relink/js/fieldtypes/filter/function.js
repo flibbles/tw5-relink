@@ -8,8 +8,8 @@ exports.name = "function";
 
 exports.report = function(filterParseTree, callback, options) {
 	forEachOperand(filterParseTree, options, function(name, operand, handler, index) {
-		handler.report(operand.text, function(title, blurb) {
-			callback(title, '[function[' + name + ']' + ','.repeat(index) + '[' + (blurb || '') + ']]');
+		handler.report(operand.text, function(title, blurb, style) {
+			callback(title, '[function[' + name + ']' + ','.repeat(index) + '[' + (blurb || '') + ']]', style);
 		}, options);
 	});
 };

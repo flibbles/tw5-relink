@@ -15,7 +15,9 @@ exports.name = 'variable';
 exports.report = function(value, callback, options) {
 	var def = options.settings.getMacroDefinition(value);
 	if (def && def.tiddler) {
-		callback(systemPrefix + def.tiddler + ' ' + value);
+		// variable reports are soft, because the made-up tiddlers that act as
+		// directives for the variable shouldn't flood the "Missing" panel.
+		callback(systemPrefix + def.tiddler + ' ' + value, undefined, {soft: true});
 	}
 };
 
