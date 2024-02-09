@@ -14,8 +14,7 @@ exports.removePrefix = function(title, tiddler) {
 			return title;
 		}
 		if (title.substr(0, tiddler.length) === tiddler
-		&& title[tiddler.length] === ' '
-		&& title.indexOf(' ', tiddler.length + 1) < 0) {
+		&& title[tiddler.length] === ' ') {
 			return title.substr(tiddler.length + 1);
 		}
 	}
