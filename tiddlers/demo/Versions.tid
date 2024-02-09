@@ -3,8 +3,10 @@ tags: Relink
 title: Versions
 
 <$macrocall $name="tabs"
-            tabsList="[prefix[Versions/]suffix[.0]!nsort[created]]"
-            default={{{[prefix[Versions/]suffix[.0]!nsort[created]first[]]}}}
-            template="Templates/Version"
-            buttonTemplate="Templates/Version-button"
-            class="tc-vertical" />
+	tabsList="[prefix[Versions/]suffix[.0]!nsort[created]]"
+	default={{{[prefix[Versions/]suffix[.0]!nsort[created]first[]]}}}
+	template="Templates/Version"
+	buttonTemplate="Templates/Version-button"
+	class="tc-vertical"
+	explicitState='$:/state/tab/relink/Versions'
+/>

@@ -5,4 +5,5 @@ For V2, //Relink// needed to create the `report` method to scan tiddlers for ref
 <$macrocall $name="tabs"
 	tabsList="[[Migration to V2]tagging[]]"
 	default="Migration to V2/relinkoperator"
+	explicitState='$:/state/tab/relink/Migration to V2'
 />

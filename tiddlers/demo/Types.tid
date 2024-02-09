@@ -10,4 +10,6 @@ Fields, attributes, parameters, and operators have types. Depending on the type,
 	default="Title"
 	class="tc-vertical"
 	template="Templates/Type"
-	buttonTemplate="Templates/Button" />
+	buttonTemplate="Templates/Button"
+	explicitState='$:/state/tab/relink/Types'
+/>

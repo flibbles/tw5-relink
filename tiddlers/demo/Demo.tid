@@ -18,4 +18,5 @@ Change the tiddler ''[[Frodo]]'' down below to see how these examples react.
 	default="Demo/Links"
 	template="Templates/Demo"
 	buttonTemplate="Templates/Button"
+	explicitState='$:/state/tab/relink/Demo'
 />

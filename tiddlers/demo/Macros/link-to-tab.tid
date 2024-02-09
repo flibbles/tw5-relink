@@ -1,13 +1,13 @@
 tags: $:/tags/Macro
 title: Macros/link-to-tab
-qualifiers: Demo -1725644622 Types -1703315334 Plugins -1285577930 Versions 838063682 [[Migration to V2]] -680834286
 
 \relink link-to-tab tiddler tab caption:wikitext
-\define link-to-tab(tiddler, tab, caption)
+\procedure link-to-tab(tiddler, tab, caption)
+\whitespace trim
 <$button class="tc-btn-invisible tc-tiddlylink">
-<$action-setfield $tiddler={{{ [list[Macros/link-to-tab!!qualifiers]after<__tiddler__>addprefix[$:/state/tab-]] }}} text=<<__tab__>>/>
-<$action-navigate $to=<<__tiddler__>>/>
-$caption$
+<$action-setfield $tiddler=`$:/state/tab/relink/$(tiddler)$` text=<<tab>>/>
+<$action-navigate $to=<<tiddler>>/>
+<<caption>>
 </$button>
 \end
 

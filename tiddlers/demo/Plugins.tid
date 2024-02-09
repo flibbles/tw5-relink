@@ -7,4 +7,6 @@ title: Plugins
 <$macrocall $name="tabs"
 	tabsList="[tag[Plugin]]"
 	default={{{ [tag[Plugin]first[]] }}}
-	template="Templates/Plugin"/>
+	template="Templates/Plugin"
+	explicitState='$:/state/tab/relink/Plugins'
+/>
