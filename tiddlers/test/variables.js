@@ -78,12 +78,27 @@ it('relinks actual definition', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it('fails when given illegal variable directive titles', function() {
+	const wiki = new $tw.Wiki();
+	const text =  "\\procedure from() content\nBody";
+	wiki.addTiddler({title: 'test', tags: "$:/tags/Global", text: text});
+	utils.spyFailures(spyOn);
+	var fromDirective = variablePrefix + "test from";
+	wiki.renameTiddler(fromDirective, 'to', {wiki: wiki});
+	expect(utils.getText('test', wiki)).toEqual(text);
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	// Now test that the prefix is right, but the encoded tiddler is wrong
+	utils.failures.calls.reset();
+	wiki.renameTiddler(fromDirective, variablePrefix + 'else to', {wiki: wiki});
+	expect(utils.getText('test', wiki)).toEqual(text);
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+});
+
 it('overriding definitions in other files', function() {
 	testText('\\define else() In wrong file\n\n<<from>>', true, ['<<>>']);
 	testText('\\define from() In wrong file\n\n<<from>>', false, undefined);
 });
 
-// TODO: Test if the toTiddler isn't a legal macroname representative
 // TODO: Test whitespace trim, cause it was broken before
 // TODO: The //Relink// Missing panels is flooded with garbage
 // TODO: Order of configuration tabs is bad
