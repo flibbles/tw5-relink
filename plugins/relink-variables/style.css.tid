@@ -20,3 +20,7 @@ tags: $:/tags/Stylesheet
 .tc-relink-variables button:selected > svg {
 	fill: <<colour tiddler-controls-foreground-selected>>;
 }
+
+.tc-relink-variables-count {
+	color: <<color muted-foreground>>;
+}
