@@ -17,9 +17,13 @@ var utils = require("$:/plugins/flibbles/relink/js/utils.js");
 exports.wouldchange = function(source,operator,options) {
 	var from = options.widget && options.widget.getVariable("currentTiddler"),
 		to = operator.operand,
-		indexer = utils.getIndexer(options.wiki),
-		records = indexer.relinkLookup(from, to, options);
-	return Object.keys(records);
+		indexer = utils.getIndexer(options.wiki);
+	if (from !== to) {
+		var records = indexer.relinkLookup(from, to, options);
+		return Object.keys(records);
+	} else {
+		return [];
+	}
 };
 
 exports.impossible = function(source,operator,options) {
@@ -28,15 +32,17 @@ exports.impossible = function(source,operator,options) {
 		results = [],
 		indexer = utils.getIndexer(options.wiki),
 		records = indexer.relinkLookup(from, to, options);
-	source(function(tiddler, title) {
-		var fields = records[title];
-		if (fields) {
-			for (var field in fields) {
-				if (fields[field].impossible) {
-					results.push(title);
+	if (from !== to) {
+		source(function(tiddler, title) {
+			var fields = records[title];
+			if (fields) {
+				for (var field in fields) {
+					if (fields[field].impossible) {
+						results.push(title);
+					}
 				}
 			}
-		}
-	});
+		});
+	}
 	return results;
 };
