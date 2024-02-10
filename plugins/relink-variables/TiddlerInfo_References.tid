@@ -8,22 +8,21 @@ title: $:/plugins/flibbles/relink-variables/TiddlerInfo/References
 <$vars
 	lingo-base="$:/plugins/flibbles/relink-variables/language/TiddlerInfo/"
 	containingTiddler=<<currentTiddler>>
-	.relink-variables-filter="[all[current]relink:backreferences[]!prefix[$:/temp/]sort[title]]" >
+	.relink-variables-filter="[all[current]relink:backreferences[]!prefix[$:/temp/]sort[title]]"
+	.relink-variables-default={{{ [all[current]relink:variables[]nth[6]then[hide]else[show]] }}}>
 <$list filter="[all[current]relink:variables[]]" variable=variable emptyMessage=<<lingo Empty>>>
 <tbody>
 <$tiddler tiddler={{{ [[$:/temp/flibbles/relink-variables/]addsuffix<currentTiddler>addsuffix[ ]addsuffix<variable>] }}}>
 <$qualify title={{{ [<currentTiddler>addprefix[$:/state/flibbles/relink-variables/info/]] }}} name=".relink-view-state">
 <$vars
 	.relink-variables-count={{{ [subfilter<.relink-variables-filter>relink:report<currentTiddler>count[]]  }}} >
-<$vars
-	.relink-view-default={{{ [<.relink-variables-count>split[]count[]match[1]then[show]else[hide]] }}} >
 <tr>
 <th colspan=2 class="tc-relink-variables">
-<$button class="tc-btn-invisible tc-btn-dropdown" set=<<.relink-view-state>> setTo={{{ [<.relink-view-state>get[text]else<.relink-view-default>match[show]then[hide]else[show]] }}} >
-<$reveal type="nomatch" state=<<.relink-view-state>> text=show default=<<.relink-view-default>>>
+<$button class="tc-btn-invisible tc-btn-dropdown" set=<<.relink-view-state>> setTo={{{ [<.relink-view-state>get[text]else<.relink-variables-default>match[show]then[hide]else[show]] }}} >
+<$reveal type="nomatch" state=<<.relink-view-state>> text=show default=<<.relink-variables-default>>>
 {{$:/core/images/right-arrow}}
 </$reveal>
-<$reveal type="match" state=<<.relink-view-state>> text=show default=<<.relink-view-default>>>
+<$reveal type="match" state=<<.relink-view-state>> text=show default=<<.relink-variables-default>>>
 <!--<$button class="tc-btn-invisible tc-btn-dropdown" set=<<.relink-view-state>> setTo=hide>-->
 {{$:/core/images/down-arrow}}
 </$reveal>
@@ -48,7 +47,9 @@ title: $:/plugins/flibbles/relink-variables/TiddlerInfo/References
 		<$action-deletetiddler $tiddler=<<currentTiddler>> />
 	""">
 	<$keyboard actions=<<done-actions>> key=enter>
-	<$edit-text tiddler=<<currentTiddler>> tag=input focus=yes/>
+	<$button class="tc-btn-invisible tc-btn-dropdown" message="tm-focus-selector">
+		<$edit-text tiddler=<<currentTiddler>> tag=input focus=yes/>
+	</$button>
 	&#32;
 	<$button tooltip={{$:/language/Buttons/Cancel/Hint}} aria-label={{$:/language/Buttons/Cancel/Caption}} class=<<tv-config-toolbar-class>>>
 	<$action-deletetiddler $tiddler=<<currentTiddler>> />
@@ -78,7 +79,7 @@ title: $:/plugins/flibbles/relink-variables/TiddlerInfo/References
 </th>
 </tr>
 
-<$list variable=".relink-variables-show" filter="[<.relink-view-state>get[text]else<.relink-view-default>match[show]]">
+<$list variable=".relink-variables-show" filter="[<.relink-view-state>get[text]else<.relink-variables-default>match[show]]">
 <$list
 	filter="[all[current]relink:backreferences[]!prefix[$:/temp/]sort[title]]"
 	variable="listItem"

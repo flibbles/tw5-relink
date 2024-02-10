@@ -1,0 +1,22 @@
+title: $:/plugins/flibbles/relink-variables/style.css
+tags: $:/tags/Stylesheet
+
+.tc-relink-variables {
+	text-align: left;
+}
+
+.tc-relink-variables > button {
+	width: 100%;
+}
+
+.tc-relink-variables button:disabled > svg {
+	fill: <<colour very-muted-foreground>>;
+}
+
+.tc-relink-variables button:hover > svg {
+	fill: <<colour tiddler-controls-foreground-hover>>;
+}
+
+.tc-relink-variables button:selected > svg {
+	fill: <<colour tiddler-controls-foreground-selected>>;
+}
