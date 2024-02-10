@@ -20,6 +20,8 @@ title: $:/plugins/flibbles/relink/ui/stylesheet.css
 .tc-relink-references-title {
 	text-align: left;
 	vertical-align: top;
+	padding-top: 3px;
+	padding-bottom: 3px;
 }
 
 .tc-relink-references-occurrence {

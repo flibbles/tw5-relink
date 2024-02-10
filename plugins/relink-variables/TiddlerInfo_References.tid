@@ -4,34 +4,57 @@ title: $:/plugins/flibbles/relink-variables/TiddlerInfo/References
 
 \whitespace trim
 
+<table class="tc-relink-references-table">
 <$vars
 	lingo-base="$:/plugins/flibbles/relink-variables/language/TiddlerInfo/"
-	containingTiddler=<<currentTiddler>> >
+	containingTiddler=<<currentTiddler>>
+	.relink-variables-filter="[all[current]relink:backreferences[]!prefix[$:/temp/]sort[title]]" >
 <$list filter="[all[current]relink:variables[]]" variable=variable emptyMessage=<<lingo Empty>>>
+<tbody>
 <$tiddler tiddler={{{ [[$:/temp/flibbles/relink-variables/]addsuffix<currentTiddler>addsuffix[ ]addsuffix<variable>] }}}>
+<$qualify title={{{ [<currentTiddler>addprefix[$:/state/flibbles/relink-variables/info/]] }}} name=".relink-view-state">
+<$vars
+	.relink-variables-count={{{ [subfilter<.relink-variables-filter>relink:report<currentTiddler>count[]]  }}} >
+<$vars
+	.relink-view-default={{{ [<.relink-variables-count>split[]count[]match[1]then[show]else[hide]] }}} >
+<tr>
+<th colspan=2 class="tc-relink-variables">
+<$button class="tc-btn-invisible tc-btn-dropdown" set=<<.relink-view-state>> setTo={{{ [<.relink-view-state>get[text]else<.relink-view-default>match[show]then[hide]else[show]] }}} >
+<$reveal type="nomatch" state=<<.relink-view-state>> text=show default=<<.relink-view-default>>>
+{{$:/core/images/right-arrow}}
+</$reveal>
+<$reveal type="match" state=<<.relink-view-state>> text=show default=<<.relink-view-default>>>
+<!--<$button class="tc-btn-invisible tc-btn-dropdown" set=<<.relink-view-state>> setTo=hide>-->
+{{$:/core/images/down-arrow}}
+</$reveal>
+&#32;
 <$list filter="[all[current]is[tiddler]]" emptyMessage="""\whitespace trim
-	<h2>
+	''<$text text=<<variable>> />''
+	&#32;
+	(<$text text=<<.relink-variables-count>> />)
 	<$list variable='.relink-editable' filter="[<containingTiddler>is[tiddler]!type[application/javascript]]">
+	&#32;
 	<$button tooltip={{$:/language/Buttons/Edit/Hint}} aria-label={{$:/language/Buttons/Edit/Caption}} class=<<tv-config-toolbar-class>>>
 	<$action-createtiddler $basetitle=<<currentTiddler>> text=<<variable>> />
 	{{$:/core/images/edit-button}}
 	</$button>
-	&#32;
 	</$list>
-	<$text text=<<variable>> /></h2>""" >
-<$button tooltip={{$:/language/Buttons/Cancel/Hint}} aria-label={{$:/language/Buttons/Cancel/Caption}} class=<<tv-config-toolbar-class>>>
-<$action-deletetiddler $tiddler=<<currentTiddler>> />
-{{$:/core/images/cancel-button}}
-</$button>
-&#32;
-<$vars done-actions="""\whitespace trim
-	<$action-sendmessage
-		$message="tm-relink-tiddler"
-		from=<<currentTiddler>>
-		to={{{ [all[current]removesuffix<variable>addsuffix{!!text}] }}} />
-	<$action-deletetiddler $tiddler=<<currentTiddler>> />
-""">
+""" >
+	<$vars done-actions="""\whitespace trim
+		<$action-sendmessage
+			$message="tm-relink-tiddler"
+			from=<<currentTiddler>>
+			to={{{ [all[current]removesuffix<variable>addsuffix{!!text}] }}} />
+		<$action-deletetiddler $tiddler=<<currentTiddler>> />
+	""">
 	<$keyboard actions=<<done-actions>> key=enter>
+	<$edit-text tiddler=<<currentTiddler>> tag=input focus=yes/>
+	&#32;
+	<$button tooltip={{$:/language/Buttons/Cancel/Hint}} aria-label={{$:/language/Buttons/Cancel/Caption}} class=<<tv-config-toolbar-class>>>
+	<$action-deletetiddler $tiddler=<<currentTiddler>> />
+	{{$:/core/images/cancel-button}}
+	</$button>
+	&#32;
 	<$button
 		actions=<<done-actions>>
 		tooltip={{$:/language/Buttons/Save/Hint}}
@@ -40,28 +63,23 @@ title: $:/plugins/flibbles/relink-variables/TiddlerInfo/References
 		disabled={{{ [{!!text}!match[]!match<variable>!search:title:literal[ ]!search:title:literal[(]then[no]else[yes]] }}} >
 	{{$:/core/images/done-button}}
 	</$button>
-	&#32;
-	<$edit-text tiddler=<<currentTiddler>> tag=input focus=yes/>
 	</$keyboard>
 	</$vars>
-&#32;
-<$list variable=existing filter="[variables[]match{!!text}!match[]] -[<variable>]">
-This variable appears to already exist:
-<$list filter="[all[tiddlers+shadows]] :filter[relink:variables[]match<existing>]">
-&#32;
-<$link />
+	&#32;
+	<$list variable=existing filter="[variables[]match{!!text}!match[]] -[<variable>]">
+	This variable appears to already exist:
+	<$list filter="[all[tiddlers+shadows]] :filter[relink:variables[]match<existing>]">
+	&#32;
+	<$link />
+	</$list>
+	</$list>
 </$list>
-</$list>
-</$list>
+</$button>
+</th>
+</tr>
 
-<table class="tc-relink-references-table">
-<tbody>
+<$list variable=".relink-variables-show" filter="[<.relink-view-state>get[text]else<.relink-view-default>match[show]]">
 <$list
 	filter="[all[current]relink:backreferences[]!prefix[$:/temp/]sort[title]]"
 	variable="listItem"
 	template="$:/plugins/flibbles/relink/ui/TiddlerInfo/ReferencesTemplate" />
-</tbody>
-</table>
-</$tiddler>
-</$list>
-</$vars>

@@ -1,0 +1,15 @@
+/*\
+
+title: $:/plugins/flibbles/relink-variables/style.css
+type: text/css
+tags: $:/tags/Stylesheet
+
+\*/
+
+.tc-relink-variables {
+	text-align: left;
+}
+
+.tc-relink-variables > button {
+	width: 100%;
+}
