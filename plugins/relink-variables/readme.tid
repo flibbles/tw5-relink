@@ -2,9 +2,4 @@ title: $:/plugins/flibbles/relink-variables/readme
 
 \rules except wikilink
 
-Suplemental //Relink// plugins that allows for renaming of both globally defined and local variables through its own TiddlerInfo panel, including:
-
-* `\define`
-* `\procedure`
-* `\function`
-* `\widget`
+Suplemental //Relink// plugins that allows for renaming of both globally defined and local variables through its own TiddlerInfo panel.

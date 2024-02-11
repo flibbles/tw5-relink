@@ -1,0 +1,22 @@
+caption: Variables
+plugin: $:/plugins/flibbles/relink-variables
+tags: Feature Plugin
+title: Plugins/Variables
+
+\rules except wikilink
+
+With this supplemental plugin installed, you are able to track and rename variables just as effectively as you can tiddlers. Variables include everything defined by pragma, such as `\define`, but also all new pragma types introduced with Tiddlywiki v5.3.x, such as `\procedure`, `\function`, and `\widget`.
+
+This plugin works by introducing a second TiddlerInfo tab (<<show-reference-button>>) called ''//Relink//-variables'' which lists all variables defined in the given tiddler, as well as providing information on where and how that variable is used. From this tab, you're able to rename any of the listed variables, and the change will propogate across your Tiddlywiki, just like Relink does with tiddler titles.
+
+This plugin seemlessly works with globally-defined macros, local macros, and imported macros. It even works with javascript macros (although it won't help you rename those).
+
+!!! Install
+
+To install //Relink-variables//, first install //Relink//, then drag the following pill button onto your project:
+
+@@text-align:center;
+<$link to={{!!plugin}} class="relink-dragger relink-variables">Variable renaming support!</$link>
+@@
+
+<<link-to-tab Demo "Demo/Variables" Demo>>

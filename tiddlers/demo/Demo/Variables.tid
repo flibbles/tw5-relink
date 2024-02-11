@@ -1,4 +1,4 @@
-description: <p>Optionally, //Relink// can update the names of your variables, as well as report on where and how they're being used. Variables are all those created using `\define`, `\procedure`, `\function`, and `\widget`.</p><p>You can access this information in the ''//Relink//-variables'' Info tab by clicking <<show-reference-button>>. See the [[say-list|Macros/say-list]] or [[ul|Macros/ul]] macro definitions for practical examples.</p>
+description: <p>Optionally, //Relink// can update the names of your variables, as well as report on where and how they're being used. Variables are all those created using `\define`, `\procedure`, `\function`, and `\widget`.</p><p>You can access this information, as seen above, in the ''//Relink//-variables'' ~TiddlerInfo tab. See the [[say-list|Macros/say-list]] or [[ul|Macros/ul]] macro definitions for practical examples.</p>
 relink.showcase: text
 tags: Demo Supplemental $:/tags/Global
 template: Templates/Variables
