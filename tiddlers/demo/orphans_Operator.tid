@@ -14,4 +14,6 @@ purpose: outputs all non-shadow tiddlers with no references
 
 Behaves much like `[all[orphans]]`, except that this will look at all possible references, not just hard links.
 
+`$:/StoryList` is ignored when determining orphans. Just because a tiddler is listed in the story river doesn't mean it's not an orphan anymore.
+
 [[Examples|orphans Operator (Examples)]]

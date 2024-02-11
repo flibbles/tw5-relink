@@ -1,8 +1,13 @@
-arguments: title
+arguments: title, options
 return: {'tiddlerTitle': ['blurb', ...], ...}
 tags: Wikimethods
 title: getTiddlerRelinkReferences
 
 Given a tiddler title, `getTiddlerRelinkReferences` returns an object for which each key is a tiddler title which the given tiddler refers to, and the value is an array of blurbs which each briefly describe the type of reference. This object will include all references, including ones to tiddlers which do not exist.
+
+The following `options` properties are accepted:
+
+;hard
+:If set to `true`, then the output will exclude all references which are //soft//---as in they're only implied. For instance, if you're using the //subdirectories// rules with //Relink//-titles, then the tiddler `path/to/tiddler` //implies// the existence of `path/to` and `path` and this wikimethod would return those results unless `hard` is set to ''true''. Defaults to `false`.
 
 If the given title does not exist, this returns `undefined`.
