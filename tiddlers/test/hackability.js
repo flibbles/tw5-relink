@@ -57,4 +57,19 @@ it('touches modify even if only fields are changed', function() {
 	expect($tw.utils.hop(wiki.getTiddler('test').fields, 'modified')).toBe(true);
 });
 
+it('to-update handles various configurations', function() {
+	function updatesTest(conf) {
+		const wiki = new $tw.Wiki();
+		wiki.addTiddler({title: 'test', text: '[[from here]]'})
+		if (conf) wiki.addTiddler(utils.toUpdateConf(conf));
+		wiki.renameTiddler('from here', 'to there');
+		return wiki.getTiddler('test').fields.text;
+	};
+	expect(updatesTest()).toBe('[[to there]]');
+	expect(updatesTest('[all[]]')).toBe('[[to there]]');
+	expect(updatesTest('[prefix[te]]')).toBe('[[to there]]');
+	expect(updatesTest('[!prefix[te]]')).toBe('[[from here]]');
+	expect(updatesTest('test noexist')).toBe('[[to there]]');
+});
+
 });

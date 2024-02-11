@@ -13,33 +13,6 @@ beforeEach(function() {
 	spyOn(console, 'log');
 });
 
-function testConfig(options, /* tiddler objects */) {
-	var text = "[[from here]]", expected;
-	var tiddlerObj = Object.assign({text: text}, options);
-	[text, expected, options] = utils.prepArgs(text, options);
-	options.wiki.addTiddlers(Array.prototype.slice.call(arguments, 1));
-	var results = utils.relink(tiddlerObj, options);
-	expect(results.tiddler.fields.text).toEqual(expected);
-	return results;
-};
-
-it("handles getting no configuration at all", function() {
-	testConfig();
-});
-
-it("handles inclusive configuration", function() {
-	testConfig({}, utils.toUpdateConf("[all[]]"));
-	testConfig({tags: "update"}, utils.toUpdateConf("[tag[update]]"));
-});
-
-it("properly ignores tiddlers outside of to-update", function() {
-	testConfig({ignored: true}, utils.toUpdateConf("[tag[update]]"));
-});
-
-it("to-update handles non-existent tiddlers", function() {
-	testConfig({}, utils.toUpdateConf("test non-existent"));
-});
-
 var shadowTiddler = "$:/plugins/flibbles/test/tiddler";
 function wikiWithPlugin() {
 	return utils.addPlugin("$:/plugins/flibbles/test", [

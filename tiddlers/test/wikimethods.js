@@ -37,6 +37,7 @@ it('returns empty object if tiddler does not exist', function() {
 
 describe('getRelinkableTitles', function() {
 
+// Maybe this should go in hackability.js
 it('updates to-update cache on any change', function() {
 	var wiki = new $tw.Wiki();
 	expect(wiki.getRelinkableTitles().indexOf("new")).toBeLessThan(0);
