@@ -1,5 +1,6 @@
 description: Optionally, //Relink// fully supports markdown. It works seemlessly with any of the major markdown plugins.
 tags: Demo Supplemental
+template: Templates/Split
 type: text/x-markdown
 warning: Markdown support requires you to download the <<link-to-tab Plugins Plugins/Markdown "//Relink-markdown// supplemental plugin">>.
 

@@ -1,5 +1,6 @@
 description: <p>Relink can rename the parameters in macros. Each parameter must be declared first. All core macros are already configured, but you can add your own as well. [[See here for more details.|Macros]]</p> <p>`<<say-list>>` is defined [[here|Macros/say-list]].<br/>`<<ul>>` is defined [[here|Macros/ul]].<br/>See each for examples on different ways to declare parameters.</p>
 tags: Demo
+template: Templates/Split
 
 \relink foes hobbit
 \define foes(hobbit) <$view tiddler=<<__hobbit__>> field="foes" />

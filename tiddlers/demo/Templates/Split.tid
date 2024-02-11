@@ -1,0 +1,11 @@
+title: Templates/Split
+
+@@.relink-demo-source
+<div class="relink-text"><pre><$view field=<<field>> /></pre></div>
+@@
+
+<div class="relink-demo-preview">
+
+<$transclude />
+
+</div>

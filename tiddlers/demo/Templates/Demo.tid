@@ -4,22 +4,7 @@ title: Templates/Demo
 
 !! <$link>{{!!caption}}</$link>
 
-<% if [all[current]has[template]] %>
-
 <$transclude $tiddler={{!!template}} />
-
-<% else %>
-
-@@.relink-demo-source
-<div class="relink-text"><pre><$view field=<<field>> /></pre></div>
-@@
-
-<div class="relink-demo-preview">
-
-<$transclude />
-
-</div>
-<% endif %>
 
 @@.relink-demo-description
 <$transclude field="description" />

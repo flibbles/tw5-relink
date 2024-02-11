@@ -1,5 +1,6 @@
 description: Notice that custom link captions don't change, neither do plaintext occurrences of Frodo. Only occurrences of the title that in some way link to the page are updated.
 tags: Demo
+template: Templates/Split
 
 [[Frodo]]
 

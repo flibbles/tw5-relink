@@ -1,5 +1,6 @@
 description: <p>Checkboxes, and all core widgets whose attributes can reference a tiddler will be updated on a rename. You can configure which widgets, and corresponding attributes, are updated, including with custom widgets.</p><p>Indirect and filter attributes are all updated regardless of whether they're whitelisted.</p>
 tags: Demo
+template: Templates/Split
 
 <$checkbox tiddler="Frodo" tag="checked">
 Check tag `checked`

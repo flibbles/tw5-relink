@@ -1,5 +1,6 @@
 description: <p>Change image name with the buttons, or [[visit it|Frodo.svg]] to change it manually.</p><p>Links to image tiddlers will be updated when applicable. All attributes will also be properly relinked if necessary.</p>
 tags: Demo
+template: Templates/Split
 
 [img
    height=150
