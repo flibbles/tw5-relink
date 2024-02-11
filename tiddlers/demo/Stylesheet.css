@@ -1,9 +1,3 @@
-/*\
-
-```
-
-\*/
-
 a.relink-dragger {
 	-moz-box-shadow:inset 0px 1px 0px 0px #caefab;
 	-webkit-box-shadow:inset 0px 1px 0px 0px #caefab;
@@ -127,12 +121,12 @@ a.relink-markdown.relink-dragger {
 	padding-left: 20px;
 }
 
-.demo-character > a {
+.demo-character {
 	color: <<color very-muted-foreground>>;
 	font-weight: bold;
 }
 
-.demo-location > a {
+a.tc-tiddlylink.demo-location {
 	color: <<colour muted-foreground>>;
 	font-weight: bold;
 }
