@@ -1,0 +1,12 @@
+tags: Types Supplemental
+title: Variable
+
+\rules except wikilink
+
+This type indicates a single variable name, not a tiddler title.
+
+For example: `<$transclude $variable="myMacro" />` represents a variable, not a title. That means if you go to the tiddler containing the `myMacro` definition, and use the //Relink//-variables TiddlerInfo panel to rename `myMacro` macro, the `$variable` attribute of the transclude will update accordingly.
+
+It will ''not'' update if a tiddler named `myMacro` is renamed.
+
+{{$:/core/images/warning}} ''Warning:'' This type is only present in the <<link-to-tab Plugins "Plugins/Variables" "Variables supplemental plugin">>
