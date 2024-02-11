@@ -12,9 +12,6 @@
 		"tiddlywiki/snowwhite"
 	],
 	"build": {
-		"dist": [
-			"--build", "demo", "library"
-		],
 		"test": [
 			"--output", "./docs/",
 			"--rendertiddler",
