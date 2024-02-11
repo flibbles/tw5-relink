@@ -135,7 +135,12 @@ it('macrocall wikitext', function() {
 	testText('<<from "tick`">>', true, ['<< "tick`">>']);
 	testText('<<from "equals=">>', true, ['<< "equals=">>']);
 	// Abridges very long strings
-	testText("B<<from 'This is a very long string which should get truncated'>>", true, ['<< "This is a very ...">>']);
+	testText("B<<from 'This is a very long string which should truncate'>>",
+	         true, ['<< "This is a very long string whi...">>']);
+	testText("B<<from 'This is a very long string which should get truncated' Bwiki: 'This is another very long string which requires truncation'>>",
+	         true, ['<< "This is a very ..." Bwiki: "This is another...">>']);
+	testText("B<<from 'This is a very long string which should get truncated' Bwiki: 'This is another very long string which requires truncation' Cfilter:'Another truncation required here'>>",
+	         true, ['<< ... Bwiki: ... Cfilter: ...>>']);
 });
 
 it('macrocall wikitext bad names', function() {

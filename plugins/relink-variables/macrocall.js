@@ -14,10 +14,12 @@ exports.name = 'variables';
 
 exports.report = function(context, macro, callback, options) {
 	varRelinker.report(macro.name, function(title, blurb, style) {
-		var blurb = '';
-		for (var i = 0; i < macro.params.length; i++) {
-			var param = macro.params[i];
-			blurb += ' ' + (param.name? param.name + ': ': '') + wrapValue(utils.abridgeString(param.value, 18));
+		var blurb = formBlurb(macro, 33);
+		if (blurb.length > 50) {
+			blurb = formBlurb(macro, 18);
+		}
+		if (blurb.length > 50) {
+			blurb = formBlurb(macro);
 		}
 		callback(title, blurb, style);
 	}, options);
@@ -50,4 +52,14 @@ function wrapValue(value) {
 	}
 	// I guess just go with the quotes then
 	return '"' + value + '"';
+};
+
+function formBlurb(macro, maxLength) {
+	var blurb = '';
+	for (var i = 0; i < macro.params.length; i++) {
+		var param = macro.params[i];
+		var value = wrapValue(utils.abridgeString(param.value, maxLength));
+		blurb += ' ' + (param.name? param.name + ': ': '') + value;
+	}
+	return blurb;
 };
