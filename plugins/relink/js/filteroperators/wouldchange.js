@@ -29,10 +29,10 @@ exports.wouldchange = function(source,operator,options) {
 exports.impossible = function(source,operator,options) {
 	var from = options.widget && options.widget.getVariable("currentTiddler"),
 		to = operator.operand,
-		results = [],
-		indexer = utils.getIndexer(options.wiki),
-		records = indexer.relinkLookup(from, to, options);
+		results = [];
 	if (from !== to) {
+		var indexer = utils.getIndexer(options.wiki),
+			records = indexer.relinkLookup(from, to, options);
 		source(function(tiddler, title) {
 			var fields = records[title];
 			if (fields) {

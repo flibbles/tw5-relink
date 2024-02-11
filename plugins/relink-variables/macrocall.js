@@ -43,7 +43,11 @@ function wrapValue(value) {
 		return value;
 	} else if (value.indexOf('"') < 0) {
 		return '"' + value + '"';
-	} else {
+	} else if (value.indexOf('\'') < 0) {
 		return '\'' + value + '\'';
+	} else if (value.indexOf(']]') < 0) {
+		return '[[' + value + ']]';
 	}
+	// I guess just go with the quotes then
+	return '"' + value + '"';
 };

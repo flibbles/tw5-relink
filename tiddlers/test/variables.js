@@ -184,10 +184,16 @@ it('[function[]]', function() {
 });
 
 it('[direct call[]]', function() {
-	testText("{{{ [[A].from[]] }}}", true, ['{{{[]}}}'], {defType: 'function', from: '.from', to: '.to'});
-	testText("{{{ [[A].from[].from[]] }}}", true, ['{{{[]}}}', '{{{[]}}}'], {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [[A].from[]] }}}",
+	         true, ['{{{[]}}}'],
+	         {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [[A].from[].from[]] }}}",
+	         true, ['{{{[]}}}', '{{{[]}}}'],
+	         {defType: 'function', from: '.from', to: '.to'});
 	// Replaces operator and an operand
-	testText("{{{ [.from[],[<<.from>>]] }}}", true, ['{{{[.from,[<<>>]]}}}', '{{{[,[<<.from>>]]}}}'], {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [.from[],[<<.from>>]] }}}",
+	         true, ['{{{[.from,[<<>>]]}}}', '{{{[,[<<.from>>]]}}}'],
+	         {defType: 'function', from: '.from', to: '.to'});
 	// Better reporting
 	testText("{{{ [.from[value],<text arg>,{filter}] }}}",
 	         true, ['{{{[[value],<text arg>,{filter}]}}}'],
@@ -232,7 +238,24 @@ it('updates widgets', function() {
 	testText("<$.from\n\n/>", true, ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
 	testText("Start<$.from>Content</$.from>End", true, ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
 	// attributes in blurb
-	testText("Content<$.from Atitle=value Bwiki={{ref}} Cfilter=<<macro>> Dwildcard={{{ filter }}} Esub=`sub`>Content</$.from>", true, ['< Atitle="value" Bwiki={{ref}} Cfilter=<<macro>> Dwildcard={{{filter}}} Esub=`sub` />'], {defType: "widget", from: "$.from", to: '$.to'})
+	testText("Content<$.from Atitle=val Bwiki={{ref}} Cfilter=<<macro>> Dwildcard={{{ fil }}} Esub=`sub`>Content</$.from>",
+	         true, ['< Atitle=val Bwiki={{ref}} Cfilter=<<macro>> Dwildcard={{{fil}}} Esub=`sub` />'],
+	         {defType: "widget", from: "$.from", to: '$.to'})
+	testText("<$.from Atitle='This is a very long attribute that needs to be truncated'>C</$.from>",
+	         true, ['< Atitle="This is a very long attribute ..." />'],
+	         {defType: "widget", from: "$.from", to: '$.to'})
+	testText("<$.from Atitle={{{  This is a very long attribute that needs to be truncated  }}}>C</$.from>",
+	         true, ['< Atitle={{{This is a very long attribute ...}}} />'],
+	         {defType: "widget", from: "$.from", to: '$.to'})
+	testText("<$.from Atitle=`This is a $(very)$ long attribute that needs to be truncated`>C</$.from>",
+	         true, ['< Atitle=`This is a $(very)$ long attrib...` />'],
+	         {defType: "widget", from: "$.from", to: '$.to'})
+	testText("<$.from Atitle='This is a very long attribute that needs to be truncated' Bwiki='This also needs to be truncated' >C</$.from>",
+	         true, ['< Atitle="This is a very ..." Bwiki="This also needs..." />'],
+	         {defType: "widget", from: "$.from", to: '$.to'})
+	testText("<$.from Atitle='This is a very long attribute that needs to be truncated' Bwiki='This also needs to be truncated' Cfilter='This also needs truncation'>C</$.from>",
+	         true, ['< Atitle=... Bwiki=... Cfilter=... />'],
+	         {defType: "widget", from: "$.from", to: '$.to'})
 	// attributes change too
 	testText("Start<$.from Atitle=<<$.from>>>Content</$.from>End", true, ['<$.from Atitle=<<>> />', '< Atitle=<<$.from>> />'], {defType: 'widget', from: '$.from', to: '$.to'});
 	testText("Start<$.from Bwiki='<<$.from>>'>Content</$.from>End", true, ['<$.from Bwiki="<<>>" />', '< Bwiki="<<$.from>>" />'], {defType: 'widget', from: '$.from', to: '$.to'});

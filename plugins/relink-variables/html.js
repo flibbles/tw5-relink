@@ -17,28 +17,12 @@ exports.report = function(element, parser, callback, options) {
 		var def = options.settings.getMacroDefinition(element.tag);
 		if (def && def.isWidgetDefinition) {
 			varRelinker.reportForTitle(element.tag, function(title, blurb, style) {
-				blurb = '';
-				var attrs = element.orderedAttributes;
-				for (var i = 0; i < attrs.length; i++) {
-					var attr = attrs[i];
-					blurb += ' ' + attr.name + '=';
-					switch (attr.type) {
-					case 'string':
-						blurb += '"' + attr.value + '"';
-						break;
-					case 'indirect':
-						blurb += '{{' + attr.textReference + '}}';
-						break;
-					case 'filtered':
-						blurb += '{{{' + attr.filter.trim() + '}}}';
-						break;
-					case 'macro':
-						blurb += '<<' + attr.value.name + '>>';
-						break;
-					case 'substituted':
-						blurb += '`' + attr.rawValue + '`';
-						break;
-					}
+				blurb = formBlurb(element, 33);
+				if (blurb.length > 60) {
+					blurb = formBlurb(element, 18);
+				}
+				if (blurb.length > 60) {
+					blurb = formBlurb(element);
 				}
 				callback(title, blurb, style);
 			}, def.tiddler);
@@ -71,4 +55,41 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		}
 	}
 	return output;
+};
+
+function wrapValue(value) {
+	if (!/([\/\s<>"'`=])/.test(value) && value.length > 0) {
+		return value;
+	} else if (value.indexOf('"') < 0) {
+		return '"' + value + '"';
+	} else {
+		return '\'' + value + '\'';
+	}
+};
+
+function formBlurb(element, maxLength) {
+	var blurb = '';
+	var attrs = element.orderedAttributes;
+	for (var i = 0; i < attrs.length; i++) {
+		var attr = attrs[i];
+		blurb += ' ' + attr.name + '=';
+		switch (attr.type) {
+		case 'string':
+			blurb += wrapValue(utils.abridgeString(attr.value, maxLength));
+			break;
+		case 'indirect':
+			blurb += '{{' + attr.textReference + '}}';
+			break;
+		case 'filtered':
+			blurb += '{{{' + utils.abridgeString(attr.filter.trim(), maxLength) + '}}}';
+			break;
+		case 'macro':
+			blurb += '<<' + attr.value.name + '>>';
+			break;
+		case 'substituted':
+			blurb += '`' + utils.abridgeString(attr.rawValue, maxLength) + '`';
+			break;
+		}
+	}
+	return blurb;
 };
