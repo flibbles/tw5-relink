@@ -1,6 +1,6 @@
 /*\
 
-Tests the new relinking wiki methods.
+Tests various parts of relink that don't require their own suite.
 
 \*/
 
@@ -38,18 +38,6 @@ it("properly ignores tiddlers outside of to-update", function() {
 
 it("to-update handles non-existent tiddlers", function() {
 	testConfig({}, utils.toUpdateConf("test non-existent"));
-});
-
-it("properly updates to-update cached list on any change", function() {
-	var wiki = new $tw.Wiki();
-	expect(wiki.getRelinkableTitles().indexOf("new")).toBeLessThan(0);
-	wiki.addTiddler({title: "new"});
-	expect(wiki.getRelinkableTitles()).toContain("new");
-
-	wiki.addTiddler(utils.toUpdateConf("[tag[relink]]"));
-	expect(wiki.getRelinkableTitles().length).toEqual(0);
-	wiki.addTiddler({title: "next", tags: "relink"});
-	expect(wiki.getRelinkableTitles()).toContain("next");
 });
 
 var shadowTiddler = "$:/plugins/flibbles/test/tiddler";

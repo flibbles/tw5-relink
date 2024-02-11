@@ -114,7 +114,6 @@ it('overriding definitions in other files', function() {
 // TODO: Change whitelist blurb from $ to |
 // TODO: Better <<>> blurbs for named attributes.
 // TODO: Abridgement in all variable reporting
-// TODO: Ensure getTiddlerRelink(Back)references return correct thing if empty
 // TODO: Make relink-titles soft in most cases
 // TODO: Whitelist references need better links
 // TODO: Maybe be better about dealing with placeholders in titles?
