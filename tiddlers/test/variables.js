@@ -110,12 +110,9 @@ it('overriding definitions in other files', function() {
 });
 
 // TODO: $transclude blurb isn't neat like $macrocall
-// TODO: Maybe move all the rules into the fieldType directory?
-// TODO: The variable InfoPanel must detect impossible renames
 // TODO: If blurb attributes are too large, truncate
 // TODO: Proper lingo for the TiddlerInfo panel
 // TODO: Change whitelist blurb from $ to |
-// TODO: TiddlerInfo panels need to be collapsable
 // TODO: Better <<>> blurbs for named attributes.
 // TODO: Abridgement in all variable reporting
 // TODO: Ensure getTiddlerRelink(Back)references return correct thing if empty
@@ -123,6 +120,7 @@ it('overriding definitions in other files', function() {
 // TODO: Whitelist references need better links
 // TODO: Maybe be better about dealing with placeholders in titles?
 // TODO: Update documentation on wikimethods getRelinkTiddlerReferences and Orphans
+// TODO: Make filter blurbs more informative: `[[]tagging]`
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

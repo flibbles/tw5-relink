@@ -2,6 +2,7 @@ description: Optionally, //Relink// can update the names of any fields which mat
 relink.showcase: title type Frodo
 Frodo: [[Hairy feet]] [[Short stature]] Frodo
 tags: Demo Supplemental
+template: Templates/Showcase
 type: text/vnd.tiddlywiki
 warning: Fieldnames support requires you to download the <<link-to-tab Plugins Plugins/Fieldnames "//Relink-fieldnames// supplemental plugin">>.
 
