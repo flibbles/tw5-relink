@@ -119,7 +119,6 @@ it('overriding definitions in other files', function() {
 // TODO: Make relink-titles soft in most cases
 // TODO: Whitelist references need better links
 // TODO: Maybe be better about dealing with placeholders in titles?
-// TODO: Update documentation on wikimethods getRelinkTiddlerReferences and Orphans
 // TODO: Make filter blurbs more informative: `[[]tagging]`
 
 it('macrocall wikitext', function() {

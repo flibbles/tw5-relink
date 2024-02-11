@@ -1,4 +1,5 @@
 caption: {{$:/plugins/flibbles/relink-variables/language/TiddlerInfo/Caption}}
+list-after: $:/plugins/flibbles/relink/ui/TiddlerInfo/References
 tags: $:/tags/TiddlerInfo
 title: $:/plugins/flibbles/relink-variables/TiddlerInfo/References
 
