@@ -2,4 +2,11 @@ title: $:/plugins/flibbles/relink-variables/language/
 
 TiddlerInfo/Caption: //Relink// Variables
 TiddlerInfo/Description: The following are variables any the tiddlers that contain invocations of them:
+TiddlerInfo/Exists/Prompt: ''Warning:'' This variable appears to already exist
 TiddlerInfo/Empty: This tiddler does not contain any importable variables
+TiddlerInfo/Cancel/Caption: cancel
+TiddlerInfo/Cancel/Hint: Cancel rename to this variable
+TiddlerInfo/Edit/Caption: edit
+TiddlerInfo/Edit/Hint: Edit this variable
+TiddlerInfo/Save/Caption: ok
+TiddlerInfo/Save/Hint: Confirm update to this variable name

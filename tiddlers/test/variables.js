@@ -111,7 +111,6 @@ it('overriding definitions in other files', function() {
 
 // TODO: $transclude blurb isn't neat like $macrocall
 // TODO: If blurb attributes are too large, truncate
-// TODO: Proper lingo for the TiddlerInfo panel
 // TODO: Change whitelist blurb from $ to |
 // TODO: Better <<>> blurbs for named attributes.
 // TODO: Abridgement in all variable reporting
