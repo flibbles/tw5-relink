@@ -3,7 +3,7 @@ title: Lazy Loading
 
 //Relink// does ''not'' support tiddlywikis that implement the ~NodeJS lazy loading mechanism.
 
-...I know. So sad, but it just doesn't make sense. //Relink// needs to be able to look at all tiddlers to find relinks to make, and it can't do that if not all tiddlers are loaded, and _loading_ them all would defeat the purpose of lazy loading in the first place.
+...I know. So sad, but it just doesn't make sense. //Relink// needs to be able to look at all tiddlers to find relinks to make, and it can't do that if not all tiddlers are loaded, and //loading// them all would defeat the purpose of lazy loading in the first place.
 
 In theory, relinking is something that could happen on the ~NodeJS server, but that would require infrastructure which the [[core Tiddlywiki developers have already made clear will never happen|https://github.com/Jermolene/TiddlyWiki5/issues/4767#issuecomment-711328177]].
 

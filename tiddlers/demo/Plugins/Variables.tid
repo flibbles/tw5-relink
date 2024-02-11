@@ -1,6 +1,6 @@
 caption: Variables
 plugin: $:/plugins/flibbles/relink-variables
-tags: Feature Plugin
+tags: Plugin
 title: Plugins/Variables
 
 \rules except wikilink
