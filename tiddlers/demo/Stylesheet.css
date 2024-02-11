@@ -126,3 +126,13 @@ a.relink-markdown.relink-dragger {
 	margin-left: 0;
 	padding-left: 20px;
 }
+
+.demo-character > a {
+	color: <<color very-muted-foreground>>;
+	font-weight: bold;
+}
+
+.demo-location > a {
+	color: <<colour muted-foreground>>;
+	font-weight: bold;
+}

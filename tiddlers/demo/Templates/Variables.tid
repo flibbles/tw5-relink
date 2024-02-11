@@ -1,0 +1,9 @@
+title: Templates/Variables
+
+<div class="tc-tiddler-info tc-popup-handle">
+
+{{||$:/plugins/flibbles/relink-variables/TiddlerInfo/References}}
+
+</div>
+
+{{||Templates/Split}}

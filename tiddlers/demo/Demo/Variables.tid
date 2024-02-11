@@ -1,0 +1,22 @@
+description: <p>Optionally, //Relink// can update the names of your variables, as well as report on where and how they're being used. Variables are all those created using `\define`, `\procedure`, `\function`, and `\widget`.</p><p>You can see information variables in the //Relink//-variables Info tab by clicking the <<show-reference-button>>. See the [[say-list|Macros/say-list]] or [[ul|Macros/ul]] macro definitions for practical examples.</p>
+relink.showcase: text
+tags: Demo Supplemental $:/tags/Global
+template: Templates/Variables
+type: text/vnd.tiddlywiki
+warning: Variables support requires you to download the <<link-to-tab Plugins Plugins/Variables "//Relink-variables// supplemental plugin">>.
+
+\relink location tiddler
+\procedure location(name, tiddler)
+<span class=demo-location>
+<$link to=<<tiddler>>><$text text=<<name>> /></$link>
+</span>
+\end
+
+\relink character name
+\procedure character(name)
+<span class=demo-character><$link to=<<name>> /></span>
+\end
+
+The hobbits left <<location "their home" Shire>> to toss the ring into <<location name: "Mount Doom" tiddler: "Amon Amarth">>.
+
+And <<character Gollum>> followed.
