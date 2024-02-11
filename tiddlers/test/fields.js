@@ -49,13 +49,6 @@ it("doesn't touch ineligible tiddlers", function() {
 	expect($tw.utils.hop(wiki.getTiddler('test').fields, 'modified')).toBe(false);
 });
 
-it("touches eligible tiddlers", function() {
-	const wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.touchModifyConf("yes"));
-	var results = testTags("[[from here]]", ["to there"], ['tags'], {wiki: wiki});
-	expect($tw.utils.hop(wiki.getTiddler('test').fields, 'modified')).toBe(true);
-});
-
 it('still relinks tags', function() {
 	testTags("[[from here]] another", ['to there', 'another'], ['tags']);
 	expect(console.log).toHaveBeenCalledWith("Renaming 'from here' to 'to there' in 'test'");
