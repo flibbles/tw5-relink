@@ -15,20 +15,14 @@ exports.name = "variables";
 exports.report = function(filterParseTree, callback, options) {
 	forEachFunctionOperator(filterParseTree, options, function(operator, def) {
 		varRelinker.reportForTitle(operator.operator, function(title, blurb, style) {
-			blurb = [];
-			for (var i = 0; i < operator.operands.length; i++) {
-				var operand = operator.operands[i];
-				if (operand.indirect) {
-					blurb.push('{' + operand.text + '}');
-				} else if (operand.variable) {
-					blurb.push('<' + operand.text + '>');
-				} else if (operand.text) {
-					blurb.push('[' + operand.text + ']');
-				} else {
-					blurb.push('');
-				}
+			blurb = formBlurb(operator, 33);
+			if (blurb.length > 50) {
+				blurb = formBlurb(operator, 18);
 			}
-			callback(title, '[' + blurb.join(',') + ']', style);
+			if (blurb.length > 50) {
+				blurb = formBlurb(operator);
+			}
+			callback(title, blurb, style);
 		}, def.tiddler);
 	});
 };
@@ -68,4 +62,21 @@ function forEachFunctionOperator(filterParseTree, options, method) {
 			}
 		}
 	}
+};
+
+function formBlurb(operator, maxLength) {
+	var blurb = [];
+	for (var i = 0; i < operator.operands.length; i++) {
+		var operand = operator.operands[i];
+		if (operand.indirect) {
+			blurb.push('{' + operand.text + '}');
+		} else if (operand.variable) {
+			blurb.push('<' + utils.abridgeString(operand.text, maxLength) + '>');
+		} else if (operand.text) {
+			blurb.push('[' + utils.abridgeString(operand.text, maxLength) + ']');
+		} else {
+			blurb.push('');
+		}
+	}
+	return '[' + blurb.join(',') + ']';
 };

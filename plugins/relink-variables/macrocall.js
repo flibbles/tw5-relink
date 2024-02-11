@@ -17,7 +17,7 @@ exports.report = function(context, macro, callback, options) {
 		var blurb = '';
 		for (var i = 0; i < macro.params.length; i++) {
 			var param = macro.params[i];
-			blurb += ' ' + (param.name? param.name + ': ': '') + '"' + utils.abridgeString(param.value, 17) + '"';
+			blurb += ' ' + (param.name? param.name + ': ': '') + wrapValue(utils.abridgeString(param.value, 18));
 		}
 		callback(title, blurb, style);
 	}, options);
@@ -36,4 +36,14 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 		entry.output = macro;
 	}
 	return entry;
+};
+
+function wrapValue(value) {
+	if (!/([\/\s<>"'`=])/.test(value) && value.length > 0) {
+		return value;
+	} else if (value.indexOf('"') < 0) {
+		return '"' + value + '"';
+	} else {
+		return '\'' + value + '\'';
+	}
 };

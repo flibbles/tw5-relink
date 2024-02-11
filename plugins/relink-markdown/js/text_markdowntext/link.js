@@ -85,7 +85,7 @@ exports.report = function(text, callback, options) {
 		}, options);
 	}
 	if (isImage || hasHash) {
-		var safeCaption = utils.abridgeString(caption, 17);
+		var safeCaption = utils.abridgeString(caption, 18);
 		try {
 			var decodedLink = utils.decodeLink(link);
 			// If the link doesn't have a hash, it can't have any escaping

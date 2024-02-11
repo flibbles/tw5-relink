@@ -121,11 +121,19 @@ it('overriding definitions in other files', function() {
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
-	testText("<<from content>>", true, ['<< "content">>']);
+	testText("<<from content>>", true, ['<< content>>']);
 	testText("<<from Bwiki: '<<from>>'>>", true, ['<<from Bwiki: "<<>>">>', '<< Bwiki: "<<from>>">>']);
-	testText("B<<from Atitle:'title'>>", true, ['<< Atitle: "title">>']);
-	testText("B<<from 'title'>>", true, ['<< "title">>']);
-	testText("B<<from Bwiki: 'wiki' 'title'>>", true, ['<< Bwiki: "wiki" "title">>']);
+	testText("B<<from Atitle:'title'>>", true, ['<< Atitle: title>>']);
+	testText("B<<from 'title'>>", true, ['<< title>>']);
+	testText("B<<from Bwiki: 'wiki' 'title'>>", true, ['<< Bwiki: wiki title>>']);
+	// Used quotes
+	testText("<<from nospace>>", true, ['<< nospace>>']);
+	testText("<<from 'some space'>>", true, ['<< "some space">>']);
+	testText('<<from "apost\'">>', true, ['<< "apost\'">>']);
+	testText('<<from "slash/">>', true, ['<< "slash/">>']);
+	testText("<<from 'quote\"'>>", true, ["<< 'quote\"'>>"]);
+	testText('<<from "tick`">>', true, ['<< "tick`">>']);
+	testText('<<from "equals=">>', true, ['<< "equals=">>']);
 	// Abridges very long strings
 	testText("B<<from 'This is a very long string which should get truncated'>>", true, ['<< "This is a very ...">>']);
 });
@@ -134,7 +142,7 @@ it('macrocall wikitext bad names', function() {
 	utils.spyFailures(spyOn);
 	function test(badName) {
 		utils.failures.calls.reset();
-		testText("<<from content>>", false, ['<< "content">>'], {to: badName});
+		testText("<<from content>>", false, ['<< content>>'], {to: badName});
 		expect(utils.failures).toHaveBeenCalledTimes(1);
 	};
 	test("to>this");
@@ -145,7 +153,8 @@ it('macrocall wikitext bad names', function() {
 
 it('macro attributes', function() {
 	testText("<$text text=<<from>> />", true, ['<$text text=<<>> />']);
-	testText("<$text text=<<from   title >> />", true, ['<$text text=<< "title">> />']);
+	testText("<$text text=<<from   title >> />", true, ['<$text text=<< title>> />']);
+	testText("<$text text=<<from 'space title' >> />", true, ['<$text text=<< "space title">> />']);
 });
 
 it('$transclude', function() {
@@ -180,8 +189,24 @@ it('[direct call[]]', function() {
 	// Replaces operator and an operand
 	testText("{{{ [.from[],[<<.from>>]] }}}", true, ['{{{[.from,[<<>>]]}}}', '{{{[,[<<.from>>]]}}}'], {defType: 'function', from: '.from', to: '.to'});
 	// Better reporting
-	testText("{{{ [.from[value],<text>,{filter}] }}}", true, ['{{{[[value],<text>,{filter}]}}}'], {defType: 'function', from: '.from', to: '.to'});
-	testText("{{{ [.from[],<>,{}] }}}", true, ['{{{[,<>,{}]}}}'], {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [.from[value],<text arg>,{filter}] }}}",
+	         true, ['{{{[[value],<text arg>,{filter}]}}}'],
+	         {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [.from[],<>,{}] }}}",
+	         true,['{{{[,<>,{}]}}}'],
+	         {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [.from[This is very long and it should be truncated]] }}}",
+	         true, ['{{{[[This is very long and it shoul...]]}}}'],
+	         {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [.from<This is very long and it should be truncated>] }}}",
+	         true, ['{{{[<This is very long and it shoul...>]}}}'],
+	         {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [.from[This is very long and it should be truncated],[also very long and should truncate]] }}}", true,
+	         ['{{{[[This is very lo...],[also very long ...]]}}}'],
+	         {defType: 'function', from: '.from', to: '.to'});
+	testText("{{{ [.from[This is very long string],[also very long string],[another very long string]] }}}", true,
+	         ['{{{[[...],[...],[...]]}}}'],
+	         {defType: 'function', from: '.from', to: '.to'});
 	// Not actually function variables
 	testText("{{{ [.from[]] }}}", false, undefined, {from: '.from', to: '.to'});
 	testText("{{{ [from[]] }}}", false, undefined, {defType: 'function', from: 'from', to: '.to'});

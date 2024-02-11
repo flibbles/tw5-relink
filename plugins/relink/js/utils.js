@@ -182,9 +182,9 @@ exports.getDefaultType = function(wiki) {
 
 exports.abridgeString = function(string, length) {
 	if (typeof string === "string") {
-		length = length || 32;
+		length = length || 3;
 		string = string.replace(/\s+/g, " ").trim();
-		return (string.length > length)? string.substr(0, length-2) + "..." : string;
+		return (string.length > length)? string.substr(0, length-3) + "..." : string;
 	}
 	return string;
 };

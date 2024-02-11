@@ -32,7 +32,7 @@ exports.report = function(text, callback, options) {
 		return;
 	}
 	if (isActuallyLink(m, decodedLink, options)) {
-		callback(decodedLink, '[' + utils.abridgeString(m[1], 17) + ']:');
+		callback(decodedLink, '[' + utils.abridgeString(m[1], 18) + ']:');
 	}
 };
 

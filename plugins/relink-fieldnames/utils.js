@@ -37,11 +37,11 @@ exports.blurbOperands = function(operator) {
 		}
 		var operand = operator.operands[index];
 		if (operand.indirect) {
-			string += '{' + exports.abridgeString(operand.text) + '}';
+			string += '{' + exports.abridgeString(operand.text, 33) + '}';
 		} else if (operand.variable) {
-			string += '<' + exports.abridgeString(operand.text) + '>';
+			string += '<' + exports.abridgeString(operand.text, 33) + '>';
 		} else {
-			string += '[' + exports.abridgeString(operand.text) + ']';
+			string += '[' + exports.abridgeString(operand.text, 33) + ']';
 		}
 	}
 	return string;
