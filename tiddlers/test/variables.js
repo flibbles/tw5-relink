@@ -305,8 +305,8 @@ it('updates whitelist', function() {
 		expect(wiki.tiddlerExists(newConf.title)).toBe(true);
 		expect(wiki.getTiddlerText(newConf.title)).toBe(paramType);
 	}
-	test('Dwildcard', 'title', '$relink Dwildcard');
-	test('Efilter', 'filter', '$relink Efilter:filter');
+	test('Dwildcard', 'title', '#relink Dwildcard');
+	test('Efilter', 'filter', '#relink Efilter:filter');
 });
 
 it('does not update whitelist for local macros', function() {

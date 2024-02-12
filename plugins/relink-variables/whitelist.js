@@ -22,7 +22,7 @@ exports.report = function(tiddler, callback, options) {
 			var defaultType = utils.getDefaultType(options.wiki);
 			var type = tiddler.fields.text;
 			var affix = type === defaultType? '': ':' + type;
-			callback(title, "$relink " + macroParam + affix, style);
+			callback(title, "#relink " + macroParam + affix, style);
 		}, options);
 	}
 };
