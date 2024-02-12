@@ -180,6 +180,13 @@ it("handles indexer and rule settings changes", function() {
 	expect(utils.getReport('dir/file', wiki)).toEqual({dir: ['title: ./file']})
 });
 
+it('reference to super-directories are considered soft', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler({title: 'my/directory/test'});
+	expect(wiki.filterTiddlers("[[my/directory/test]relink:references[]]")).toEqual(['my', 'my/directory']);
+	expect(wiki.filterTiddlers("[[my/directory/test]relink:references:hard[]]")).toEqual([]);
+});
+
 });
 
 describe('lookup', function() {

@@ -109,9 +109,7 @@ it('overriding definitions in other files', function() {
 	testText('\\define from() In wrong file\n\n<<from>>', false, undefined);
 });
 
-// TODO: Change whitelist blurb from $ to |
 // TODO: Abridgement in all variable reporting
-// TODO: Make relink-titles soft in most cases
 // TODO: Whitelist references need better links
 // TODO: Maybe be better about dealing with placeholders in titles?
 // TODO: Make filter blurbs more informative: `[[]tagging]`

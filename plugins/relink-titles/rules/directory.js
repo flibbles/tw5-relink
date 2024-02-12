@@ -21,7 +21,7 @@ exports.report = function(title, callback, options) {
 	var index = -1;
 	while ((index = title.indexOf('/', index+1)) >= 0) {
 		var dir = title.substr(0, index);
-		callback(dir, '.' + title.substr(index));
+		callback(dir, '.' + title.substr(index), {soft: true});
 	}
 };
 
