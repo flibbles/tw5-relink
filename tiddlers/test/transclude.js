@@ -105,6 +105,17 @@ it('ignores malformed transcludes', function() {
 	testText("{{from here|}}", false, undefined);
 });
 
+it('handles placeholders', function() {
+	testText('\\define macro(abc) {{$abc$!!title}}', false, undefined, {from: '$abc$'});
+	testText('\\define macro(abc) {{tiddler||$abc$}}', false, undefined, {from: '$abc$'});
+	utils.spyFailures(spyOn);
+	testText('\\define macro(abc) {{from here!!title}}', false, ['\\define macro() {{!!title}}'], {to: '$abc$'});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	utils.failures.calls.reset();
+	testText('\\define macro(abc) {{tiddler||from here}}', false, ['\\define macro() {{tiddler||}}'], {to: '$abc$'});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+});
+
 it('rightly judges unpretty', function() {
 	function testUnpretty(to) {
 		testText("{{from here}}.",

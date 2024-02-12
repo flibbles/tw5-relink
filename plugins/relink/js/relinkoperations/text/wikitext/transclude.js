@@ -11,6 +11,7 @@ This renames both the tiddler and the template field.
 \*/
 
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
+var titleHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/title");
 var utils = require("./utils.js");
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 var referenceOperators = relinkUtils.getModulesByTypeAsHashmap('relinkreference', 'name');
@@ -35,13 +36,13 @@ exports.report = function(text, callback, options) {
 			callback(title, "{{" + blurb + "}}", style);
 		}, options);
 	}
-	if (template) {
+	titleHandler.report(template, function(title, blurb, style) {
 		var templateBlurb = refString + '||';
 		if (params) {
 			templateBlurb += '|' + params;
 		}
-		callback(template, '{{' + templateBlurb + '}}');
-	}
+		callback(template, '{{' + templateBlurb + '}}', style);
+	}, options);
 	this.parser.pos = this.matchRegExp.lastIndex;
 };
 
@@ -66,9 +67,15 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 		}
 	}
-	if ($tw.utils.trim(template) === fromTitle) {
-		template = template.replace(fromTitle, toTitle);
-		modified = true;
+	var templateEntry = titleHandler.relink($tw.utils.trim(template), fromTitle, toTitle, options);
+	if (templateEntry) {
+		if (templateEntry.impossible) {
+			impossible = true;
+		}
+		if (templateEntry.output) {
+			template = template.replace(fromTitle, toTitle);
+			modified = true;
+		}
 	}
 	if (modified) {
 		var output = this.makeTransclude(this.parser, reference, template, params);
