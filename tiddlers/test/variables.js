@@ -111,7 +111,6 @@ it('overriding definitions in other files', function() {
 
 // TODO: Abridgement in all variable reporting
 // TODO: Maybe be better about dealing with placeholders in titles?
-// TODO: Make filter blurbs more informative: `[[]tagging]`
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

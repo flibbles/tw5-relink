@@ -84,9 +84,17 @@ it('multiples', function() {
 it('runs', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('title'));
-	testFilter("[get[a][a]has[a]]", '[get[a][to there]has[a]]', ['filt: [[]]'],
+	testFilter("[get[a][a]has[a]]", '[get[a][to there]has[a]]', ['filt: [[]has...]'],
 	           {from: "a", wiki: wiki});
-	testFilter("[[here]has[x]]", true, ['filt: [[]]'], {from: "here", wiki: wiki});
+	testFilter("[[here]has[x]]", true, ['filt: [[]has...]'], {from: "here", wiki: wiki});
+	testFilter("[[from here]]", true, ['filt'], {wiki: wiki});
+	testFilter("-[[from here]]", true, ['filt: -'], {wiki: wiki});
+	testFilter("[[from here]tagging[]]", true, ['filt: [[]tagging...]'], {wiki: wiki});
+	testFilter("[[from here]!prefix[f]]", true, ['filt: [[]!prefix...]'], {wiki: wiki});
+	testFilter("[[from here]search::literal[f]]", true, ['filt: [[]search::literal...]'], {wiki: wiki});
+	// This one is weird. It shouldn't happen, but it could.
+	testFilter("[[from here][f]]", true, ['filt: [[]...]'], {wiki: wiki});
+	testFilter("+[[from here]tagging[]]", true, ['filt: +[[]tagging...]'], {wiki: wiki});
 });
 
 it('title operator', function() {
@@ -95,7 +103,7 @@ it('title operator', function() {
 	testFilter("A [title[from here]] B", true, ['filt'], {wiki: wiki});
 	testFilter("A [!title[from here]] B", true, ['filt: [![]]'], {wiki: wiki});
 	testFilter("A [![from here]] B", true, ['filt: [![]]'], {wiki: wiki});
-	testFilter("A [title[from here]is[tiddler]] B", true, ['filt: [[]]'], {wiki: wiki});
+	testFilter("A [title[from here]is[tiddler]] B", true, ['filt: [[]is...]'], {wiki: wiki});
 	testFilter("A ~[title[from here]] B", true, ['filt: ~'], {wiki: wiki});
 	testFilter("A ~[!title[from here]] B", true, ['filt: ~[![]]'], {wiki: wiki});
 });
@@ -383,7 +391,7 @@ it("field failures don't prevent from continuing", function() {
 
 	// properly counts failures
 	fail("[tag[from]title[from]tag{from}]", "1]2",
-	     "[tag[from]title[from]tag{1]2}]", ['filt: [tag[]]', 'filt: [[]]', 'filt: [tag{}]'], 1);
+	     "[tag[from]title[from]tag{1]2}]", ['filt: [tag[]]', 'filt: [[]tag...]', 'filt: [tag{}]'], 1);
 
 	// Reference operand properly fails
 	fail("[list[from]tag[from]]", "t!!f",

@@ -17,23 +17,20 @@ exports.report = function(filterParseTree, callback, options) {
 			var operator = run.operators[j];
 			for (var index = 1; index <= operator.operands.length; index++) {
 				var operand = operator.operands[index-1];
-				var display = operator.operator === 'title'? '': operator.operator;
-				if (operator.suffix) {
-					display += ':' + operator.suffix;
-				}
+				var display = makeDisplay(operator);
 				// Now add any commas if this is a later operand
 				for (var x = 1; x < index; x++) {
 					display += ',';
 				}
 				if (operand.indirect) {
 					refHandler.report(operand.text, function(title, blurb, style) {
-						callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '{' + (blurb || '') + '}]', style);
+						callback(title, (run.prefix || '') + '[' + display + '{' + (blurb || '') + '}]', style);
 					}, options);
 				} else if (operand.variable) {
 					var macro = $tw.utils.parseMacroInvocation("<<"+operand.text+">>", 0);
 					if (macro) {
 						macrocall.report(options.settings, macro, function(title, blurb, style) {
-							callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '<' + blurb + '>]', style);
+							callback(title, (run.prefix || '') + '[' + display + '<' + blurb + '>]', style);
 						}, options);
 					}
 					continue;
@@ -41,10 +38,17 @@ exports.report = function(filterParseTree, callback, options) {
 					var handler = fieldType(options.settings, operator, index, options)
 					if (handler) {
 						handler.report(operand.text, function(title, blurb, style) {
-							if (blurb || !standaloneTitleRun(run)) {
-								callback(title, (run.prefix || '') + '[' + (operator.prefix || '') + display + '[' + (blurb || '') + ']]', style);
-							} else {
+							if (!isTitleRun(operator) || blurb) {
+								callback(title, (run.prefix || '') + '[' + display + '[' + (blurb || '') + ']]', style);
+							} else if (j === run.operators.length-1) {
+								// index will always be 1, meaning single operator run,
+								// unless the user is weird. [title[]] ignores
+								// input, so why would it ever not be 1?
 								callback(title, run.prefix, style);
+							} else {
+								// Special case: It's a title operator that's
+								// leading a run
+								callback(title, (run.prefix || '') + '[[]' + makeDisplay(run.operators[j+1]) + '...]', style);
 							}
 						}, options);
 					}
@@ -114,14 +118,14 @@ function fieldType(context, operator, index, options) {
 	return rtn;
 };
 
-function standaloneTitleRun(run) {
-	if (run.operators.length == 1) {
-		var op = run.operators[0];
-		return op.operator === 'title'
-			&& !op.prefix
-			&& !op.suffix;
-	}
-	return false;
+function makeDisplay(operator) {
+	return (operator.prefix || '') + (operator.operator === 'title'? '': operator.operator) + (operator.suffix? ':' + operator.suffix: '');
+};
+
+function isTitleRun(operator) {
+	return operator.operator === 'title'
+		&& !operator.prefix
+		&& !operator.suffix;
 };
 
 // Takes care of relinking a macro, as well as putting it back together.
