@@ -41,7 +41,7 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 };
 
 function wrapValue(value) {
-	if (!/([\/\s<>"'`=])/.test(value) && value.length > 0) {
+	if (!/([\/\s<>"'`:])/.test(value) && value.length > 0) {
 		return value;
 	} else if (value.indexOf('"') < 0) {
 		return '"' + value + '"';

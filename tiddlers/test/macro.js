@@ -145,6 +145,10 @@ it('quotation of originalValue', function() {
 	testText('<<test Btitle:from/here>>', true, ['<<test Btitle>>'], {from: "from/here", to: "to/there"});
 	// they allow unquoted '<' as well, while attributes don't
 	testText('<<test Btitle:from>>', true, ['<<test Btitle>>'], {from: "from", to: "to<there"});
+	// Colons are not allowed to be unquoted
+	testText('<<test x from>>', "<<test x 'to:there'>>", ['<<test Btitle>>'], {from: "from", to: "to:there"});
+	// but = is allowed
+	testText('<<test x from>>', true, ['<<test Btitle>>'], {from: "from", to: "to=there"});
 });
 
 it('unquotable titles', function() {

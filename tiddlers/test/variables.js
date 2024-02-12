@@ -109,10 +109,7 @@ it('overriding definitions in other files', function() {
 	testText('\\define from() In wrong file\n\n<<from>>', false, undefined);
 });
 
-// TODO: $transclude blurb isn't neat like $macrocall
-// TODO: If blurb attributes are too large, truncate
 // TODO: Change whitelist blurb from $ to |
-// TODO: Better <<>> blurbs for named attributes.
 // TODO: Abridgement in all variable reporting
 // TODO: Make relink-titles soft in most cases
 // TODO: Whitelist references need better links
@@ -133,7 +130,8 @@ it('macrocall wikitext', function() {
 	testText('<<from "slash/">>', true, ['<< "slash/">>']);
 	testText("<<from 'quote\"'>>", true, ["<< 'quote\"'>>"]);
 	testText('<<from "tick`">>', true, ['<< "tick`">>']);
-	testText('<<from "equals=">>', true, ['<< "equals=">>']);
+	testText('<<from "equals=">>', true, ['<< equals=>>']);
+	testText('<<from "equals:">>', true, ['<< "equals:">>']);
 	// Abridges very long strings
 	testText("B<<from 'This is a very long string which should truncate'>>",
 	         true, ['<< "This is a very long string whi...">>']);

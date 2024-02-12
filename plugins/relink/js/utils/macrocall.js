@@ -77,7 +77,7 @@ exports.reassemble = function(entry, text, options) {
 exports.wrapParameterValue = function(value, preference) {
 	var whitelist = ["", "'", '"', '[[', '"""'];
 	var choices = {
-		"": function(v) {return !/([\s>"'=])/.test(v); },
+		"": function(v) {return !/([\s>"':])/.test(v); },
 		"'": function(v) {return v.indexOf("'") < 0; },
 		'"': function(v) {return v.indexOf('"') < 0; },
 		"[[": canBePrettyOperand,
