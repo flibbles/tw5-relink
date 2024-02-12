@@ -1,13 +1,24 @@
-created: 
+created: 20240212194724861
 
 \rules except wikilink
 
+This release sees full support of TiddlyWiki v5.3.x^^*^^
 
+This release also sees the premier of //Relink//-variables, which can handle relinking, except for your variables instead of your tiddlers.
+
+*,,Except for \parameters applied to tiddlers, which will need new \relink syntax before it could even be used.,,
 Other features and fixes
 
-* Some tm-messages are now supported, specifically `tm-new-tiddler` with `$action-sendmessage`.
+V5.3.x support
+
 * Conditionals (i.e. `<% if filter %>`) are now fully supported.
 * Full support for the new `<$transclude />`, not only for //Relink//-variables, but also by removing blindspots for new-style attributes like `$tiddler` and `$variable`, as well as
+
+Other work
+
+* Soft reporting is now a thing. This is when a tiddler references another tiddler, but that doesn't mean that other tiddler should exist. So it won't show up on the //Relink//-Missing tab. For instance, if you have //Relink//-fieldnames, just because a tiddler has a field, doesn't mean a corresponding tiddler for that field name is expected to exist.
+* Some tm-messages are now supported, specifically `tm-new-tiddler` with `$action-sendmessage`.
 * Fixed issue where `\whitespace trim` would cause following `\function` pragma not to relink properly.
 * Fixed issue where named pragma closers (i.e. `\end myMacro`) weren't recognized.
 * Fixed issue where renaming to a tiddler with a colon in it could break macrocalls in certain cases.
+* Fixed issue where Relink could mistake some `\define` style placeholders for titles.
