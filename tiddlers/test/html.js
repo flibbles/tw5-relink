@@ -478,6 +478,30 @@ it('supports relinking of internal text content', function() {
 	testText("<$link to='from here'>[[from here]]</$link>", true, ['<$link to />', '[[from here]]'], {wiki: wiki});
 });
 
+it('handles attributes that have placeholders', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$widg', 'list', 'list'));
+	wiki.addTiddler(utils.attrConf('$list', 'emptyMessage', 'wikitext'));
+	// List string attributes
+	testText('\\define macro(abc) <$widg list="A $abc$ D"/>', false, undefined, {wiki: wiki, from: '$abc$'});
+	// wikitext string attributes
+	testText('\\define macro(abc) <$list emptyMessage="X{{$abc$}}"/>', false, undefined, {wiki: wiki, from: '$abc$'});
+	// indirect attributes
+	testText('\\define macro(abc) <$text text={{$abc$!!title}}/>', false, undefined, {wiki: wiki, from: '$abc$'});
+	utils.spyFailures(spyOn);
+	function fails(text, report) {
+		utils.failures.calls.reset();
+		testText(text, false, [report], {wiki: wiki, to: '$abc$'});
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+	};
+	fails('\\define macro(abc) <$widg list="A [[from here]] D"/>',
+	      '\\define macro() <$widg list />');
+	fails('\\define macro(abc) <$text text={{from here!!title}}/>',
+	      '\\define macro() <$text text={{!!title}} />');
+	fails('\\define macro(abc) <$list emptyMessage="X{{from here}}"/>',
+	      '\\define macro() <$list emptyMessage="{{}}" />');
+});
+
 it('supports widgets that support regexp matching fields to attrs', function() {
 	const wiki = new $tw.Wiki();
 	const prefix = "$:/config/flibbles/relink/fieldattributes/";

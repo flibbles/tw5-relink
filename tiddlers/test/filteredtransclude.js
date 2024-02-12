@@ -98,6 +98,9 @@ it('handles placeholders from macros', function() {
 	// Non bracket titles
 	testText('\\define macro(A) {{{ "$A$" }}}', false, undefined, {from: '$A$'});
 	testText('\\define macro(A) {{{ "$ABC$" }}}', true, ['\\define macro() {{{}}}'], {from: '$ABC$'});
+	// Bare style
+	testText('\\define macro(A) {{{ $A$ X }}}', false, undefined, {from: '$A$'});
+	testText('\\define macro(A) {{{ $ABC$ X }}}', true, ['\\define macro() {{{}}}'], {from: '$ABC$', to: 'to'});
 	// Changing TO placeholders
 	testText('\\define macro(A) {{{ "from here" }}}', true, ['\\define macro() {{{}}}'], {to: '$ABC$'});
 	utils.spyFailures(spyOn);

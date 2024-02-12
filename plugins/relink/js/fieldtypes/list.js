@@ -4,12 +4,14 @@ This manages replacing titles that occur within stringLists, like,
 TiddlerA [[Tiddler with spaces]] [[Another Title]]
 \*/
 
+var titleRelinker = require('./title.js');
+
 exports.name = "list";
 
 exports.report = function(value, callback, options) {
 	var list = $tw.utils.parseStringArray(value);
 	for (var i = 0; i < list.length; i++) {
-		callback(list[i]);
+		titleRelinker.report(list[i], callback, options);
 	}
 };
 
@@ -19,7 +21,9 @@ exports.report = function(value, callback, options) {
  */
 exports.relink = function(value, fromTitle, toTitle, options) {
 	var isModified = false,
+		impossible = false,
 		actualList = false,
+		entry,
 		list;
 	if (typeof value !== "string") {
 		// Not a string. Must be a list.
@@ -31,25 +35,30 @@ exports.relink = function(value, fromTitle, toTitle, options) {
 		list = $tw.utils.parseStringArray(value || "");
 	}
 	$tw.utils.each(list,function (title,index) {
-		if(title === fromTitle) {
-			list[index] = toTitle;
-			isModified = true;
+		var titleEntry = titleRelinker.relink(title, fromTitle, toTitle, options);
+		if (titleEntry) {
+			if (titleEntry.output) {
+				list[index] = titleEntry.output;
+				isModified = true;
+			}
+			if (titleEntry.impossible) {
+				impossible = true;
+			}
 		}
 	});
-	if (isModified) {
-		var entry = {name: "list"};
+	if (isModified || impossible) {
+		entry = {name: "list", impossible: impossible};
 		// It doesn't parse correctly alone, it won't
 		// parse correctly in any list.
 		if (!canBeListItem(toTitle)) {
 			entry.impossible = true;
 		} else if (actualList) {
 			entry.output = list;
-		} else {
+		} else if (isModified) {
 			entry.output = $tw.utils.stringifyList(list);
 		}
-		return entry;
 	}
-	return undefined;
+	return entry;
 };
 
 function canBeListItem(value) {
