@@ -64,8 +64,6 @@ it("sets up placeholder context for body", function() {
 	testText('\\define macro(abc)\n\\define inner() {{$abc$}}\n\\end', false, undefined, {from: '$abc$'});
 });
 
-// TODO: Does transclude inconsistent with whitespace trimming between reporting and relinking?
-
 it('whitespace for single line', function() {
 	var report = ['\\define macro() [[from here]]'];
 	testText("\\define macro() [[from here]]", true, report);
