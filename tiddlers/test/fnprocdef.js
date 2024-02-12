@@ -49,6 +49,17 @@ it('parameters', function() {
 	testText("\\procedure macro(  field:'value',  here   ) [[from here]]", true, ["\\procedure macro() [[from here]]"]);
 });
 
+it("does not set up a placeholder context", function() {
+	testText('\\procedure macro(abc) {{$abc$}}', true, ['\\procedure macro() {{}}'], {from: '$abc$'});
+	testText('\\procedure macro(abc) {{$(currentTiddler)$}}', true, ['\\procedure macro() {{}}'], {from: '$(currentTiddler)$'});
+	// Can rename TO placeholders
+	testText('\\procedure macro(abc) {{from here}}', true, ['\\procedure macro() {{}}'], {to: '$(currentTiddler)$'});
+	testText('\\procedure macro(abc) {{from here}}', true, ['\\procedure macro() {{}}'], {to: '$abc$'});
+	//But outer defines can still set up a context
+	testText('\\define macro(abc)\n\\define inner() {{$abc$}}\n\\end', false, undefined, {from: '$abc$'});
+	testText('\\define macro(abc)\n\\define inner() {{from here}}\n\\end', false, ['\\define macro() \\define inner() {{}}'], {to: '$abc$', fails: 1});
+});
+
 it('multiline', function() {
 	testText("\\procedure macro()\n[[from here]]\n\\end", true, ["\\procedure macro() [[from here]]"]);
 });

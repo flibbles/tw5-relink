@@ -16,10 +16,13 @@ exports.report = function(value, callback, options) {
 /**Returns undefined if no change was made.
  */
 exports.relink = function(value, fromTitle, toTitle, options) {
-	if (value === fromTitle && !containsPlaceholder(value, options)) {
+	if (value !== fromTitle || containsPlaceholder(value, options)) {
+		return undefined;
+	} else if (containsPlaceholder(toTitle, options)) {
+		return {impossible: true};
+	} else {
 		return {output: toTitle};
 	}
-	return undefined;
 };
 
 function containsPlaceholder(value, options) {

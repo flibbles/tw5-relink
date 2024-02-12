@@ -92,6 +92,19 @@ it('handles macro parameters inside', function() {
 	testText("{{{ [<macro 'from here'>] }}}", true, ['{{{[<macro A>]}}}'], {wiki: wiki});
 });
 
+it('handles placeholders from macros', function() {
+	testText("\\define macro(A) {{{ [[$A$]] }}}", false, undefined, {from: '$A$'});
+	testText("\\define macro(A) {{{ [[$ABC$]] }}}", true, ['\\define macro() {{{}}}'], {from: '$ABC$'});
+	// Non bracket titles
+	testText('\\define macro(A) {{{ "$A$" }}}', false, undefined, {from: '$A$'});
+	testText('\\define macro(A) {{{ "$ABC$" }}}', true, ['\\define macro() {{{}}}'], {from: '$ABC$'});
+	// Changing TO placeholders
+	testText('\\define macro(A) {{{ "from here" }}}', true, ['\\define macro() {{{}}}'], {to: '$ABC$'});
+	utils.spyFailures(spyOn);
+	testText('\\define macro(A) {{{ "from here" }}}', false, ['\\define macro() {{{}}}'], {to: '$A$'});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+});
+
 it('rightly judges unpretty', function() {
 	function testUnpretty(to) {
 		testText("Test: {{{from}}} inline",
