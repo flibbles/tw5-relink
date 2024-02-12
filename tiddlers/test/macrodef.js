@@ -48,6 +48,24 @@ it('parameters', function() {
 	testText("\\define macro(  field:'value',  here   ) [[from here]]", true, ['\\define macro() [[from here]]']);
 });
 
+it("sets up placeholder context for body", function() {
+	testText('\\define macro(abc) {{$A$}}', true, ['\\define macro() {{}}'], {from: '$A$'});
+	testText('\\define macro(abc def) {{$abc$}}', false, undefined, {from: '$abc$'});
+	testText('\\define macro(abc def) {{title$abc$}}', false, undefined, {from: 'title$abc$'});
+	testText('\\define macro() {{$(any)$}}', false, undefined, {from: '$(any)$'});
+	// These global placeholders don't parse, so they aren't placeholders
+	testText('\\define macro() {{$(a$ny)$}}', true, ['\\define macro() {{}}'], {from: '$(a$ny)$'});
+	testText('\\define macro() {{$(a)ny)$}}', true, ['\\define macro() {{}}'], {from: '$(a)ny)$'});
+	testText('\\define macro() {{$()$}}', true, ['\\define macro() {{}}'], {from: '$()$'});
+	// Outside of the macrodef, substition is not considered
+	testText('\\define macro(abc def) Content\n{{$abc$}}', true, ['{{}}'], {from: '$abc$'});
+	testText('\\define macro() Content\n{{$(any)$}}', true, ['{{}}'], {from: '$(any)$'});
+	// Placeholder contexts can nest
+	testText('\\define macro(abc)\n\\define inner() {{$abc$}}\n\\end', false, undefined, {from: '$abc$'});
+});
+
+// TODO: Does transclude inconsistent with whitespace trimming between reporting and relinking?
+
 it('whitespace for single line', function() {
 	var report = ['\\define macro() [[from here]]'];
 	testText("\\define macro() [[from here]]", true, report);

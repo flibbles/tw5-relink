@@ -78,6 +78,11 @@ it('relinks actual definition', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it('definition does not consider its own title a placeholder', function() {
+	var prefix = variablePrefix + "test ";
+	testText("\\define $def$(def) Content\n", true, undefined, {from: '$def$', noglobal: true, prefix: prefix});
+});
+
 it('detects and reports on javascript macros', function() {
 	const wiki = new $tw.Wiki();
 	const module = 'test/modules/macro-module.js'
@@ -108,8 +113,6 @@ it('overriding definitions in other files', function() {
 	testText('\\define else() In wrong file\n\n<<from>>', true, ['<<>>']);
 	testText('\\define from() In wrong file\n\n<<from>>', false, undefined);
 });
-
-// TODO: Maybe be better about dealing with placeholders in titles?
 
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);

@@ -8,16 +8,40 @@ simplest kind of field type. One title swaps out for the other.
 exports.name = 'title';
 
 exports.report = function(value, callback, options) {
-	callback(value);
+	if (value && !containsPlaceholder(value, options)) {
+		callback(value);
+	}
 };
 
 /**Returns undefined if no change was made.
  */
 exports.relink = function(value, fromTitle, toTitle, options) {
-	if (value === fromTitle) {
+	if (value === fromTitle && !containsPlaceholder(value, options)) {
 		return {output: toTitle};
 	}
 	return undefined;
+};
+
+function containsPlaceholder(value, options) {
+	var dollar = value.indexOf('$');
+	// Quick test. If no dollar signs. No placeholders.
+	if (dollar >= 0 && value.indexOf('$', dollar+1)) {
+		// We potentially have a placeholder
+		var placeholders = options.settings.getPlaceholderList();
+		if (placeholders) {
+			if (value.search(/\$\([^$\)]+\)\$/) >= 0) {
+				// A global placeholder exists
+				return true;
+			}
+			for (var name in placeholders) {
+				if (value.indexOf('$' + name + '$') >= 0) {
+					// Oops. This contains a placeholder.
+					return true;
+				}
+			}
+		}
+	}
+	return false;
 };
 
 // This is legacy support for when 'title' was known as 'field'

@@ -61,6 +61,13 @@ Context.prototype.getFocus = function() {
 	}
 };
 
+Context.prototype.getPlaceholderList = function() {
+	if (this.parent) {
+		return this.parent.getPlaceholderList();
+	}
+	return null;
+};
+
 Context.prototype.addParameter = function(parameter) {
 	if(this.parent) {
 		return this.parent.addParameter(parameter);

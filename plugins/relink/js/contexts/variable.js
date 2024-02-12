@@ -22,6 +22,12 @@ function VariableContext(parent, setParseTreeNode) {
 	// point our widget to bottom, where any other contexts would attach to
 	this.widget = this.getBottom(this.setWidget);
 	this.parameterFocus = true;
+	if (setParseTreeNode.isMacroDefinition) {
+		this.placeholderList = Object.create(parent.getPlaceholderList());
+		for (var i = 0; i < setParseTreeNode.params.length; i++) {
+			this.placeholderList[setParseTreeNode.params[i].name] = true;
+		}
+	}
 };
 
 exports.variable = VariableContext;
@@ -33,6 +39,14 @@ VariableContext.prototype.getFocus = function() {
 		return this;
 	} else {
 		return this.parent.getFocus();
+	}
+};
+
+VariableContext.prototype.getPlaceholderList = function() {
+	if (this.placeholderList !== undefined) {
+		return this.placeholderList;
+	} else {
+		return this.parent.getPlaceholderList();
 	}
 };
 

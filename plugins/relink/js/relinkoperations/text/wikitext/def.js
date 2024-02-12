@@ -28,6 +28,7 @@ exports.report = function(text, callback, options) {
 		this.parser.pos = endMatch.index + endMatch[0].length;
 	}
 	context.parameterFocus = false;
+	context.placeholderList = undefined;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -61,6 +62,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		}
 	}
 	context.parameterFocus = false;
+	context.placeholderList = undefined;
 	return entry;
 };
 

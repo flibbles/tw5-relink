@@ -260,6 +260,13 @@ it('handles failure for string attributes', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it("recognizes when a title is actually a macro placeholder", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	testText('\\define macro(abc) <$link to="""$A$""" />', true, ['\\define macro() <$link to />'], {wiki: wiki, from: '$A$'});
+	testText('\\define macro(abc def) <$link to="""$abc$""" />', false, undefined, {wiki: wiki, from: '$abc$'});
+});
+
 it("doesn't use macros if forbidden by \\rules", function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
