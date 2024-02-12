@@ -110,7 +110,6 @@ it('overriding definitions in other files', function() {
 });
 
 // TODO: Abridgement in all variable reporting
-// TODO: Whitelist references need better links
 // TODO: Maybe be better about dealing with placeholders in titles?
 // TODO: Make filter blurbs more informative: `[[]tagging]`
 

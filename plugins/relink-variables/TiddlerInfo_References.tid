@@ -104,7 +104,14 @@ title: $:/plugins/flibbles/relink-variables/TiddlerInfo/References
 	<tr class="tc-relink-references">
 <$vars toTitle={{{ [subfilter<.relink-variables-filter-to>] }}}>
 		<td class={{{ tc-relink-references-title [<listItem>relink:impossible<toTitle>then[tc-relink-impossible]] +[join[ ]] }}} >
-			<$link to=<<listItem>>/>
+			<$list
+				variable=whitelist
+				filter="[<listItem>removeprefix[$:/config/flibbles/relink/]split[/]first[]titlecase[]addprefix[$:/plugins/flibbles/relink/ui/configuration/]]"
+				emptyMessage="<$link to=<<listItem>>/>" >
+				<$link to=<<whitelist>>>
+					''//Relink//&#32;whitelist''
+				</$link>
+			</$list>
 		</td>
 </$vars>
 		<td class="tc-relink-references-report">

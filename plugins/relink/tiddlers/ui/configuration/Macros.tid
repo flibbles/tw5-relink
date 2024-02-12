@@ -63,11 +63,14 @@ title: $:/plugins/flibbles/relink/ui/configuration/Macros
 <$text text={{$(lingo-base)$NewParameter/Caption}}/>
 </$button>
 </$reveal>
+
+@@.tc-control-panel
 <$macrocall
 	$name=tables
 	category="macros"
 	header-list="Macro Parameter Type"
 	list-row-macro="row" />
+@@
 \end
 
 {{$:/plugins/flibbles/relink/language/Help/Macros}}
