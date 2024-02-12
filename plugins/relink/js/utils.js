@@ -180,11 +180,14 @@ exports.getDefaultType = function(wiki) {
 	return fieldTypes[defaultType] ? defaultType : "title";
 };
 
-exports.abridgeString = function(string, length) {
+exports.abridgeString = function(string, maxLength, truncLength) {
 	if (typeof string === "string") {
-		length = length || 3;
+		maxLength = maxLength || 3;
+		if (truncLength === undefined) {
+			truncLength = maxLength-3;
+		}
 		string = string.replace(/\s+/g, " ").trim();
-		return (string.length > length)? string.substr(0, length-3) + "..." : string;
+		return (string.length > maxLength)? string.substr(0, truncLength) + "..." : string;
 	}
 	return string;
 };

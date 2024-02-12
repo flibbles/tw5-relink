@@ -19,7 +19,7 @@ exports.report = function(context, macro, callback, options) {
 			blurb = formBlurb(macro, 18);
 		}
 		if (blurb.length > 50) {
-			blurb = formBlurb(macro);
+			blurb = formBlurb(macro, 23, 0);
 		}
 		callback(title, blurb, style);
 	}, options);
@@ -41,7 +41,7 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 };
 
 function wrapValue(value) {
-	if (!/([\/\s<>"'`:])/.test(value) && value.length > 0) {
+	if (!/([\s>"':])/.test(value) && value.length > 0) {
 		return value;
 	} else if (value.indexOf('"') < 0) {
 		return '"' + value + '"';
@@ -54,11 +54,11 @@ function wrapValue(value) {
 	return '"' + value + '"';
 };
 
-function formBlurb(macro, maxLength) {
+function formBlurb(macro, maxLength, truncLength) {
 	var blurb = '';
 	for (var i = 0; i < macro.params.length; i++) {
 		var param = macro.params[i];
-		var value = wrapValue(utils.abridgeString(param.value, maxLength));
+		var value = wrapValue(utils.abridgeString(param.value, maxLength, truncLength));
 		blurb += ' ' + (param.name? param.name + ': ': '') + value;
 	}
 	return blurb;

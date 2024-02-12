@@ -109,7 +109,6 @@ it('overriding definitions in other files', function() {
 	testText('\\define from() In wrong file\n\n<<from>>', false, undefined);
 });
 
-// TODO: Abridgement in all variable reporting
 // TODO: Maybe be better about dealing with placeholders in titles?
 
 it('macrocall wikitext', function() {
@@ -123,9 +122,10 @@ it('macrocall wikitext', function() {
 	testText("<<from nospace>>", true, ['<< nospace>>']);
 	testText("<<from 'some space'>>", true, ['<< "some space">>']);
 	testText('<<from "apost\'">>', true, ['<< "apost\'">>']);
-	testText('<<from "slash/">>', true, ['<< "slash/">>']);
+	testText('<<from "slash/allowed">>', true, ['<< slash/allowed>>']);
 	testText("<<from 'quote\"'>>", true, ["<< 'quote\"'>>"]);
-	testText('<<from "tick`">>', true, ['<< "tick`">>']);
+	testText('<<from "tick`">>', true, ['<< tick`>>']);
+	testText('<<from "less<than">>', true, ['<< less<than>>']);
 	testText('<<from "equals=">>', true, ['<< equals=>>']);
 	testText('<<from "equals:">>', true, ['<< "equals:">>']);
 	// Abridges very long strings
@@ -135,6 +135,8 @@ it('macrocall wikitext', function() {
 	         true, ['<< "This is a very ..." Bwiki: "This is another...">>']);
 	testText("B<<from 'This is a very long string which should get truncated' Bwiki: 'This is another very long string which requires truncation' Cfilter:'Another truncation required here'>>",
 	         true, ['<< ... Bwiki: ... Cfilter: ...>>']);
+	testText("<<from Short Bwiki: 'This is another very long string which requires truncation' Cfilter:'Another truncation required here'>>",
+	         true, ['<< Short Bwiki: ... Cfilter: ...>>']);
 });
 
 it('macrocall wikitext bad names', function() {
