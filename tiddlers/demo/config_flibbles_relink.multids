@@ -6,6 +6,6 @@ fields/example-list: list
 fields/example-title: title
 fields/example-wikitext: wikitext
 fields/Frodo: list
-fields/relink.showcase: fieldnamelist
+fields/showcase: fieldnamelist
 fields/template: title
 macros/ul/tag: title

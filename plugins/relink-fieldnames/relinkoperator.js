@@ -26,6 +26,11 @@ exports.report = function(tiddler, callback, options) {
 			callback(field, ': ' + utils.abridgeString(fields[field], 33), {soft: true});
 		}
 	}
+	// If this is a whitelist entry, report it.
+	if (tiddler.fields.title.substr(0, configPrefix.length) === configPrefix) {
+		var title = tiddler.fields.title.substr(configPrefix.length);
+		callback(title, "#relink " + tiddler.fields.text, {soft: true});
+	}
 };
 
 exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {

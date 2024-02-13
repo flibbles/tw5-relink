@@ -1,12 +1,12 @@
 title: Whitelisting
 
-You can use the <<link-to-config-tab Macros "//Relink// configuration table">> to whitelist <<say-list [tag[Types]lowercase[]]>>. Just go to the correct table and input what you need.
+You can use the <<link-to-config-tab Macros "//Relink// configuration table">> to whitelist any <<say-list [tag[Types]!tag[Supplemental]lowercase[]]>>. Just go to the correct table and input what you need.
 
 A macro may have multiple parameter entries, one for each relinkable parameter. Same with attributes. See each of <<say-list [tag[Construct]] "<$link/>">> for more details.
 
 !! Integrating your plugin with relink
 
-You can configure the <<say-list "[tag[Types]lowercase[]]">> of your plugin to automatically be in the whitelist.
+You can configure the <<say-list "[tag[Types]!tag[Supplementallowercase[]addsuffix[s]]">> of your plugin to automatically be in the whitelist.
 
 To do this, just add tiddlers to your plugin following the naming convention:
 

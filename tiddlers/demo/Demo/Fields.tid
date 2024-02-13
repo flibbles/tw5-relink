@@ -4,7 +4,7 @@ example-list: Relink Frodo BilboBaggins
 example-title: Frodo
 example-wikitext: This [[link to Frodo|Frodo]] will relink.
 list: [[Some Tiddler]] Frodo [[Another Tiddler]]
-relink.showcase: list tags example-filter example-list example-title example-wikitext
+showcase: list tags example-filter example-list example-title example-wikitext
 tags: Demo Frodo
 template: Templates/Showcase
 

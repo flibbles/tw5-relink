@@ -306,7 +306,7 @@ it('updates whitelist', function() {
 		expect(wiki.tiddlerExists(newConf.title)).toBe(true);
 		expect(wiki.getTiddlerText(newConf.title)).toBe(paramType);
 	}
-	test('Dwildcard', 'title', '#relink Dwildcard');
+	test('Dwildcard', 'title', '#relink Dwildcard:title');
 	test('Efilter', 'filter', '#relink Efilter:filter');
 });
 

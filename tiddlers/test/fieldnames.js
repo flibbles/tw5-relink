@@ -207,6 +207,16 @@ it("can relink a tiddler with itself as a field", function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it('reports whitelist entries', function() {
+	const wiki = getWiki();
+	const conf = utils.fieldConf('test', 'filter');
+	wiki.addTiddlers([
+		conf,
+		{title: 'test'}]);
+	expect(utils.getReport(conf.title, wiki).test).toEqual(['#relink filter']);
+	expect(wiki.filterTiddlers('[['+conf.title+']relink:references:hard[]]')).toEqual([]);
+});
+
 it("won't clobber existing whitelist entries", function() {
 	const wiki = getWiki();
 	const fromConf = utils.fieldConf("from", "list");
