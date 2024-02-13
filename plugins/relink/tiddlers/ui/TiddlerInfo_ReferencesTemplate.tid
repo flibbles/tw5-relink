@@ -2,14 +2,19 @@ title: $:/plugins/flibbles/relink/ui/TiddlerInfo/ReferencesTemplate
 
 \whitespace trim
 <tr class="tc-relink-references">
-<td class="tc-relink-references-title">
-<$link to=<<listItem>>/>
+<td class={{{ tc-relink-references-title [<toTitle>!match[]then<listItem>relink:impossible<toTitle>then[tc-relink-impossible]] +[join[ ]] }}} >
+	<$list
+		variable=whitelist
+		filter="[<listItem>removeprefix[$:/config/flibbles/relink/]split[/]first[]titlecase[]addprefix[$:/plugins/flibbles/relink/ui/configuration/]]"
+		emptyMessage="<$link to=<<listItem>>/>" >
+		<$link to=<<whitelist>>>
+			''//Relink//&#32;whitelist''
+		</$link>
+	</$list>
 </td>
 <td class="tc-relink-references-report">
-<$list filter="[<listItem>relink:report<currentTiddler>]">
+	<$list filter="[<listItem>relink:report<currentTiddler>]">
 
-<$text text=<<currentTiddler>> />
-</$list>
-
-</td>
-</tr>
+		<$text text=<<currentTiddler>> />
+	</$list>
+</td></tr>

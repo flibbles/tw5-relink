@@ -39,11 +39,14 @@ title: $:/plugins/flibbles/relink/ui/configuration/Operators
 <$text text={{$(lingo-base)$NewOperator/Caption}}/>
 </$button>
 </$reveal>
+
+@@.tc-control-panel
 <$macrocall
 	$name=tables
 	category="operators"
 	header-list="[[Filter Operator]] [[Operand Type]]"
 	list-row-macro="row" />
+@@
 \end
 
 {{$:/plugins/flibbles/relink/language/Help/Operators}}

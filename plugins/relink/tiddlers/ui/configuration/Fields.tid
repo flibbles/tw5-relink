@@ -39,11 +39,14 @@ title: $:/plugins/flibbles/relink/ui/configuration/Fields
 <$text text={{$(lingo-base)$NewField/Caption}}/>
 </$button>
 </$reveal>
+
+@@.tc-control-panel
 <$macrocall
 	$name=tables
 	category="fields"
 	header-list="[[Field Name]] [[Field Type]]"
 	list-row-macro="row" />
+@@
 \end
 
 {{$:/plugins/flibbles/relink/language/Help/Fields}}

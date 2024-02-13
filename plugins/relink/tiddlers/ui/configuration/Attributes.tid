@@ -62,11 +62,14 @@ title: $:/plugins/flibbles/relink/ui/configuration/Attributes
 <$text text={{$(lingo-base)$NewAttribute/Caption}}/>
 </$button>
 </$reveal>
+
+@@.tc-control-panel
 <$macrocall
 	$name=tables
 	category="attributes"
 	header-list="[[Widget/HTML Element]] Attribute Type"
 	list-row-macro="row" />
+@@
 \end
 
 {{$:/plugins/flibbles/relink/language/Help/Attributes}}
