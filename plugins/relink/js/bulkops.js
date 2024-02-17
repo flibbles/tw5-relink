@@ -36,6 +36,7 @@ function relinkTiddler(fromTitle, toTitle, options) {
 	var failures = [];
 	var indexer = utils.getIndexer(this);
 	var records = indexer.relinkLookup(fromTitle, toTitle, options);
+	var changedTitles = Object.create(null);
 	for (var title in records) {
 		var entries = records[title],
 			changes = Object.create(null),
@@ -63,11 +64,16 @@ function relinkTiddler(fromTitle, toTitle, options) {
 			this.addTiddler(newTiddler);
 			// If the title changed, we need to perform a nested rename
 			if (newTiddler.fields.title !== title) {
-				this.deleteTiddler(title);
-				this.relinkTiddler(title, newTiddler.fields.title,options);
+				changedTitles[title] = newTiddler.fields.title;
 			}
 		}
 	};
+	// Now that the rename is complete, we must now rename any tiddlers that
+	// changed their titles, and thus repeat the process.
+	for (var title in changedTitles) {
+		this.deleteTiddler(title);
+		this.relinkTiddler(title, changedTitles[title], options);
+	}
 	if (failures.length > 0) {
 		var options = $tw.utils.extend(
 			{ variables: {to: toTitle, from: fromTitle},

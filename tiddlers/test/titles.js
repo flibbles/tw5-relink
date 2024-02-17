@@ -119,6 +119,24 @@ it("doesn't clobber existing tiddlers", function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it("doesn't override related changes to the same tiddler", function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'a-test', text: "{{from}} {{from/path}}"},
+		{title: 'from'},
+		{title: 'from/path'},
+		{title: 'z-test', text: "{{from}} {{from/path}}"}]);
+	wiki.renameTiddler('from', 'to');
+	expect(wiki.tiddlerExists('from')).toBe(false);
+	expect(wiki.tiddlerExists('from/path')).toBe(false);
+	expect(wiki.tiddlerExists('to')).toBe(true);
+	expect(wiki.tiddlerExists('to/path')).toBe(true);
+	// We put in two tests because alphabetical order might matter
+	// It changes the order things are updated.
+	expect(wiki.getTiddlerText('a-test')).toBe('{{to}} {{to/path}}');
+	expect(wiki.getTiddlerText('z-test')).toBe('{{to}} {{to/path}}');
+});
+
 it("doesn't override other changes with nested renames", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
