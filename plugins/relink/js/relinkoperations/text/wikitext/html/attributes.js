@@ -11,6 +11,7 @@ var utils = require('../utils.js');
 var refHandler = relinkUtils.getType('reference');
 var filterHandler = relinkUtils.getType('filter');
 var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
+var substition = require("$:/plugins/flibbles/relink/js/utils/substition.js");
 var attributeOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtmlattributes', 'name');
 
 exports.name = "attributes";
@@ -64,18 +65,9 @@ exports.report = function(element, parser, callback, options) {
 			}, options);
 			break;
 		case "substituted":
-			var filterRegex = /\$\{([\S\s]+?)\}\$/g, filter;
-			while (filter = filterRegex.exec(attr.rawValue)) {
-				filterHandler.report(filter[1], function(title, blurb, style) {
-					callback(title, element.tag + ' ' + attributeName + '=`${' + blurb + '}$`', style);
-				}, options);
-			}
-			var varRegex = /\$\(([^\)\$]+)\)\$/g, varMatch;
-			while (varMatch = varRegex.exec(attr.rawValue)) {
-				macrocall.report(options.settings, {name: varMatch[1], params: []}, function(title, blurb, style) {
-					callback(title, element.tag + ' ' + attributeName + '=`$(' + blurb + ')$`', style);
-				}, options);
-			}
+			substition.report(attr.rawValue, function(title, blurb, style) {
+				callback(title, element.tag + ' ' + attributeName + '=`' + blurb + '`', style);
+			}, options);
 			for (var operatorName in attributeOperators) {
 				var operator = attributeOperators[operatorName];
 				var handler = operator.getHandler(element, attr, options);
