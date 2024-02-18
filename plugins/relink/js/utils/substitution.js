@@ -46,11 +46,17 @@ exports.relink = function(string, fromTitle, toTitle, options) {
 		return match;
 	});
 	newValue = newValue.replace(/\$\(([^\)\$]+)\)\$/g, function(match, varname) {
-		var macroEntry = macrocall.relink(options.settings, {name: varname, params: []}, parser.source, fromTitle, toTitle, false, options);
+		var macroEntry = macrocallHandler.relink(options.settings, {name: varname, params: []}, string, fromTitle, toTitle, false, options);
 		if (macroEntry) {
+			entry = entry || {};
 			if (macroEntry.output) {
-				changed = true;
-				match = '$(' + macroEntry.output.attributes.$variable.value + ')$';
+				var newTitle = macroEntry.output.attributes.$variable.value;
+				if (newTitle.indexOf('$') >= 0 || newTitle.indexOf(')') >= 0) {
+					entry.impossible = true;
+				} else {
+					changed = true;
+					match = '$(' + newTitle + ')$';
+				}
 			}
 			if (macroEntry.impossible) {
 				entry.impossible = true;

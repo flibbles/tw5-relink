@@ -11,7 +11,7 @@ var utils = require('../utils.js');
 var refHandler = relinkUtils.getType('reference');
 var filterHandler = relinkUtils.getType('filter');
 var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
-var substition = require("$:/plugins/flibbles/relink/js/utils/substition.js");
+var substitution = require("$:/plugins/flibbles/relink/js/utils/substitution.js");
 var attributeOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtmlattributes', 'name');
 
 exports.name = "attributes";
@@ -65,7 +65,7 @@ exports.report = function(element, parser, callback, options) {
 			}, options);
 			break;
 		case "substituted":
-			substition.report(attr.rawValue, function(title, blurb, style) {
+			substitution.report(attr.rawValue, function(title, blurb, style) {
 				callback(title, element.tag + ' ' + attributeName + '=`' + blurb + '`', style);
 			}, options);
 			for (var operatorName in attributeOperators) {
@@ -111,38 +111,16 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		switch (attr.type) {
 		case 'substituted':
 			if (utils.containsPlaceholders(attr.rawValue)) {
-				var newValue = attr.rawValue.replace(/\$\{([\S\s]+?)\}\$/g, function(match, filter) {
-					var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, options);
-					if (filterEntry) {
-						if (filterEntry.output) {
-							// The only }$ should be the one at the very end
-							if (filterEntry.output.indexOf("}$") < 0) {
-								changed = true;
-								match = '${' + filterEntry.output + '}$';
-							} else {
-								impossible = true;
-							}
-						}
-						if (filterEntry.impossible) {
-							impossible = true;
-						}
+				var subEntry = substitution.relink(attr.rawValue, fromTitle, toTitle, options);
+				if (subEntry) {
+					if (subEntry.output) {
+						attr.rawValue = subEntry.output;
+						changed = true;
 					}
-					return match;
-				});
-				newValue = newValue.replace(/\$\(([^\)\$]+)\)\$/g, function(match, varname) {
-					var macroEntry = macrocall.relink(options.settings, {name: varname, params: []}, parser.source, fromTitle, toTitle, false, options);
-					if (macroEntry) {
-						if (macroEntry.output) {
-							changed = true;
-							match = '$(' + macroEntry.output.attributes.$variable.value + ')$';
-						}
-						if (macroEntry.impossible) {
-							impossible = true;
-						}
+					if (subEntry.impossible) {
+						impossible = true;
 					}
-					return match;
-				});
-				attr.rawValue = newValue;
+				}
 				if (!utils.containsPlaceholders(fromTitle)) {
 					for (var operatorName in attributeOperators) {
 						var operator = attributeOperators[operatorName];
@@ -152,7 +130,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 							if (entry && entry.output) {
 								if (utils.containsPlaceholders(toTitle)) {
 									// If we relinked, but the toTitle can't be in
-									// a substition, then we must fail instead.
+									// a substitution, then we must fail instead.
 									entry.impossible = true;
 								} else {
 									attr.rawValue = entry.output;

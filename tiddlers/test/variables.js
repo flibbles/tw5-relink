@@ -292,7 +292,16 @@ it('updates widgets', function() {
 });
 
 it('updates substition attributes', function() {
+	function testFail() {
+		utils.failures.calls.reset();
+		testText.apply(this, arguments);
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+	};
 	testText("Begin <$text text=`A $(from)$ B` /> End", true, ['<$text text=`$()$` />']);
+	utils.spyFailures(spyOn);
+	testFail("Begin <$text text=`A $(from)$ B` /> End", false, ['<$text text=`$()$` />'], {to: "to$there"});
+	testFail("Begin <$text text=`A $(from)$ B` /> End", false, ['<$text text=`$()$` />'], {to: "to)there"});
+	testFail("Begin <$text text=`A $(from)$ B` /> End", false, ['<$text text=`$()$` />'], {to: "to there"});
 });
 
 it('updates whitelist', function() {
