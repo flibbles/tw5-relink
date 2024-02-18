@@ -1,0 +1,9 @@
+created: 20240218034155571
+
+\rules except wikilink
+
+* //Relink//-fieldnames reports whitelist entries for fields now.
+* Substitution attributes can update their placeholders for //Relink//-variables. I forgot about this when I released the supplemental plugin.
+* Same goes for placeholders in `\define` as well. //Relink//-variables will pick those up too.
+* Fixed issue where //Relink//-titles would fail if a tiddler references two different tiddlers which are both changed as a result of a single relink.
+* Fixed issue with substitution attributes where they could swallow relink errors that occur within nested filter placeholders.
