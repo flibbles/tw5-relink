@@ -70,6 +70,12 @@ exports.report = function(element, parser, callback, options) {
 					callback(title, element.tag + ' ' + attributeName + '=`${' + blurb + '}$`', style);
 				}, options);
 			}
+			var varRegex = /\$\(([^\)\$]+)\)\$/g, varMatch;
+			while (varMatch = varRegex.exec(attr.rawValue)) {
+				macrocall.report(options.settings, {name: varMatch[1], params: []}, function(title, blurb, style) {
+					callback(title, element.tag + ' ' + attributeName + '=`$(' + blurb + ')$`', style);
+				}, options);
+			}
 			for (var operatorName in attributeOperators) {
 				var operator = attributeOperators[operatorName];
 				var handler = operator.getHandler(element, attr, options);
@@ -79,13 +85,14 @@ exports.report = function(element, parser, callback, options) {
 						if (!utils.containsPlaceholders(title)) {
 							blurb = (utils.containsPlaceholders(attr.rawValue) || blurb)? '`' + blurb + '`': '';
 							if (operator.formBlurb) {
-								callback(title, operator.formBlurb(element, attr, blurb, options), style);
+								blurb = operator.formBlurb(element, attr, blurb, options);
 							} else {
 								if (blurb) {
 									blurb = '=' + blurb;
 								}
-								callback(title, element.tag + ' ' + attributeName + blurb, style);
+								blurb = element.tag + ' ' + attributeName + blurb;
 							}
+							callback(title, blurb, style);
 						}
 					}, options);
 					break;
@@ -119,12 +126,27 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 							// The only }$ should be the one at the very end
 							if (filterEntry.output.indexOf("}$") < 0) {
 								changed = true;
+								// TODO: This will have a bug about it
+								//       A relink and a fail will swallow fail
 								return '${' + filterEntry.output + '}$';
 							} else {
 								impossible = true;
 							}
 						}
 						if (filterEntry.impossible) {
+							impossible = true;
+						}
+					}
+					return match;
+				});
+				newValue = newValue.replace(/\$\(([^\)\$]+)\)\$/g, function(match, varname) {
+					var macroEntry = macrocall.relink(options.settings, {name: varname, params: []}, parser.source, fromTitle, toTitle, false, options);
+					if (macroEntry) {
+						if (macroEntry.output) {
+							changed = true;
+							match = '$(' + macroEntry.output.attributes.$variable.value + ')$';
+						}
+						if (macroEntry.impossible) {
 							impossible = true;
 						}
 					}

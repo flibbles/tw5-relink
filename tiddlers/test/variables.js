@@ -291,6 +291,10 @@ it('updates widgets', function() {
 	testFail("$t. o");
 });
 
+it('updates substition attributes', function() {
+	testText("Begin <$text text=`A $(from)$ B` /> End", true, ['<$text text=`$()$` />']);
+});
+
 it('updates whitelist', function() {
 	function test(paramName, paramType, report) {
 		const wiki = new $tw.Wiki();
