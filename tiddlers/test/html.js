@@ -372,22 +372,37 @@ it('mixed failure and replacement with macro attributes', function() {
 	testText("<$link to=`$(from)$`/>", false, undefined, {wiki: wiki, from: "from"});
 	testText("<$link to=`$(from)$`/>", false, undefined, {wiki: wiki, from: "$(from)$"});
 	testText("<$link to=`from $(here)$`/>", false, undefined, {wiki: wiki, from: "from $(here)$"});
-	// Presents of embedded filters in titles
-	testText("<$link to=`${from}$`/>", false, undefined, {wiki: wiki, from: "${from}$"});
-	testText("<$text text=`${[[from here]]}$ ${[tag[from here]]}$`/>", true, ["<$text text=`${}$` />", "<$text text=`${[tag[]]}$` />"], {wiki: wiki});
-	testText("<$text text=`${[[from here]] [tag[from here]]}$`/>", true, ["<$text text=`${}$` />", "<$text text=`${[tag[]]}$` />"], {wiki: wiki});
-	testText("<$text text=`${from}$`/>", true, ["<$text text=`${}$` />"], {wiki: wiki, from: "from", to: "to}}}there"});
-	testFail("<$text text=`${[tag{from here}]}$`/>", false, ["<$text text=`${[tag{}]}$` />"], {wiki: wiki, to: "to}there"});
 	// Not quite substitution in titles
 	testText("<$link to=`$(from here)$`/>", false, undefined, {wiki: wiki, from: "$(from here)$"});
 	// backticks in value
 	testText("<$link to=`from here`/>", "<$link to='to```there'/>", ["<$link to />"],{wiki: wiki, to: "to```there"});
 	testText("<$link to=`from here`/>", "<$link to='to`there`'/>", ["<$link to />"],{wiki: wiki, to: "to`there`"});
-	// substitutions in value
+	// substitutions in string values are ignored
 	testText("<$link to=`from here`/>", "<$link to=to$(d)$there/>", ["<$link to />"],{wiki: wiki, to: "to$(d)$there"});
 	testText("<$link to=`from here`/>", "<$link to='to${d}$ there'/>", ["<$link to />"],{wiki: wiki, to: "to${d}$ there"});
 	// substitution in irrelevant attributes
 	testText("<$link to='from here' class=`myclass` />", true, ['<$link to />'], {wiki: wiki});
+});
+
+(utils.atLeastVersion("5.3.0")? it: xit)('substitution attributes with embedded filters', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.operatorConf('tag'));
+	function testFail() {
+		utils.failures.calls.reset();
+		testText.apply(this, arguments);
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+	};
+	testText("<$link to=`${from}$`/>", false, undefined, {wiki: wiki, from: "${from}$"});
+	testText("<$text text=`${[[from here]]}$ ${[tag[from here]]}$`/>", true, ["<$text text=`${}$` />", "<$text text=`${[tag[]]}$` />"], {wiki: wiki});
+	testText("<$text text=`${[[from here]] [tag[from here]]}$`/>", true, ["<$text text=`${}$` />", "<$text text=`${[tag[]]}$` />"], {wiki: wiki});
+	testText("<$text text=`${from}$`/>", true, ["<$text text=`${}$` />"], {wiki: wiki, from: "from", to: "to}}}there"});
+	utils.spyFailures(spyOn);
+	testFail("<$text text=`${[tag{from here}]}$`/>", false, ["<$text text=`${[tag{}]}$` />"], {wiki: wiki, to: "to}there"});
+	// Mix of success and failure
+	testFail("<$text text=`${[tag{from here}] [[from here]] }$`/>",
+	         "<$text text=`${[tag{from here}] to}there }$`/>",
+	         ["<$text text=`${[tag{}]}$` />", "<$text text=`${}$` />"],
+	         {wiki: wiki, to: "to}there"});
 });
 
 (utils.atLeastVersion("5.3.0")? it: xit)('substitution attributes with actual substitution', function() {

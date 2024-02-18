@@ -126,9 +126,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 							// The only }$ should be the one at the very end
 							if (filterEntry.output.indexOf("}$") < 0) {
 								changed = true;
-								// TODO: This will have a bug about it
-								//       A relink and a fail will swallow fail
-								return '${' + filterEntry.output + '}$';
+								match = '${' + filterEntry.output + '}$';
 							} else {
 								impossible = true;
 							}
