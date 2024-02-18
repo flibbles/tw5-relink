@@ -304,6 +304,22 @@ it('updates substition attributes', function() {
 	testFail("Begin <$text text=`A $(from)$ B` /> End", false, ['<$text text=`$()$` />'], {to: "to there"});
 });
 
+it("gives placeholders a chance to relink", function() {
+	function testFail() {
+		utils.failures.calls.reset();
+		testText.apply(this, arguments);
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+	};
+	testText("\\define test() A-$(from)$-B", true, ['\\define test() $()$']);
+	testText("\\procedure test() A-$(from)$-B", false);
+	testText("\\define test() A-$(from)$-B <<from>>", true, ['\\define test() <<>>', '\\define test() $()$']);
+	// substitute filters don't work here
+	testText("\\define test() A-${[<from>] from }$-B", false);
+	utils.spyFailures(spyOn);
+	testFail("\\define test() A-$(from)$-B", false, ['\\define test() $()$'], {to: 't$o'});
+	testFail("\\define test() A-$(from)$-B", false, ['\\define test() $()$'], {to: 't o'});
+});
+
 it('updates whitelist', function() {
 	function test(paramName, paramType, report) {
 		const wiki = new $tw.Wiki();

@@ -9,11 +9,13 @@ var filterHandler = utils.getType('filter');
 var macrocallHandler = require("./macrocall.js");
 
 exports.report = function(string, callback, options) {
-	var filterRegex = /\$\{([\S\s]+?)\}\$/g, filter;
-	while (filter = filterRegex.exec(string)) {
-		filterHandler.report(filter[1], function(title, blurb, style) {
-			callback(title, '${' + blurb + '}$', style);
-		}, options);
+	if (!options.noFilterSubstitution) {
+		var filterRegex = /\$\{([\S\s]+?)\}\$/g, filter;
+		while (filter = filterRegex.exec(string)) {
+			filterHandler.report(filter[1], function(title, blurb, style) {
+				callback(title, '${' + blurb + '}$', style);
+			}, options);
+		}
 	}
 	var varRegex = /\$\(([^\)\$]+)\)\$/g, varMatch;
 	while (varMatch = varRegex.exec(string)) {
@@ -26,25 +28,28 @@ exports.report = function(string, callback, options) {
 exports.relink = function(string, fromTitle, toTitle, options) {
 	var entry;
 	var changed = false;
-	var newValue = string.replace(/\$\{([\S\s]+?)\}\$/g, function(match, filter) {
-		var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, options);
-		if (filterEntry) {
-			entry = entry || {};
-			if (filterEntry.output) {
-				// The only }$ should be the one at the very end
-				if (filterEntry.output.indexOf("}$") < 0) {
-					changed = true;
-					match = '${' + filterEntry.output + '}$';
-				} else {
+	var newValue = string;
+	if (!options.noFilterSubstitution) {
+		newValue = newValue.replace(/\$\{([\S\s]+?)\}\$/g, function(match, filter) {
+			var filterEntry = filterHandler.relink(filter, fromTitle, toTitle, options);
+			if (filterEntry) {
+				entry = entry || {};
+				if (filterEntry.output) {
+					// The only }$ should be the one at the very end
+					if (filterEntry.output.indexOf("}$") < 0) {
+						changed = true;
+						match = '${' + filterEntry.output + '}$';
+					} else {
+						entry.impossible = true;
+					}
+				}
+				if (filterEntry.impossible) {
 					entry.impossible = true;
 				}
 			}
-			if (filterEntry.impossible) {
-				entry.impossible = true;
-			}
-		}
-		return match;
-	});
+			return match;
+		});
+	}
 	newValue = newValue.replace(/\$\(([^\)\$]+)\)\$/g, function(match, varname) {
 		var macroEntry = macrocallHandler.relink(options.settings, {name: varname, params: []}, string, fromTitle, toTitle, false, options);
 		if (macroEntry) {
