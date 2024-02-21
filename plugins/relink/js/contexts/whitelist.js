@@ -80,6 +80,10 @@ WhitelistContext.prototype.getMacros = function() {
 	return flatten(this.macros);
 };
 
+WhitelistContext.prototype.getException = function(tiddlerTitle) {
+	return this.exceptions[tiddlerTitle];
+};
+
 WhitelistContext.prototype.changed = function(changedTiddlers) {
 	for (var i = 0; i < WhitelistContext.hotDirectories.length; i++) {
 		var dir = WhitelistContext.hotDirectories[i];

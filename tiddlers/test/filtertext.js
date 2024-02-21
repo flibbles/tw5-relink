@@ -16,15 +16,17 @@ beforeEach(function() {
 function testDefault(text, expected, options) {
 	[text, expected, options] = utils.prepArgs(text, expected, options);
 	var type = options.type || "text/vnd.tiddlywiki";
-	var results = utils.relink({text: text, type: type}, Object.assign({target: "$:/DefaultTiddlers"}, options));
+	var results = utils.relink({text: text, type: type}, options);
 	expect(results.tiddler.fields.text).toEqual(expected);
 	expect(utils.failures).toHaveBeenCalledTimes(options.fails || 0);
 };
 
-it('manages $:/DefaultTiddlers', function() {
-	testDefault("[[from here]]");
-	testDefault("[tag[from here]]");
-	testDefault("from", "to", {from: "from", to: "to"});
+it('manages exception tiddlers like $:/DefaultTiddlers', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.exceptionConf('test'));
+	testDefault("[[from here]]", {wiki: wiki});
+	testDefault("[tag[from here]]", {wiki: wiki});
+	testDefault("from", "to", {from: "from", to: "to", wiki: wiki});
 });
 
 it('manages tiddlers with text/x-tiddler-filter type', function() {
@@ -38,7 +40,9 @@ it('preserves whitespace', function() {
 
 it('throws error in case of failure', function() {
 	var text = "[tag[from here]]";
-	testDefault(text, text, {to: "brackets[[in]]title", fails: 1});
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.exceptionConf('test'));
+	testDefault(text, text, {to: "brackets[[in]]title", fails: 1, wiki: wiki});
 });
 
 });

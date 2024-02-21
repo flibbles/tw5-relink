@@ -43,6 +43,13 @@ Context.prototype.getMacros = function() {
 	return this.parent.getMacros();
 };
 
+/* Exceptions are tiddlers that have text/vnd.tiddlywiki type, but should
+ * not be treated as such.
+ */
+Context.prototype.getException = function(tiddlerTitle) {
+	return this.parent.getException(tiddlerTitle);
+};
+
 Context.prototype.allowPrettylinks = function() {
 	return this.parent.allowPrettylinks();
 };

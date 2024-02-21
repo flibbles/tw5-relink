@@ -188,6 +188,14 @@ exports.operatorConf = function(operator, type, argNumber) {
 	return {title: prefix + operator + argSuffix, text: type};
 };
 
+exports.exceptionConf = function(title, type) {
+	var prefix =  "$:/config/flibbles/relink/exceptions/";
+	if (type === undefined) {
+		type = "text/x-tiddler-filter";
+	}
+	return {title: prefix + title, text: type};
+};
+
 exports.toUpdateConf = function(filter) {
 	return {title: "$:/config/flibbles/relink/to-update", text: filter};
 };

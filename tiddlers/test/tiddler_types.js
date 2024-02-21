@@ -52,8 +52,10 @@ it('x-tiddler-filter types', function() {
 
 it('$:/DefaultTiddlers', function() {
 	const wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.operatorConf('tag'));
-	wiki.addTiddler({title: '$:/DefaultTiddlers', text: '[tag[from]]'});
+	wiki.addTiddlers([
+		utils.operatorConf('tag'),
+		utils.exceptionConf('$:/DefaultTiddlers'),
+		{title: '$:/DefaultTiddlers', text: '[tag[from]]'}]);
 	// We test 'from' directly because relink-titles adds a useless '$:' option
 	expect(utils.getReport('$:/DefaultTiddlers', wiki).from).toEqual(['[tag[]]']);
 	wiki.renameTiddler('from', 'to');
