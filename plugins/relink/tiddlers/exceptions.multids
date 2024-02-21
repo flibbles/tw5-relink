@@ -1,5 +1,5 @@
 title: $:/config/flibbles/relink/exceptions/$:/
 
-DefaultTiddlers: text/x-tiddler-filter
-config/FileSystemPaths: text/x-tiddler-filter
-config/FileSystemExtensions: text/x-tiddler-filter
+DefaultTiddlers: application/x-tiddler-filter
+config/FileSystemPaths: application/x-tiddler-filter
+config/FileSystemExtensions: application/x-tiddler-filter

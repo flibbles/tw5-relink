@@ -10,7 +10,9 @@ This relinks tiddlers which contain a tiddler list as their body.
 
 var listHandler = require("$:/plugins/flibbles/relink/js/utils").getType('list');
 
-exports.type = 'text/x-tiddler-list';
+exports.type = 'application/x-tiddler-list';
+
+exports.aliases = ['text/x-tiddler-list'];
 
 exports.report = listHandler.report;
 exports.relink = listHandler.relink;

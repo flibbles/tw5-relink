@@ -15,6 +15,16 @@ exports.name = 'text';
 
 var textOperators = utils.getModulesByTypeAsHashmap('relinktext', 'type');
 
+// Set up any aliases, mostly for backward-compatibility
+$tw.utils.each(Object.keys(textOperators), function(type) {
+	var operator = textOperators[type];
+	if(operator.aliases) {
+		for(var index = 0; index < operator.aliases.length; index++) {
+			textOperators[operator.aliases[index]] = operator;
+		}
+	}
+});
+
 // These are deprecated. Don't use them.
 var oldTextOperators = utils.getModulesByTypeAsHashmap('relinktextoperator', 'type');
 

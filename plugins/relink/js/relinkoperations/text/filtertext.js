@@ -11,7 +11,9 @@ wikitext.
 
 var filterHandler = require("$:/plugins/flibbles/relink/js/utils").getType('filter');
 
-exports.type = 'text/x-tiddler-filter';
+exports.type = 'application/x-tiddler-filter';
+
+exports.aliases = ['text/x-tiddler-filter'];
 
 exports.report = filterHandler.report;
 exports.relink = filterHandler.relink;

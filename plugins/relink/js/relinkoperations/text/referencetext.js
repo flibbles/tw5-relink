@@ -10,7 +10,9 @@ This relinks tiddlers which contain a tiddler reference as their body.
 
 var refHandler = require("$:/plugins/flibbles/relink/js/utils").getType('reference');
 
-exports.type = 'text/x-tiddler-reference';
+exports.type = 'application/x-tiddler-reference';
+
+exports.aliases = ['text/x-tiddler-reference'];
 
 exports.report = refHandler.report;
 exports.relink = refHandler.relink;

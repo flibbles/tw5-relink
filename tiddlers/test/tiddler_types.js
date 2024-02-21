@@ -37,7 +37,21 @@ it('javascript body is not treated like wikitext', function() {
 	expect(utils.getText('test.js', wiki)).toEqual(text);
 });
 
-it('x-tiddler-filter types', function() {
+it('application/x-tiddler-filter types', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.operatorConf('tag'));
+	wiki.addTiddler(utils.operatorConf('title'));
+	wiki.addTiddler({title: 'op', type: 'application/x-tiddler-filter', text: '[tag[from]]'});
+	wiki.addTiddler({title: 'raw', type: 'application/x-tiddler-filter', text: '"from"'});
+	expect(utils.getReport('op', wiki)).toEqual({from: ['[tag[]]']});
+	expect(utils.getReport('raw', wiki)).toEqual({from: ['']});
+	wiki.renameTiddler('from', 'to');
+	expect(utils.getText('op', wiki)).toEqual('[tag[to]]');
+	expect(utils.getText('raw', wiki)).toEqual('"to"');
+});
+
+// This is a legacy type
+it('text/x-tiddler-filter types', function() {
 	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('tag'));
 	wiki.addTiddler(utils.operatorConf('title'));
@@ -62,18 +76,18 @@ it('$:/DefaultTiddlers', function() {
 	expect(utils.getText('$:/DefaultTiddlers', wiki)).toEqual('[tag[to]]');
 });
 
-it("text/x-tiddler-title types", function() {
+it("application/x-tiddler-title types", function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: 'test', text: 'from here', type: "text/x-tiddler-title"});
+	wiki.addTiddler({title: 'test', text: 'from here', type: "application/x-tiddler-title"});
 	expect(utils.getReport('test', wiki)).toEqual({'from here': ['']});
 	wiki.renameTiddler('from here', 'to there');
 	expect(wiki.getTiddler('test').fields.text).toEqual('to there');
 	expect(utils.getReport('test', wiki)).toEqual({'to there': ['']});
 });
 
-it("text/x-tiddler-list types", function() {
+it("application/x-tiddler-list types", function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: 'test', text: '[[from here]] from', type: "text/x-tiddler-list"});
+	wiki.addTiddler({title: 'test', text: '[[from here]] from', type: "application/x-tiddler-list"});
 	expect(utils.getReport('test', wiki)).toEqual({'from here': [''], from: ['']});
 	wiki.renameTiddler('from', 'to');
 	expect(wiki.getTiddler('test').fields.text).toEqual('[[from here]] to');
@@ -85,9 +99,9 @@ it("text/x-tiddler-list types", function() {
 	expect(wiki.getTiddler('test').fields.text).toEqual('[[from here]] to');
 });
 
-it("text/x-tiddler-reference types", function() {
+it("application/x-tiddler-reference types", function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: 'test', text: 'from here!!field', type: "text/x-tiddler-reference"});
+	wiki.addTiddler({title: 'test', text: 'from here!!field', type: "application/x-tiddler-reference"});
 	expect(utils.getReport('test', wiki)).toEqual({'from here': ['!!field']});
 	wiki.renameTiddler('from here', 'to there');
 	expect(wiki.getTiddler('test').fields.text).toEqual('to there!!field');

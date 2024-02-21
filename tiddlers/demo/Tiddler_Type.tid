@@ -10,10 +10,10 @@ If you have the [[supplemental Relink-Markdown plugin|Plugins/Markdown]], all `t
 
 Sometimes tiddlers are used to store information instead of wikitext, particularly config tiddlers. They may store a filter, or a simple title, and it's important not only to still relink them, but to prevent them by being wrongfully relinked if they're interpretted as wikitext. For them, //Relink// defines four custom tiddler types:
 
-* text/x-tiddler-filter
-* text/x-tiddler-list
-* text/x-tiddler-reference
-* text/x-tiddler-title
+* application/x-tiddler-filter
+* application/x-tiddler-list
+* application/x-tiddler-reference
+* application/x-tiddler-title
 
 Tiddlers assigned one of these types will be relinked as a filter, list, reference, or a title respectively.
 
