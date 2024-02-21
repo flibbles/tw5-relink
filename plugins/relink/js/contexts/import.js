@@ -11,8 +11,11 @@ function ImportContext(wiki, parent, filter) {
 	this.wiki = wiki;
 	var importWidget = createImportWidget(filter, this.wiki, this.parent.widget);
 	this._compileList(importWidget.tiddlerList, importWidget.variables);
+	// this.widget is where we ask for macro definitions.
 	// This only works if only one filter is imported
 	this.widget = this.getBottom(importWidget);
+	// We keep this one because it's where we need to test for changes from.
+	this.importWidget = importWidget
 	// Trickle this up, so that any containing tiddlercontext knows that this
 	// tiddler does some importing, and must be checked regularly.
 	parent.hasImports(true);
@@ -23,7 +26,7 @@ exports.import = ImportContext;
 ImportContext.prototype = new WidgetContext();
 
 ImportContext.prototype.changed = function(changes) {
-	return this.widget && this.widget.refresh(changes)
+	return this.importWidget && this.importWidget.refresh(changes)
 };
 
 function createImportWidget(filter, wiki, parent) {

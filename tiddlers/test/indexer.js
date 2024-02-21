@@ -127,6 +127,20 @@ it("detects changes to global macro definitions", async function() {
 	expect(getReport('test', wiki).x).toEqual(['<<M arg>>']);
 });
 
+it('detects changes to global macros when <$set> involved', async function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'A', tags: '$:/tags/Macro', text: '<$set name=macroA value=A>\n\n</$set>'},
+		{title: 'C', tags: '$:/tags/Macro', text: '<$set name=macroC value=C>\n\n</$set>'},
+		{title: 'from'}
+	]);
+	expect(utils.getReport('test', wiki)).toBeUndefined();
+	await utils.flush();
+	wiki.addTiddler({title: 'B', tags: '$:/tags/Macro', text: '\\relink macro arg\n\\procedure macro(arg) $arg$'});
+	wiki.addTiddler({title: 'test', text: '<<macro from>>'});
+	expect(utils.getReport('test', wiki).from).toEqual(['<<macro arg>>']);
+});
+
 it("updates when import tiddler list would grow", function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
