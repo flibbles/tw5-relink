@@ -1,0 +1,14 @@
+created: 20240221025320294
+
+\rules except wikilink
+
+Did you know that you can create `<$set>` widgets that can be imported using <<tag $:/tags/Global>>?
+
+No you didn't, because only a chosen few were ever made privy to this secret trick. It's a nice feature to use if you need to define a global macro using a filter, or if you want to make your wikitext easily misunderstood and hard-to-debug.
+
+Whatever your reason, //Relink// won't stand in your way.
+
+* Fixed issue where the //Relink// indexer could desynch if `<$set>` widgets were ever imported into global context.
+* Also created mechanism for specifying tiddlers which should be handled differently. By default, this includes `$:/DefaultTiddlers`, `$:/config/FileSystemPaths`, and `$:/config/FileSystemExtensions`, but other plugins can now add to this list.
+* Or you can use the special types `applications/x-tiddler-[type]` where type can be `filter`, `reference`, `list`, or `title`. This mechanism used to be for `text/x-tiddler-[type]`, but since those types aren't meant to be seen by end users, but rather by transcluding tiddlers, they're more appropriate as application types.
+** The old types are still supported if you did use them, but they're now undocumented.
