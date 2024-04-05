@@ -1,0 +1,5 @@
+created: 20240221025320294
+
+\rules except wikilink
+
+Fixed issue that arose with the last major release that caused viewing the TiddlerInfo References panel to be so slow. It wasn't caching correctly. Now it is.

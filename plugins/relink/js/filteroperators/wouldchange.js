@@ -30,7 +30,7 @@ exports.impossible = function(source,operator,options) {
 	var from = options.widget && options.widget.getVariable("currentTiddler"),
 		to = operator.operand,
 		results = [];
-	if (from !== to) {
+	if (to && from !== to) {
 		var indexer = utils.getIndexer(options.wiki),
 			records = indexer.relinkLookup(from, to, options);
 		source(function(tiddler, title) {
