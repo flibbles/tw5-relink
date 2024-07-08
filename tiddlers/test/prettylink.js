@@ -163,5 +163,13 @@ it("tricky report situations", function() {
 	test("[[ from ]]", {' from ': ["[[ from ]]"]});
 });
 
+it("ignores placeholders", function() {
+	testText("\\define macro(B) [[$A$]]", true, ["\\define macro() [[$A$]]"], {from: "$A$"});
+	testText("\\define macro(A) [[$A$]]", false, undefined, {from: "$A$"});
+	testText("\\define macro(B) [[from here]]", true, ["\\define macro() [[from here]]"], {to: "$A$"});
+	utils.spyFailures(spyOn);
+	testText("\\define macro(A) [[from here]]", false, ["\\define macro() [[from here]]"], {to: "$A$"});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+});
 
 });
