@@ -110,4 +110,16 @@ it('impossible in filters', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+// Tests for issue #54
+it('does not return no-op relink entries when at top level', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddlers([
+		{title: 'related', text: '<%if [tag[from]] %>Content<%endif%>'},
+		{title: 'unrelated', text: '<%if [tag[unrelated]] %>Content<%endif%>'},
+		{title: 'from'},
+		utils.operatorConf('tag')]);
+	var changed = utils.wouldChange(wiki, 'from', 'to');
+	expect(changed).toEqual(['related']);
+});
+
 });

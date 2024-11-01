@@ -28,16 +28,6 @@ function dirDisabler(value) {
 	return disabler('$:/plugins/flibbles/relink-titles/rules/directory', value);
 };
 
-// This returns a list of titles that would change given a certain name change
-// More importantly, this caches the results in the indexer.
-function wouldChange(wiki, from, to) {
-	var parent = wiki.makeWidget(null, {});
-	var widget = wiki.makeWidget(null, {parentWidget: parent});
-	parent.setVariable('currentTiddler', from);
-	parent.setVariable('to', to);
-	return wiki.filterTiddlers('[relink:wouldchange<to>]', widget);
-};
-
 describe('titles', function() {
 
 beforeEach(function() {
@@ -92,7 +82,7 @@ it("doesn't wipe the content of changed tiddler", function() {
 			{title: 'from here/path'},
 			{title: 'from here/path/end', text: 'Not clobbered'}]);
 		// Pre-cache the results of the rename
-		wouldChange(wiki, 'from here', 'to there');
+		utils.wouldChange(wiki, 'from here', 'to there');
 		relinkCall(wiki);
 		wiki.relinkTiddler('from here', 'to there', options);
 		expect(console.log).toHaveBeenCalledTimes(2);

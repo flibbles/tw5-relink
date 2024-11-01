@@ -101,6 +101,17 @@ Object.defineProperty(exports, 'warnings', {
 	get: function() { return language.warn; }
 });
 
+/** This returns a list of titles that would change given a certain name change
+ *  More importantly, this caches the results in the indexer.
+ */
+exports.wouldChange = function(wiki, from, to) {
+	var parent = wiki.makeWidget(null, {});
+	var widget = wiki.makeWidget(null, {parentWidget: parent});
+	parent.setVariable('currentTiddler', from);
+	parent.setVariable('to', to);
+	return wiki.filterTiddlers('[relink:wouldchange<to>]', widget);
+};
+
 /** This allows some method to be swapped out with a mock method for the
  *  purpose of testing a block. Afterward, it replaces the old method.
  */

@@ -58,7 +58,7 @@ exports.report = function(text, callback, options) {
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var conditionEntry = {};
+	var conditionEntry = undefined;
 	var builder = new Rebuilder(text, this.match.index);
 	var reEndString = "\\<\\%\\s*(endif)\\s*\\%\\>|\\<\\%\\s*(else)\\s*\\%\\>|\\<\\%\\s*(elseif)\\s+([\\s\\S]+?)\\%\\>";
 	this.parser.pos = this.terminateIfMatch.index + this.terminateIfMatch[0].length;

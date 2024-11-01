@@ -303,13 +303,7 @@ it("returns empty object for unreferenced tiddlers", function() {
 // RELINK REFERENCES
 describe("relink results", function() {
 
-function wouldChange(wiki, from, to) {
-	var parent = wiki.makeWidget(null, {});
-	var widget = wiki.makeWidget(null, {parentWidget: parent});
-	parent.setVariable('currentTiddler', from);
-	parent.setVariable('to', to);
-	return wiki.filterTiddlers('[relink:wouldchange<to>]', widget);
-};
+var wouldChange = utils.wouldChange;
 
 it('calls getRelinkResults no more than necessary', function() {
 	var wiki = new $tw.Wiki();
