@@ -1,0 +1,5 @@
+created: 20241101154646263
+
+\rules except wikilink
+
+Fixed issue #54 where top-level conditional syntax would cause Relink to incorrectly indicate that the tiddler would change for EVERY relink in the wiki.
