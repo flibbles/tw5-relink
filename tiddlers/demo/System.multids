@@ -7,7 +7,7 @@ config/TiddlerInfo/Mode: sticky
 # This makes it so my hypothetical config tiddlers can render
 config/ViewTemplateBodyFilters/system: [prefix[$:/boot/]] [prefix[$:/config/]] [prefix[$:/core/]!field:title[$:/core/readme]!field:title[$:/core/icon]] [prefix[$:/info/]] [prefix[$:/language/]] [prefix[$:/languages/]] [prefix[$:/snippets/]] [prefix[$:/state/]] [prefix[$:/status/]] [prefix[$:/info/]] [prefix[$:/temp/]] +[limit[1]then[$:/core/ui/ViewTemplate/body/code]] -[prefix[$:/config/Hypothetical]]
 config/WikiParserRules/Inline/wikilink: enable
-DefaultTiddlers: Relink Demo Frodo
+DefaultTiddlers: Relink Demo Frodo [[Other plugins by Flibbles]]
 SiteTitle: Relink
 SiteSubtitle: flexibility when relinking renamed tiddlers
 themes/tiddlywiki/vanilla/options/sidebarlayout: fluid-fixed
