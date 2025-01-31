@@ -23,7 +23,7 @@
 				"-$:/DefaultTiddlers -$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/tiddlywiki/highlight -$:/plugins/flibbles/uglify",
 			"--test"
 		],
-		"demo": [
+		"index": [
 			"--deletetiddlers",
 				"$:/config/flibbles/uglify/compress",
 			"--setfield",
