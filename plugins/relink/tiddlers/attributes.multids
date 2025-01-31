@@ -51,6 +51,7 @@ $link/to: title
 $link/tooltip: wikitext
 $linkcatcher/actions: wikitext
 $list/filter: filter
+$list/join: wikitext
 $list/template: title
 $list/editTemplate: title
 $list/emptyMessage: wikitext

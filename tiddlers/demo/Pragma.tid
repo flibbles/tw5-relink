@@ -6,6 +6,8 @@ Relink manages relevant pragma statements.
 
 ;`\define`
 : Relink processes the contents of a define pragma like any other inline wikitext. However, it will process differently any macros which Relink created while resolving another relink on the page. For instance, if it created
+;`\procedure`, `\function`, `\widget`
+: Relink provides full support for the pragma introduced in TiddlyWiki V5.3.0. You are still able to use Relink with an earlier version of TiddlyWiki.
 : `\define relink-1() My "complicated" [[Tiddler]]`
 : it will update the definition if that weird tiddler is ever renamed again.
 ;`\import`
