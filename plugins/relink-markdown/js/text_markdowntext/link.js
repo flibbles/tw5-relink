@@ -31,7 +31,7 @@ exports.findNextMatch = function(startPos) {
  * Currently, it doesn't properly set match[0]. No need as of yet.
  * 1. "!"
  * 2. caption
- * 3. "\s*#?"
+ * 3. "\s*<?#?"
  * 4. "link"
  * 5. "\s*'tooltip'"
  */
@@ -47,24 +47,50 @@ exports.matchLink = function(text, pos) {
 		if (caption === undefined) {
 			continue;
 		}
-		var linkStart = pos + caption.length+2;
-		if (text.charAt(linkStart) !== '(') {
+		var subPos = pos + caption.length+2;
+		if (text.charAt(subPos) !== '(') {
 			continue;
 		}
+		++subPos; // Skip over that '('
+		// Now we need to find the preamble before the link.
+		var preambleRegExp = /(\s*\<\s*#?)|(\s*#?)/g;
+		preambleRegExp.lastIndex = subPos;
+		var preambleMatch = preambleRegExp.exec(text);
+		subPos += preambleMatch[0].length;
+		// Now that we know what kind of link we have, let's try and get it.
+		var link, closingBracket = '';
+		if (preambleMatch[1]) { // We have the "#<.. ..>" style link
+			var bracketRegExp = /([^\>\n\r]+?)(\s*>)/g;
+			bracketRegExp.lastIndex = subPos;
+			var bracketMatch = bracketRegExp.exec(text);
+			if (!bracketMatch) {
+				continue;
+			}
+			link = bracketMatch[1];
+			subPos = bracketRegExp.lastIndex;
+			closingBracket = bracketMatch[2];
+		} else { // We have the "#..." style link
+			link = extractUnquotedLink(text, subPos);
+			if (!link) {
+				continue;
+			}
+			subPos += link.length;
+		}
 		// match[1] and match[2] are the "!" and "caption", filled in later.
-		var regExp = /\(()()(\s*#?)((?:[^\s\(\)]|\([^\s\(\)]*\))+)((?:\s+(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|\([^)]*\)))?\s*)\)/g;
-		regExp.lastIndex = linkStart;
-		match = regExp.exec(text);
-		if (match && match.index === linkStart && utils.indexOfParagraph(match[0]) < 0) {
-			match[2] = caption;
+		var tooltipRegExp = /((?:\s+(?:'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|\([^)]*\)))?\s*)\)/g;
+		tooltipRegExp.lastIndex = subPos;
+		var tooltipMatch = tooltipRegExp.exec(text);
+		if (tooltipMatch
+		&& tooltipMatch.index === subPos
+		&& utils.indexOfParagraph(tooltipMatch[0]) < 0) {
+			match = [null, "", caption, preambleMatch[0], link, closingBracket + tooltipMatch[1]];
 			if (text.charAt(pos-1) === "!") {
 				match.index = pos-1;
 				match[1] = "!";
 			} else {
 				match.index = pos;
 			}
-		} else {
-			match = undefined;
+			match[0] = text.substring(match.index, tooltipRegExp.lastIndex);
 		}
 	} while (!match);
 	return match;
@@ -78,7 +104,7 @@ exports.report = function(text, callback, options) {
 		hash = isImage ? em[3].trim() : '#',
 		link = em[4],
 		hasHash = em[3].lastIndexOf('#') >= 0;
-	this.parser.pos = em.index + em[1].length + caption.length + em[0].length + 2;
+	this.parser.pos = em.index + em[0].length;
 	if (!isImage) {
 		markdown.report(caption, function(title, blurb, style) {
 			callback(title, prefix + '[' + (blurb || '') + '](' + hash + link + ')', style);
@@ -106,7 +132,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		caption = em[2],
 		isImage = (em[1] === '!'),
 		link = em[4];
-	this.parser.pos = em.index + em[1].length + caption.length + em[0].length + 2;
+	this.parser.pos = em.index + em[0].length;
 	if (!isImage) {
 		var newCaption = markdown.relink(caption, fromTitle, toTitle, options);
 		if (newCaption) {
@@ -183,4 +209,31 @@ exports.indexOfClose = function(text, pos, openChar, closeChar) {
 		open = text.indexOf(openChar, open+1);
 	} while (open >= 0 && open <= close);
 	return close;
+};
+
+function extractUnquotedLink(text, pos) {
+	var p = pos;
+	var depth = 0;
+	while (true) {
+		var c = text.charAt(p);
+		if (!c) {
+			return undefined;
+		} else if (c === '(') {
+			depth++;
+		} else if(c === ')') {
+			if (depth === 0) {
+				return text.substring(pos, p);
+			}
+			depth--;
+		} else if (/\s/.test(c)) {
+			if (depth === 0) {
+				return text.substring(pos, p);
+			}
+			return undefined;
+		}
+		++p;
+		if (p > 10000) {
+			throw "Infinite loop";
+		}
+	}
 };

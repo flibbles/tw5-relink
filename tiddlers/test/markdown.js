@@ -51,6 +51,19 @@ it('markdown links', function() {
 	test("[here](#<$link to='from here'/>)", process, ['<$link to />'], {from: 'from here'});
 });
 
+// Tests issue #55
+it('markdown links with weird brackets', function() {
+	test("link to [](<#from>)", true, ['[](#)']);
+	test("link to [](<   #from>)", true, ['[](#)']);
+	test("link to [](<#from   >)", true, ['[](#)']);
+	test("link to [](   <   #from>)Content", true, ['[](#)']);
+	test("link to [](<#   from>)", false, undefined);
+	test("link to [](<#fr)))om>)", true, ['[](#)'], {from: "fr)))om"});
+	test("link to [caption](<#from>)", true, ['[caption](#)']);
+	test("link to [caption](<#from> 'tooltip')", true, ['[caption](#)']);
+	test("link to [](<#from here>)", "link to [](<#to%20there>)", ['[](#)'], {from: "from here", to: "to there"});
+});
+
 it('links with the text/x-markdown type', function() {
 	test("[Caption](#from)", process, ['[Caption](#)'], {type: 'text/x-markdown'});
 });
@@ -187,7 +200,7 @@ it('markdown links with parenthesis', function() {
 	test("[c](#from)", "[c](#to(%28there)%29)", ['[c](#)'], {to: "to((there))"});
 	test("[c](#from)", "[c](#to(%28th)(ere)%29)", ['[c](#)'], {to: "to((th)(ere))"});
 	// Ansel's supports this, but tw/markdown doesn't
-	//test("[caption](#from(((here))))", {from: "from(((here)))", to: "(((to)))ther"});
+	//test("[caption](#from(((here))))", true, ['[caption](#)'], {from: "from(((here)))", to: "(((to)))there"});
 });
 
 it('markdown links with mismatched parenthesis', function() {
