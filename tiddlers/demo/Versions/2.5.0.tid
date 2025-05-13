@@ -1,0 +1,6 @@
+created: 20250513034110784
+
+\rules except wikilink
+
+* Created the `relinkprefix` moduletype, which allows 3rd party plugins to introduce relinking rules for tiddlers that have certain prefixes. This way keeps it clean and trim. This feature is largely in anticipation for TW5-Graph, which makes heavy use of this moduletype.
+* Fixed issue #57 where clearing the title in the EditTemplate would cause the "Will be renamed" list to become corrupt.
