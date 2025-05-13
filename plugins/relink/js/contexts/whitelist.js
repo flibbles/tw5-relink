@@ -88,7 +88,7 @@ WhitelistContext.prototype.changed = function(changedTiddlers) {
 	for (var i = 0; i < WhitelistContext.hotDirectories.length; i++) {
 		var dir = WhitelistContext.hotDirectories[i];
 		for (var title in changedTiddlers) {
-			if (title.substr(0, dir.length) === dir) {
+			if (utils.startsWith(title, dir)) {
 				return true;
 			}
 		}
@@ -106,7 +106,7 @@ function build(settings, wiki) {
 		settings[name] = Object.create(null);
 	}
 	wiki.eachShadowPlusTiddlers(function(tiddler, title) {
-		if (title.substr(0, prefix.length) === prefix) {
+		if (utils.startsWith(title, prefix)) {
 			var remainder = title.substr(prefix.length);
 			var category = root(remainder);
 			var factory = settingsGenerators[category];

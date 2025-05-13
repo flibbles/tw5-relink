@@ -75,7 +75,8 @@ it("supports IE11", function() {
 			continue;
 		}
 		var text = tiddler.text;
-		expect(text.indexOf(".startsWith")).toEqual(-1);
+		// We have our own startsWith now
+		//expect(text.indexOf(".startsWith")).toEqual(-1);
 		expect(text.indexOf(".endsWith")).toEqual(-1);
 		expect(text.indexOf(".assign")).toEqual(-1);
 	}

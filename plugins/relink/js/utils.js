@@ -220,6 +220,17 @@ exports.determineQuote = function(text, param) {
 	return '';
 };
 
+/**We use this startsWith instead of the core utils one, because this one
+ * uses native code if it can.
+ */
+exports.startsWith = (String.prototype.startsWith)?
+	function(str, search) {
+		return str.startsWith(search);
+	}:
+	function(str, search) {
+		return str.substring(0, search.length) === search;
+	};
+
 var fieldTypes;
 
 function getFieldTypes() {

@@ -17,19 +17,12 @@ exports.after = ['fields'];
 
 var utils = require("./utils.js");
 
-var configPrefix = "$:/config/flibbles/relink/fields/";
-
 exports.report = function(tiddler, callback, options) {
 	var fields = tiddler.fields;
 	for (var field in fields) {
 		if (!utils.isReserved(field, options)) {
 			callback(field, ': ' + utils.abridgeString(fields[field], 33), {soft: true});
 		}
-	}
-	// If this is a whitelist entry, report it.
-	if (tiddler.fields.title.substr(0, configPrefix.length) === configPrefix) {
-		var title = tiddler.fields.title.substr(configPrefix.length);
-		callback(title, "#relink " + tiddler.fields.text, {soft: true});
 	}
 };
 
@@ -55,13 +48,5 @@ exports.relink = function(tiddler, fromTitle, toTitle, changes, options) {
 			changes[toTitle] = {output: tiddler.fields[fromTitle]};
 			changes[fromTitle] = {output: null};
 		}
-	}
-	// If this is a whitelist entry for the fromTitle field, update it.
-	if (tiddler.fields.title === configPrefix + fromTitle) {
-		var newTitle = configPrefix + toTitle;
-		// Make sure we wouldn't be deleting an existing whitelist entry.
-		changes.title = (!options.wiki.tiddlerExists(newTitle)) ?
-			{ output: newTitle }:
-			{ impossible: true };
 	}
 };
