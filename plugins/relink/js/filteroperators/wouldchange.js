@@ -18,7 +18,7 @@ exports.wouldchange = function(source,operator,options) {
 	var from = options.widget && options.widget.getVariable("currentTiddler"),
 		to = operator.operand,
 		indexer = utils.getIndexer(options.wiki);
-	if (from !== to) {
+	if (to && from !== to) {
 		var records = indexer.relinkLookup(from, to, options);
 		return Object.keys(records);
 	} else {

@@ -7,15 +7,19 @@ Tests the relink indexer
 var utils = require("test/utils");
 var operators = $tw.modules.getModulesByTypeAsHashmap('relinkoperator');
 var contexts = $tw.modules.applyMethods('relinkcontext');
+var wiki;
 
 describe("indexer", function() {
+
+beforeEach(function() {
+	wiki = new $tw.Wiki();
+});
 
 describe("references", function() {
 
 var getReport = utils.getReport;
 
 it("caches report results when indexing", function() {
-	var wiki = new $tw.Wiki();
 	spyOn(operators.text, 'report').and.callThrough();
 	wiki.addTiddlers([
 		utils.operatorConf("title"),
@@ -36,7 +40,7 @@ it("caches report results when indexing", function() {
 });
 
 it("globally caches report results when not indexing", function() {
-	var wiki = new $tw.Wiki({enableIndexers: []});
+	wiki = new $tw.Wiki({enableIndexers: []});
 	spyOn(operators.text, 'report').and.callThrough();
 	wiki.addTiddler({title: 'test', text: '[[x]]'});
 	expect(getReport('test', wiki)).toEqual({x: ['[[x]]']});
@@ -49,7 +53,6 @@ it("globally caches report results when not indexing", function() {
 });
 
 it("detects changes to configuration", async function() {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'test', filter: '[tag[x]]'});
 	expect(getReport('test', wiki).x).toBeUndefined();
 	wiki.addTiddler(utils.operatorConf('tag'));
@@ -59,7 +62,6 @@ it("detects changes to configuration", async function() {
 });
 
 it("only checks tiddler contexts if and when they need checking", function() {
-	var wiki = new $tw.Wiki();
 	spyOn(contexts.tiddler.prototype, 'changed').and.callThrough();
 	wiki.addTiddlers([
 		{title: 'A', text: '\\import [tag[macro]]\n<<M x>>'},
@@ -76,7 +78,6 @@ it("only checks tiddler contexts if and when they need checking", function() {
 });
 
 it("doesn't update changed & importing tiddlers multiple times", function () {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.operatorConf('title'),
 		{title: 'A', text: 'stuff'},
@@ -92,7 +93,6 @@ it("doesn't update changed & importing tiddlers multiple times", function () {
 });
 
 it("doesn't update deleted & importing tiddlers", function () {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.operatorConf('title'),
 		{title: 'A', text: 'stuff'},
@@ -108,7 +108,6 @@ it("doesn't update deleted & importing tiddlers", function () {
 });
 
 it("doesn't choke when a tiddler is deleted twice", function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: 'A', text: '[[c|link]]'},
 		{title: 'B', text: '[[d|link]]'}]);
@@ -119,7 +118,6 @@ it("doesn't choke when a tiddler is deleted twice", function() {
 });
 
 it("detects changes to global macro definitions", async function() {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'test', text: '<<M x>>'});
 	expect(getReport('test', wiki)).toEqual({});
 	wiki.addTiddler({title: 'def', tags: '$:/tags/Macro', text: '\\relink M arg\n\\define M(arg) $arg$'});
@@ -128,7 +126,6 @@ it("detects changes to global macro definitions", async function() {
 });
 
 it('detects changes to global macros when <$set> involved', async function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: 'A', tags: '$:/tags/Macro', text: '<$set name=macroA value=A>\n\n</$set>'},
 		{title: 'C', tags: '$:/tags/Macro', text: '<$set name=macroC value=C>\n\n</$set>'},
@@ -142,7 +139,6 @@ it('detects changes to global macros when <$set> involved', async function() {
 });
 
 it("updates when import tiddler list would grow", function() {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: 'test', text: '\\import [tag[local]]\n<<M from>>'},
 		{title: 'macro', tags: 'local', text: '\\define M(val) $val$'}]);
@@ -152,7 +148,6 @@ it("updates when import tiddler list would grow", function() {
 });
 
 it("updates when import tiddler list would shrink", function() {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: 'test', text: '\\import [tag[local]]\n<<M Aarg:A Barg:B>>'},
 		{title: 'global', tags: '$:/tags/Macro', text: '\\relink M Aarg'},
@@ -164,7 +159,6 @@ it("updates when import tiddler list would shrink", function() {
 });
 
 it("updates when tiddler in import list changes", function() {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: 'test', text: '\\import [tag[local]]\n<<M Aarg:A Barg:B>>'},
 		{title: 'macro', tags: 'local', text: '\\relink M Aarg'}]);
@@ -174,7 +168,6 @@ it("updates when tiddler in import list changes", function() {
 });
 
 it("updates when tiddler in import list renames", function() {
-	var wiki = new $tw.Wiki();
 	spyOn(console, 'log');
 	wiki.addTiddlers([
 		utils.operatorConf("title"),
@@ -186,7 +179,6 @@ it("updates when tiddler in import list renames", function() {
 });
 
 it("removes old reports when target tiddler renamed", function() {
-	var wiki = new $tw.Wiki();
 	spyOn(console, 'log');
 	wiki.addTiddler({title: 'test', text: '[[link]]'});
 	// We do this to keep pesky modified fields from showing up.
@@ -198,7 +190,6 @@ it("removes old reports when target tiddler renamed", function() {
 });
 
 it("removes old reports when target tiddler deleted", function() {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'test', text: '[[link]]'});
 	expect(getReport('test', wiki)).toEqual({link: ['[[link]]']});
 	wiki.deleteTiddler('test');
@@ -206,7 +197,6 @@ it("removes old reports when target tiddler deleted", function() {
 });
 
 it('updates when relevant $importvariables exists', function() {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: 'test', text: '\\define garbage() fdfd\n<$importvariables filter="[tag[local]]">\n\n<<M Aarg:A Barg:B>></$importvariables>'},
 		{title: 'macro', tags: 'local', text: '\\relink M Aarg'}]);
@@ -216,7 +206,6 @@ it('updates when relevant $importvariables exists', function() {
 });
 
 it('updates when relevant $importvariables in fields exist', function() {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.fieldConf('wikitext', 'wikitext'),
 		{title: 'test', wikitext: '<$importvariables filter="[tag[local]]"><<M Aarg:A Barg:B>></$importvariables>'},
@@ -229,7 +218,6 @@ it('updates when relevant $importvariables in fields exist', function() {
 });
 
 (utils.atLeastVersion('5.2.0') ? it : xit)('updates for relevant $importvariables in nested context', function() {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.attrConf('$list', 'emptyMessage', 'wikitext'),
 		utils.macroConf('wikiwrapper', 'text', 'wikitext'),
@@ -242,7 +230,6 @@ it('updates when relevant $importvariables in fields exist', function() {
 });
 
 it("does not goof and give wrong report if changes cached", function() {
-	var wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'A', text: '\\import anything\n'});
 	// Cache this tiddler (which requires its context to be remembered
 	getReport('A', wiki);
@@ -259,7 +246,6 @@ it("does not goof and give wrong report if changes cached", function() {
 describe("back references", function() {
 
 it("handles references to non-existent tiddlers", function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'A', text: '[[ghost]]'});
 	expect(utils.getBackreferences('ghost', wiki)).toEqual({A: ['[[ghost]]']});
 	wiki.addTiddler({title: 'ghost', text: '{{ghost}}'});
@@ -269,7 +255,7 @@ it("handles references to non-existent tiddlers", function() {
 });
 
 it("still works without indexer", function() {
-	var wiki = new $tw.Wiki({enableIndexers: []});
+	wiki = new $tw.Wiki({enableIndexers: []});
 	spyOn(operators.text, 'report').and.callThrough();
 	wiki.addTiddlers([
 		{title: 'x', text: 'stuff'},
@@ -292,7 +278,6 @@ it("still works without indexer", function() {
 });
 
 it("returns empty object for unreferenced tiddlers", function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'A', text: 'stuff'});
 	expect(utils.getBackreferences('A', wiki)).toEqual({});
 	expect(utils.getBackreferences('B', wiki)).toEqual({});
@@ -306,7 +291,6 @@ describe("relink results", function() {
 var wouldChange = utils.wouldChange;
 
 it('calls getRelinkResults no more than necessary', function() {
-	var wiki = new $tw.Wiki();
 	spyOn(operators.text, 'relink').and.callThrough();
 	wiki.addTiddlers([
 		{title: 'A', text: '[[from]]'},
@@ -333,7 +317,7 @@ it('calls getRelinkResults no more than necessary', function() {
 });
 
 it("calls getRelinkResults rarely, even with indexers disabled", function() {
-	const wiki = new $tw.Wiki({enableIndexers: []});
+	wiki = new $tw.Wiki({enableIndexers: []});
 	spyOn(operators.text, 'relink').and.callThrough();
 	wiki.addTiddlers([
 		{title: 'A', text: '[[from]]'},
@@ -361,7 +345,6 @@ it("calls getRelinkResults rarely, even with indexers disabled", function() {
 
 it('does not call getRelinkResults on rename after scanning', function() {
 	spyOn(console, 'log');
-	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: 'A', text: '[[from]]'},
 		{title: 'B', text: 'not linking to from'},
@@ -375,7 +358,6 @@ it('does not call getRelinkResults on rename after scanning', function() {
 });
 
 it('discovers when non-cached tiddler should now be on shortlist', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		{title: 'A', text: ''},
 		{title: 'B', text: '\\import A\n<<macro from>>'},
@@ -389,7 +371,6 @@ it('discovers when non-cached tiddler should now be on shortlist', function() {
 });
 
 it('keeps the relink shortlist as short as possible', function() {
-	const wiki = new $tw.Wiki();
 	// This make sure various text patterns don't accidentally get cached
 	// for future relink shortlists
 	wiki.addTiddlers([
@@ -400,7 +381,6 @@ it('keeps the relink shortlist as short as possible', function() {
 });
 
 it("won't ignore changes to other tiddlers during title rename", function() {
-	const wiki = new $tw.Wiki();
 	spyOn(console, 'log');
 	wiki.addTiddler(utils.draft({title: 'from', text: 'boring text'}));
 	// This caches the results
@@ -412,7 +392,6 @@ it("won't ignore changes to other tiddlers during title rename", function() {
 });
 
 it("won't ignore current draft if changed after result caching", function() {
-	const wiki = new $tw.Wiki();
 	spyOn(console, 'log');
 	wiki.addTiddler(utils.draft({title: 'from', text: 'boring text'}));
 	// This caches the results
@@ -427,7 +406,6 @@ it("won't ignore current draft changes if referenced by other", function() {
 	// This is an incredibly esoteric case, but if the edited tiddler should
 	// be changed after the title is tentatively altered, AND that draft
 	// changes \\relink parameters, cause another tiddler not to update.
-	const wiki = new $tw.Wiki();
 	const def = '\\define macro(title) This links to $title$';
 	spyOn(console, 'log');
 	wiki.addTiddlers([
@@ -445,13 +423,16 @@ it("won't ignore current draft changes if referenced by other", function() {
 it("can test changes to empty string", function() {
 	// This case came up when someone cleared the draft's title, then
 	// typed something else it. wouldChange starts returning nothing.
-	const wiki = new $tw.Wiki()
 	wiki.addTiddlers([
+		utils.fieldConf("tags", "list"),
 		{title: 'from', text: "anything"},
-		{title: 'A', text: 'links to [[from]]'}]);
-	expect(wouldChange(wiki, 'from', '')).toEqual(['A']);
+		{title: 'Links', text: 'links to [[from]]'},
+		// Tags were a problem with issue #57
+		{title: 'Tags', tags: 'from'}
+	]);
+	expect(wouldChange(wiki, 'from', '')).toEqual([]);
 	// Now that the results are cached, what would it be now?
-	expect(wouldChange(wiki, 'from', '')).toEqual(['A']);
+	expect(wouldChange(wiki, 'from', 'to')).toEqual(['Links', 'Tags']);
 });
 
 });
