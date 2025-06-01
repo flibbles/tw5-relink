@@ -14,7 +14,7 @@ var assetList = [
         "title": "$:/plugins/flibbles/relink",
         "description": "Flexibility when relinking renamed tiddlers",
         "author": "Flibbles",
-        "version": "2.5.0",
+        "version": "2.5.1",
         "core-version": ">=5.1.22",
         "source": "https://github.com/flibbles/tw5-relink",
         "demo": "http://flibbles.github.io/tw5-relink/",
@@ -47,7 +47,7 @@ var assetList = [
         "title": "$:/plugins/flibbles/relink-markdown",
         "description": "Markdown support for Relink",
         "author": "Flibbles",
-        "version": "2.4.5",
+        "version": "2.5.1",
         "core-version": ">=5.1.22",
         "parent-plugin": "$:/plugins/flibbles/relink",
         "source": "https://github.com/flibbles/tw5-relink",
@@ -102,10 +102,7 @@ module-type: library
 A simple HTTP-over-window.postMessage implementation of a standard TiddlyWeb-compatible server. It uses real HTTP to load the individual tiddler JSON files.
 
 \*/
-(function(){
 
-/*jslint node: true, browser: true */
-/*global $tw: false */
 "use strict";
 
 // Listen for window messages
@@ -182,8 +179,6 @@ function httpGet(url,callback) {
 	};
 	http.send();
 }
-
-})();
 
 </script>
 </head>

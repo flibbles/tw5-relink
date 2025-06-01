@@ -1,0 +1,6 @@
+created: 20250601232034674
+
+\rules except wikilink
+
+* Fixed issue #58, markdown link relinking could fail if it was more than 10000 characters into a body of text
+* Added relink to the ControlPanel tabs where it should have been this whole time
