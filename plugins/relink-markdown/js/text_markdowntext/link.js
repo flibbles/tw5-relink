@@ -232,8 +232,5 @@ function extractUnquotedLink(text, pos) {
 			return undefined;
 		}
 		++p;
-		if (p > 10000) {
-			throw "Infinite loop";
-		}
 	}
 };
