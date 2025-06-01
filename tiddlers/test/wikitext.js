@@ -4,7 +4,7 @@ Tests the new relinking wiki methods.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 var wikitextUtils = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/utils.js');
 
 function testText(text, expected, options) {

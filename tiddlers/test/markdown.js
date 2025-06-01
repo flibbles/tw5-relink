@@ -4,7 +4,7 @@ Tests relinking in markdown tiddlers. (text/markdown)
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe("markdown text", function() {
 

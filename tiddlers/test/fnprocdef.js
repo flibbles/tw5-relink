@@ -10,7 +10,7 @@ E.G.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 (utils.atLeastVersion('5.3.0')? describe : xdescribe)("fnprocdef", function() {
 

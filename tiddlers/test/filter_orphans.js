@@ -4,7 +4,7 @@ Tests the orphans filter.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe('filter: orphans', function() {
 

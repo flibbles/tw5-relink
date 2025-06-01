@@ -8,7 +8,7 @@
 				"tags": "$:/tags/test-spec",
 				"title": {
 					"source": "filename",
-					"prefix": "test/"
+					"prefix": "$:/test/"
 				},
 				"type": "application/javascript"
 			}

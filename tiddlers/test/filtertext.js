@@ -4,7 +4,7 @@ Tests relinking in filter tiddlers. (text/x-tiddler-filter)
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe("filtertext", function() {
 

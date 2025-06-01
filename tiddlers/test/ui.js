@@ -6,7 +6,7 @@ easy problems.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 function uiWiki() {
 	var wiki = new $tw.Wiki();

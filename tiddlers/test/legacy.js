@@ -4,7 +4,7 @@ Tests to make sure old modules still work
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe('legacy', function() {
 

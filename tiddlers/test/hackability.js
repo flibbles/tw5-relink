@@ -5,7 +5,7 @@ These are configuration options defined in the documentation.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe('hackability', function() {
 

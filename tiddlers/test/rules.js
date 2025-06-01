@@ -6,7 +6,7 @@ Tests rules and all its idiosyncracies.
 
 describe('rules', function() {
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 beforeEach(function() {
 	spyOn(console, 'log');

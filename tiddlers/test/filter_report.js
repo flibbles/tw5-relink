@@ -4,7 +4,7 @@ Tests the report filter.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe('filter: references', function() {
 

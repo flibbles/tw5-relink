@@ -4,7 +4,7 @@ Tests 3rd party module-types. Like a relinkfieldtype
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe("custom: fieldtypes", function() {
 

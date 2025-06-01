@@ -10,7 +10,7 @@ E.G.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 var variablePrefix = "$:/temp/flibbles/relink-variables/";
 

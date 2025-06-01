@@ -4,7 +4,7 @@ Tests the fields
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 var relink = utils.relink;
 
 function testField(text, expected, report, options) {

@@ -10,7 +10,7 @@ E.G.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe("macrodef", function() {
 

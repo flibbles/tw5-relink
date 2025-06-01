@@ -6,7 +6,7 @@ Tests syslinks, like
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 function testText(text, expected, report, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);

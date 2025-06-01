@@ -4,7 +4,7 @@ Tests the filter tiddler type.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe('tiddler type', function() {
 

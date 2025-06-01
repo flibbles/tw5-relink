@@ -6,7 +6,7 @@ Tests comments in wikitext.
 
 describe('comment', function() {
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 beforeEach(function() {
 	spyOn(console, 'log');

@@ -4,7 +4,7 @@ Tests the relink-fieldnames sub plugin.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe('fieldname plugin', function() {
 

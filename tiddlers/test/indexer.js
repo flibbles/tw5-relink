@@ -4,7 +4,7 @@ Tests the relink indexer
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 var operators = $tw.modules.getModulesByTypeAsHashmap('relinkoperator');
 var contexts = $tw.modules.applyMethods('relinkcontext');
 var wiki;

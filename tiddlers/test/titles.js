@@ -4,7 +4,7 @@ Tests relinking titles of other tiddlers.
 
 \*/
 
-var utils = require('test/utils');
+var utils = require('./utils');
 
 function test(title, expected, report, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);

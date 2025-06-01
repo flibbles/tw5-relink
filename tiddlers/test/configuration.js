@@ -4,7 +4,7 @@ Tests the new relinking wiki methods.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 describe('configuration', function() {
 

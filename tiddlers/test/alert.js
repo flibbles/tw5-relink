@@ -5,7 +5,7 @@ be skipped over.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 var Logger = $tw.utils.Logger.prototype;
 
 function testAlert(wiki, tiddlers, browser) {

@@ -4,7 +4,7 @@ Tests the relink mangler used to add fields in configuration.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 var Mangler = require("$:/plugins/flibbles/relink/js/mangler.js").relinkmangler;
 var prefix = "$:/config/flibbles/relink/";
 var defaultTiddler = "$:/config/flibbles/relink/settings/default-type";

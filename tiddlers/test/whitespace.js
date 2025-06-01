@@ -6,7 +6,7 @@ Tests whitespace pragma.
 
 describe('whitespace', function() {
 
-var utils = require("test/utils");
+var utils = require("./utils");
 
 beforeEach(function() {
 	spyOn(console, 'log');

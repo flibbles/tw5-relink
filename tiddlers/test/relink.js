@@ -4,7 +4,7 @@ Tests various parts of relink that don't require their own suite.
 
 \*/
 
-var utils = require("test/utils");
+var utils = require("./utils");
 var relink = utils.relink;
 
 describe('relink', function() {
