@@ -1,4 +1,6 @@
 title: $:/plugins/flibbles/relink/configuration
+caption: Relink
+tags: $:/tags/ControlPanel/SettingsTab
 
 \whitespace trim
 <div class="tc-control-panel">

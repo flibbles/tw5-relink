@@ -1,4 +1,5 @@
 title: Templates/Version
+code-body: yes
 
 <$set name="minor" filter="[<currentTab>removesuffix[.0]]">
 
