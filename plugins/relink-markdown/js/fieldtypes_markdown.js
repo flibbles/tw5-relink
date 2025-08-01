@@ -39,7 +39,7 @@ MarkdownWalker.prototype = Object.create(WikiParser.prototype);
 module.exports
 
 MarkdownWalker.prototype.parseBlock = function(terminatorRegExpString) {
-	var terminatorRegExp = /([^\S\n]*\r?\n)/mg;
+	var terminatorRegExp = /([^\S\n]*\r?\n\r?\n)/mg;
 	this.skipEmptyLines();
 	if(this.pos >= this.sourceLength) {
 		return [];

@@ -361,7 +361,8 @@ it("footnotes", function() {
 	// This one should be true, but I gave up on perfect parsing.
 	//test("text\n[1]:#from", ignore);
 	test("text\nd[1]:#from", ignore);
-	test("Text[1]\n1.\n[1]: #from", process, ['[1]:']);
+	test("Text[1]\n1.\n[1]: #from", ignore);
+	test("Text[1]\n1.\n\n[1]: #from", process, ['[1]:']);
 
 	test("[1]: #from%20here", "[1]: #to%20there", ['[1]:'], {from: 'from here', to: 'to there'});
 	test("[1\n\n2]: #else\n\n[3]: #from", process, ['[3]:']);
@@ -461,6 +462,13 @@ it("code", function() {
 	// Both in weird ways
 	test("T```[c](#from)\n```[h](#from)", "T```[c](#to)\n```[h](#from)", ['[c](#)']);
 	test("T```[c](#from)\n```\n[h](#from)", "T```[c](#to)\n```\n[h](#from)", ['[c](#)']);
+});
+
+it("macros on multiple lines", function() {
+	test("\\define X(l) $l$\n\\relink X l:list\n<<X \"from\">>", process, ['<<X l>>']);
+	test("\\define X(l) $l$\n\\relink X l:list\n<<X \"\nfrom\">>",
+	     "\\define X(l) $l$\n\\relink X l:list\n<<X \"to\">>",
+	['<<X l>>']);
 });
 
 /* INCOMPLETE PARSING:
