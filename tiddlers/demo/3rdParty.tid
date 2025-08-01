@@ -3,6 +3,7 @@ list: readme
 name: Relink Example
 plugin-type: plugin
 title: $:/plugins/flibbles/3rd-party
+stability: STABILITY_2_STABLE
 type: application/json
 
 {
