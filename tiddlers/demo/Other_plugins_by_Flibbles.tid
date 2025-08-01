@@ -4,6 +4,12 @@ title: Other plugins by Flibbles
 
 Other plugins I've developed for TiddlyWiki5
 
+!! [[Graph|https://flibbles.github.io/tw5-graph/]]
+
+Visualize your tiddlers in graphs with this highly adaptive and versatile adapter which connects TiddlyWiki with a variety of visualization libraries.
+
+If you like TiddlyMap, you'll love TW5-Graph.
+
 !! [[Uglify|https://flibbles.github.io/tw5-uglify/]]
 
 Scrunch TiddlyWiki down! Minify javascript and JSON to serve from Node.JS, shrink down your TiddlyWiki file, or compress your own plugins before publishing them.
