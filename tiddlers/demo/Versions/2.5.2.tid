@@ -1,0 +1,6 @@
+created: 20250801185523507
+
+\rules except wikilink
+
+* Flagging all the plugins as stable.
+* Fixed issue #59, markdown could fail to relink macros that occupied multiple lines.
