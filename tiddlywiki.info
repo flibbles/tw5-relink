@@ -12,7 +12,6 @@
 	],
 	"build": {
 		"test": [
-			"--output", "./docs/",
 			"--rendertiddler",
 				"$:/core/save/all",
 				"test.html",

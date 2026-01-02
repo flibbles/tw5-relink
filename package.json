@@ -28,6 +28,9 @@
     "url": "https://github.com/flibbles/tw5-relink/issues"
   },
   "homepage": "https://github.com/flibbles/tw5-relink#readme",
+  "files": [
+    "plugins/"
+  ],
   "dependencies": {
     "tiddlywiki": "^5.1.22"
   },
