@@ -1,0 +1,37 @@
+{
+  "name": "tw5-relink",
+  "version": "2.5.2",
+  "description": "Flexibility when relinking renamed tiddlers",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build": "tiddlywiki ++node_modules/tw5-uglify/plugins/uglify --build index",
+    "library": "tiddlywiki ++node_modules/tw5-uglify/plugins/uglify --build library",
+    "test": "tiddlywiki --build test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flibbles/tw5-relink.git"
+  },
+  "keywords": [
+    "markdown",
+    "rename",
+    "tiddlywiki5",
+    "tiddlywiki-plugin",
+    "replaceall"
+  ],
+  "author": "Flibbles",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/flibbles/tw5-relink/issues"
+  },
+  "homepage": "https://github.com/flibbles/tw5-relink#readme",
+  "dependencies": {
+    "tiddlywiki": "^5.1.22"
+  },
+  "devDependencies": {
+    "tw5-uglify": "github:flibbles/tw5-uglify"
+  }
+}

@@ -4,8 +4,7 @@
 		"tiddlywiki/jasmine",
 		"tiddlywiki/highlight",
 		"tiddlywiki/pluginlibrary",
-		"tiddlywiki/markdown",
-		"flibbles/uglify"
+		"tiddlywiki/markdown"
 	],
 	"themes": [
 		"tiddlywiki/vanilla",
