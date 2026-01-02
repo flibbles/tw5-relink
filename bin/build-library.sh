@@ -21,8 +21,7 @@ ln -s "${ROOT_PATH}/plugins" "${SYMLINK}"
 trap "rm -Rf \"${OUTPUT_PATH}\"" EXIT
 
 # OUTPUT_PATH comes first, so it supercedes any globally installed relink
-TIDDLYWIKI_PLUGIN_PATH=${OUTPUT_PATH}
-#:${TIDDLYWIKI_PLUGIN_PATH}
+TIDDLYWIKI_PLUGIN_PATH=${OUTPUT_PATH}:${TIDDLYWIKI_PLUGIN_PATH}
 
 #Diagnostic stuff for now
 echo "TIDDLYWIKI_PLUGIN_PATH=${TIDDLYWIKI_PLUGIN_PATH}"
