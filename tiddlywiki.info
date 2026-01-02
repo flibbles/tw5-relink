@@ -29,7 +29,6 @@
 				"created",
 				"Templates/release-date",
 				"text/plain",
-			"--output", "./docs/",
 			"--rendertiddler",
 				"$:/core/save/all",
 				"index.html",
@@ -47,7 +46,7 @@
 				"$:/core/templates/json-tiddler"
 		],
 		"library": [
-			"--output", "./docs/library/",
+			"--output", "./output/library",
 			"--makelibrary","$:/UpgradeLibrary",
 			"--savelibrarytiddlers",
 				"$:/UpgradeLibrary",
