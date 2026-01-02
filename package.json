@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "tiddlywiki ++node_modules/tw5-uglify/plugins/uglify --build index",
-    "library": "tiddlywiki ++node_modules/tw5-uglify/plugins/uglify --build library",
+    "library": "./bin/build-library.sh",
     "test": "tiddlywiki --build test"
   },
   "repository": {
