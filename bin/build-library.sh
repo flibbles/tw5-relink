@@ -23,5 +23,9 @@ trap "rm -Rf \"${OUTPUT_PATH}\"" EXIT
 # OUTPUT_PATH comes first, so it supercedes any globally installed relink
 TIDDLYWIKI_PLUGIN_PATH=${OUTPUT_PATH}:${TIDDLYWIKI_PLUGIN_PATH}
 
+#Diagnostic stuff for now
+echo "TIDDLYWIKI_PLUGIN_PATH=${TIDDLYWIKI_PLUGIN_PATH}"
+ls -la "${ROOT_PATH}/plugins"
+
 # Now let's run the library with the path set correctly
 tiddlywiki --build library
