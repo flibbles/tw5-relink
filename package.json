@@ -2,7 +2,6 @@
   "name": "tw5-relink",
   "version": "2.5.2",
   "description": "Flexibility when relinking renamed tiddlers",
-  "main": "index.js",
   "directories": {
     "doc": "docs"
   },
@@ -31,12 +30,12 @@
   "files": [
     "plugins/"
   ],
-  "bin": {
-    "flibbles_relink": "plugins/relink",
-    "flibbles_relink-fieldnames": "plugins/relink-fieldnames",
-    "flibbles_relink-markdown": "plugins/relink-markdown",
-    "flibbles_relink-titles": "plugins/relink-titles",
-    "flibbles_relink-variables": "plugins/relink-variables"
+  "tiddlywiki": {
+    "flibbles/relink": "./plugins/relink/",
+    "flibbles/relink-fieldnames": "./plugins/relink-fieldnames/",
+    "flibbles/relink-markdown": "./plugins/relink-markdown/",
+    "flibbles/relink-titles": "./plugins/relink-titles/",
+    "flibbles/relink-variables": "./plugins/relink-variables/"
   },
   "dependencies": {
     "tiddlywiki": "^5.1.22"
