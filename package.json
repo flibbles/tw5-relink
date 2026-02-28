@@ -1,6 +1,6 @@
 {
   "name": "tw5-relink",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "description": "Flexibility when relinking renamed tiddlers",
   "directories": {
     "doc": "docs"

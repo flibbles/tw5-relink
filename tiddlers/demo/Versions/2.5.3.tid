@@ -1,0 +1,9 @@
+created: 20260228181302895
+
+\rules except wikilink
+
+No new content, but this is the ''final release'' of Relink which will supportTiddlyWiki V5.3.8 and lower. V5.4 brings too many finnicky changes to things such as attributes and macro parameters. I don't have the time to make Relink account for pre and post V5.4.
+
+Also, TiddlyWiki V5.4 supposedly brings a way for wikitext to be converted back from a parse tree, and if it's done right, could really simplify Relink. So we'll see.
+
+Distributables of this version will be linked to in the Relink website, and should always be available.
