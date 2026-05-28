@@ -601,8 +601,8 @@ it("failures in wikitext don't stop markdown relinking", function() {
 		{title: 'test', type: 'text/markdown',
 		 text: "<$link to='from here' />[C](#from%20here)"}]);
 	utils.spyFailures(spyOn);
-	wiki.renameTiddler('from here', "to 'there```\"");
-	expect(utils.getText('test', wiki)).toBe("<$link to='from here' />[C](#to%20'there```\")");
+	wiki.renameTiddler('from here', "to 'there]]```\"");
+	expect(utils.getText('test', wiki)).toBe("<$link to='from here' />[C](#to%20'there]]```\")");
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 

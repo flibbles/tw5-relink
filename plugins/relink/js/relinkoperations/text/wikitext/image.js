@@ -151,6 +151,8 @@ function reportAttribute(parser, attribute, callback, options) {
 		var end = attribute.value.end;
 		var macro = attribute.value;
 		var oldValue = attribute.value;
+		macro.name = macro.name || macro.attributes['$variable'].value;
+		macro.params = macro.params || macro.orderedAttributes;
 		macrocall.reportAttribute(parser, macro, function(title, blurb, style) {
 			callback(title, '[img ' + attribute.name + '=' + blurb + ']', style);
 		}, options);
@@ -199,6 +201,8 @@ function relinkAttribute(parser, attribute, builder, fromTitle, toTitle, options
 		var end = attribute.value.end;
 		var macro = attribute.value;
 		var oldValue = attribute.value;
+		macro.name = macro.name || macro.attributes['$variable'].value;
+		macro.params = macro.params || macro.orderedAttributes;
 		var macroEntry = macrocall.relinkAttribute(parser, macro, text, fromTitle, toTitle, options);
 		if (macroEntry !== undefined) {
 			if (macroEntry.impossible) {

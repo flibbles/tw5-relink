@@ -60,6 +60,8 @@ exports.report = function(element, parser, callback, options) {
 			break;
 		case "macro":
 			var macro = attr.value;
+			macro.name = macro.name || macro.attributes["$variable"].value;
+			macro.params = macro.params || macro.orderedAttributes;
 			macrocall.report(options.settings, macro, function(title, blurb, style) {
 				callback(title, element.tag + ' ' + attributeName + '=<<' + blurb + '>>', style);
 			}, options);
@@ -178,6 +180,8 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			break;
 		case 'macro':
 			var macro = attr.value;
+			macro.name = macro.name || macro.attributes["$variable"].value;
+			macro.params = macro.params || macro.orderedAttributes;
 			entry = macrocall.relink(options.settings, macro, parser.source, fromTitle, toTitle, false, options);
 			if (entry && entry.output) {
 				attr.output = macrocall.reassemble(entry, parser.source, options);

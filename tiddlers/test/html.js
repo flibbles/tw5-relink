@@ -4,7 +4,15 @@ Tests widget and HTML element attributes.
 
 \*/
 
+describe("html", function() {
+
 var utils = require("./utils");
+var wiki;
+
+beforeEach(function() {
+	spyOn(console, 'log');
+	wiki = new $tw.Wiki();
+});
 
 function testText(text, expected, report, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);
@@ -22,14 +30,7 @@ function testText(text, expected, report, options) {
 	expect(utils.getText('test', wiki)).toEqual(expected);
 };
 
-describe("html", function() {
-
-beforeEach(function() {
-	spyOn(console, 'log');
-});
-
 it('field attributes', function() {
-	const wiki = new $tw.Wiki();
 	const options = {wiki: wiki};
 	const link = ['<$link to />'];
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
@@ -65,7 +66,6 @@ it('field attributes', function() {
 });
 
 it('respects \\rules', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	// allowed
 	testText("\\rules except macrodef\n<$link to='from here'/>", true, ['<$link to />'], {wiki: wiki});
@@ -76,7 +76,6 @@ it('respects \\rules', function() {
 });
 
 it('properly ignored when not to be relinked', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	testText(`<$link to="from here XXX" />`, false, undefined, {wiki: wiki});
 	testText(`<$link to={{index!!from here}} />`, false, undefined, {wiki: wiki});
@@ -85,7 +84,6 @@ it('properly ignored when not to be relinked', function() {
 });
 
 it('field attributes with true', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	testText(`<$link trueAttr to="from here">caption</$link>`, true, ['<$link to />'], {wiki: wiki});
 	testText(`<$link to />`, false, undefined, {wiki: wiki});
@@ -104,9 +102,8 @@ it('field attributes with true', function() {
 });
 
 it('field attributes fun with quotes', function() {
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	function testQuote(from, to, options) {
-		const wiki = new $tw.Wiki();
-		wiki.addTiddler(utils.attrConf('$link', 'to'));
 		options = Object.assign({wiki: wiki}, options);
 		const report = $tw.utils.hop(options, 'report') ? options.report : ['<$link to />']
 		testText(`<$link to=${from}/>`, `<$link to=${to}/>`, report, options);
@@ -126,10 +123,52 @@ it('field attributes fun with quotes', function() {
 
 	// Now for the super advanced quotes!! //
 	testQuote("from", `""""begins" with quote; has apos'"""`, {from: "from", to: `"begins" with quote; has apos'`});
-	// The brackets here should be considered part of the title
-	// This differs from how macro parameters behave
-	testQuote("[[from]]", "to", {from: "[[from]]", to: "to"});
-	testQuote("[[from]]", "[[from]]", {from: "from", to: "to", report: undefined});
+});
+
+it('field attributes fun with brackets', function() {
+	var report = ["<$link to />"];
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	if (utils.bracketAttrsAllowed()) {
+		// Post v5.4.0
+		// The brackets here are considered a form of quotation
+		// This matches how macro parameters behave
+		testText("<$link to=[[from]]/>",
+		         "<$link to=[[from]]/>", undefined,
+		         {from: "[[from]]", to: "to", wiki: wiki});
+		testText("<$link to=[[from]]/>",
+		         "<$link to=to/>", report,
+		         {from: "from", to: "to", wiki: wiki});
+		testText("<$link to=from/>",
+		         "<$link to='[[to]]C'/>", report,
+		         {from: "from", to: "[[to]]C", wiki: wiki});
+		testText("<$link to=from/>",
+		         "<$link to=[[to]/>", report,
+		         {from: "from", to: "[[to]", wiki: wiki});
+		testText("<$link to=from/>",
+		         "<$link to=[to[[C]]/>", report,
+		         {from: "from", to: "[to[[C]]", wiki: wiki});
+		// TODO: More to do here. Make sure brackets get selected when relevant
+		testText("<$link to=from/>",
+		         "<$link to=[[to '```\"\"\"]X]]/>", report,
+		         {from: "from", to: "to '```\"\"\"]X", wiki: wiki});
+		// Prefer brackets to backticks
+		testText("<$link to=from/>",
+		         "<$link to=[[to '\"\"\"X]]/>", report,
+		         {from: "from", to: "to '\"\"\"X", wiki: wiki});
+	} else {
+		// Pre v5.4.0
+		// The brackets here should be considered part of the title
+		// This differs from how macro parameters behave
+		testText("<$link to=[[from]]/>",
+		         "<$link to=to/>", report,
+		         {from: "[[from]]", to: "to", wiki: wiki});
+		testText("<$link to=[[from]]/>",
+		         "<$link to=[[from]]/>", undefined,
+		         {from: "from", to: "to", wiki: wiki});
+		testText("<$link to=from/>",
+		         "<$link to=[[to]]/>", report,
+		         {from: "from", to: "[[to]]", wiki: wiki});
+	}
 });
 
 it('supports indirect attribute values', function() {
@@ -145,7 +184,6 @@ it('supports indirect attribute values', function() {
 });
 
 it('allows redirect with bad toTitle if not applicable', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	// Relink used to fail processing {{thing}} because of an illegal
 	// toTitle for references, but it shouldn't fail since no replacement
@@ -157,7 +195,6 @@ it('allows redirect with bad toTitle if not applicable', function() {
 });
 
 it('fails on bad indirect attributes', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	utils.spyFailures(spyOn);
 	testText("<$link tooltip={{from here}} to='from here'/>",
@@ -198,7 +235,6 @@ it("handles failure in innerText", function() {
 });
 
 it("failure doesn't prevent other relinks", function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	utils.spyFailures(spyOn);
 	testText("<$link tooltip={{from here}} to='from here' />",
@@ -233,7 +269,6 @@ it('supports filter attribute values', function() {
 });
 
 it('can find recently imported variables in attributes', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: "X", text: "\\define macro(param)\n\\relink macro param"});
 	testText("\\import X\n<$macrocall $name=macro param='from here'/>", true,
 	         ['<<macro param />'], {wiki: wiki});
@@ -241,7 +276,6 @@ it('can find recently imported variables in attributes', function() {
 
 it('bad names in filtered attribute values', function() {
 	var to = "brack}}}s";
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('tag'));
 	utils.spyFailures(spyOn);
 	testText("<$w a={{{from}}}/>", false, ['<$w a={{{}}} />'], {from: "from", to: to});
@@ -252,32 +286,28 @@ it('bad names in filtered attribute values', function() {
 });
 
 it('handles failure for string attributes', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	utils.spyFailures(spyOn);
 	testText("<$link to='from here'/>", false,
-	         ['<$link to />'], {to:  'End\'s with ``` "quotes"', wiki: wiki});
+	         ['<$link to />'], {to:  'End\'s with ``` ]]"quotes"', wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it("recognizes when a title is actually a macro placeholder", function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	testText('\\define macro(abc) <$link to="""$A$""" />', true, ['\\define macro() <$link to />'], {wiki: wiki, from: '$A$'});
 	testText('\\define macro(abc def) <$link to="""$abc$""" />', false, undefined, {wiki: wiki, from: '$abc$'});
 });
 
 it("doesn't use macros if forbidden by \\rules", function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	utils.spyFailures(spyOn);
 	testText('\\rules except macrodef\n<$link to="from here"/>', false,
-	         ['<$link to />'], {to: "x' ``` y\"", wiki: wiki});
+	         ['<$link to />'], {to: "x' ``` ]]y\"", wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('detects when internal list uses macros', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$list', 'filter', 'filter'));
 	wiki.addTiddler(utils.operatorConf('tag'));
 	var to = "bad[]name";
@@ -287,7 +317,6 @@ it('detects when internal list uses macros', function() {
 });
 
 it('ignores blank attribute configurations', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	wiki.addTiddlers(utils.attrConf("$transclude", "tiddler", ""));
 	testText(`<$link to="A" /><$transclude tiddler="A" />`,
@@ -296,7 +325,6 @@ it('ignores blank attribute configurations', function() {
 });
 
 it('ignores unrecognized attribute configurations', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	wiki.addTiddler(utils.attrConf("$transclude", "tiddler", "kablam"));
 	testText(`<$link to="A" /><$transclude tiddler="A" />`,
@@ -308,13 +336,11 @@ it('ignores unrecognized attribute configurations', function() {
  * But field didn't make sense in many contexts.
  */
 it('supports "field" attribute configuration', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf("$transclude", "tiddler", "field"));
 	testText(`<$transclude tiddler="from here" />`, true, ['<$transclude tiddler />'], {wiki: wiki});
 });
 
 it('filter attributes', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$list', 'filter', 'filter'));
 	wiki.addTiddler(utils.operatorConf('tag'));
 	testText('<$list filter="A [[from here]] B" />', true,
@@ -329,7 +355,6 @@ it('filter attributes', function() {
 it('mixed failure with string and reference attributes', function() {
 	// Regression test on bug which resulted from the output value of the
 	// first attribute bleeding into the second if the second fails.
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	utils.spyFailures(spyOn);
 	testText("<$link to='from here' tooltip={{from here}} />",
@@ -340,7 +365,6 @@ it('mixed failure with string and reference attributes', function() {
 });
 
 it('mixed failure and replacement with macro attributes', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler({title: 'macro', tags: '$:/tags/Macro', text: '\\relink macro A:title B:reference\n\\define macro(A, B) $A$$B$'});
 	utils.spyFailures(spyOn);
 	testText("<$link to=<<macro A:'from here' B:'from here'>> />",
@@ -351,7 +375,6 @@ it('mixed failure and replacement with macro attributes', function() {
 });
 
 (utils.atLeastVersion("5.3.0")? it: xit)('substitution attributes without substitution', function() {
-	const wiki = new $tw.Wiki();
 	function testFail() {
 		utils.failures.calls.reset();
 		testText.apply(this, arguments);
@@ -385,7 +408,6 @@ it('mixed failure and replacement with macro attributes', function() {
 });
 
 (utils.atLeastVersion("5.3.0")? it: xit)('substitution attributes with embedded filters', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf('tag'));
 	function testFail() {
 		utils.failures.calls.reset();
@@ -406,7 +428,6 @@ it('mixed failure and replacement with macro attributes', function() {
 });
 
 (utils.atLeastVersion("5.3.0")? it: xit)('substitution attributes with actual substitution', function() {
-	const wiki = new $tw.Wiki();
 	utils.spyFailures(spyOn);
 	function testFail() {
 		utils.failures.calls.reset();
@@ -434,21 +455,19 @@ it('mixed failure and replacement with macro attributes', function() {
 	testText("<$list filter=`$(var)$ from)$(here`/>", true, ["<$list filter=`` />"],{wiki: wiki, from: "from)$(here", to: "to)$(there"});
 	// Presents of substition near titles
 	testText("<$list filter=`[[from here]] $(sub)$`/>", true, ["<$list filter=`` />"], {wiki: wiki});
-	testFail("<$link to=`from here`/>", false, ["<$link to />"],{wiki: wiki, to: "to`\"\"\"'there`"});
+	testFail("<$link to=`from here`/>", false, ["<$link to />"],{wiki: wiki, to: "to`\"\"\"']]there`"});
 	testText("<$list filter=`[[from here]] $(other)$`/>", "<$list filter=```to`there` $(other)$```/>", ["<$list filter=`` />"],{wiki: wiki, to: "to`there`"});
 });
 
 (utils.atLeastVersion("5.3.0")? it: xit)('strange edgecase with substitution', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler( utils.attrConf('$list', 'filter', 'filter') );
 	// Strange edge case with backtics
 	utils.spyFailures(spyOn);
-	testText("<$list filter='a$(b from'/>", false, ["<$list filter />"], {wiki: wiki, from: "from", to: "to)$'\"\"\"there"});
+	testText("<$list filter='a$(b from'/>", false, ["<$list filter />"], {wiki: wiki, from: "from", to: "to)$'\"\"\"]]there"});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('switches to using backticks when necessary', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	utils.spyFailures(spyOn);
 	function testPass(to, expected) {
@@ -460,32 +479,31 @@ it('switches to using backticks when necessary', function() {
 		utils.failures.calls.reset();
 	};
 	if (utils.atLeastVersion("5.3.0")) {
-		testPass('to\'"""there',     '<$link to=`to\'"""there`/>');
-		testPass('to\'there"',       '<$link to=`to\'there"`/>');
-		testPass('to\'"""` there',   '<$link to=```to\'"""` there```/>');
-		testFail('to\'""" there`');
-		testPass('to\'"""$( there',   '<$link to=`to\'"""$( there`/>');
-		testPass('to\'"""$()$ there', '<$link to=`to\'"""$()$ there`/>');
-		testPass('to\'"""$(d$()$ there', '<$link to=`to\'"""$(d$()$ there`/>');
-		testPass('to\'"""$($)$ there', '<$link to=`to\'"""$($)$ there`/>');
-		testPass('to\'"""$())$ there', '<$link to=`to\'"""$())$ there`/>');
-		testFail('to\'"""$(d)$ there');
-		testFail('to\'"""$($(d)$ there');
+		testPass('to\'"""there]',     '<$link to=`to\'"""there]`/>');
+		testPass('to\'there]]"',       '<$link to=`to\'there]]"`/>');
+		testPass('to\'"""` there]',   '<$link to=```to\'"""` there]```/>');
+		testFail('to\'""" ]]there`');
+		testPass('to\'"""$( there]',   '<$link to=`to\'"""$( there]`/>');
+		testPass('to\'"""$()$ there]', '<$link to=`to\'"""$()$ there]`/>');
+		testPass('to\'"""$(d$()$ ther]', '<$link to=`to\'"""$(d$()$ ther]`/>');
+		testPass('to\'"""$($)$ there]', '<$link to=`to\'"""$($)$ there]`/>');
+		testPass('to\'"""$())$ there]', '<$link to=`to\'"""$())$ there]`/>');
+		testFail('to\'"""$(d)$ there]');
+		testFail('to\'"""$($(d)$ there]');
 		// Now check filter placeholders
-		testPass('to\'"""${ there',   '<$link to=`to\'"""${ there`/>');
-		testPass('to\'"""${}$ there', '<$link to=`to\'"""${}$ there`/>');
-		testFail('to\'"""${$}$ there');
-		testFail('to\'"""${}}$ there');
-		testFail('to\'"""$(d)$ there');
-		testFail('to\'"""$($(d)$ there');
+		testPass('to\'"""${ there]',   '<$link to=`to\'"""${ there]`/>');
+		testPass('to\'"""${}$ there]', '<$link to=`to\'"""${}$ there]`/>');
+		testFail('to\'"""${$}$ there]');
+		testFail('to\'"""${}}$ there]');
+		testFail('to\'"""$(d)$ there]');
+		testFail('to\'"""$($(d)$ there]');
 	} else {
 		// In old versions, just make sure the backticks aren't being used
-		testFail('to\'"""there');
+		testFail('to\'"""there]');
 	}
 });
 
 it('supports relinking of internal text content', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	testText("<$link to='whatevs'><$a b={{from here!!field}} /></$link>", true, ['<$a b={{!!field}} />'], {wiki: wiki});
 	testText("<$link to='from here'><$a b={{from here!!field}} /></$link>", true, ['<$link to />', '<$a b={{!!field}} />'], {wiki: wiki});
@@ -494,7 +512,6 @@ it('supports relinking of internal text content', function() {
 });
 
 it('handles attributes that have placeholders', function() {
-	const wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.attrConf('$widg', 'list', 'list'));
 	wiki.addTiddler(utils.attrConf('$list', 'emptyMessage', 'wikitext'));
 	// List string attributes
@@ -518,7 +535,6 @@ it('handles attributes that have placeholders', function() {
 });
 
 it('supports widgets that support regexp matching fields to attrs', function() {
-	const wiki = new $tw.Wiki();
 	const prefix = "$:/config/flibbles/relink/fieldattributes/";
 	wiki.addTiddlers([
 		utils.fieldConf("myfield"),
@@ -554,7 +570,6 @@ it('supports widgets that support regexp matching fields to attrs', function() {
 });
 
 it('supports messages using $action-sendmessage', function() {
-	const wiki = new $tw.Wiki();
 	const prefix = "$:/config/flibbles/relink/messages/";
 	wiki.addTiddlers([
 		utils.fieldConf("myfield"),

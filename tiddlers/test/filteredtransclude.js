@@ -162,10 +162,10 @@ it('unpretty and unquotable', function() {
 	wiki.addTiddlers([
 		utils.attrConf('$list', 'template'),
 		utils.attrConf('$list', 'filter', 'filter')]);
-	var weird = 'a\'|" ``` """x';
+	var weird = 'a\'|" ``` ]]"""x';
 	utils.spyFailures(spyOn);
 	testText("{{{[title[from here]]}}}", false, ['{{{}}}'], {to: 'bad[]title', wiki: wiki});
-	var tooltip = '"tooltips\'s```"';
+	var tooltip = '"tooltips\'s]]```"';
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 	utils.failures.calls.reset();
 	testText("{{{Title||from here}}}", false, ['{{{Title||}}}'], {to: weird, wiki: wiki});

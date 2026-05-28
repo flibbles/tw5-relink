@@ -58,8 +58,10 @@ function formBlurb(macro, maxLength, truncLength) {
 	var blurb = '';
 	for (var i = 0; i < macro.params.length; i++) {
 		var param = macro.params[i];
-		var value = wrapValue(utils.abridgeString(param.value, maxLength, truncLength));
-		blurb += ' ' + (param.name? param.name + ': ': '') + value;
+		if (param.name !== "$variable") {
+			var value = wrapValue(utils.abridgeString(param.value, maxLength, truncLength));
+			blurb += ' ' + (!param.isPositional && param.name? param.name + ': ': '') + value;
+		}
 	}
 	return blurb;
 };

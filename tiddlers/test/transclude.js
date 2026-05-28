@@ -181,13 +181,13 @@ it('unpretty, but the title is unquotable', function() {
 	wiki.addTiddler(utils.attrConf('$tiddler', 'tiddler'));
 	utils.spyFailures(spyOn);
 	var to = "curly {}";
-	var other = "a```'\"";
+	var other = "a```'\"\"\"]";
 	testText("{{"+other+"||from here}}.", false, ['{{'+other+'||}}'], {to: to, wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
 it('unpretty and unquotable', function() {
-	var to = "has {curly} ``` 'apos' \"quotes\"";
+	var to = "has {curly} ```]] 'apos' \"quotes\"";
 	const wiki = new $tw.Wiki();
 	wiki.addTiddlers([
 		utils.attrConf('$tiddler', 'tiddler'),

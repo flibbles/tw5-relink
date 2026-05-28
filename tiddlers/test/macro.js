@@ -152,7 +152,7 @@ it('quotation of originalValue', function() {
 });
 
 it('unquotable titles', function() {
-	var to = `to''[]there"`;
+	var to = `to''[]]there"`;
 	testText("Macro <<test stuff 'from here'>>.",
 	         "Macro <$macrocall $name=test A=stuff Btitle=`"+to+"`/>.",
 	         ['<<test Btitle>>'], {to: to});
@@ -164,7 +164,7 @@ it('unquotable titles', function() {
 	         "X<$macrocall $name=test A='g>t' Btitle=`"+to+"`/>Y",
 	         ['<<test Btitle>>'], {to: to});
 	// Even if the toTitle is okay. It can make a list unquotable
-	var apos = "M[]'s";
+	var apos = "M[]]'s";
 	testText('X<<test Clist: \'[[from here]] C"\'>>Y',
 	         'X<$macrocall $name=test Clist=`'+apos+' C"`/>Y',
 	         ['<<test Clist>>'], {to: apos});
@@ -223,7 +223,7 @@ it('undefined macros', function() {
 	testText("<<undef param:'from here'>>", true, ['<<undef param>>'], {wiki: wiki});
 	testText("<<undef A B C D param:'from here'>>", true, ['<<undef param>>'], {wiki: wiki});
 	testText("<<undef 'from here'>>", false, undefined, {wiki: wiki, fails: 1});
-	var to = `to''[]there"`;
+	var to = `to''[]]there"`;
 	testText("<<undef param:'from here'>>",
 	         "<$macrocall $name=undef param=`"+to+"`/>",
 	         ['<<undef param>>'], {wiki: wiki, to: to});
@@ -368,7 +368,7 @@ it('slashes in macro name', function() {
 	// unquoted attribute
 	// Also, it might goof up our settings system
 	var wiki = new $tw.Wiki();
-	var to = 'to\'\'[]there"';
+	var to = 'to\'\'[]]there"';
 	wiki.addTiddler(utils.macroConf("non/attr", "param", "title"));
 	testText('X<<non/attr param:"from here">>Y',
 	         "X<$macrocall $name='non/attr' param=`"+to+"`/>Y",

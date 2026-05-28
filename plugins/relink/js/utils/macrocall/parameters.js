@@ -110,7 +110,7 @@ function getParamIndexWithinMacrocall(context, macroName, param, params, options
 		if (name === param) {
 			return i;
 		}
-		if (name === undefined) {
+		if (params[i].isPositional || name === undefined) {
 			anonsExist = true;
 		}
 	}
@@ -124,7 +124,10 @@ function getParamIndexWithinMacrocall(context, macroName, param, params, options
 	if (expectedIndex >= 0) {
 		var anonI = 0;
 		for (i = 0; i < params.length; i++) {
-			if (params[i].name === undefined) {
+			if (params[i].name === "$variable") {
+				continue;
+			}
+			if (params[i].isPositional || params[i].name === undefined) {
 				if (anonI === expectedIndex) {
 					return i;
 				}

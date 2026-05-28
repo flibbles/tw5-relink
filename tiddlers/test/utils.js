@@ -139,6 +139,12 @@ exports.atLeastVersion = function(targetVersion) {
 	return $tw.utils.compareVersions($tw.version, targetVersion) >= 0;
 };
 
+// With TW ^v5.4.0, widget string attributes can be wrapped in [[brackets]].
+// A lot of tests must behave differently on this.
+exports.bracketAttrsAllowed = function() {
+	return $tw.wiki.renderText(null, null, "<$text text=[[V]]/>") === "V";
+};
+
 exports.addPlugin = function(pluginName, tiddlers, options) {
 	options = options || {};
 	var wiki = options.wiki || new $tw.Wiki();

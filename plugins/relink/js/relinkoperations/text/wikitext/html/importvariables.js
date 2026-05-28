@@ -51,9 +51,28 @@ function computeAttribute(context, attribute, options) {
 		value = options.wiki.getTextReference(attribute.textReference,"",parentWidget.variables.currentTiddler.value);
 	} else if(attribute.type === "macro") {
 		var parentWidget = context.widget;
-		value = parentWidget.getVariable(attribute.value.name,{params: attribute.value.params});
+		var params = makeSuitableParams(parentWidget, attribute.value);
+		value = parentWidget.getVariable(attribute.value.name,{params: params});
 	} else { // String attribute
 		value = attribute.value;
 	}
 	return value;
+};
+
+function makeSuitableParams(widget, macro) {
+	if (macro.params) {
+		var params = [];
+		for (var i = 0; i < macro.params.length; i++) {
+			var attr = macro.params[i];
+			var param = {
+				value: widget.computeAttribute(attr)
+			};
+			if (attr.name && !attr.isPositional) {
+				param.name = attr.name;
+			}
+			params.push(param);
+		}
+		return params;
+	}
+	return macro.params;
 };

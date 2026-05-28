@@ -162,8 +162,8 @@ it('failures in non-text fields', function() {
 	fails("A {{from here}}", {ignored: true, to: "A}}B ```]]'\""});
 	fails("A {{X||from here}}", {ignored: true, to: "A}}B ```]]'\""});
 	fails("A {{A]]'```\"||from here}}", {ignored: true, to: "A}}B"});
-	fails("A {{A!!in'```dex\"||from here}}", {ignored: true, to: "A}}B"});
-	fails("A {{from here!!in'```dex\"||from here}}", {ignored: true, to: "A}}U"});
+	fails("A {{A!!in'```]]dex\"||from here}}", {ignored: true, to: "A}}B"});
+	fails("A {{from here!!in']]```dex\"||from here}}", {ignored: true, to: "A}}U"});
 	// Macrocalls
 	wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.macroConf("test", "t"));
@@ -188,7 +188,7 @@ it('failures in non-text fields', function() {
 	utils.monkeyPatch(wikitextUtils, "shorthandPrettylinksSupported", () => false, function() {
 		fails("A [[from here]] link", {ignored: true, to: "A]]B"});
 	});
-	fails("A [[B'// ```\"\"\"|from here]] link", {ignored: true, to: "to]]there"});
+	fails("A [[B'// ```\"\"\"]|from here]] link", {ignored: true, to: "to]]there"});
 	// Images
 	fails("[img[from here]]", {ignored: true, to: "']] ```\""});
 	// Tricky case. We should still be able to downgrade images into widgets.

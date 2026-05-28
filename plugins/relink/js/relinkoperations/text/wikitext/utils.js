@@ -93,12 +93,18 @@ exports.containsPlaceholders = function(string) {
 
 var whitelist = ["", "'", '"', '"""'];
 var choices = {
-	"": function(v) {return !/([\/\s<>"'`=])/.test(v) && v.length > 0; },
+	"": function(v) {
+		return !/([\/\s<>"'`=])/.test(v)
+		&& v.length > 0
+		&& (!_bracketsSupported
+			|| v.indexOf('[[') !== 0
+			|| v.indexOf(']]') === -1); },
 	"'": function(v) {return v.indexOf("'") < 0; },
 	'"': function(v) {return v.indexOf('"') < 0; },
 	'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';},
 };
 var _backticksSupported;
+var _bracketsSupported;
 
 /**Finds an appropriate quote mark for a given value.
  *
@@ -110,6 +116,18 @@ var _backticksSupported;
  * return: Returns the wrapped value, or undefined if it's impossible to wrap
  */
 exports.wrapAttributeValue = function(value, preference) {
+	if (_bracketsSupported === undefined) {
+		var test = $tw.wiki.renderText("text/plain", "text/vnd.tiddlywiki", "<$link to=[[test]]/>");
+		_bracketsSupported = (test === "test");
+		if (_bracketsSupported) {
+			whitelist.push('[[');
+			choices['[['] = function(v) {
+				return v.indexOf('[[') !== 0
+				&& v.lastIndexOf(']') !== v.length-1
+				&& v.lastIndexOf(']]') < 0;
+			};
+		}
+	}
 	if (_backticksSupported === undefined) {
 		var test = $tw.wiki.renderText("text/plain", "text/vnd.tiddlywiki", "<$link to=`test`/>");
 		_backticksSupported = (test === "test");

@@ -85,10 +85,21 @@ it('respects \\rules', function() {
 	testText("\\rules only html wikilink\nWikiLink",
 	         "\\rules only html wikilink\n<$link to='to there'/>",
 	         report, {from: "WikiLink"});
+});
 
-	// link can be pretty, but pretty isn't allowed
+it('respects brackets and \\rules', function() {
+	var input = "\\rules except prettylink\nWikiLink";
 	var prettyOnly =  "to 'there```\"";
-	testFail("\\rules except prettylink\nWikiLink", false, {to: prettyOnly});
+	if (utils.bracketAttrsAllowed()) {
+		var expected = "\\rules except prettylink\n<$link to=[[" + prettyOnly + "]]/>";
+		// It can still relink, but in this case, widgets can handle it.
+		testText(input, expected, ['~WikiLink'], {to: prettyOnly});
+	} else {
+		utils.spyFailures(spyOn);
+		// link can be pretty, but pretty isn't allowed
+		testText(input, false, ['~WikiLink'], {to: prettyOnly});
+		expect(utils.failures).toHaveBeenCalledTimes(1);
+	}
 });
 
 it("reports", function() {
