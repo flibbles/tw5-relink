@@ -42,9 +42,7 @@ beforeEach(function() {
 it('relinks actual definition', function() {
 	var prefix = variablePrefix + "test ";
 	var options = {prefix: prefix, noglobal: true};
-	testText('\\whitespace trim\n\n\t\\procedure from() C\n', true, undefined, options);
 	// Whitespace preservation
-	testText('\t\\procedure from( arg ) C\n', true, undefined, options);
 	testText('\\procedure from(\n\targ\n) C\n', true, undefined, options);
 	testText('\\define from(\n\targ\n) C\n', true, undefined, options);
 	testText('\\define\n\tfrom(\n\targ\n) C\n', true, undefined, options);
@@ -76,6 +74,14 @@ it('relinks actual definition', function() {
 	         '\\define t>>o(arg) <<from>>\nbody',
 	         ['\\define from() <<>>'], Object.assign(options, {to: "t>>o"}));
 	expect(utils.failures).toHaveBeenCalledTimes(1);
+});
+
+(utils.spacesBeforePragmaAllowed()? it: xit)
+("does not interfere even when spaces precede pragma", function() {
+	var prefix = variablePrefix + "test ";
+	var options = {prefix: prefix, noglobal: true};
+	testText('\\whitespace trim\n\n\t\\procedure from() C\n', true, undefined, options);
+	testText('\t\\procedure from( arg ) C\n', true, undefined, options);
 });
 
 it('definition does not consider its own title a placeholder', function() {

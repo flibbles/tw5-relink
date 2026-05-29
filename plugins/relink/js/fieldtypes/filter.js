@@ -7,7 +7,6 @@ This specifies logic for updating filters to reflect title changes.
 var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
-var filterRelinkers = utils.getModulesByTypeAsHashmap('relinkfilter', 'name');
 
 exports.name = "filter";
 
@@ -19,8 +18,9 @@ exports.report = function(filter, callback, options) {
 			// It must have been malformed. Return without doing anything.
 			return;
 		}
-		for (var module in filterRelinkers) {
-			filterRelinkers[module].report(parseTree, callback, options);
+		var relinkers = FilterRelinkers();
+		for (var module in relinkers) {
+			relinkers[module].report(parseTree, callback, options);
 		}
 	}
 };
@@ -38,8 +38,9 @@ exports.relink = function(filter, fromTitle, toTitle, options) {
 			// It must have been malformed. Return without doing anything.
 			return;
 		}
-		for (var module in filterRelinkers) {
-			var entry = filterRelinkers[module].relink(parseTree, fromTitle, toTitle, options);
+		var relinkers = FilterRelinkers();
+		for (var module in relinkers) {
+			var entry = relinkers[module].relink(parseTree, fromTitle, toTitle, options);
 			if (entry) {
 				if (entry.changed) {
 					changed = true;
@@ -254,4 +255,13 @@ function canBePrettyOperand(value) {
 
 function canBeInBraces(value) {
 	return value.indexOf("}}}") < 0 && value.substr(value.length-2) !== '}}';
+};
+
+var _filterRelinkers;
+
+function FilterRelinkers() {
+	if (!_filterRelinkers) {
+		_filterRelinkers = utils.getModulesByTypeAsHashmap('relinkfilter', 'name');
+	}
+	return _filterRelinkers;
 };

@@ -23,7 +23,8 @@ function testText(text, expected, report, options) {
 	expect(utils.getText('test', wiki)).toEqual(expected);
 };
 
-describe("conditional", function() {
+($tw.wiki.renderText(null, null, "<%if T%>yes<%endif%>") === "yes"?
+describe: xdescribe)("conditional", function() {
 
 beforeEach(function() {
 	spyOn(console, 'log');

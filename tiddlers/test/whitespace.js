@@ -25,6 +25,10 @@ it('does not interfere with later pragma', function() {
 	test('\\whitespace trim\n\\function test() [tag[from here]]\n');
 	test('\\whitespace trim\n\n\n\\function test() [tag[from here]]\n');
 	test('\\whitespace trim\r\n\r\n\\function test() [tag[from here]]\n');
+});
+
+(utils.spacesBeforePragmaAllowed()? it: xit)
+("does not interfere even when spaces precede pragma", function() {
 	test('\\whitespace trim\n    \\function test() [tag[from here]]\n');
 });
 

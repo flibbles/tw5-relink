@@ -23,6 +23,11 @@ function test(text) {
 
 it('does not interfere with pragma', function() {
 	test('<!-- Comment -->\n\\function test() [tag[from here]]\n');
+	test('<!--\n\nComment\n\n-->\n\\function test() [tag[from here]]\n');
+});
+
+(utils.spacesBeforePragmaAllowed()? it: xit)
+("does not interfere even when spaces precede pragma", function() {
 	test('<!-- Comment -->\\function test() [tag[from here]]\n');
 	test('<!--\n\nComment\n\n-->\n  \\function test() [tag[from here]]\n');
 });

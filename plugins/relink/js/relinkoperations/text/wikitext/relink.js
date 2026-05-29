@@ -10,7 +10,7 @@ It takes care of providing its own relink and report rules.
 
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 var language = require('$:/plugins/flibbles/relink/js/language.js');
-var pragmaOperators = utils.getModulesByTypeAsHashmap('relinkpragma', 'name');
+var pragmaOperators;
 
 exports.name = "relink";
 exports.types = {pragma: true};
@@ -70,6 +70,9 @@ exports.parse = function() {
 };
 
 exports.report = function(text, callback, options) {
+	if (!pragmaOperators) {
+		pragmaOperators = utils.getModulesByTypeAsHashmap('relinkpragma', 'name');
+	}
 	operate(this, options);
 	for (var operator in pragmaOperators) {
 		pragmaOperators[operator].report(this, callback, options);
@@ -77,6 +80,9 @@ exports.report = function(text, callback, options) {
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
+	if (!pragmaOperators) {
+		pragmaOperators = utils.getModulesByTypeAsHashmap('relinkpragma', 'name');
+	}
 	operate(this, options);
 	var entry;
 	for (var operator in pragmaOperators) {
