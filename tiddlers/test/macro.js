@@ -151,7 +151,8 @@ it('quotation of originalValue', function() {
 	testText('<<test x from>>', true, ['<<test Btitle>>'], {from: "from", to: "to=there"});
 });
 
-it('unquotable titles', function() {
+(utils.substitutionAttrsAllowed()? it: xit)
+('unquotable titles', function() {
 	var to = `to''[]]there"`;
 	testText("Macro <<test stuff 'from here'>>.",
 	         "Macro <$macrocall $name=test A=stuff Btitle=`"+to+"`/>.",
@@ -177,7 +178,8 @@ it('unquotable titles', function() {
 	         ['<<test Btitle>>'], {to: to});
 });
 
-it('unquotable wikitext', function() {
+(utils.substitutionAttrsAllowed()? it: xit)
+('unquotable wikitext', function() {
 	// wikitext fails when it's too complicated.
 	var to = "' ``` ]]}}\"";
 	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>", false,
@@ -211,7 +213,8 @@ it('respects \\rules', function() {
 	         {to: to, fails: 1});
 });
 
-it('undefined macros', function() {
+(utils.substitutionAttrsAllowed()? it: xit)
+('undefined macros', function() {
 	// Relink will try it's best to tolerate macro settings that have
 	// no coreesponding macro definition, but it'll fail if there's a
 	// chance it's not relinking when it should.
@@ -363,7 +366,8 @@ it('local macros simple', function() {
 	         ['<<outer text="<<inner title>>" />'], {wiki: wiki});
 });
 
-it('slashes in macro name', function() {
+(utils.substitutionAttrsAllowed()? it: xit)
+('slashes in macro name', function() {
 	// non/attr is a legal macro name, but not a legal
 	// unquoted attribute
 	// Also, it might goof up our settings system

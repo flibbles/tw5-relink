@@ -20,7 +20,8 @@ function testText(text, expected, report, options) {
 	expect(utils.getText('test', wiki)).toEqual(expected);
 };
 
-describe("parameters", function() {
+(utils.fnprocdefAllowed()?
+describe: xdescribe)("parameters", function() {
 
 beforeEach(function() {
 	spyOn(console, 'log');
