@@ -103,7 +103,9 @@ function getInfoFromRule(rule) {
 
 function mustBeAWidget(macro) {
 	for (var i = 0; i < macro.params.length; i++) {
-		if (macrocall.wrapParameterValue(macro.params[i].value) === undefined) {
+		var param = macro.params[i];
+		if (param.assignmentOperator !== '='
+		&& macrocall.wrapParameterValue(param.value) === undefined) {
 			return true;
 		}
 	}
@@ -135,6 +137,8 @@ function macroToWidgetString(macro, names) {
 		var val;
 		if (p.newValue) {
 			val = p.newValue;
+		} else if (p.type === 'indirect') {
+			val = '{{' + p.textReference + '}}';
 		} else {
 			val = utils.wrapAttributeValue(p.value);
 		}

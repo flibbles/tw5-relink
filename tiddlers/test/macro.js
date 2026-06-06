@@ -93,6 +93,15 @@ it("doesn't choke if attribute string == macro name", function() {
 	         {wiki: wiki, from: "jsontiddlers", to: "to"});
 });
 
+($tw.wiki.renderText(null, null, "\\procedure X(V) <<V>>\n<<X V={{{ yes }}}>>") === "yes"?
+it: xit)('handles newfangled attribute-like parameters', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler({title: "from here", text: "Expected"});
+	testText("<<test Btitle={{from here}}>>", true, ['<<test Btitle={{}}>>'], {wiki: wiki});
+	testText("<<test\n\tBtitle  =  {{from here}}>>", true, ['<<test Btitle={{}}>>'], {wiki: wiki});
+	// TODO: Needs to test all the other kinds of non-string parameters
+});
+
 it('core javascript macros', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddlers([

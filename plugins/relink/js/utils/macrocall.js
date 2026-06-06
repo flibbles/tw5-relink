@@ -57,11 +57,32 @@ exports.reassemble = function(entry, text, options) {
 	for (var i = 0; i < macro.params.length; i++) {
 		var param = macro.params[i];
 		if (param.modified) {
-			var newValue = exports.wrapParameterValue(param.value, param.quote);
-			if (newValue === undefined) {
-				entry.impossible = true;
-			} else {
-				builder.add(newValue, param.start, param.end);
+			var quotedValue = undefined;
+			var impossible = false;
+			switch (param.type) {
+			case "indirect":
+				// We've got to skip whitespace if it's there.
+				// param.start is inconsistent.
+				quotedValue = "{{" + param.textReference + "}}";
+				break;
+			default:
+				quotedValue = exports.wrapParameterValue(param.value, param.quote);
+				if (quotedValue === undefined) {
+					impossible = true;
+					entry.impossible = true;
+				}
+			}
+			if (quotedValue && !impossible) {
+				var ptr = param.start;
+				ptr = $tw.utils.skipWhiteSpace(text, ptr);
+				// param.start points to different places depending one
+				if (param.assignmentOperator === "=") {
+					ptr += param.name.length;
+					ptr = $tw.utils.skipWhiteSpace(text, ptr);
+					ptr++ // skip the '=' or ':'
+					ptr = $tw.utils.skipWhiteSpace(text, ptr);
+				}
+				builder.add(quotedValue, ptr, param.end);
 			}
 		}
 	}

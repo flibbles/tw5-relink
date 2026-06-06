@@ -14,7 +14,7 @@ var utils = require("./utils");
 
 var variablePrefix = "$:/temp/flibbles/relink-variables/";
 
-function testText(text, expected, report, options) {
+function testText(text, expected, expectedReport, options) {
 	options = Object.assign({from: 'from', to: 'to'}, options);
 	const wiki = options.wiki || new $tw.Wiki();
 	if (expected === true) {
@@ -28,7 +28,9 @@ function testText(text, expected, report, options) {
 		wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\" + defType + " " + options.from + "(Atitle Bwiki Cfilter) content\n\\relink " + options.from + " Atitle Bwiki:wikitext Cfilter:filter\n"});
 	}
 	var prefix = options.prefix || (variablePrefix + "global ");
-	expect(utils.getReport('test', wiki)[prefix + options.from]).toEqual(report);
+	var report = utils.getReport('test', wiki)[prefix + options.from];
+	report && report.sort();
+	expect(report).toEqual(expectedReport);
 	wiki.renameTiddler(prefix + options.from, prefix + options.to, options);
 	expect(utils.getText('test', wiki)).toEqual(expected);
 };
@@ -124,7 +126,7 @@ it('overriding definitions in other files', function() {
 it('macrocall wikitext', function() {
 	testText("Begin <<from>> End", true, ['<<>>']);
 	testText("<<from content>>", true, ['<< content>>']);
-	testText("<<from Bwiki: '<<from>>'>>", true, ['<<from Bwiki: "<<>>">>', '<< Bwiki: "<<from>>">>']);
+	testText("<<from Bwiki: '<<from>>'>>", true, ['<< Bwiki: "<<from>>">>', '<<from Bwiki: "<<>>">>']);
 	testText("B<<from Atitle:'title'>>", true, ['<< Atitle: title>>']);
 	testText("B<<from 'title'>>", true, ['<< title>>']);
 	testText("B<<from Bwiki: 'wiki' 'title'>>", true, ['<< Bwiki: wiki title>>']);
@@ -188,7 +190,7 @@ it('[function[]]', function() {
 		utils.attrConf('$list', 'filter', 'filter')]);
 	var options = {defType: 'function', wiki: wiki};
 	testText("{{{ [[A]function[from]] }}}", true, ['{{{[function[]]}}}'], options);
-	testText("{{{ [[A]function[from],[],[<<from>>]] }}}", true, ['{{{[function[from],,[<<>>]]}}}', '{{{[function[]]}}}'], options);
+	testText("{{{ [[A]function[from],[],[<<from>>]] }}}", true, ['{{{[function[]]}}}', '{{{[function[from],,[<<>>]]}}}'], options);
 	// Works in other contexts
 	testText("<$list filter='[[A]function[from]]'/>", true, ['<$list filter="[function[]]" />'], options);
 	testText("<$text text={{{[[A]function[from]]}}}/>", true, ['<$text text={{{[function[]]}}} />'], options);
@@ -203,7 +205,7 @@ it('[direct call[]]', function() {
 	         {defType: 'function', from: '.from', to: '.to'});
 	// Replaces operator and an operand
 	testText("{{{ [.from[],[<<.from>>]] }}}",
-	         true, ['{{{[.from,[<<>>]]}}}', '{{{[,[<<.from>>]]}}}'],
+	         true, ['{{{[,[<<.from>>]]}}}', '{{{[.from,[<<>>]]}}}'],
 	         {defType: 'function', from: '.from', to: '.to'});
 	// Better reporting
 	testText("{{{ [.from[value],<text arg>,{filter}] }}}",
@@ -268,8 +270,8 @@ it('updates widgets', function() {
 	         true, ['< Atitle=... Bwiki=... Cfilter=... />'],
 	         {defType: "widget", from: "$.from", to: '$.to'})
 	// attributes change too
-	testText("Start<$.from Atitle=<<$.from>>>Content</$.from>End", true, ['<$.from Atitle=<<>> />', '< Atitle=<<$.from>> />'], {defType: 'widget', from: '$.from', to: '$.to'});
-	testText("Start<$.from Bwiki='<<$.from>>'>Content</$.from>End", true, ['<$.from Bwiki="<<>>" />', '< Bwiki="<<$.from>>" />'], {defType: 'widget', from: '$.from', to: '$.to'});
+	testText("Start<$.from Atitle=<<$.from>>>Content</$.from>End", true, ['< Atitle=<<$.from>> />', '<$.from Atitle=<<>> />'], {defType: 'widget', from: '$.from', to: '$.to'});
+	testText("Start<$.from Bwiki='<<$.from>>'>Content</$.from>End", true, ['< Bwiki="<<$.from>>" />', '<$.from Bwiki="<<>>" />'], {defType: 'widget', from: '$.from', to: '$.to'});
 	// Closing tags, or lack thereof.
 	testText("<$.from>Content", true, ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
 	testText("<$.from>Content</$.from></.$from>",
@@ -319,7 +321,7 @@ it("gives placeholders a chance to relink", function() {
 	};
 	testText("\\define test() A-$(from)$-B", true, ['\\define test() $()$']);
 	testText("\\procedure test() A-$(from)$-B", false);
-	testText("\\define test() A-$(from)$-B <<from>>", true, ['\\define test() <<>>', '\\define test() $()$']);
+	testText("\\define test() A-$(from)$-B <<from>>", true, ['\\define test() $()$', '\\define test() <<>>']);
 	// substitute filters don't work here
 	testText("\\define test() A-${[<from>] from }$-B", false);
 	utils.spyFailures(spyOn);
