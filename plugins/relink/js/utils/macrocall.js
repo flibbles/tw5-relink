@@ -60,10 +60,13 @@ exports.reassemble = function(entry, text, options) {
 			var quotedValue = undefined;
 			var impossible = false;
 			switch (param.type) {
-			case "indirect":
+			case 'indirect':
 				// We've got to skip whitespace if it's there.
 				// param.start is inconsistent.
 				quotedValue = "{{" + param.textReference + "}}";
+				break;
+			case 'filtered':
+				quotedValue = "{{{" + param.filter + "}}}";
 				break;
 			default:
 				quotedValue = exports.wrapParameterValue(param.value, param.quote);

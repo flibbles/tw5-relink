@@ -37,9 +37,11 @@ function getText(wiki, title) {
 
 describe("macro", function() {
 
+var failures;
+
 beforeEach(function() {
 	spyOn(console, 'log');
-	utils.spyFailures(spyOn);
+	failures = utils.spyFailures(spyOn);
 });
 
 it('argument orders', function() {
@@ -93,13 +95,31 @@ it("doesn't choke if attribute string == macro name", function() {
 	         {wiki: wiki, from: "jsontiddlers", to: "to"});
 });
 
+/*** Attribute-like Parameters ***/
+
 ($tw.wiki.renderText(null, null, "\\procedure X(V) <<V>>\n<<X V={{{ yes }}}>>") === "yes"?
-it: xit)('handles newfangled attribute-like parameters', function() {
+describe: xdescribe)('attribute-like parameters', function() {
+
+it('handle references', function() {
+	testText("<<test Btitle={{from here}}>>", true, ['<<test Btitle={{}}>>']);
+	testText("<<test\n\tBtitle  =  {{from here}}>>", true, ['<<test Btitle={{}}>>']);
+	testText("<<test Btitle={{from here}}>>", false, ['<<test Btitle={{}}>>'], {to: "title}withBracket", fails: 1});
+});
+
+it('handles filters', function() {
 	var wiki = new $tw.Wiki();
-	wiki.addTiddler({title: "from here", text: "Expected"});
-	testText("<<test Btitle={{from here}}>>", true, ['<<test Btitle={{}}>>'], {wiki: wiki});
-	testText("<<test\n\tBtitle  =  {{from here}}>>", true, ['<<test Btitle={{}}>>'], {wiki: wiki});
-	// TODO: Needs to test all the other kinds of non-string parameters
+	wiki.addTiddler(utils.operatorConf("title"));
+	wiki.addTiddler(utils.operatorConf("tag"));
+	testText("<<test\n\tBtitle  =  {{{ [[from here]] }}}>>", true, ['<<test Btitle={{{}}}>>'], {wiki: wiki});
+	testText("<<test\n\tBtitle  =  {{{ [tag[from here]] }}}>>", true, ['<<test Btitle={{{[tag[]]}}}>>'], {wiki: wiki});
+	// Can fail
+	testText("<<test\n\tBtitle  =  {{{ [{from here}] }}}>>", false, ['<<test Btitle={{{[{}]}}}>>'], {wiki: wiki, fails: 1, to: "E}}E"});
+});
+
+// TODO: Needs to test all the other kinds of non-string parameters
+// TODO: Impossibles
+// TODO: relink-variable reports may be off for attr-like parameters
+
 });
 
 it('core javascript macros', function() {
