@@ -116,6 +116,11 @@ it('handles filters', function() {
 	testText("<<test\n\tBtitle  =  {{{ [{from here}] }}}>>", false, ['<<test Btitle={{{[{}]}}}>>'], {wiki: wiki, fails: 1, to: "E}}E"});
 });
 
+it('handles macros', function() {
+	testText("<<test A=<<test Btitle='from here'>> >>", true, ['<<test A=<<test Btitle>>>>']);
+	testText("<<test A=<<test Btitle=<<test Btitle='from here'>> >> >>", true, ['<<test A=<<test Btitle=<<test Btitle>>>>>>']);
+});
+
 // TODO: Needs to test all the other kinds of non-string parameters
 // TODO: Impossibles
 // TODO: relink-variable reports may be off for attr-like parameters

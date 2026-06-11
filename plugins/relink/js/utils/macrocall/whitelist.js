@@ -28,6 +28,10 @@ exports.report = function(context, macro, callback, options) {
 			continue;
 		}
 		var param = macro.params[index];
+		if (param.type !== 'string'
+		&& param.assignmentOperator === "=") {
+			continue;
+		}
 		var handler = managedMacro[managedArg];
 		var nestedOptions = Object.create(options);
 		nestedOptions.settings = context;

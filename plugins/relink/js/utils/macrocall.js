@@ -68,6 +68,13 @@ exports.reassemble = function(entry, text, options) {
 			case 'filtered':
 				quotedValue = "{{{" + param.filter + "}}}";
 				break;
+			case 'macro':
+				var sub = param.value;
+				var subEntry = {output: sub};
+				//sub.start = utils.skipAttributeName(text, sub.start, param);
+				var subAssemble = exports.reassemble(subEntry, text, options);
+				quotedValue = subAssemble;
+				break;
 			default:
 				quotedValue = exports.wrapParameterValue(param.value, param.quote);
 				if (quotedValue === undefined) {
@@ -79,11 +86,9 @@ exports.reassemble = function(entry, text, options) {
 				var ptr = param.start;
 				ptr = $tw.utils.skipWhiteSpace(text, ptr);
 				// param.start points to different places depending one
-				if (param.assignmentOperator === "=") {
-					ptr += param.name.length;
-					ptr = $tw.utils.skipWhiteSpace(text, ptr);
-					ptr++ // skip the '=' or ':'
-					ptr = $tw.utils.skipWhiteSpace(text, ptr);
+				if (param.type !== "string"
+				&& param.assignmentOperator === "=") {
+					ptr = utils.skipAttributeName(text, ptr, param);
 				}
 				builder.add(quotedValue, ptr, param.end);
 			}

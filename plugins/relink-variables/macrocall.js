@@ -64,8 +64,11 @@ function formBlurb(macro, maxLength, truncLength) {
 			case 'indirect':
 				value = '{{' + utils.abridgeString(param.textReference, maxLength, truncLength) + '}}';
 				break;
-				value = '{{{' + utils.abridgeString(param.filter, maxLength, truncLength) + '}}}';
 			case 'filtered':
+				value = '{{{' + utils.abridgeString(param.filter, maxLength, truncLength) + '}}}';
+				break;
+			case 'macro':
+				value = '<<' + utils.abridgeString(param.value.name, maxLength, truncLength) + '}}}';
 				break;
 			default:
 				value = wrapValue(utils.abridgeString(param.value, maxLength, truncLength));

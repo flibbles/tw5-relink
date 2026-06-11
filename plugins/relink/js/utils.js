@@ -220,6 +220,13 @@ exports.determineQuote = function(text, param) {
 	return '';
 };
 
+exports.skipAttributeName = function(text, ptr, attribute) {
+	ptr += attribute.name.length;
+	ptr = $tw.utils.skipWhiteSpace(text, ptr);
+	ptr++ // skip the '=' or ':'
+	return $tw.utils.skipWhiteSpace(text, ptr);
+};
+
 /**We use this startsWith instead of the core utils one, because this one
  * uses native code if it can.
  */
