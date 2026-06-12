@@ -19,10 +19,9 @@ exports.report = function(attribute, callback, options) {
 };
 
 exports.relink = function(attribute, fromTitle, toTitle, options) {
-	var entry = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
+	var entry = refHandler.relinkInBraces(attribute.textReference, fromTitle, toTitle, options);
 	if (entry && entry.output) {
 		attribute.textReference = entry.output;
-		changed = true;
 	}
 	return entry;
 };

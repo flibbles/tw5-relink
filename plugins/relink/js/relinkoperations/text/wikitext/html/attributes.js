@@ -8,8 +8,6 @@ Handles all element attribute values. Most widget relinking happens here.
 
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 var utils = require('../utils.js');
-var refHandler = relinkUtils.getType('reference');
-var filterHandler = relinkUtils.getType('filter');
 var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
 var substitution = require("$:/plugins/flibbles/relink/js/utils/substitution.js");
 var attributeOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtmlattributes', 'name');
@@ -107,7 +105,13 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			continue;
 		}
 		var entry = undefined;
-		switch (attr.type) {
+		var typeHandler = attrTypeOperators[attr.type];
+		if (typeHandler) {
+			entry = typeHandler.relink(attr, fromTitle, toTitle, options);
+			if (entry && entry.output) {
+				changed = true;
+			}
+		} else switch (attr.type) {
 		case 'substituted':
 			if (utils.containsPlaceholders(attr.rawValue)) {
 				var subEntry = substitution.relink(attr.rawValue, fromTitle, toTitle, options);
@@ -159,20 +163,6 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 						attr.type = 'string';
 					}
 				}
-			}
-			break;
-		case 'indirect':
-			entry = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
-			if (entry && entry.output) {
-				attr.textReference = entry.output;
-				changed = true;
-			}
-			break;
-		case 'filtered':
-			entry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, options);
-			if (entry && entry.output) {
-				attr.filter = entry.output;
-				changed = true;
 			}
 			break;
 		case 'macro':

@@ -18,10 +18,9 @@ exports.report = function(attribute, callback, options) {
 };
 
 exports.relink = function(attribute, fromTitle, toTitle, options) {
-	var entry = filterHandler.relinkInBraces(attr.filter, fromTitle, toTitle, options);
+	var entry = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, options);
 	if (entry && entry.output) {
-		attr.filter = entry.output;
-		changed = true;
+		attribute.filter = entry.output;
 	}
 	return entry;
 };
