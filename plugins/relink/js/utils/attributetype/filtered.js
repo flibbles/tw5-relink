@@ -11,6 +11,10 @@ exports.name = 'filtered';
 exports.prefix = '{{{';
 exports.suffix = '}}}';
 
+exports.rawString = function(attribute, options) {
+	return attribute.filter;
+};
+
 exports.report = function(attribute, callback, options) {
 	filterHandler.report(attribute.filter, function(title, blurb, style) {
 		callback(title, '{{{' + blurb + '}}}', style);

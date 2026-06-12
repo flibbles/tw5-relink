@@ -9,6 +9,7 @@ Relinks \widgets in their html element form. (i.e. <$my.widget />)
 
 var utils = require("$:/plugins/flibbles/relink/js/utils.js");
 var varRelinker = utils.getType('variable');
+var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
 
 exports.name = 'variables';
 
@@ -73,15 +74,13 @@ function formBlurb(element, maxLength) {
 	for (var i = 0; i < attrs.length; i++) {
 		var attr = attrs[i];
 		blurb += ' ' + attr.name + '=';
-		switch (attr.type) {
+		var handler = attrTypeOperators[attr.type];
+		if (handler) {
+			var innerString = utils.abridgeString(handler.rawString(attr), maxLength);
+			blurb += handler.prefix + innerString + handler.suffix;
+		} else switch (attr.type) {
 		case 'string':
 			blurb += wrapValue(utils.abridgeString(attr.value, maxLength));
-			break;
-		case 'indirect':
-			blurb += '{{' + attr.textReference + '}}';
-			break;
-		case 'filtered':
-			blurb += '{{{' + utils.abridgeString(attr.filter.trim(), maxLength) + '}}}';
 			break;
 		case 'macro':
 			blurb += '<<' + attr.value.name + '>>';

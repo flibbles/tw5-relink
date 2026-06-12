@@ -3,6 +3,7 @@ var refHandler = utils.getType('reference');
 var filterHandler = utils.getType('filter');
 // TODO: This may be a problem
 var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
+var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
 
 exports.name = "parameters";
 
@@ -12,17 +13,13 @@ exports.report = function(context, macro, callback, options) {
 	for (var index in macro.params) {
 		var param = macro.params[index];
 		if (param.assignmentOperator === "=") {
-			switch (param.type) {
-			case 'indirect':
-				refHandler.report(param.textReference, function(title, blurb, style) {
-					callback(title, macro.name + ' ' + param.name + '={{' + (blurb || '') + '}}', style);
-				}, nestedOptions);
-				break;
-			case 'filtered':
-				filterHandler.report(param.filter, function(title, blurb, style) {
-					callback(title, macro.name + ' ' + param.name + '={{{' + blurb + '}}}', style);
+			var typeHandler = attrTypeOperators[param.type];
+			if (typeHandler) {
+				typeHandler.report(param, function(title, blurb, style) {
+					var newBlurb = macro.name + ' ' + param.name + '=' + blurb;
+					callback(title, newBlurb, style);
 				}, options);
-				break;
+			} else switch (param.type) {
 			case 'macro':
 				var submacro = param.value;
 				submacro.name = submacro.attributes["$variable"].value;
@@ -44,23 +41,14 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 		var param = macro.params[index];
 		if (param.assignmentOperator === '=') {
 			var entry;
-			switch (param.type) {
-			case 'indirect':
-				entry = refHandler.relinkInBraces(param.textReference, fromTitle, toTitle, nestedOptions);
+			var typeHandler = attrTypeOperators[param.type];
+			if (typeHandler) {
+				entry = typeHandler.relink(param, fromTitle, toTitle, options);
 				if (entry && entry.output) {
-					param.textReference = entry.output;
 					param.modified = true;
 					changed = true;
 				}
-				break;
-			case 'filtered':
-				entry = filterHandler.relinkInBraces(param.filter, fromTitle, toTitle, options);
-				if (entry && entry.output) {
-					param.filter = entry.output;
-					param.modified = true;
-					changed = true;
-				}
-				break;
+			} else switch (param.type) {
 			case 'macro':
 				var submacro = param.value;
 				submacro.name = submacro.attributes["$variable"].value;

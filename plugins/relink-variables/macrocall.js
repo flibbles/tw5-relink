@@ -9,6 +9,7 @@ Handles relinking of variables in <<macrocall>> format.
 
 var utils = require("$:/plugins/flibbles/relink/js/utils.js");
 var varRelinker = utils.getType('variable');
+var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
 
 exports.name = 'variables';
 
@@ -60,13 +61,11 @@ function formBlurb(macro, maxLength, truncLength) {
 		var param = macro.params[i];
 		var value;
 		if (param.name !== "$variable") {
-			switch (param.type) {
-			case 'indirect':
-				value = '{{' + utils.abridgeString(param.textReference, maxLength, truncLength) + '}}';
-				break;
-			case 'filtered':
-				value = '{{{' + utils.abridgeString(param.filter, maxLength, truncLength) + '}}}';
-				break;
+			var handler = attrTypeOperators[param.type];
+			if (handler) {
+				var innerString = utils.abridgeString(handler.rawString(param), maxLength);
+				value = handler.prefix + innerString + handler.suffix;
+			} else switch (param.type) {
 			case 'macro':
 				value = '<<' + utils.abridgeString(param.value.name, maxLength, truncLength) + '}}}';
 				break;

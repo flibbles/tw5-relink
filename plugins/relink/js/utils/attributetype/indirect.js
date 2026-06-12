@@ -12,6 +12,10 @@ exports.name = 'indirect';
 exports.prefix = '{{';
 exports.suffix = '}}';
 
+exports.rawString = function(attribute, options) {
+	return attribute.textReference;
+};
+
 exports.report = function(attribute, callback, options) {
 	refHandler.report(attribute.textReference, function(title, blurb, style) {
 		callback(title, '{{' + (blurb || '') + '}}', style);
