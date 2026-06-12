@@ -13,6 +13,7 @@ var filterHandler = relinkUtils.getType('filter');
 var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
 var substitution = require("$:/plugins/flibbles/relink/js/utils/substitution.js");
 var attributeOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtmlattributes', 'name');
+var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
 
 exports.name = "attributes";
 
@@ -26,7 +27,13 @@ exports.report = function(element, parser, callback, options) {
 		if (nextEql < 0 || nextEql > attr.end) {
 			continue;
 		}
-		switch (attr.type) {
+		var typeHandler = attrTypeOperators[attr.type];
+		if (typeHandler) {
+			typeHandler.report(attr, function(title, blurb, style) {
+				var newBlurb = element.tag + ' ' + attributeName + '=' + blurb;
+				callback(title, newBlurb, style);
+			}, options);
+		} else switch (attr.type) {
 		case "string":
 			for (var operatorName in attributeOperators) {
 				var operator = attributeOperators[operatorName];
@@ -47,16 +54,6 @@ exports.report = function(element, parser, callback, options) {
 					break;
 				}
 			}
-			break;
-		case "indirect":
-			refHandler.report(attr.textReference, function(title, blurb, style) {
-				callback(title, element.tag + ' ' + attributeName + '={{' + (blurb || '') + '}}', style);
-			}, options);
-			break;
-		case "filtered":
-			filterHandler.report(attr.filter, function(title, blurb, style) {
-				callback(title, element.tag + ' ' + attributeName + '={{{' + blurb + '}}}', style);
-			}, options);
 			break;
 		case "macro":
 			var macro = attr.value;

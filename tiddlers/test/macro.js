@@ -110,15 +110,25 @@ it('handles filters', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf("title"));
 	wiki.addTiddler(utils.operatorConf("tag"));
-	testText("<<test\n\tBtitle  =  {{{ [[from here]] }}}>>", true, ['<<test Btitle={{{}}}>>'], {wiki: wiki});
+	testText("X<<test\n\tBtitle  =  {{{ [[from here]] }}}>>", true, ['<<test Btitle={{{}}}>>'], {wiki: wiki});
 	testText("<<test\n\tBtitle  =  {{{ [tag[from here]] }}}>>", true, ['<<test Btitle={{{[tag[]]}}}>>'], {wiki: wiki});
 	// Can fail
-	testText("<<test\n\tBtitle  =  {{{ [{from here}] }}}>>", false, ['<<test Btitle={{{[{}]}}}>>'], {wiki: wiki, fails: 1, to: "E}}E"});
+	testText("<<test\n\tA  =  {{{ [{from here}] }}} Btitle:'from here'>>",
+	         "<<test\n\tA  =  {{{ [{from here}] }}} Btitle:'E}}E'>>",
+	         ['<<test A={{{[{}]}}}>>', '<<test Btitle>>'],
+	         {wiki: wiki, fails: 1, to: "E}}E"});
+});
+
+xit('handles substitution', function() {
+	testText("X<<test Btitle=`from title`>>", true, ['<<test Btitle>>']);
+	//testText("X<<test Btitle=`from title`>>", true, ['<<test Btitle>>'], {to: 'to`there'});
 });
 
 it('handles macros', function() {
 	testText("<<test A=<<test Btitle='from here'>> >>", true, ['<<test A=<<test Btitle>>>>']);
 	testText("<<test A=<<test Btitle=<<test Btitle='from here'>> >> >>", true, ['<<test A=<<test Btitle=<<test Btitle>>>>>>']);
+	// Can fail
+	testText("<<test A=<<test Btitle='from here'>> >>", false, ['<<test A=<<test Btitle>>>>'], {to: "to'\"\"\">>]]there", fails: 1});
 });
 
 // TODO: Needs to test all the other kinds of non-string parameters

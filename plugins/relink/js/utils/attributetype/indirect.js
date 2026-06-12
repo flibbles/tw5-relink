@@ -1,0 +1,28 @@
+/*\
+
+Manages indirect attribute.
+
+\*/
+
+var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
+var refHandler = relinkUtils.getType('reference');
+
+exports.name = 'indirect';
+
+exports.prefix = '{{';
+exports.suffix = '}}';
+
+exports.report = function(attribute, callback, options) {
+	refHandler.report(attribute.textReference, function(title, blurb, style) {
+		callback(title, '{{' + (blurb || '') + '}}', style);
+	}, options);
+};
+
+exports.relink = function(attribute, fromTitle, toTitle, options) {
+	var entry = refHandler.relinkInBraces(attr.textReference, fromTitle, toTitle, options);
+	if (entry && entry.output) {
+		attribute.textReference = entry.output;
+		changed = true;
+	}
+	return entry;
+};
