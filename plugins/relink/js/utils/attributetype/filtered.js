@@ -21,7 +21,7 @@ exports.report = function(attribute, callback, options) {
 	}, options);
 };
 
-exports.relink = function(attribute, fromTitle, toTitle, options) {
+exports.relink = function(attribute, text, fromTitle, toTitle, options) {
 	var entry = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, options);
 	if (entry && entry.output) {
 		attribute.filter = entry.output;

@@ -63,13 +63,10 @@ function formBlurb(macro, maxLength, truncLength) {
 		if (param.name !== "$variable") {
 			var handler = attrTypeOperators[param.type];
 			if (handler) {
-				var innerString = utils.abridgeString(handler.rawString(param), maxLength);
+				var raw = handler.rawString(param);
+				var innerString = utils.abridgeString(raw, maxLength, truncLength);
 				value = handler.prefix + innerString + handler.suffix;
-			} else switch (param.type) {
-			case 'macro':
-				value = '<<' + utils.abridgeString(param.value.name, maxLength, truncLength) + '}}}';
-				break;
-			default:
+			} else {
 				value = wrapValue(utils.abridgeString(param.value, maxLength, truncLength));
 			}
 			blurb += ' ' + (!param.isPositional && param.name? param.name + ': ': '') + value;

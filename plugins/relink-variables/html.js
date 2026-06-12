@@ -76,14 +76,12 @@ function formBlurb(element, maxLength) {
 		blurb += ' ' + attr.name + '=';
 		var handler = attrTypeOperators[attr.type];
 		if (handler) {
-			var innerString = utils.abridgeString(handler.rawString(attr), maxLength);
+			var raw = handler.rawString(attr);
+			var innerString = utils.abridgeString(raw, maxLength);
 			blurb += handler.prefix + innerString + handler.suffix;
 		} else switch (attr.type) {
 		case 'string':
 			blurb += wrapValue(utils.abridgeString(attr.value, maxLength));
-			break;
-		case 'macro':
-			blurb += '<<' + attr.value.name + '>>';
 			break;
 		case 'substituted':
 			blurb += '`' + utils.abridgeString(attr.rawValue, maxLength) + '`';

@@ -22,7 +22,7 @@ exports.report = function(attribute, callback, options) {
 	}, options);
 };
 
-exports.relink = function(attribute, fromTitle, toTitle, options) {
+exports.relink = function(attribute, text, fromTitle, toTitle, options) {
 	var entry = refHandler.relinkInBraces(attribute.textReference, fromTitle, toTitle, options);
 	if (entry && entry.output) {
 		attribute.textReference = entry.output;

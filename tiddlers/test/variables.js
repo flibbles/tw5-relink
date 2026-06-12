@@ -251,8 +251,8 @@ it('updates widgets', function() {
 	testText("<$.from\n\n/>", true, ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
 	testText("Start<$.from>Content</$.from>End", true, ['< />'], {defType: "widget", from: "$.from", to: '$.to'})
 	// attributes in blurb
-	testText("Content<$.from Atitle=val Bwiki={{ref}} Cfilter=<<macro>> Dwildcard={{{ fil }}} Esub=`sub`>Content</$.from>",
-	         true, ['< Atitle=val Bwiki={{ref}} Cfilter=<<macro>> Dwildcard={{{fil}}} Esub=`sub` />'],
+	testText("Content<$.from Atitle=val Bwiki={{ref}} Cfilter=<<mac>> Dwildcard={{{ fil }}} Esub=`sub`>Content</$.from>",
+	         true, ['< Atitle=val Bwiki={{ref}} Cfilter=<<mac>> Dwildcard={{{fil}}} Esub=`sub` />'],
 	         {defType: "widget", from: "$.from", to: '$.to'})
 	testText("<$.from Atitle='This is a very long attribute that needs to be truncated'>C</$.from>",
 	         true, ['< Atitle="This is a very long attribute ..." />'],

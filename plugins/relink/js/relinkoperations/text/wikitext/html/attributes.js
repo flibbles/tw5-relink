@@ -8,7 +8,6 @@ Handles all element attribute values. Most widget relinking happens here.
 
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 var utils = require('../utils.js');
-var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
 var substitution = require("$:/plugins/flibbles/relink/js/utils/substitution.js");
 var attributeOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtmlattributes', 'name');
 var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
@@ -52,14 +51,6 @@ exports.report = function(element, parser, callback, options) {
 					break;
 				}
 			}
-			break;
-		case "macro":
-			var macro = attr.value;
-			macro.name = macro.name || macro.attributes["$variable"].value;
-			macro.params = macro.params || macro.orderedAttributes;
-			macrocall.report(options.settings, macro, function(title, blurb, style) {
-				callback(title, element.tag + ' ' + attributeName + '=<<' + blurb + '>>', style);
-			}, options);
 			break;
 		case "substituted":
 			substitution.report(attr.rawValue, function(title, blurb, style) {
@@ -107,7 +98,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		var entry = undefined;
 		var typeHandler = attrTypeOperators[attr.type];
 		if (typeHandler) {
-			entry = typeHandler.relink(attr, fromTitle, toTitle, options);
+			entry = typeHandler.relink(attr, parser.source, fromTitle, toTitle, options);
 			if (entry && entry.output) {
 				changed = true;
 			}
@@ -163,17 +154,6 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 						attr.type = 'string';
 					}
 				}
-			}
-			break;
-		case 'macro':
-			var macro = attr.value;
-			macro.name = macro.name || macro.attributes["$variable"].value;
-			macro.params = macro.params || macro.orderedAttributes;
-			entry = macrocall.relink(options.settings, macro, parser.source, fromTitle, toTitle, false, options);
-			if (entry && entry.output) {
-				attr.output = macrocall.reassemble(entry, parser.source, options);
-				attr.value = entry.output;
-				changed = true;
 			}
 			break;
 		}
