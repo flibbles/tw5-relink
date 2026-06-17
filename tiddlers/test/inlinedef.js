@@ -8,7 +8,7 @@ As in: \relink macroName macroParam:macroType ...
 
 var utils = require("./utils");
 
-function testText(text, expected, report, options) {
+function testText(text, expected, expectedReport, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);
 	utils.failures.calls.reset();
 	const wiki = options.wiki || new $tw.Wiki();
@@ -17,10 +17,13 @@ function testText(text, expected, report, options) {
 	} else if (expected === false) {
 		expected = text;
 	}
+	expectedReport && expectedReport.sort();
 	wiki.addTiddlers(
 		[Object.assign({title: 'test', text: text}, options.fields)]);
 	wiki.addTiddlers(utils.setupTiddlers());
-	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+	var report = utils.getReport('test', wiki)[options.from];
+	report && report.sort();
+	expect(report).toEqual(expectedReport);
 	wiki.renameTiddler(options.from, options.to, options);
 	expect(utils.getText('test', wiki)).toEqual(expected);
 	expect(utils.failures).toHaveBeenCalledTimes(options.fails || 0);

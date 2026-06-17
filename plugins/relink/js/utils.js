@@ -271,3 +271,11 @@ function getRelinkOperators() {
 	}
 	return relinkOperators;
 };
+
+// Error thrown when a macro's definition is needed, but can't be found.
+exports.CannotFindMacroDef = function() {};
+exports.CannotFindMacroDef.prototype.impossible = true;
+exports.CannotFindMacroDef.prototype.name = "macroparam";
+// Failed relinks due to missing definitions aren't reported for now.
+// I may want to do something special later on.
+exports.CannotFindMacroDef.prototype.report = function() { return []; };

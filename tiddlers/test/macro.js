@@ -6,8 +6,9 @@ Tests macros.
 
 var utils = require("./utils");
 
-function testText(text, expected, report, options) {
+function testText(text, expected, expectedReport, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);
+	expectedReport && expectedReport.sort()
 	const wiki = options.wiki || new $tw.Wiki();
 	if (expected === true) {
 		expected = text.split(options.from).join(options.to);
@@ -24,7 +25,9 @@ function testText(text, expected, report, options) {
 		{title: "testMacro", tags: "$:/tags/Macro",
 		 text: "\\define test(A, Btitle, Clist, Dref, Ewiki) stuff\n"}
 	]);
-	expect(utils.getReport('test', wiki)[options.from]).toEqual(report);
+	var report = utils.getReport('test', wiki)[options.from];
+	report && report.sort();
+	expect(report).toEqual(expectedReport);
 	utils.failures.calls.reset();
 	wiki.renameTiddler(options.from, options.to, options);
 	expect(utils.getText('test', wiki)).toEqual(expected);

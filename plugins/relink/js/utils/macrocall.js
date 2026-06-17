@@ -86,8 +86,7 @@ exports.reassemble = function(entry, text, options) {
 				var ptr = param.start;
 				ptr = $tw.utils.skipWhiteSpace(text, ptr);
 				// param.start points to different places depending one
-				if (param.type !== "string"
-				&& param.assignmentOperator === "=") {
+				if (param.name && !param.isPositional) {
 					ptr = utils.skipAttributeName(text, ptr, param);
 				}
 				builder.add(quotedValue, ptr, param.end);
