@@ -8,8 +8,10 @@ var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 var filterHandler = relinkUtils.getType('filter');
 
 exports.name = 'filtered';
-exports.prefix = '{{{';
-exports.suffix = '}}}';
+
+exports.wrap = function(filter) {
+	return "{{{" + filter + "}}}";
+};
 
 exports.rawString = function(attribute, options) {
 	return attribute.filter;

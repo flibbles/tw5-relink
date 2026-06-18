@@ -9,8 +9,9 @@ var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
 
 exports.name = 'macro';
 
-exports.prefix = '<<';
-exports.suffix = '>>';
+exports.wrap = function(macroString) {
+	return "<<" + macroString + ">>";
+};
 
 exports.rawString = function(attribute, options) {
 	return attribute.value.name;

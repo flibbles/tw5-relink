@@ -75,9 +75,6 @@ function formBlurb(element, maxLength) {
 		var attr = attrs[i];
 		blurb += ' ' + attr.name + '=';
 		switch (attr.type) {
-		case 'string':
-			blurb += wrapValue(utils.abridgeString(attr.value, maxLength));
-			break;
 		case 'substituted':
 			blurb += '`' + utils.abridgeString(attr.rawValue, maxLength) + '`';
 			break;
@@ -86,7 +83,7 @@ function formBlurb(element, maxLength) {
 			if (handler) {
 				var raw = handler.rawString(attr);
 				var innerString = utils.abridgeString(raw, maxLength);
-				blurb += handler.prefix + innerString + handler.suffix;
+				blurb += handler.wrap(innerString);
 			}
 		}
 	}

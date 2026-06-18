@@ -41,20 +41,6 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 	return entry;
 };
 
-function wrapValue(value) {
-	if (!/([\s>"':])/.test(value) && value.length > 0) {
-		return value;
-	} else if (value.indexOf('"') < 0) {
-		return '"' + value + '"';
-	} else if (value.indexOf('\'') < 0) {
-		return '\'' + value + '\'';
-	} else if (value.indexOf(']]') < 0) {
-		return '[[' + value + ']]';
-	}
-	// I guess just go with the quotes then
-	return '"' + value + '"';
-};
-
 function formBlurb(macro, maxLength, truncLength) {
 	var blurb = '';
 	for (var i = 0; i < macro.params.length; i++) {
@@ -65,9 +51,7 @@ function formBlurb(macro, maxLength, truncLength) {
 			if (handler) {
 				var raw = handler.rawString(param);
 				var innerString = utils.abridgeString(raw, maxLength, truncLength);
-				value = handler.prefix + innerString + handler.suffix;
-			} else {
-				value = wrapValue(utils.abridgeString(param.value, maxLength, truncLength));
+				value = handler.wrap(innerString);
 			}
 			blurb += ' ' + (!param.isPositional && param.name? param.name + ': ': '') + value;
 		}

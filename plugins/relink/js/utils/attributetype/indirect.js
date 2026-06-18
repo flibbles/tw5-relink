@@ -9,8 +9,9 @@ var refHandler = relinkUtils.getType('reference');
 
 exports.name = 'indirect';
 
-exports.prefix = '{{';
-exports.suffix = '}}';
+exports.wrap = function(textReference) {
+	return "{{" + textReference + "}}";
+};
 
 exports.rawString = function(attribute, options) {
 	return attribute.textReference;
