@@ -74,18 +74,20 @@ function formBlurb(element, maxLength) {
 	for (var i = 0; i < attrs.length; i++) {
 		var attr = attrs[i];
 		blurb += ' ' + attr.name + '=';
-		var handler = attrTypeOperators[attr.type];
-		if (handler) {
-			var raw = handler.rawString(attr);
-			var innerString = utils.abridgeString(raw, maxLength);
-			blurb += handler.prefix + innerString + handler.suffix;
-		} else switch (attr.type) {
+		switch (attr.type) {
 		case 'string':
 			blurb += wrapValue(utils.abridgeString(attr.value, maxLength));
 			break;
 		case 'substituted':
 			blurb += '`' + utils.abridgeString(attr.rawValue, maxLength) + '`';
 			break;
+		default:
+			var handler = attrTypeOperators[attr.type];
+			if (handler) {
+				var raw = handler.rawString(attr);
+				var innerString = utils.abridgeString(raw, maxLength);
+				blurb += handler.prefix + innerString + handler.suffix;
+			}
 		}
 	}
 	return blurb;

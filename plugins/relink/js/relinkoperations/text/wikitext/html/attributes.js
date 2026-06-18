@@ -24,13 +24,7 @@ exports.report = function(element, parser, callback, options) {
 		if (nextEql < 0 || nextEql > attr.end) {
 			continue;
 		}
-		var typeHandler = attrTypeOperators[attr.type];
-		if (typeHandler) {
-			typeHandler.report(attr, function(title, blurb, style) {
-				var newBlurb = element.tag + ' ' + attributeName + '=' + blurb;
-				callback(title, newBlurb, style);
-			}, options);
-		} else switch (attr.type) {
+		switch (attr.type) {
 		case "string":
 			for (var operatorName in attributeOperators) {
 				var operator = attributeOperators[operatorName];
@@ -79,6 +73,14 @@ exports.report = function(element, parser, callback, options) {
 				}
 			}
 			break;
+		default:
+			var typeHandler = attrTypeOperators[attr.type];
+			if (typeHandler) {
+				typeHandler.report(attr, function(title, blurb, style) {
+					var newBlurb = element.tag + ' ' + attributeName + '=' + blurb;
+					callback(title, newBlurb, style);
+				}, options);
+			}
 		}
 	}
 };
@@ -96,13 +98,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			continue;
 		}
 		var entry = undefined;
-		var typeHandler = attrTypeOperators[attr.type];
-		if (typeHandler) {
-			entry = typeHandler.relink(attr, parser.source, fromTitle, toTitle, options);
-			if (entry && entry.output) {
-				changed = true;
-			}
-		} else switch (attr.type) {
+		switch (attr.type) {
 		case 'substituted':
 			if (utils.containsPlaceholders(attr.rawValue)) {
 				var subEntry = substitution.relink(attr.rawValue, fromTitle, toTitle, options);
@@ -156,6 +152,14 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 				}
 			}
 			break;
+		default:
+			var typeHandler = attrTypeOperators[attr.type];
+			if (typeHandler) {
+				entry = typeHandler.relink(attr, parser.source, fromTitle, toTitle, options);
+				if (entry && entry.output) {
+					changed = true;
+				}
+			}
 		}
 		if (entry && entry.impossible) {
 			impossible = true;
