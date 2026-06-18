@@ -45,7 +45,7 @@ function formBlurb(macro, maxLength, truncLength) {
 	var blurb = '';
 	for (var i = 0; i < macro.params.length; i++) {
 		var param = macro.params[i];
-		var value;
+		var value = '';
 		if (param.name !== "$variable") {
 			var handler = attrTypeOperators[param.type];
 			if (handler) {
@@ -53,6 +53,7 @@ function formBlurb(macro, maxLength, truncLength) {
 				var innerString = utils.abridgeString(raw, maxLength, truncLength);
 				value = handler.wrap(innerString);
 			}
+			// TODO: What does this do if value never got set?
 			blurb += ' ' + (!param.isPositional && param.name? param.name + ': ': '') + value;
 		}
 	}

@@ -58,33 +58,17 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 	return output;
 };
 
-function wrapValue(value) {
-	if (!/([\/\s<>"'`=])/.test(value) && value.length > 0) {
-		return value;
-	} else if (value.indexOf('"') < 0) {
-		return '"' + value + '"';
-	} else {
-		return '\'' + value + '\'';
-	}
-};
-
 function formBlurb(element, maxLength) {
 	var blurb = '';
 	var attrs = element.orderedAttributes;
 	for (var i = 0; i < attrs.length; i++) {
 		var attr = attrs[i];
+		var handler = attrTypeOperators[attr.type];
 		blurb += ' ' + attr.name + '=';
-		switch (attr.type) {
-		case 'substituted':
-			blurb += '`' + utils.abridgeString(attr.rawValue, maxLength) + '`';
-			break;
-		default:
-			var handler = attrTypeOperators[attr.type];
-			if (handler) {
-				var raw = handler.rawString(attr);
-				var innerString = utils.abridgeString(raw, maxLength);
-				blurb += handler.wrap(innerString);
-			}
+		if (handler) {
+			var raw = handler.rawString(attr);
+			var innerString = utils.abridgeString(raw, maxLength);
+			blurb += handler.wrap(innerString);
 		}
 	}
 	return blurb;
