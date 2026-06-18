@@ -25,27 +25,6 @@ exports.report = function(element, parser, callback, options) {
 			continue;
 		}
 		switch (attr.type) {
-		case "string":
-			for (var operatorName in attributeOperators) {
-				var operator = attributeOperators[operatorName];
-				var handler = operator.getHandler(element, attr, options);
-				if (handler) {
-					handler.report(attr.value, function(title, blurb, style) {
-						if (operator.formBlurb) {
-							if (blurb) {
-								blurb = '"' + blurb + '"';
-							}
-							callback(title, operator.formBlurb(element, attr, blurb, options), style);
-						} else if (blurb) {
-							callback(title, element.tag + ' ' + attributeName + '="' + blurb + '"', style);
-						} else {
-							callback(title, element.tag + ' ' + attributeName, style);
-						}
-					}, options);
-					break;
-				}
-			}
-			break;
 		case "substituted":
 			substitution.report(attr.rawValue, function(title, blurb, style) {
 				callback(title, element.tag + ' ' + attributeName + '=`' + blurb + '`', style);
@@ -77,7 +56,16 @@ exports.report = function(element, parser, callback, options) {
 			var typeHandler = attrTypeOperators[attr.type];
 			if (typeHandler) {
 				typeHandler.report(element, attr, attributeOperators, function(title, blurb, style) {
-					var newBlurb = element.tag + ' ' + attributeName + '=' + blurb;
+					var newBlurb;
+					if (style && style.customBlurb) {
+						newBlurb = blurb;
+						style.customBlurb = false;
+					} else {
+						newBlurb = element.tag + ' ' + attributeName;
+						if (blurb) {
+							newBlurb += '=' + blurb;
+						}
+					}
 					callback(title, newBlurb, style);
 				}, options);
 			}
