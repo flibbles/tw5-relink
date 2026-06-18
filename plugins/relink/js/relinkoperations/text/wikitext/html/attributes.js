@@ -76,7 +76,7 @@ exports.report = function(element, parser, callback, options) {
 		default:
 			var typeHandler = attrTypeOperators[attr.type];
 			if (typeHandler) {
-				typeHandler.report(attr, function(title, blurb, style) {
+				typeHandler.report(attr, attributeOperators, function(title, blurb, style) {
 					var newBlurb = element.tag + ' ' + attributeName + '=' + blurb;
 					callback(title, newBlurb, style);
 				}, options);

@@ -43,7 +43,7 @@ exports.report = function(context, macro, callback, options) {
 		} else {
 			var typeHandler = attrTypeOperators[param.type];
 			if (typeHandler) {
-				typeHandler.report(param, function(title, blurb, style) {
+				typeHandler.report(param, stringParameterOperators, function(title, blurb, style) {
 					var newBlurb = macro.name + ' ' + param.name + '=' + blurb;
 					callback(title, newBlurb, style);
 				}, options);

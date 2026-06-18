@@ -17,7 +17,7 @@ exports.rawString = function(attribute, options) {
 	return attribute.value.name;
 };
 
-exports.report = function(attribute, callback, options) {
+exports.report = function(attribute, valueModules, callback, options) {
 	var macro = attribute.value;
 	macro.name = macro.name || macro.attributes["$variable"].value;
 	macro.params = macro.params || macro.orderedAttributes;
