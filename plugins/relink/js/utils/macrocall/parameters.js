@@ -43,7 +43,7 @@ exports.report = function(context, macro, callback, options) {
 		} else {
 			var typeHandler = attrTypeOperators[param.type];
 			if (typeHandler) {
-				typeHandler.report(param, stringParameterOperators, function(title, blurb, style) {
+				typeHandler.report(macro, param, stringParameterOperators, function(title, blurb, style) {
 					var newBlurb = macro.name + ' ' + param.name + '=' + blurb;
 					callback(title, newBlurb, style);
 				}, options);
@@ -97,7 +97,7 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 			var entry;
 			var typeHandler = attrTypeOperators[param.type];
 			if (typeHandler) {
-				entry = typeHandler.relink(param, text, fromTitle, toTitle, options);
+				entry = typeHandler.relink(macro, param, stringParameterOperators, text, fromTitle, toTitle, options);
 				if (entry && entry.output) {
 					param.modified = true;
 					changed = true;

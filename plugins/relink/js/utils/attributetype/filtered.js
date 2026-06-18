@@ -17,13 +17,13 @@ exports.rawString = function(attribute, options) {
 	return attribute.filter;
 };
 
-exports.report = function(attribute, valueModules, callback, options) {
+exports.report = function(element, attribute, valueModules, callback, options) {
 	filterHandler.report(attribute.filter, function(title, blurb, style) {
 		callback(title, '{{{' + blurb + '}}}', style);
 	}, options);
 };
 
-exports.relink = function(attribute, text, fromTitle, toTitle, options) {
+exports.relink = function(element, attribute, valueModules, text, fromTitle, toTitle, options) {
 	var entry = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, options);
 	if (entry && entry.output) {
 		attribute.filter = entry.output;

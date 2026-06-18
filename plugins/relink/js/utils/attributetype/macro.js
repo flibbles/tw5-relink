@@ -17,7 +17,7 @@ exports.rawString = function(attribute, options) {
 	return attribute.value.name;
 };
 
-exports.report = function(attribute, valueModules, callback, options) {
+exports.report = function(element, attribute, valueModules, callback, options) {
 	var macro = attribute.value;
 	macro.name = macro.name || macro.attributes["$variable"].value;
 	macro.params = macro.params || macro.orderedAttributes;
@@ -26,7 +26,7 @@ exports.report = function(attribute, valueModules, callback, options) {
 	}, options);
 };
 
-exports.relink = function(attribute, text, fromTitle, toTitle, options) {
+exports.relink = function(element, attribute, valueModules, text, fromTitle, toTitle, options) {
 	var macro = attribute.value;
 	macro.name = macro.name || macro.attributes["$variable"].value;
 	macro.params = macro.params || macro.orderedAttributes;

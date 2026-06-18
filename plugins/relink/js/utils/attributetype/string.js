@@ -24,8 +24,8 @@ exports.rawString = function(attribute, options) {
 	return attribute.value;
 };
 
-exports.report = function(attribute, valueModules, callback, options) {
+exports.report = function(element, attribute, valueModules, callback, options) {
 };
 
-exports.relink = function(attribute, text, fromTitle, toTitle, options) {
+exports.relink = function(element, attribute, valueModules, text, fromTitle, toTitle, options) {
 };

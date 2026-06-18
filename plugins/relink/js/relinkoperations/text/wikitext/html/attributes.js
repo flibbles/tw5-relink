@@ -76,7 +76,7 @@ exports.report = function(element, parser, callback, options) {
 		default:
 			var typeHandler = attrTypeOperators[attr.type];
 			if (typeHandler) {
-				typeHandler.report(attr, attributeOperators, function(title, blurb, style) {
+				typeHandler.report(element, attr, attributeOperators, function(title, blurb, style) {
 					var newBlurb = element.tag + ' ' + attributeName + '=' + blurb;
 					callback(title, newBlurb, style);
 				}, options);
@@ -155,7 +155,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		default:
 			var typeHandler = attrTypeOperators[attr.type];
 			if (typeHandler) {
-				entry = typeHandler.relink(attr, parser.source, fromTitle, toTitle, options);
+				entry = typeHandler.relink(element, attr, attributeOperators, parser.source, fromTitle, toTitle, options);
 				if (entry && entry.output) {
 					changed = true;
 				}
