@@ -7,46 +7,24 @@ exports.name = "parameters";
 exports.report = function(context, macro, callback, options) {
 	var nestedOptions = Object.create(options);
 	nestedOptions.settings = context;
+	if (macro.resolved === undefined) {
+		assignNamesToNameless(macro, nestedOptions);
+	}
 	for (var index in macro.params) {
 		var param = macro.params[index];
-		if (param.assignmentOperator !== '='
-		|| param.type === 'string') {
-			for (var operatorName in stringParameterOperators) {
-				var operator = stringParameterOperators[operatorName];
-				if (macro.resolved === undefined) {
-					assignNamesToNameless(macro, nestedOptions);
-				}
-				try {
-					var handler = operator.getHandler(macro, param, nestedOptions);
-				} catch (e) {
-					// We couldn't find the definition
-					// Let's not RSoD, just ignore the macro
-					continue;
-				}
-				if (handler) {
-					handler.report(param.value, function(title, blurb, style) {
-						if (operator.formBlurb) {
-							if (blurb) {
-								blurb = '"' + blurb + '"';
-							}
-							callback(title, operator.formBlurb(macro, param, blurb, options), style);
-						} else if (blurb) {
-							var assignment = param.assignmentOperator || ":";
-							callback(title, macro.name + ' ' + param.resolvedName + assignment + ' "' + blurb + '"', style);
-						} else {
-							callback(title, macro.name + ' ' + param.resolvedName, style);
-						}
-					}, options);
-					break;
-				}
-			}
-		} else {
-			var typeHandler = attrTypeOperators[param.type];
-			if (typeHandler) {
+		var typeHandler = attrTypeOperators[param.type] || attrTypeOperators.string;
+		if (typeHandler) {
+			try {
 				typeHandler.report(macro, param, stringParameterOperators, function(title, blurb, style) {
-					var newBlurb = macro.name + ' ' + param.name + '=' + blurb;
+					var newBlurb = macro.name + ' ' + param.resolvedName;
+					if (blurb) {
+						var assign = param.assignmentOperator === '='? '=': ': ';
+						newBlurb += assign + blurb;
+					}
 					callback(title, newBlurb, style);
-				}, options);
+				}, nestedOptions);
+			} catch (e) {
+				// Let's not RSoD, just ignore the parameter
 			}
 		}
 	}
@@ -95,7 +73,7 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 			}
 		} else {
 			var entry;
-			var typeHandler = attrTypeOperators[param.type];
+			var typeHandler = attrTypeOperators[param.type] || attrTypeOperators.string;
 			if (typeHandler) {
 				entry = typeHandler.relink(macro, param, stringParameterOperators, text, fromTitle, toTitle, options);
 				if (entry && entry.output) {
