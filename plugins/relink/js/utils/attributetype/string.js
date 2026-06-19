@@ -4,6 +4,8 @@ Manages string attribute.
 
 \*/
 
+var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+
 exports.name = 'string';
 
 exports.wrap = function(value) {
@@ -59,6 +61,7 @@ exports.relink = function(element, attribute, valueModules, text, fromTitle, toT
 			var entry = handler.relink(attribute.value, fromTitle, toTitle, options);
 			if (entry) {
 				if (entry.output) {
+					attribute.quote = utils.determineQuote(text, attribute);
 					attribute.oldValue = attribute.value;
 					attribute.value = entry.output;
 					attribute.handler = handler.name;

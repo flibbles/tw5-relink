@@ -34,55 +34,29 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 	var changed = undefined, impossible = undefined;
 	var nestedOptions = Object.create(options);
 	nestedOptions.settings = context;
+	if (macro.resolved === undefined) {
+		assignNamesToNameless(macro, nestedOptions);
+	}
 	for (var index in macro.params) {
 		var param = macro.params[index];
-		if (param.assignmentOperator !== '='
-		|| param.type === 'string') {
-			for (var operatorName in stringParameterOperators) {
-				var operator = stringParameterOperators[operatorName];
-				if (macro.resolved === undefined) {
-					assignNamesToNameless(macro, nestedOptions);
-				}
-				try {
-					var handler = operator.getHandler(macro, param, nestedOptions);
-				} catch (e) {
-					if (e instanceof utils.CannotFindMacroDef) {
-						impossible = true;
-						continue;
-					}
-				}
-				if (handler) {
-					entry = handler.relink(param.value, fromTitle, toTitle, options);
-					if (entry) {
-						if (entry.output) {
-							param.quote = utils.determineQuote(text, param);
-							param.oldValue = param.value;
-							param.value = entry.output;
-							param.handler = handler.name;
-							changed = true;
-							param.modified = true;
-							// Change it into a string if this was a
-							// substitution that had no substitutions
-							param.type = 'string';
-						}
-						if (entry.impossible) {
-							impossible = true;
-						}
-					}
-				}
-			}
-		} else {
-			var entry;
-			var typeHandler = attrTypeOperators[param.type] || attrTypeOperators.string;
-			if (typeHandler) {
+		var entry;
+		var typeHandler = attrTypeOperators[param.type] || attrTypeOperators.string;
+		if (typeHandler) {
+			try {
 				entry = typeHandler.relink(macro, param, stringParameterOperators, text, fromTitle, toTitle, options);
 				if (entry && entry.output) {
-					param.modified = true;
 					changed = true;
+					param.modified = true;
 				}
-			}
-			if (entry && entry.impossible) {
-				impossible = true;
+				if (entry && entry.impossible) {
+					impossible = true;
+				}
+			} catch (e) {
+				if (e instanceof utils.CannotFindMacroDef) {
+					impossible = true;
+				} else {
+					throw e;
+				}
 			}
 		}
 	}
