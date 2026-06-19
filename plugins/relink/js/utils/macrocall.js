@@ -68,6 +68,9 @@ exports.reassemble = function(entry, text, options) {
 			case 'filtered':
 				quotedValue = "{{{" + param.filter + "}}}";
 				break;
+			case 'substituted':
+				quotedValue = "`" + param.rawValue + "`";
+				break;
 			case 'macro':
 				var sub = param.value;
 				var subEntry = {output: sub};

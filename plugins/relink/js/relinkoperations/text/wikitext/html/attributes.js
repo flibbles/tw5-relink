@@ -7,8 +7,6 @@ Handles all element attribute values. Most widget relinking happens here.
 'use strict';
 
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
-var utils = require('../utils.js');
-var substitution = require("$:/plugins/flibbles/relink/js/utils/substitution.js");
 var attributeOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtmlattributes', 'name');
 var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
 

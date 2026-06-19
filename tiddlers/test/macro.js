@@ -123,8 +123,19 @@ it('handles filters', function() {
 });
 
 xit('handles substitution', function() {
-	testText("X<<test Btitle=`from title`>>", true, ['<<test Btitle>>']);
-	//testText("X<<test Btitle=`from title`>>", true, ['<<test Btitle>>'], {to: 'to`there'});
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.operatorConf("title"));
+	wiki.addTiddler(utils.operatorConf("tag"));
+	testText("X<<test Btitle=`X${ [tag[from here]] }$Y`>>", true,
+	         ['<<test Btitle=`${[tag[]]}$`>>'], {wiki: wiki});
+	testText("X<<test Btitle=`X${ [tag[from here]] }$Y`>>",
+	         "X<<test Btitle=```X${ [tag[to`there]] }$Y```>>",
+	         ['<<test Btitle=`${[tag[]]}$`>>'], {wiki: wiki, to: "to`there"});
+	// Not actual substitution, just a quotation
+	testText("X<<test Btitle=`from here`>>",
+	         "X<<test Btitle='to there'>>", ['<<test Btitle>>']);
+	testText("X<<test Btitle=`from here`>>",
+	         "X<<test Btitle=to`t>>", ['<<test Btitle>>'], {to: 'to`t'});
 });
 
 it('handles macros', function() {
