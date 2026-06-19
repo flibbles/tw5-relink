@@ -24,51 +24,21 @@ exports.report = function(element, parser, callback, options) {
 		if (nextEql < 0 || nextEql > attr.end) {
 			continue;
 		}
-		switch (attr.type) {
-		case "substituted":
-			substitution.report(attr.rawValue, function(title, blurb, style) {
-				callback(title, element.tag + ' ' + attributeName + '=`' + blurb + '`', style);
-			}, options);
-			for (var operatorName in attributeOperators) {
-				var operator = attributeOperators[operatorName];
-				var handler = operator.getHandler(element, attr, options);
-				if (handler) {
-					handler.report(attr.rawValue, function(title, blurb, style) {
-						// Only consider titles without substitutions.
-						if (!utils.containsPlaceholders(title)) {
-							blurb = (utils.containsPlaceholders(attr.rawValue) || blurb)? '`' + blurb + '`': '';
-							if (operator.formBlurb) {
-								blurb = operator.formBlurb(element, attr, blurb, options);
-							} else {
-								if (blurb) {
-									blurb = '=' + blurb;
-								}
-								blurb = element.tag + ' ' + attributeName + blurb;
-							}
-							callback(title, blurb, style);
-						}
-					}, options);
-					break;
-				}
-			}
-			break;
-		default:
-			var typeHandler = attrTypeOperators[attr.type];
-			if (typeHandler) {
-				typeHandler.report(element, attr, attributeOperators, function(title, blurb, style) {
-					var newBlurb;
-					if (style && style.customBlurb) {
-						newBlurb = blurb;
-						style.customBlurb = false;
-					} else {
-						newBlurb = element.tag + ' ' + attributeName;
-						if (blurb) {
-							newBlurb += '=' + blurb;
-						}
+		var typeHandler = attrTypeOperators[attr.type];
+		if (typeHandler) {
+			typeHandler.report(element, attr, attributeOperators, function(title, blurb, style) {
+				var newBlurb;
+				if (style && style.customBlurb) {
+					newBlurb = blurb;
+					style.customBlurb = false;
+				} else {
+					newBlurb = element.tag + ' ' + attributeName;
+					if (blurb) {
+						newBlurb += '=' + blurb;
 					}
-					callback(title, newBlurb, style);
-				}, options);
-			}
+				}
+				callback(title, newBlurb, style);
+			}, options);
 		}
 	}
 };

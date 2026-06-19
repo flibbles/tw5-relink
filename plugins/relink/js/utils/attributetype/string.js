@@ -37,15 +37,13 @@ exports.report = function(element, attribute, valueModules, callback, options) {
 						// TODO: Maybe I want to use the wrap, but it'll involve changing some tests
 						blurb = '"' + blurb + '"';
 					}
-					var customBlurb = operator.formBlurb(element, attribute, blurb, options);
+					blurb  = operator.formBlurb(element, attribute, blurb, options);
 					style = style || {};
 					style.customBlurb = true;
-					callback(title, customBlurb, style);
 				} else if (blurb) {
-					callback(title, '"' + blurb + '"', style);
-				} else {
-					callback(title, blurb, style);
+					blurb = '"' + blurb + '"';
 				}
+				callback(title, blurb, style);
 			}, options);
 			break;
 		}
