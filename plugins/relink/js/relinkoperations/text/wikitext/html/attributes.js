@@ -57,54 +57,14 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 		}
 		var entry = undefined;
 		var typeHandler = attrTypeOperators[attr.type];
-		switch (attr.type) {
-		case 'substituted':
-			if (utils.containsPlaceholders(attr.rawValue)) {
-				var subEntry = substitution.relink(attr.rawValue, fromTitle, toTitle, options);
-				if (subEntry) {
-					if (subEntry.output) {
-						attr.rawValue = subEntry.output;
-						changed = true;
-					}
-					if (subEntry.impossible) {
-						impossible = true;
-					}
-				}
-				if (!utils.containsPlaceholders(fromTitle)) {
-					for (var operatorName in attributeOperators) {
-						var operator = attributeOperators[operatorName];
-						var handler = operator.getHandler(element, attr, options);
-						if (handler) {
-							entry = handler.relink(attr.rawValue, fromTitle, toTitle, options);
-							if (entry && entry.output) {
-								if (utils.containsPlaceholders(toTitle)) {
-									// If we relinked, but the toTitle can't be in
-									// a substitution, then we must fail instead.
-									entry.impossible = true;
-								} else {
-									attr.rawValue = entry.output;
-									attr.handler = handler.name;
-									changed = true;
-								}
-							}
-						}
-					}
-				}
-				break;
+		if (typeHandler) {
+			entry = typeHandler.relink(element, attr, attributeOperators, parser.source, fromTitle, toTitle, options);
+			if (entry && entry.output) {
+				changed = true;
 			}
-			// no break. turn it into a string and try to work with it
-			attr.value = attr.rawValue;
-			typeHandler = attrTypeOperators.string;
-		default:
-			if (typeHandler) {
-				entry = typeHandler.relink(element, attr, attributeOperators, parser.source, fromTitle, toTitle, options);
-				if (entry && entry.output) {
-					changed = true;
-				}
+			if (entry && entry.impossible) {
+				impossible = true;
 			}
-		}
-		if (entry && entry.impossible) {
-			impossible = true;
 		}
 	}
 	if (changed || impossible) {
