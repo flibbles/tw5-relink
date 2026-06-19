@@ -133,4 +133,3 @@ function assignNamesToNameless(macro, options) {
 		}
 	}
 };
-

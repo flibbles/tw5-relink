@@ -86,6 +86,7 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			continue;
 		}
 		var entry = undefined;
+		var typeHandler = attrTypeOperators[attr.type];
 		switch (attr.type) {
 		case 'substituted':
 			if (utils.containsPlaceholders(attr.rawValue)) {
@@ -123,25 +124,8 @@ exports.relink = function(element, parser, fromTitle, toTitle, options) {
 			}
 			// no break. turn it into a string and try to work with it
 			attr.value = attr.rawValue;
-		case 'string':
-			for (var operatorName in attributeOperators) {
-				var operator = attributeOperators[operatorName];
-				var handler = operator.getHandler(element, attr, options);
-				if (handler) {
-					entry = handler.relink(attr.value, fromTitle, toTitle, options);
-					if (entry && entry.output) {
-						attr.oldValue = attr.value;
-						attr.value = entry.output;
-						attr.handler = handler.name;
-						changed = true;
-						// Change it into a string if this was a substitution that had no substitutions
-						attr.type = 'string';
-					}
-				}
-			}
-			break;
+			typeHandler = attrTypeOperators.string;
 		default:
-			var typeHandler = attrTypeOperators[attr.type];
 			if (typeHandler) {
 				entry = typeHandler.relink(element, attr, attributeOperators, parser.source, fromTitle, toTitle, options);
 				if (entry && entry.output) {
