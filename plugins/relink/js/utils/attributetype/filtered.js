@@ -17,6 +17,10 @@ exports.rawString = function(attribute, options) {
 	return attribute.filter;
 };
 
+exports.reassemble = function(attribute, options) {
+	return "{{{" + attribute.filter + "}}}";
+};
+
 exports.report = function(element, attribute, valueModules, callback, options) {
 	filterHandler.report(attribute.filter, function(title, blurb, style) {
 		callback(title, '{{{' + blurb + '}}}', style);

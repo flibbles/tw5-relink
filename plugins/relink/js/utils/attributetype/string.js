@@ -27,6 +27,10 @@ exports.rawString = function(attribute, options) {
 	return attribute.value;
 };
 
+exports.reassemble = function(attribute, options) {
+	return attribute.quotedValue;
+};
+
 exports.report = function(element, attribute, valueModules, callback, options) {
 	for (var operatorName in valueModules) {
 		var operator = valueModules[operatorName];

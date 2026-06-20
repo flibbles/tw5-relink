@@ -17,6 +17,10 @@ exports.rawString = function(attribute, options) {
 	return attribute.value.name;
 };
 
+exports.reassemble = function(attribute, options) {
+	return attribute.output;
+};
+
 exports.report = function(element, attribute, valueModules, callback, options) {
 	var macro = attribute.value;
 	macro.name = macro.name || macro.attributes["$variable"].value;

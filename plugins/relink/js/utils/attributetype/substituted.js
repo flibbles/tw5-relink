@@ -18,6 +18,10 @@ exports.rawString = function(attribute, options) {
 	return attribute.rawValue;
 };
 
+exports.reassemble = function(attribute, options) {
+	return attribute.quotedValue;
+};
+
 exports.report = function(element, attribute, valueModules, callback, options) {
 	substitution.report(attribute.rawValue, function(title, blurb, style) {
 		callback(title, '`' + blurb + '`', style);

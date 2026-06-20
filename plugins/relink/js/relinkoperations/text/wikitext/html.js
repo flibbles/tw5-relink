@@ -13,6 +13,7 @@ var utils = require("./utils.js");
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 var htmlOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtml', 'name');
+var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
 
 exports.name = "html";
 
@@ -70,45 +71,23 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		builder.add(newTag, elem.start+1, getEndOfTag(elem, text));
 		for (var attributeName in elem.attributes) {
 			var attr = elem.attributes[attributeName];
-			var quotedValue;
-			switch (attr.type) {
-			case 'string':
-				if (attr.valueless) {
-					continue;
-				}
-				quotedValue = attr.quotedValue;
-				break;
-			case 'indirect':
-				quotedValue = "{{" + attr.textReference + "}}";
-				break;
-			case 'filtered':
-				quotedValue = "{{{" + attr.filter + "}}}";
-				break;
-			case 'macro':
-				if (attr.output) {
-					quotedValue = attr.output;
-				} else {
-					quotedValue = undefined;
-				}
-				// Else If output isn't set, this wasn't ever changed
-				break;
-			case 'substituted':
-				quotedValue = attr.quotedValue;
-				break;
-			}
 			var ptr = attr.start;
 			ptr = $tw.utils.skipWhiteSpace(text, ptr);
 			if (attributeName !== attr.name) {
 				// Ooh, the attribute name changed
 				builder.add(attr.name, ptr, ptr + attributeName.length);
 			}
-			if (quotedValue) {
-				// We have a new attribute value
-				ptr += attributeName.length;
-				ptr = $tw.utils.skipWhiteSpace(text, ptr);
-				ptr++; // For the equals
-				ptr = $tw.utils.skipWhiteSpace(text, ptr);
-				builder.add(quotedValue, ptr, attr.end);
+			var typeHandler = attrTypeOperators[attr.type];
+			if (typeHandler) {
+				var quotedValue = typeHandler.reassemble(attr, options);
+				if (quotedValue) {
+					// We have a new attribute value
+					ptr += attributeName.length;
+					ptr = $tw.utils.skipWhiteSpace(text, ptr);
+					ptr++; // For the equals
+					ptr = $tw.utils.skipWhiteSpace(text, ptr);
+					builder.add(quotedValue, ptr, attr.end);
+				}
 			}
 		}
 		if (tag.children) {

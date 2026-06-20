@@ -17,6 +17,10 @@ exports.rawString = function(attribute, options) {
 	return attribute.textReference;
 };
 
+exports.reassemble = function(attribute, options) {
+	return "{{" + attribute.textReference + "}}";
+};
+
 exports.report = function(element, attribute, valueModules, callback, options) {
 	refHandler.report(attribute.textReference, function(title, blurb, style) {
 		callback(title, '{{' + (blurb || '') + '}}', style);
