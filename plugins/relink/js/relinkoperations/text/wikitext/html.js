@@ -93,16 +93,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				// Else If output isn't set, this wasn't ever changed
 				break;
 			case 'substituted':
-				var ticIndex = attr.rawValue.lastIndexOf("`");
-				if (ticIndex < 0) {
-					quotedValue = "`" + attr.rawValue + "`";
-				} else if (ticIndex < attr.rawValue.length-1
-						&& attr.rawValue.indexOf("```") < 0) {
-					quotedValue = "```" + attr.rawValue + "```";
-				} else {
-					// We can't have a tic at the end; can't have triple tic.
-					widgetEntry.impossible = true;
-				}
+				quotedValue = attr.quotedValue;
 				break;
 			}
 			var ptr = attr.start;

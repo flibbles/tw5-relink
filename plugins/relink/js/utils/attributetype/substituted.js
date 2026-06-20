@@ -81,6 +81,15 @@ exports.relink = function(element, attribute, valueModules, text, fromTitle, toT
 				}
 			}
 		}
+		if (changed) {
+			var wrapped = wrap(attribute.rawValue);
+			if (wrapped) {
+				attribute.quotedValue = wrapped;
+			} else {
+				impossible = true;
+				changed = false;
+			}
+		}
 		if (changed || impossible) {
 			return {output: changed, impossible: impossible};
 		}
@@ -89,4 +98,16 @@ exports.relink = function(element, attribute, valueModules, text, fromTitle, toT
 		attribute.value = attribute.rawValue;
 		return string.relink(element, attribute, valueModules, text, fromTitle, toTitle, options);
 	}
+};
+
+function wrap(value) {
+	var ticIndex = value.lastIndexOf("`");
+	var quotedValue;
+	if (ticIndex < 0) {
+		return "`" + value + "`";
+	} else if (ticIndex < value.length-1
+			&& value.indexOf("```") < 0) {
+		return "```" + value + "```";
+	}
+	return null;
 };
