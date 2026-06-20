@@ -136,7 +136,7 @@ it('field attributes fun with brackets', function() {
 		         "<$link to=[[from]]/>", undefined,
 		         {from: "[[from]]", to: "to", wiki: wiki});
 		testText("<$link to=[[from]]/>",
-		         "<$link to=to/>", report,
+		         "<$link to=[[to]]/>", report,
 		         {from: "from", to: "to", wiki: wiki});
 		testText("<$link to=from/>",
 		         "<$link to='[[to]]C'/>", report,

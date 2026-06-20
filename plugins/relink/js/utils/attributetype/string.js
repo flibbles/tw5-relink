@@ -5,6 +5,7 @@ Manages string attribute.
 \*/
 
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
+var wikitextUtils = require("$:/plugins/flibbles/relink/js/relinkoperations/text/wikitext/utils.js");
 
 exports.name = 'string';
 
@@ -59,14 +60,21 @@ exports.relink = function(element, attribute, valueModules, text, fromTitle, toT
 			var entry = handler.relink(attribute.value, fromTitle, toTitle, options);
 			if (entry) {
 				if (entry.output) {
-					attribute.quote = utils.determineQuote(text, attribute);
-					attribute.oldValue = attribute.value;
-					attribute.value = entry.output;
-					attribute.handler = handler.name;
-					// Change it into a string if this was a
-					// substitution that had no substitutions
-					attribute.type = 'string';
-					changed = true;
+					var oldQuote = utils.determineQuote(text, attribute);
+					var quotedValue = wikitextUtils.wrapAttributeValue(entry.output, oldQuote)
+					if (quotedValue === undefined) {
+						impossible = true;
+					} else {
+						attribute.quotedValue = quotedValue;
+						attribute.quote = oldQuote;
+						attribute.oldValue = attribute.value;
+						attribute.value = entry.output;
+						attribute.handler = handler.name;
+						// Change it into a string if this was a
+						// substitution that had no substitutions
+						attribute.type = 'string';
+						changed = true;
+					}
 				}
 				if (entry.impossible) {
 					impossible = true;

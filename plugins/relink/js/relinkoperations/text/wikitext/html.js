@@ -76,12 +76,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 				if (attr.valueless) {
 					continue;
 				}
-				var quote = relinkUtils.determineQuote(text, attr);
-				quotedValue = utils.wrapAttributeValue(attr.value, quote)
-				if (quotedValue === undefined) {
-					widgetEntry.impossible = true;
-					continue;
-				}
+				quotedValue = attr.quotedValue;
 				break;
 			case 'indirect':
 				quotedValue = "{{" + attr.textReference + "}}";
