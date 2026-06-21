@@ -6,6 +6,7 @@ Handles state updating required for $importvariables widgets
 
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
 var ImportContext = relinkUtils.getContext('import');
+var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
 
 exports.name = "importvariables";
 
@@ -42,37 +43,9 @@ function processImportFilter(parser, importAttribute, options) {
 };
 
 function computeAttribute(context, attribute, options) {
-	var value;
-	if(attribute.type === "filtered") {
-		var parentWidget = context.widget;
-		value = options.wiki.filterTiddlers(attribute.filter,parentWidget)[0] || "";
-	} else if(attribute.type === "indirect") {
-		var parentWidget = context.widget;
-		value = options.wiki.getTextReference(attribute.textReference,"",parentWidget.variables.currentTiddler.value);
-	} else if(attribute.type === "macro") {
-		var parentWidget = context.widget;
-		var params = makeSuitableParams(parentWidget, attribute.value);
-		value = parentWidget.getVariable(attribute.value.name,{params: params});
-	} else { // String attribute
-		value = attribute.value;
+	var typeHandler = attrTypeOperators[attribute.type];
+	if (typeHandler) {
+		return typeHandler.compute(attribute, context, options);
 	}
-	return value;
-};
-
-function makeSuitableParams(widget, macro) {
-	if (macro.params) {
-		var params = [];
-		for (var i = 0; i < macro.params.length; i++) {
-			var attr = macro.params[i];
-			var param = {
-				value: widget.computeAttribute(attr)
-			};
-			if (attr.name && !attr.isPositional) {
-				param.name = attr.name;
-			}
-			params.push(param);
-		}
-		return params;
-	}
-	return macro.params;
+	return undefined;
 };

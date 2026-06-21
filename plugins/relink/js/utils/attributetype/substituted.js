@@ -21,6 +21,10 @@ exports.reassemble = function(attribute, options) {
 	return attribute.quotedValue;
 };
 
+exports.compute = function(attribute, context, options) {
+	return options.wiki.getSubstitutedText(attribute.rawValue, context.widget);
+};
+
 exports.report = function(element, attribute, valueModules, callback, options) {
 	substitution.report(attribute.rawValue, function(title, blurb, style) {
 		callback(title, '`' + blurb + '`', style);

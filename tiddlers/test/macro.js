@@ -360,7 +360,7 @@ it('imported macros', function() {
 			utils.macroConf("ptr", "tiddler", "title"),
 			utils.attrConf("$importvariables", "filter", "filter"),
 			{title: "otherTiddler", text: "\\define other(A, param) X\n"},
-			{title: "ptr", tags: "$:/tags/Macro", text: "\\define ptr(tiddler) $tiddler$\n"},
+			{title: "ptr", tags: "$:/tags/Macro", text: "\\define ptr(tiddler) $tiddler$\n\\define myVar() otherTiddler\n"},
 			{title: "otherRef", pointer: "otherTiddler"},
 			{title: "newTest", text: "\\define test(Dref) X\n"}
 		]);
@@ -371,6 +371,7 @@ it('imported macros', function() {
 	test("<$importvariables filter='A otherTiddler B'><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>']);
 	test("<$importvariables filter={{otherRef!!pointer}}><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>']);
 	test("<$importvariables filter={{{[all[current]get[pointer]]}}}><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>'], {fields: {pointer: "otherTiddler"}});
+	test("<$importvariables filter=`A $(myVar)$ B`><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>'], {fields: {pointer: "otherTiddler"}});
 	test("<$importvariables filter={{!!pointer}}><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>'], {fields: {pointer: "otherTiddler"}});
 	test("<$importvariables filter=<<ptr otherTiddler>>><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>']);
 	// If macro not imported. Arguments aren't resolved

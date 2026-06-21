@@ -21,6 +21,11 @@ exports.reassemble = function(attribute, options) {
 	return "{{" + attribute.textReference + "}}";
 };
 
+exports.compute = function(attribute, context, options) {
+	var parentWidget = context.widget;
+	return options.wiki.getTextReference(attribute.textReference, "", parentWidget.variables.currentTiddler.value);
+};
+
 exports.report = function(element, attribute, valueModules, callback, options) {
 	refHandler.report(attribute.textReference, function(title, blurb, style) {
 		callback(title, '{{' + (blurb || '') + '}}', style);

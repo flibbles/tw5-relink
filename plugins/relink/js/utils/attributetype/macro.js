@@ -21,6 +21,12 @@ exports.reassemble = function(attribute, options) {
 	return attribute.output;
 };
 
+exports.compute = function(attribute, context, options) {
+	var parentWidget = context.widget;
+	var params = makeSuitableParams(parentWidget, attribute.value);
+	return parentWidget.getVariable(attribute.value.name,{params: params});
+};
+
 exports.report = function(element, attribute, valueModules, callback, options) {
 	var macro = attribute.value;
 	macro.name = macro.name || macro.attributes["$variable"].value;
@@ -40,4 +46,22 @@ exports.relink = function(element, attribute, valueModules, text, fromTitle, toT
 		attribute.value = entry.output;
 	}
 	return entry;
+};
+
+function makeSuitableParams(widget, macro) {
+	if (macro.params) {
+		var params = [];
+		for (var i = 0; i < macro.params.length; i++) {
+			var attr = macro.params[i];
+			var param = {
+				value: widget.computeAttribute(attr)
+			};
+			if (attr.name && !attr.isPositional) {
+				param.name = attr.name;
+			}
+			params.push(param);
+		}
+		return params;
+	}
+	return macro.params;
 };

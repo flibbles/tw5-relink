@@ -21,6 +21,11 @@ exports.reassemble = function(attribute, options) {
 	return "{{{" + attribute.filter + "}}}";
 };
 
+exports.compute = function(attribute, context, options) {
+	var parentWidget = context.widget;
+	return options.wiki.filterTiddlers(attribute.filter,parentWidget)[0] || "";
+};
+
 exports.report = function(element, attribute, valueModules, callback, options) {
 	filterHandler.report(attribute.filter, function(title, blurb, style) {
 		callback(title, '{{{' + blurb + '}}}', style);
