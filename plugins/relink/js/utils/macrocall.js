@@ -7,6 +7,7 @@ Methods for reporting and relinking macros. Behaves much like a fieldtype, excep
 var utils = require('$:/plugins/flibbles/relink/js/utils.js');
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
 var macrocallOperators = utils.getModulesByTypeAsHashmap('relinkmacrocall', 'name');
+var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
 
 /** As in, report a macrocall invocation that is an html attribute.
  * macro: must be a macro object.*/
@@ -59,36 +60,14 @@ exports.reassemble = function(entry, text, options) {
 		if (param.modified) {
 			var quotedValue = undefined;
 			var impossible = false;
-			switch (param.type) {
-			case 'indirect':
-				// We've got to skip whitespace if it's there.
-				// param.start is inconsistent.
-				quotedValue = "{{" + param.textReference + "}}";
-				break;
-			case 'filtered':
-				quotedValue = "{{{" + param.filter + "}}}";
-				break;
-			case 'substituted':
-				quotedValue = "`" + param.rawValue + "`";
-				break;
-			case 'macro':
-				var sub = param.value;
-				var subEntry = {output: sub};
-				//sub.start = utils.skipAttributeName(text, sub.start, param);
-				var subAssemble = exports.reassemble(subEntry, text, options);
-				quotedValue = subAssemble;
-				break;
-			default:
-				quotedValue = exports.wrapParameterValue(param.value, param.quote);
-				if (quotedValue === undefined) {
-					impossible = true;
-					entry.impossible = true;
-				}
+			var typeHandler = attrTypeOperators[param.type];
+			if (typeHandler) {
+				quotedValue = typeHandler.reassemble(param, options);
 			}
 			if (quotedValue && !impossible) {
 				var ptr = param.start;
 				ptr = $tw.utils.skipWhiteSpace(text, ptr);
-				// param.start points to different places depending one
+				// param.start points to different places
 				if (param.name && !param.isPositional) {
 					ptr = utils.skipAttributeName(text, ptr, param);
 				}

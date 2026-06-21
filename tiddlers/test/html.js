@@ -253,10 +253,10 @@ it("failure doesn't prevent other relinks", function() {
 	wiki.addTiddlers([utils.macroConf("t", "arg"),
 		{title: "m", tags: "$:/tags/Macro", text: "\\define t(arg)"}]);
 	utils.failures.calls.reset();
-	testText("<$link to=<<t 'from here'>>/> [[from here]]",
-			 "<$link to=<<t 'from here'>>/> [[A' B]\"]]",
-			 ['<$link to=<<t arg>> />', '[[from here]]'],
-			 {to: "A' B]\"", wiki: wiki});
+	testText("<$link to=<<t 'from here'>>/> {{from here}}",
+			 "<$link to=<<t 'from here'>>/> {{A' B]]\"}}",
+			 ['<$link to=<<t arg>> />', '{{}}'],
+			 {to: "A' B]]\"", wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
@@ -467,7 +467,8 @@ it('mixed failure and replacement with macro attributes', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
-it('switches to using backticks when necessary', function() {
+it('will not use backticks when necessary', function() {
+	// Back ticks are too complicated
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	utils.spyFailures(spyOn);
 	function testPass(to, expected) {
@@ -478,29 +479,7 @@ it('switches to using backticks when necessary', function() {
 		expect(utils.failures).toHaveBeenCalledTimes(1);
 		utils.failures.calls.reset();
 	};
-	if (utils.atLeastVersion("5.3.0")) {
-		testPass('to\'"""there]',     '<$link to=`to\'"""there]`/>');
-		testPass('to\'there]]"',       '<$link to=`to\'there]]"`/>');
-		testPass('to\'"""` there]',   '<$link to=```to\'"""` there]```/>');
-		testFail('to\'""" ]]there`');
-		testPass('to\'"""$( there]',   '<$link to=`to\'"""$( there]`/>');
-		testPass('to\'"""$()$ there]', '<$link to=`to\'"""$()$ there]`/>');
-		testPass('to\'"""$(d$()$ ther]', '<$link to=`to\'"""$(d$()$ ther]`/>');
-		testPass('to\'"""$($)$ there]', '<$link to=`to\'"""$($)$ there]`/>');
-		testPass('to\'"""$())$ there]', '<$link to=`to\'"""$())$ there]`/>');
-		testFail('to\'"""$(d)$ there]');
-		testFail('to\'"""$($(d)$ there]');
-		// Now check filter placeholders
-		testPass('to\'"""${ there]',   '<$link to=`to\'"""${ there]`/>');
-		testPass('to\'"""${}$ there]', '<$link to=`to\'"""${}$ there]`/>');
-		testFail('to\'"""${$}$ there]');
-		testFail('to\'"""${}}$ there]');
-		testFail('to\'"""$(d)$ there]');
-		testFail('to\'"""$($(d)$ there]');
-	} else {
-		// In old versions, just make sure the backticks aren't being used
-		testFail('to\'"""there]');
-	}
+	testFail('to\'"""there]');
 });
 
 it('supports relinking of internal text content', function() {

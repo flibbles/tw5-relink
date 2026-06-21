@@ -106,10 +106,10 @@ it("macro attributes", function() {
 
 	testText(macros+"[img width=<<ten 'from here'>> [s]]", true, ['[img width=<<ten tiddler>>]'], {wiki: wiki});
 	utils.spyFailures(spyOn);
-	testText(macros+"[img width=<<ten 'from here'>> [s]] [[from here]]",
-			 macros+"[img width=<<ten 'from here'>> [s]] [[A ']B\"]]",
-			 ['[img width=<<ten tiddler>>]', '[[from here]]'],
-			 {to: "A ']B\"", wiki: wiki});
+	testText(macros+"[img width=<<ten 'from here'>> [s]] {{from here}}",
+			 macros+"[img width=<<ten 'from here'>> [s]] {{A ']]B\"}}",
+			 ['[img width=<<ten tiddler>>]', '{{}}'],
+			 {to: "A ']]B\"", wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 

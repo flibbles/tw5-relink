@@ -6,6 +6,8 @@ Tests macros.
 
 var utils = require("./utils");
 
+var attrLikeParametersAllowed = $tw.wiki.renderText(null, null, "\\procedure X(V) <<V>>\n<<X V={{{ yes }}}>>") === "yes";
+
 function testText(text, expected, expectedReport, options) {
 	options = Object.assign({from: 'from here', to: 'to there'}, options);
 	expectedReport && expectedReport.sort()
@@ -100,8 +102,8 @@ it("doesn't choke if attribute string == macro name", function() {
 
 /*** Attribute-like Parameters ***/
 
-($tw.wiki.renderText(null, null, "\\procedure X(V) <<V>>\n<<X V={{{ yes }}}>>") === "yes"?
-describe: xdescribe)('attribute-like parameters', function() {
+(attrLikeParametersAllowed? describe: xdescribe)
+('attribute-like parameters', function() {
 
 it('handle references', function() {
 	testText("<<test Btitle={{from here}}>>", true, ['<<test Btitle={{}}>>']);
@@ -199,45 +201,41 @@ it('quotation of originalValue', function() {
 	testText('<<test Btitle:"""from here""">>', true, ['<<test Btitle>>']);
 	// Trick title. Old param parser choked on this.
 	testText('<<test Btitle:from]] >>', true, ['<<test Btitle>>'], {from: "from]]", to: "tothere"});
-	// Doesn't use quotes when slashes present. This is important to me.
-	testText('<<test Btitle:from/here>>', true, ['<<test Btitle>>'], {from: "from/here", to: "to/there"});
+	testText('<<test Btitle:from/here>>', "<<test Btitle:'to/there'>>", ['<<test Btitle>>'], {from: "from/here", to: "to/there"});
 	// they allow unquoted '<' as well, while attributes don't
-	testText('<<test Btitle:from>>', true, ['<<test Btitle>>'], {from: "from", to: "to<there"});
+	testText('<<test Btitle:from>>', "<<test Btitle:'to<there'>>", ['<<test Btitle>>'], {from: "from", to: "to<there"});
 	// Colons are not allowed to be unquoted
 	testText('<<test x from>>', "<<test x 'to:there'>>", ['<<test Btitle>>'], {from: "from", to: "to:there"});
-	// but = is allowed
-	testText('<<test x from>>', true, ['<<test Btitle>>'], {from: "from", to: "to=there"});
+	// and neither are =
+	testText('<<test x from>>', "<<test x 'to=there'>>", ['<<test Btitle>>'], {from: "from", to: "to=there"});
 });
 
-(utils.substitutionAttrsAllowed()? it: xit)
-('unquotable titles', function() {
+(utils.substitutionAttrsAllowed()? describe: xdescribe)
+('substitution attributes', function() {
+ 
+it('unquotable titles without substitution', function() {
 	var to = `to''[]]there"`;
-	testText("Macro <<test stuff 'from here'>>.",
-	         "Macro <$macrocall $name=test A=stuff Btitle=`"+to+"`/>.",
-	         ['<<test Btitle>>'], {to: to});
+	testText("Macro <<test stuff 'from here'>>.", false,
+			 ['<<test Btitle>>'], {to: to, fails: 1});
 	testText("<$link to=<<test stuff 'from here'>> />", false,
-	         ['<$link to=<<test Btitle>> />'], {fails: 1, to: to});
+			 ['<$link to=<<test Btitle>> />'], {fails: 1, to: to});
 	// This one is tricky because an unrelated attribute can't be quoted
 	// the way it was in a macro invocation
-	testText('X<<test A:g>t "from here">>Y',
-	         "X<$macrocall $name=test A='g>t' Btitle=`"+to+"`/>Y",
-	         ['<<test Btitle>>'], {to: to});
+	testText('X<<test A:g>t "from here">>Y', false,
+			 ['<<test Btitle>>'], {to: to, fails: 1});
 	// Even if the toTitle is okay. It can make a list unquotable
 	var apos = "M[]]'s";
-	testText('X<<test Clist: \'[[from here]] C"\'>>Y',
-	         'X<$macrocall $name=test Clist=`'+apos+' C"`/>Y',
-	         ['<<test Clist>>'], {to: apos});
+	testText('X<<test Clist: \'[[from here]] C"\'>>Y', false,
+			 ['<<test Clist>>'], {to: apos, fails: 1});
+	// Empty attributes remain, but should be quoted
+	testText('<<test Clist: "" Btitle:"from here">>', false,
+			 ['<<test Btitle>>'], {to: to, fails: 1});
 	// Without backtics, we'd even have to fail
 	testText('X<<test Clist: \'[[from here]] C"\'>>Y', false,
-	         ['<<test Clist>>'], {to: "```"+apos, fails: 1});
-	// Empty attributes remain, but should be quoted
-	testText('<<test Clist: "" Btitle:"from here">>',
-	         "<$macrocall $name=test Clist='' Btitle=`"+to+"`/>",
-	         ['<<test Btitle>>'], {to: to});
+			 ['<<test Clist>>'], {to: "```"+apos, fails: 1});
 });
 
-(utils.substitutionAttrsAllowed()? it: xit)
-('unquotable wikitext', function() {
+it('unquotable wikitext', function() {
 	// wikitext fails when it's too complicated.
 	var to = "' ``` ]]}}\"";
 	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>", false,
@@ -251,28 +249,22 @@ it('quotation of originalValue', function() {
 
 	// Will downgrade to a widget if necessary
 	to = "' \"]]}}"; // This can be wrapped in triple-quotes
-	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>",
-	         'X<$macrocall $name=test Ewiki=`T <$link to="""'+to+'""" />`/>',
-	         ['<<test Ewiki: "<$link to />">>'], {to: to});
+	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>", false,
+	         ['<<test Ewiki: "<$link to />">>'], {to: to, fails: 1});
 });
 
-it('respects \\rules', function() {
-	testText("\\rules only macrocallinline\n<<test Btitle:'from here'>>", true,
-	         ['<<test Btitle>>']);
-	testText("\\rules only macrocallblock\n<<test Btitle:'from here'>>", true,
-	         ['<<test Btitle>>']);
-	testText("\\rules only html macrodef\n<<test Btitle:'from here'>>", false);
-	testText("\\rules except macrocallinline macrocallblock\n<<test Btitle:'from here'>>", false);
-
-	// downgrading to widget
-	var to = `to''[]there"`;
-	testText("\\rules except html\n<<test Btitle:'from here'>>", false,
-	         ['<<test Btitle>>'],
-	         {to: to, fails: 1});
+it('slashes in macro name', function() {
+	// non/attr is a legal macro name, but not a legal
+	// unquoted attribute
+	// Also, it might goof up our settings system
+	var wiki = new $tw.Wiki();
+	var to = 'to\'\'[]]there"';
+	wiki.addTiddler(utils.macroConf("non/attr", "param", "title"));
+	testText('X<<non/attr param:"from here">>Y', false,
+	         ['<<non/attr param>>'], {to: to, wiki: wiki, fails: 1});
 });
 
-(utils.substitutionAttrsAllowed()? it: xit)
-('undefined macros', function() {
+it('undefined macros', function() {
 	// Relink will try it's best to tolerate macro settings that have
 	// no coreesponding macro definition, but it'll fail if there's a
 	// chance it's not relinking when it should.
@@ -285,21 +277,37 @@ it('respects \\rules', function() {
 	testText("<<undef A B C D param:'from here'>>", true, ['<<undef param>>'], {wiki: wiki});
 	testText("<<undef 'from here'>>", false, undefined, {wiki: wiki, fails: 1});
 	var to = `to''[]]there"`;
-	testText("<<undef param:'from here'>>",
-	         "<$macrocall $name=undef param=`"+to+"`/>",
-	         ['<<undef param>>'], {wiki: wiki, to: to});
+	testText("<<undef param:'from here'>>", false,
+	         ['<<undef param>>'], {wiki: wiki, to: to, fails: 1});
 	// Relink CAN resolve the argument, since it's named, but it needs to
 	// convert into a widget, which it can't do unless ALL arguments can
 	// be named (which you can't do without the macro definition).
-	testText("<<undef something param:'from here'>> [[from here]]",
-	         "<<undef something param:'from here'>> [[A] '\"]]",
-	         ['<<undef param>>', '[[from here]]'],
-	         {wiki: wiki, to: "A] '\"", fails: 1});
+	testText("<<undef something param:'from here'>> {{from here}}",
+	         "<<undef something param:'from here'>> {{A]] '\"}}",
+	         ['<<undef param>>', '{{}}'],
+	         {wiki: wiki, to: "A]] '\"", fails: 1});
 	// Relink should realize that there's nothing to do on this one and
 	// not emit an error. param is already spoken for, so that undefined
 	// param is irrelevant.
 	testText("<<undef 'from here' param: unrelated>> from here", false,
 	         undefined, {wiki: wiki, fails: 0})
+});
+
+});
+
+it('respects \\rules', function() {
+	testText("\\rules only macrocallinline\n<<test Btitle:'from here'>>", true,
+	         ['<<test Btitle>>']);
+	testText("\\rules only macrocallblock\n<<test Btitle:'from here'>>", true,
+	         ['<<test Btitle>>']);
+	testText("\\rules only html macrodef\n<<test Btitle:'from here'>>", false);
+	testText("\\rules except macrocallinline macrocallblock\n<<test Btitle:'from here'>>", false);
+
+	// downgrading to widget
+	var to = `to''[]]there"`;
+	testText("\\rules except html\n<<test Btitle:'from here'>>", false,
+	         ['<<test Btitle>>'],
+	         {to: to, fails: 1});
 });
 
 it("undefined macros, multiple active parameters", function() {
@@ -319,7 +327,7 @@ it("undefined macros, multiple active parameters", function() {
 	// into a widget, but it can't because an unnamed parameter can't be
 	// resolved.
 	testText("<<undef 'from here' param:'from here'>>",
-	         "<<undef 'from here' param:'from here'>>",
+	         "<<undef 'from here' param:[["+to+"]]>>",
 	         ['<<undef param>>'],
 	         {wiki: wiki, fails: 1, to: to});
 
@@ -327,7 +335,7 @@ it("undefined macros, multiple active parameters", function() {
 	// downgrade. But there's an unresolved anonymous param, so no
 	// downgrade possible. Therefore, fail that, but process the other.
 	testText("<<undef list:'[[from]]' param:'from' anon>> [[from]]",
-	         `<<undef list:"""[[A] '\"]]""" param:'from' anon>> [[A] '\"]]`,
+	         `<<undef list:"""[[A] '\"]]""" param:[[A] '\"]] anon>> [[A] '\"]]`,
 	         ['<<undef list>>', '<<undef param>>', '[[from]]'],
 	         {wiki: wiki, fails: 1, from: "from", to: "A] '\""});
 });
@@ -422,19 +430,6 @@ it('local macros simple', function() {
 	         ['<$macrocall text=<<inner title>> />'], {wiki: wiki});
 	testText('\\define inner(title) content\n<$macrocall $name=outer text="""<<inner "from here">>""" />', true,
 	         ['<<outer text="<<inner title>>" />'], {wiki: wiki});
-});
-
-(utils.substitutionAttrsAllowed()? it: xit)
-('slashes in macro name', function() {
-	// non/attr is a legal macro name, but not a legal
-	// unquoted attribute
-	// Also, it might goof up our settings system
-	var wiki = new $tw.Wiki();
-	var to = 'to\'\'[]]there"';
-	wiki.addTiddler(utils.macroConf("non/attr", "param", "title"));
-	testText('X<<non/attr param:"from here">>Y',
-	         "X<$macrocall $name='non/attr' param=`"+to+"`/>Y",
-	         ['<<non/attr param>>'], {to: to, wiki: wiki});
 });
 
 it('empty or undefined macro params', function() {

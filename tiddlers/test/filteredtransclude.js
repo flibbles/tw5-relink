@@ -130,7 +130,7 @@ it('unpretty (degrades to widget)', function() {
 	testText("{{{A||from here}}}","<$list filter=A template=cur}/>", ['{{{A||}}}'], {to: "cur}"});
 	testText("{{{A||from here}}}","<$list filter=A template=cur{/>", ['{{{A||}}}'], {to: "cur{"});
 	testText("{{{[[from here]]|tooltip||Template}}width:50;}.A.B",
-	         "<$list filter=bar| tooltip=tooltip template=Template style=width:50; itemClass='A B'/>", ['{{{||Template}}}'], {to: 'bar|'});
+	         "<$list filter=bar| tooltip=tooltip template=Template style='width:50;' itemClass='A B'/>", ['{{{||Template}}}'], {to: 'bar|'});
 
 	// preserves block newline whitespace
 	testText("{{{[[from here]]}}}\nTxt", "<$list filter=A|B/>\nTxt", ['{{{}}}'], {to: 'A|B'});

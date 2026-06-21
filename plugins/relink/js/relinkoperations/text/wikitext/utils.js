@@ -94,7 +94,7 @@ exports.containsPlaceholders = function(string) {
 var whitelist = ["", "'", '"', '"""'];
 var choices = {
 	"": function(v) {
-		return !/([\/\s<>"'`=])/.test(v)
+		return !/([\/\s<>"'`:=])/.test(v)
 		&& v.length > 0
 		&& (!_bracketsSupported
 			|| v.indexOf('[[') !== 0
@@ -126,16 +126,6 @@ exports.wrapAttributeValue = function(value, preference) {
 				&& v.lastIndexOf(']') !== v.length-1
 				&& v.lastIndexOf(']]') < 0;
 			};
-		}
-	}
-	if (_backticksSupported === undefined) {
-		var test = $tw.wiki.renderText("text/plain", "text/vnd.tiddlywiki", "<$link to=`test`/>");
-		_backticksSupported = (test === "test");
-		if (_backticksSupported) {
-			// add in support for the backtick to the lists
-			whitelist.push('`', '```');
-			choices['`'] = function(v) {return v.indexOf('`') < 0 && !exports.containsPlaceholders(v); };
-			choices['```'] = function(v) {return v.indexOf('```') < 0 && v[v.length-1] != '`' && !exports.containsPlaceholders(v);};
 		}
 	}
 	if (choices[preference] && choices[preference](value)) {
