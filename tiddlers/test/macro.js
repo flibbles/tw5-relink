@@ -124,7 +124,7 @@ it('handles filters', function() {
 	         {wiki: wiki, fails: 1, to: "E}}E"});
 });
 
-xit('handles substitution', function() {
+it('handles substitution', function() {
 	var wiki = new $tw.Wiki();
 	wiki.addTiddler(utils.operatorConf("title"));
 	wiki.addTiddler(utils.operatorConf("tag"));
@@ -135,9 +135,9 @@ xit('handles substitution', function() {
 	         ['<<test Btitle=`${[tag[]]}$`>>'], {wiki: wiki, to: "to`there"});
 	// Not actual substitution, just a quotation
 	testText("X<<test Btitle=`from here`>>",
-	         "X<<test Btitle='to there'>>", ['<<test Btitle>>']);
+	         "X<<test Btitle=`to there`>>", ['<<test Btitle>>']);
 	testText("X<<test Btitle=`from here`>>",
-	         "X<<test Btitle=to`t>>", ['<<test Btitle>>'], {to: 'to`t'});
+	         "X<<test Btitle=```to`t```>>", ['<<test Btitle>>'], {to: 'to`t'});
 });
 
 it('handles macros', function() {

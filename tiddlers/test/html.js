@@ -387,10 +387,14 @@ it('mixed failure and replacement with macro attributes', function() {
 		utils.macroConf('tag', 'tag'),
 		utils.macroConf('tabs', 'tabsList', 'filter')]);
 	utils.spyFailures(spyOn);
-	testText("<$link to=`from here`/>", "<$link to='to there'/>", ["<$link to />"],{wiki: wiki});
-	testText("<$list filter=`[tag[from here]]`/>", "<$list filter='[tag[to there]]'/>", ["<$list filter=`[tag[]]` />"],{wiki: wiki});
-	testText("<$macrocall $name=tag tag=`from here`/>", "<$macrocall $name=tag tag='to there'/>", ["<<tag tag />"],{wiki: wiki});
-	testText("<$macrocall $name=tabs tabsList=`[tag[from here]]`/>", "<$macrocall $name=tabs tabsList='[tag[to there]]'/>", ["<<tabs tabsList=`[tag[]]` />"],{wiki: wiki});
+	testText("<$link to=`from here`/>", true, ["<$link to />"],{wiki: wiki});
+	testText("<$list filter=`[tag[from here]]`/>", true,
+	         ["<$list filter=`[tag[]]` />"],{wiki: wiki});
+	testText("<$macrocall $name=tag tag=`from here`/>",
+	         "<$macrocall $name=tag tag=`to there`/>",
+	         ["<<tag tag />"],{wiki: wiki});
+	testText("<$macrocall $name=tabs tabsList=`[tag[from here]]`/>", true,
+	         ["<<tabs tabsList=`[tag[]]` />"],{wiki: wiki});
 	// Presents of substition in titles
 	testText("<$link to=`$(from)$`/>", false, undefined, {wiki: wiki, from: "from"});
 	testText("<$link to=`$(from)$`/>", false, undefined, {wiki: wiki, from: "$(from)$"});
@@ -398,11 +402,15 @@ it('mixed failure and replacement with macro attributes', function() {
 	// Not quite substitution in titles
 	testText("<$link to=`$(from here)$`/>", false, undefined, {wiki: wiki, from: "$(from here)$"});
 	// backticks in value
-	testText("<$link to=`from here`/>", "<$link to='to```there'/>", ["<$link to />"],{wiki: wiki, to: "to```there"});
-	testText("<$link to=`from here`/>", "<$link to='to`there`'/>", ["<$link to />"],{wiki: wiki, to: "to`there`"});
+	testText("<$link to=`from here`/>", false,
+	         ["<$link to />"], {wiki: wiki, to: "to```there", fails: 1});
+	testText("<$link to=`from here`/>", false,
+	         ["<$link to />"], {wiki: wiki, to: "to`there`", fails: 1});
 	// substitutions in string values are ignored
-	testText("<$link to=`from here`/>", "<$link to=to$(d)$there/>", ["<$link to />"],{wiki: wiki, to: "to$(d)$there"});
-	testText("<$link to=`from here`/>", "<$link to='to${d}$ there'/>", ["<$link to />"],{wiki: wiki, to: "to${d}$ there"});
+	testText("<$link to=`from here`/>", false,
+	         ["<$link to />"], {wiki: wiki, to: "to$(d)$there", fails: 1});
+	testText("<$link to=`from here`/>", false,
+	         ["<$link to />"],{wiki: wiki, to: "to${d}$ there", fails: 1});
 	// substitution in irrelevant attributes
 	testText("<$link to='from here' class=`myclass` />", true, ['<$link to />'], {wiki: wiki});
 });
