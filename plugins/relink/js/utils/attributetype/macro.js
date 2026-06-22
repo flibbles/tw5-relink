@@ -43,7 +43,12 @@ exports.relink = function(element, attribute, valueModules, text, fromTitle, toT
 	var entry = macrocall.relink(options.settings, macro, text, fromTitle, toTitle, false, options);
 	if (entry && entry.output) {
 		attribute.output = macrocall.reassemble(entry, text, options);
-		attribute.value = entry.output;
+		if (!attribute.output) {
+			// Nope. Nothing got changed after all.
+			entry.output = undefined;
+		} else {
+			attribute.value = entry.output;
+		}
 	}
 	return entry;
 };

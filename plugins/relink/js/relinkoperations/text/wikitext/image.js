@@ -10,39 +10,25 @@ Handles replacement in wiki text inline rules, like,
 \*/
 
 var Rebuilder = require("$:/plugins/flibbles/relink/js/utils/rebuilder");
-var refHandler = require("$:/plugins/flibbles/relink/js/fieldtypes/reference");
-var filterHandler = require("$:/plugins/flibbles/relink/js/utils").getType('filter');
-var macrocall = require("./macrocall.js");
 var utils = require("./utils.js");
 var relinkUtils = require('$:/plugins/flibbles/relink/js/utils.js');
+var attributeOperators = relinkUtils.getModulesByTypeAsHashmap('relinkhtmlattributes', 'name');
+var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
 
 exports.name = "image";
 
 exports.report = function(text, callback, options) {
-	var ptr = this.nextImage.start + 4; //[img
-	var inSource = false;
 	for (var attributeName in this.nextImage.attributes) {
 		var attr = this.nextImage.attributes[attributeName];
-		if (attributeName === "source" || attributeName === "tooltip") {
-			if (inSource) {
-				ptr = text.indexOf('|', ptr);
-			} else {
-				ptr = text.indexOf('[', ptr);
-				inSource = true;
-			}
-			ptr += 1;
-		}
 		if (attributeName === "source") {
 			var tooltip = this.nextImage.attributes.tooltip;
 			var blurb = '[img[' + (tooltip ? tooltip.value : '') + ']]';
 			callback(attr.value, blurb);
-			ptr = text.indexOf(attr.value, ptr);
-			ptr = text.indexOf(']]', ptr) + 2;
 		} else if (attributeName !== "tooltip") {
-			ptr = reportAttribute(this.parser, attr, callback, options);
+			reportAttribute(this.parser, attr, callback, options);
 		}
 	}
-	this.parser.pos = ptr;
+	this.parser.pos = this.nextImage.end;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -124,96 +110,31 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 };
 
 function reportAttribute(parser, attribute, callback, options) {
-	var text = parser.source;
-	var ptr = text.indexOf(attribute.name, attribute.start);
-	var end;
-	ptr += attribute.name.length;
-	ptr = text.indexOf('=', ptr);
-	if (attribute.type === "string") {
-		ptr = text.indexOf(attribute.value, ptr)
-		var quote = relinkUtils.determineQuote(text, attribute);
-		// ignore first quote. We already passed it
-		end = ptr + quote.length + attribute.value.length;
-	} else if (attribute.type === "indirect") {
-		ptr = text.indexOf('{{', ptr);
-		var end = ptr + attribute.textReference.length + 4;
-		refHandler.report(attribute.textReference, function(title, blurb, style) {
-			callback(title, '[img ' + attribute.name + '={{' + (blurb || '') + '}}]', style);
-		}, options);
-	} else if (attribute.type === "filtered") {
-		ptr = text.indexOf('{{{', ptr);
-		var end = ptr + attribute.filter.length + 6;
-		filterHandler.report(attribute.filter, function(title, blurb, style) {
-			callback(title, '[img ' + attribute.name + '={{{' + blurb + '}}}]', style);
-		}, options);
-	} else if (attribute.type === "macro") {
-		ptr = text.indexOf("<<", ptr);
-		var end = attribute.value.end;
-		var macro = attribute.value;
-		var oldValue = attribute.value;
-		macro.name = macro.name || macro.attributes['$variable'].value;
-		macro.params = macro.params || macro.orderedAttributes;
-		macrocall.reportAttribute(parser, macro, function(title, blurb, style) {
-			callback(title, '[img ' + attribute.name + '=' + blurb + ']', style);
+	var typeHandler = attrTypeOperators[attribute.type];
+	if (typeHandler) {
+		typeHandler.report({tag: '$image'}, attribute, attributeOperators, function(title, blurb, style) {
+			callback(title, '[img ' + attribute.name + '=' + (blurb || '') + ']', style);
 		}, options);
 	}
-	return end;
 };
 
 function relinkAttribute(parser, attribute, builder, fromTitle, toTitle, options) {
 	var text = builder.text;
 	var ptr = text.indexOf(attribute.name, attribute.start);
-	var end;
 	ptr += attribute.name.length;
 	ptr = text.indexOf('=', ptr);
-	if (attribute.type === "string") {
-		ptr = text.indexOf(attribute.value, ptr)
-		var quote = relinkUtils.determineQuote(text, attribute);
-		// ignore first quote. We already passed it
-		end = ptr + quote.length + attribute.value.length;
-	} else if (attribute.type === "indirect") {
-		ptr = text.indexOf('{{', ptr);
-		var end = ptr + attribute.textReference.length + 4;
-		var ref = refHandler.relinkInBraces(attribute.textReference, fromTitle, toTitle, options);
-		if (ref) {
-			if (ref.impossible) {
-				builder.impossible = true;
-			}
-			if (ref.output) {
-				builder.add("{{"+ref.output+"}}", ptr, end);
-			}
+	ptr = $tw.utils.skipWhiteSpace(text, ptr+1);
+	var typeHandler = attrTypeOperators[attribute.type];
+	if (typeHandler) {
+		var entry = typeHandler.relink({tag: "$image"}, attribute, attributeOperators, parser.source, fromTitle, toTitle, options);
+		if (entry && entry.output) {
+			builder.add(typeHandler.reassemble(attribute, options), ptr, attribute.end);
 		}
-	} else if (attribute.type === "filtered") {
-		ptr = text.indexOf('{{{', ptr);
-		var end = ptr + attribute.filter.length + 6;
-		var filter = filterHandler.relinkInBraces(attribute.filter, fromTitle, toTitle, options);
-		if (filter !== undefined) {
-			if (filter.impossible) {
-				builder.impossible = true;
-			}
-			if (filter.output) {
-				var quoted = "{{{"+filter.output+"}}}";
-				builder.add(quoted, ptr, end);
-			}
-		}
-	} else if (attribute.type === "macro") {
-		ptr = text.indexOf("<<", ptr);
-		var end = attribute.value.end;
-		var macro = attribute.value;
-		var oldValue = attribute.value;
-		macro.name = macro.name || macro.attributes['$variable'].value;
-		macro.params = macro.params || macro.orderedAttributes;
-		var macroEntry = macrocall.relinkAttribute(parser, macro, text, fromTitle, toTitle, options);
-		if (macroEntry !== undefined) {
-			if (macroEntry.impossible) {
-				builder.impossible = true;
-			}
-			if (macroEntry.output) {
-				builder.add(macroEntry.output, ptr, end);
-			}
+		if (entry && entry.impossible) {
+			builder.impossible = true;
 		}
 	}
-	return end;
+	return attribute.end;
 };
 
 function canBePretty(title, tooltip) {

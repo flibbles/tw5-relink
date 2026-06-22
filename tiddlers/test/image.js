@@ -65,6 +65,15 @@ it("image respects \\rules", function() {
 	testFails("\\rules except macrodef\n[img[from here]]", '"F]] ```\'"');
 });
 
+it("string attributes", function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.attrConf('$image', "loadActions", "wikitext"));
+	testText("[img loadActions='{{from here}}' [s]]", true, ['[img loadActions="{{}}"]'], {wiki: wiki});
+	testText("[img loadActions  =  '{{from here}}'   [s]]", true, ['[img loadActions="{{}}"]'], {wiki: wiki});
+});
+
+// TODO: Anything that comes after an image, because ptr may be corrupted
+
 it("indirect attributes", function() {
 	testText("[img width={{from here}} [s]]", true, ['[img width={{}}]']);
 	testText("[img width  =  {{from here}} [s]]", true, ['[img width={{}}]']);
@@ -101,15 +110,23 @@ it("filtered attributes", function() {
 
 it("macro attributes", function() {
 	const wiki = new $tw.Wiki();
-	wiki.addTiddler(utils.macroConf("ten", "tiddler"));
-	const macros = "\\define ten(tiddler) 10\n";
+	wiki.addTiddler(utils.macroConf("ten", "A"));
+	wiki.addTiddler(utils.macroConf("ten", "B", "reference"));
+	const macros = "\\define ten(A, B) 10\n";
 
-	testText(macros+"[img width=<<ten 'from here'>> [s]]", true, ['[img width=<<ten tiddler>>]'], {wiki: wiki});
+	testText(macros+"[img width=<<ten 'from here'>> [s]]", true, ['[img width=<<ten A>>]'], {wiki: wiki});
 	utils.spyFailures(spyOn);
 	testText(macros+"[img width=<<ten 'from here'>> [s]] {{from here}}",
 			 macros+"[img width=<<ten 'from here'>> [s]] {{A ']]B\"}}",
-			 ['[img width=<<ten tiddler>>]', '{{}}'],
+			 ['[img width=<<ten A>>]', '{{}}'],
 			 {to: "A ']]B\"", wiki: wiki});
+	expect(utils.failures).toHaveBeenCalledTimes(1);
+	// Now make sure we can support partial success
+	utils.failures.calls.reset();
+	testText(macros+"[img width=<<ten from from>> [s]] [[from]]",
+			 macros+"[img width=<<ten to!!there from>> [s]] [[to!!there]]",
+			 ['[img width=<<ten A>>]', '[img width=<<ten B>>]', '[[from]]'],
+			 {from: 'from', to: 'to!!there', wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 

@@ -41,6 +41,7 @@ $fieldmangler/tiddler: title
 $fields/tiddler: title
 $genesis/$names: filter
 $genesis/$values: filter
+$image/loadActions: wikitext
 $image/source: title
 $importvariables/filter: filter
 $jsontiddler/tiddler: title
