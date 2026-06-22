@@ -12,7 +12,7 @@ exports.report = function(context, macro, callback, options) {
 	}
 	for (var index in macro.params) {
 		var param = macro.params[index];
-		var typeHandler = attrTypeOperators[param.type] || attrTypeOperators.string;
+		var typeHandler = attrTypeOperators[param.type];
 		if (typeHandler) {
 			try {
 				typeHandler.report(macro, param, stringParameterOperators, function(title, blurb, style) {
@@ -40,7 +40,7 @@ exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 	for (var index in macro.params) {
 		var param = macro.params[index];
 		var entry;
-		var typeHandler = attrTypeOperators[param.type] || attrTypeOperators.string;
+		var typeHandler = attrTypeOperators[param.type];
 		if (typeHandler) {
 			try {
 				entry = typeHandler.relink(macro, param, stringParameterOperators, text, fromTitle, toTitle, options);

@@ -69,6 +69,13 @@ it('argument orders', function() {
 	         ['<<test Ewiki: "{{}}">>'], {from: "from"});
 });
 
+it("supports brackets", function() {
+	// This ensures that brackets for macro params is allowed, even in
+	// legacy versions of TW.
+	// params that start with brackets will stick with brackets if they can
+	testText("Macro <<test stuff [[from here]]>>.", true, ['<<test Btitle>>']);
+});
+
 it("the '>' character", function() {
 	// It's a tricky character. Allowed in some places, but not others
 	// Allowed in standalone macrocalls
@@ -147,6 +154,16 @@ it('handles macros', function() {
 	testText("<<test A=<<test Btitle='from here'>> >>", false, ['<<test A=<<test Btitle>>>>'], {to: "to'\"\"\">>]]there", fails: 1});
 });
 
+it("can select brackets for strings", function() {
+	var to = "\"Cat's\"";
+	testText("Macro <<test stuff from>>.",
+	         "Macro <<test stuff [[\"Cat's\"]]>>.",
+	         ['<<test Btitle>>'], {from: 'from', to: "\"Cat's\""});
+	testText("Macro <<test stuff from>>.",
+	         'Macro <<test stuff [[c"""\' d]]>>.',
+	         ['<<test Btitle>>'], {from: 'from', to: 'c"""\' d'});
+});
+
 // TODO: Needs to test all the other kinds of non-string parameters
 // TODO: Impossibles
 // TODO: relink-variable reports may be off for attr-like parameters
@@ -186,8 +203,6 @@ it('quotation for new value', function() {
 	};
 	test("cd", "cd");
 	test("c\"\"' ]d", `"""c\"\"' ]d"""`);
-	test('c"""\' d', '[[c"""\' d]]');
-	test('c"""\' d', '[[c"""\' d]]');
 	test('c""" ]d', '\'c""" ]d\'');
 });
 
@@ -210,9 +225,6 @@ it('quotation of originalValue', function() {
 	testText('<<test x from>>', "<<test x 'to=there'>>", ['<<test Btitle>>'], {from: "from", to: "to=there"});
 });
 
-(utils.substitutionAttrsAllowed()? describe: xdescribe)
-('substitution attributes', function() {
- 
 it('unquotable titles without substitution', function() {
 	var to = `to''[]]there"`;
 	testText("Macro <<test stuff 'from here'>>.", false,
@@ -243,7 +255,7 @@ it('unquotable wikitext', function() {
 
 	// but wikitext will still be wrapped if it can
 	to = "' ``` \"}}"; // This can be wrapped in triple-quotes
-	testText("X<<test Ewiki: 'T <$link to=\"from here\" />'>>",
+	testText("X<<test Ewiki: [[T <$link to=\"from here\" />]]>>",
 	         'X<<test Ewiki: [[T <$link to="""'+to+'""" />]]>>',
 	         ['<<test Ewiki: "<$link to />">>'], {to: to});
 
@@ -293,8 +305,6 @@ it('undefined macros', function() {
 	         undefined, {wiki: wiki, fails: 0})
 });
 
-});
-
 it('respects \\rules', function() {
 	testText("\\rules only macrocallinline\n<<test Btitle:'from here'>>", true,
 	         ['<<test Btitle>>']);
@@ -326,7 +336,7 @@ it("undefined macros, multiple active parameters", function() {
 	// Two failures, one can't be resolved. The other needs to downgrade
 	// into a widget, but it can't because an unnamed parameter can't be
 	// resolved.
-	testText("<<undef 'from here' param:'from here'>>",
+	testText("<<undef 'from here' param:[[from here]]>>",
 	         "<<undef 'from here' param:[["+to+"]]>>",
 	         ['<<undef param>>'],
 	         {wiki: wiki, fails: 1, to: to});
@@ -334,7 +344,7 @@ it("undefined macros, multiple active parameters", function() {
 	// Super tricky. Both parameters can relink, but 'param' requires a
 	// downgrade. But there's an unresolved anonymous param, so no
 	// downgrade possible. Therefore, fail that, but process the other.
-	testText("<<undef list:'[[from]]' param:'from' anon>> [[from]]",
+	testText("<<undef list:[[from]] param:[[from]] anon>> [[from]]",
 	         `<<undef list:"""[[A] '\"]]""" param:[[A] '\"]] anon>> [[A] '\"]]`,
 	         ['<<undef list>>', '<<undef param>>', '[[from]]'],
 	         {wiki: wiki, fails: 1, from: "from", to: "A] '\""});

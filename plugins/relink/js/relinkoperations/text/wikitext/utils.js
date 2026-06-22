@@ -102,6 +102,11 @@ var choices = {
 	"'": function(v) {return v.indexOf("'") < 0; },
 	'"': function(v) {return v.indexOf('"') < 0; },
 	'"""': function(v) {return v.indexOf('"""') < 0 && v[v.length-1] != '"';},
+	'[[': function(v) {
+		return v.indexOf('[[') !== 0
+		&& v.lastIndexOf(']') !== v.length-1
+		&& v.lastIndexOf(']]') < 0;
+	}
 };
 var _backticksSupported;
 var _bracketsSupported;
@@ -121,13 +126,11 @@ exports.wrapAttributeValue = function(value, preference) {
 		_bracketsSupported = (test === "test");
 		if (_bracketsSupported) {
 			whitelist.push('[[');
-			choices['[['] = function(v) {
-				return v.indexOf('[[') !== 0
-				&& v.lastIndexOf(']') !== v.length-1
-				&& v.lastIndexOf(']]') < 0;
-			};
 		}
 	}
+	// It's possible for preferences to specify '[[', even if it isn't
+	// whitelisted. This happens on older versions of TW where '[[' isn't
+	// available for widgets
 	if (choices[preference] && choices[preference](value)) {
 		return wrap(value, preference);
 	}
