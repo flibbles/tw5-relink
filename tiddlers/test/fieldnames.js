@@ -395,7 +395,7 @@ it('can rename widget attribute names', function() {
 		$tw.wiki.getTiddler(prefix + "$jsontiddler")]);
 	// Test that all attribute value types work
 	testText("<$action-createtiddler from  =  'value' />", true,
-	         ['<$action-createtiddler ="value" />'], {wiki: wiki});
+	         ['<$action-createtiddler =value />'], {wiki: wiki});
 	testText("<$action-createtiddler from={{value!!field}} />", true,
 	         ['<$action-createtiddler ={{value!!field}} />'], {wiki: wiki});
 	testText("<$action-createtiddler from={{{ [[value]get[field]] }}} />", true,
@@ -407,7 +407,7 @@ it('can rename widget attribute names', function() {
 	         ['<$action-createtiddler =<<value>> />'], {from: "fr<om", wiki: wiki});
 	// Works when attribute name doesn't exactly match title
 	testText("<$jsontiddler $from='value' />", true,
-	         ['<$jsontiddler ="value" />'], {wiki: wiki});
+	         ['<$jsontiddler =value />'], {wiki: wiki});
 	testText("<$jsontiddler $$from=value />", false, undefined, {wiki: wiki});
 	testText("<$jsontiddler from=value />", false, undefined, {wiki: wiki});
 	testText("<$jsontiddler myfrom=value />", false, undefined, {wiki: wiki});
@@ -416,8 +416,9 @@ it('can rename widget attribute names', function() {
 	const string = "This is an excessively long value to have as a field";
 	testText("<$jsontiddler $from='"+string+"' />", true,
 	         ['<$jsontiddler ="'+string.substr(0, maxLength)+'..." />'], {wiki: wiki});
-	testText("<$jsontiddler $from =    <<"+string+">> />", true,
-	         ['<$jsontiddler =<<'+string.substr(0, maxLength)+'...>> />'], {wiki: wiki});
+	var spaceless = string.replaceAll(" ", "");
+	testText("<$jsontiddler $from =    <<"+spaceless+">> />", true,
+	         ['<$jsontiddler =<<'+spaceless.substr(0, maxLength)+'...>> />'], {wiki: wiki});
 	testText("<$jsontiddler $from={{{"+string+"}}} />", true,
 	         ['<$jsontiddler ={{{'+string.substr(0, maxLength)+'...}}} />'], {wiki: wiki});
 	// Newlines or tabs exist in value
@@ -425,30 +426,30 @@ it('can rename widget attribute names', function() {
 	         ['<$jsontiddler ="Start of a new line Start of a..." />'], {wiki: wiki});
 	// Attribute name and value must change
 	testText("<$jsontiddler $hotfield='hotfield' />", true,
-	         ['<$jsontiddler $hotfield />', '<$jsontiddler ="hotfield" />'],
+	         ['<$jsontiddler $hotfield />', '<$jsontiddler =hotfield />'],
 	         {wiki: wiki, from: "hotfield"});
 	// Respects blacklist
 	testText("<$action-createtiddler text=value />", false,
 	         undefined, {from: "text", wiki: wiki});
 	utils.spyFailures(spyOn);
 	testText("<$action-createtiddler from=value />", false,
-	         ['<$action-createtiddler ="value" />'], {to: "text", wiki: wiki});
+	         ['<$action-createtiddler =value />'], {to: "text", wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 	// new attribute name wouldn't match regexp
 	utils.failures.calls.reset();
 	testText("<$action-createtiddler from=value />", false,
-	         ['<$action-createtiddler ="value" />'], {to: "$to", wiki: wiki});
+	         ['<$action-createtiddler =value />'], {to: "$to", wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 	// Matches regexp, but isn't a legal attribute name
 	utils.failures.calls.reset();
 	testText("<$action-createtiddler from=value />", false,
-	         ['<$action-createtiddler ="value" />'], {to: "to here", wiki: wiki});
+	         ['<$action-createtiddler =value />'], {to: "to here", wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 	// Failure does not prevent the rest of the html from relinking
 	utils.failures.calls.reset();
 	testText("<$jsontiddler $from=value val={{from}} />",
 	         "<$jsontiddler $from=value val={{to there}} />",
-	         ['<$jsontiddler val={{}} />', '<$jsontiddler ="value" />'],
+	         ['<$jsontiddler val={{}} />', '<$jsontiddler =value />'],
 	         {to: "to there", wiki: wiki});
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });

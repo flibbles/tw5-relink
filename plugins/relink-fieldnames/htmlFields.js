@@ -12,6 +12,7 @@ e.g.
 \*/
 
 var utils = require("./utils.js");
+var attrTypeOperators = $tw.modules.getModulesByTypeAsHashmap('relinkattributetype');
 
 exports.name = "fieldnames";
 
@@ -25,23 +26,11 @@ exports.report = function(element, parser, callback, options) {
 			&& !utils.isReserved(results[1], options)) {
 				var attr = element.attributes[attributeName];
 				var blurb;
-				switch (attr.type) { 
-				case "string":
-					blurb = '"' + utils.abridgeString(attr.value, 33) + '"';
-					break;
-				case "indirect":
-					blurb = "{{" + attr.textReference + "}}";
-					break;
-				case "filtered":
-					blurb = "{{{" + utils.abridgeString(attr.filter, 33) + "}}}";
-					break;
-				case "macro":
-					// Find the equals
-					var equals = parser.source.indexOf("=", attr.start);
-					// Now that the macrostart after that equals
-					var macroStart = parser.source.indexOf("<", equals);
-					blurb = "<<" + utils.abridgeString(parser.source.substring(macroStart+2, attr.end-2), 33) + ">>";
-					break;
+				var handler = attrTypeOperators[attr.type];
+				if (handler) {
+					var raw = handler.rawString(attr);
+					var innerString = utils.abridgeString(raw, 33);
+					blurb = handler.wrap(innerString);
 				}
 				callback(results[1], element.tag + ' =' + blurb, {soft: true});
 			}
