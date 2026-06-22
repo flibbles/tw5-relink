@@ -347,7 +347,7 @@ it("undefined macros, multiple active parameters", function() {
 	testText("<<undef list:[[from]] param:[[from]] anon>> [[from]]",
 	         `<<undef list:"""[[A] '\"]]""" param:[[A] '\"]] anon>> [[A] '\"]]`,
 	         ['<<undef list>>', '<<undef param>>', '[[from]]'],
-	         {wiki: wiki, fails: 1, from: "from", to: "A] '\""});
+	         {wiki: wiki, from: "from", to: "A] '\""});
 });
 
 it('undefined macros, no anonymous params', function() {
