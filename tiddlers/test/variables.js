@@ -419,4 +419,18 @@ it('missing operator does not list variable directive tiddlers', function() {
 	expect(wiki.filterTiddlers("[[test]relink:references:hard[]]")).toEqual(['nonexist']);
 });
 
+var attrLikeParametersAllowed = $tw.wiki.renderText(null, null, "\\procedure X(V) <<V>>\n<<X V={{{ yes }}}>>") === "yes";
+
+(attrLikeParametersAllowed? describe: xdescribe)
+("attr-like parameters", function() {
+
+fit('reports attr-like parameters', function() {
+	testText("Begin <<from A='text'>> End", true, ['<< A=text>>']);
+	testText("Begin <<from A={{ref}}>> End", true, ['<< A={{ref}}>>']);
+	testText("Begin <<from A={{{ filt }}}>> End", true, ['<< A={{{filt}}}>>']);
+	testText("Begin <<from A=<<macro>>>> End", true, ['<< A=<<macro>>>>']);
+});
+
+});
+
 });

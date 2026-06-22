@@ -54,7 +54,12 @@ function formBlurb(macro, maxLength, truncLength) {
 				value = handler.wrap(innerString);
 			}
 			// TODO: What does this do if value never got set?
-			blurb += ' ' + (!param.isPositional && param.name? param.name + ': ': '') + value;
+			blurb += ' ';
+			if (!param.isPositional && param.name) {
+				blurb += param.name;
+				blurb += (param.assignmentOperator === '=')? '=': ': ';
+			}
+			blurb += value;
 		}
 	}
 	return blurb;

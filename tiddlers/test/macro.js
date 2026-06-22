@@ -140,18 +140,41 @@ it('handles substitution', function() {
 	testText("X<<test Btitle=`X${ [tag[from here]] }$Y`>>",
 	         "X<<test Btitle=```X${ [tag[to`there]] }$Y```>>",
 	         ['<<test Btitle=`${[tag[]]}$`>>'], {wiki: wiki, to: "to`there"});
+	testText("X<<test Btitle=`X${ [tag[from]] from }$Y`>>",
+	         "X<<test Btitle=`X${ [tag[from]] 'to] there' }$Y`>>",
+	         ['<<test Btitle=`${[tag[]]}$`>>', '<<test Btitle=`${}$`>>'],
+	         {wiki: wiki, from: 'from', to: "to] there", fails: 1});
 	// Not actual substitution, just a quotation
 	testText("X<<test Btitle=`from here`>>",
 	         "X<<test Btitle=`to there`>>", ['<<test Btitle>>']);
 	testText("X<<test Btitle=`from here`>>",
 	         "X<<test Btitle=```to`t```>>", ['<<test Btitle>>'], {to: 'to`t'});
+	testText("X<<test Btitle=`from here`>>", false,
+	         ['<<test Btitle>>'], {to: '$(to)$ there', fails: 1});
 });
 
 it('handles macros', function() {
-	testText("<<test A=<<test Btitle='from here'>> >>", true, ['<<test A=<<test Btitle>>>>']);
-	testText("<<test A=<<test Btitle=<<test Btitle='from here'>> >> >>", true, ['<<test A=<<test Btitle=<<test Btitle>>>>>>']);
+	testText("<<test A=<<test Btitle='from here'>> >>", true,
+	         ['<<test A=<<test Btitle>>>>']);
+	testText("<<test A=<<test Btitle=<<test Btitle='from here'>> >> >>", true,
+	         ['<<test A=<<test Btitle=<<test Btitle>>>>>>']);
 	// Can fail
-	testText("<<test A=<<test Btitle='from here'>> >>", false, ['<<test A=<<test Btitle>>>>'], {to: "to'\"\"\">>]]there", fails: 1});
+	testText("<<test A=<<test Btitle='from here'>> >>", false,
+	         ['<<test A=<<test Btitle>>>>'],
+	         {to: "to'\"\"\">>]]there", fails: 1});
+	testText("<<test A=<<test Btitle:from Clist:from>> >>",
+	         "<<test A=<<test Btitle:'to]] there' Clist:from>> >>",
+	         ['<<test A=<<test Btitle>>>>', '<<test A=<<test Clist>>>>'],
+	         {from: 'from', to: "to]] there", fails: 1});
+});
+
+it('handles indirect', function() {
+	testText("<<test A={{from here!!field}} >>", true,
+	         ['<<test A={{!!field}}>>']);
+	// Can fail
+	testText("<<test A={{from here!!field}} >>", false,
+	         ['<<test A={{!!field}}>>'],
+	         {to: 'to!!there', fails: 1});
 });
 
 it("can select brackets for strings", function() {
@@ -163,10 +186,6 @@ it("can select brackets for strings", function() {
 	         'Macro <<test stuff [[c"""\' d]]>>.',
 	         ['<<test Btitle>>'], {from: 'from', to: 'c"""\' d'});
 });
-
-// TODO: Needs to test all the other kinds of non-string parameters
-// TODO: Impossibles
-// TODO: relink-variable reports may be off for attr-like parameters
 
 });
 
