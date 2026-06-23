@@ -187,6 +187,16 @@ it("can select brackets for strings", function() {
 	         ['<<test Btitle>>'], {from: 'from', to: 'c"""\' d'});
 });
 
+xit('handles multivalue variables', function() {
+});
+
+}); /*** Attribute-like Parameters ***/
+
+it('ignores irrelevant mvv', function() {
+	var wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("test", "B"));
+	testText("<<test A=((anything)) B:'from here' >>", true,
+	         ['<<test B>>'], {wiki: wiki});
 });
 
 it('core javascript macros', function() {

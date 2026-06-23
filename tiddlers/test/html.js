@@ -183,6 +183,16 @@ it('supports indirect attribute values', function() {
 	expect(utils.failures).toHaveBeenCalledTimes(1);
 });
 
+it('can ignore irrelevant mvv', function() {
+	wiki.addTiddler(utils.attrConf('$link', 'to'));
+	testText('<$link to="from here" tag=((tag)) />', true,
+	         ['<$link to />'], {wiki: wiki});
+});
+
+(utils.bracketAttrsAllowed()? xit: xit)
+('supports mvv attribute values', function() {
+});
+
 it('allows redirect with bad toTitle if not applicable', function() {
 	wiki.addTiddler(utils.attrConf('$link', 'to'));
 	// Relink used to fail processing {{thing}} because of an illegal

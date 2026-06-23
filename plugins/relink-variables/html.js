@@ -68,7 +68,7 @@ function formBlurb(element, maxLength) {
 		if (handler) {
 			var raw = handler.rawString(attr);
 			var innerString = utils.abridgeString(raw, maxLength);
-			blurb += handler.wrap(innerString);
+			blurb += handler.wrap(attr, innerString);
 		}
 	}
 	return blurb;

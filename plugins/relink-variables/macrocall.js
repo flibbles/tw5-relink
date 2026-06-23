@@ -51,7 +51,7 @@ function formBlurb(macro, maxLength, truncLength) {
 			if (handler) {
 				var raw = handler.rawString(param);
 				var innerString = utils.abridgeString(raw, maxLength, truncLength);
-				value = handler.wrap(innerString);
+				value = handler.wrap(param, innerString);
 			}
 			// TODO: What does this do if value never got set?
 			blurb += ' ';

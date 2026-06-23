@@ -421,10 +421,17 @@ it('missing operator does not list variable directive tiddlers', function() {
 
 var attrLikeParametersAllowed = $tw.wiki.renderText(null, null, "\\procedure X(V) <<V>>\n<<X V={{{ yes }}}>>") === "yes";
 
+it('reports with mmv parameters', function() {
+	// Curiously, this will be the same
+	// even in TW version where mvv does not exist.
+	testText("Begin <<from ((text)) >> End", true, ['<< ((text))>>']);
+	testText("Begin <<from A=((text)) >> End", true, ['<< A=((text))>>']);
+});
+
 (attrLikeParametersAllowed? describe: xdescribe)
 ("attr-like parameters", function() {
 
-fit('reports attr-like parameters', function() {
+it('reports attr-like parameters', function() {
 	testText("Begin <<from A='text'>> End", true, ['<< A=text>>']);
 	testText("Begin <<from A={{ref}}>> End", true, ['<< A={{ref}}>>']);
 	testText("Begin <<from A={{{ filt }}}>> End", true, ['<< A={{{filt}}}>>']);

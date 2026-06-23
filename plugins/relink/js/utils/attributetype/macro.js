@@ -9,8 +9,12 @@ var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
 
 exports.name = 'macro';
 
-exports.wrap = function(macroString) {
-	return "<<" + macroString + ">>";
+exports.wrap = function(attribute, macroString) {
+	if (attribute.isMVV) {
+		return "((" + macroString + "))";
+	} else {
+		return "<<" + macroString + ">>";
+	}
 };
 
 exports.rawString = function(attribute, options) {
@@ -32,7 +36,11 @@ exports.report = function(element, attribute, valueModules, callback, options) {
 	macro.name = macro.name || macro.attributes["$variable"].value;
 	macro.params = macro.params || macro.orderedAttributes;
 	macrocall.report(options.settings, macro, function(title, blurb, style) {
-		callback(title, '<<' + blurb + '>>', style);
+		if (attribute.isMVV) {
+			callback(title, '((' + blurb + '))', style);
+		} else {
+			callback(title, '<<' + blurb + '>>', style);
+		}
 	}, options);
 };
 

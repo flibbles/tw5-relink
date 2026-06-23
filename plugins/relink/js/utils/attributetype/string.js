@@ -9,7 +9,7 @@ var wikitextUtils = require("$:/plugins/flibbles/relink/js/relinkoperations/text
 
 exports.name = 'string';
 
-exports.wrap = function(value) {
+exports.wrap = function(attribute, value) {
 	if (!/([\s>"':])/.test(value) && value.length > 0) {
 		return value;
 	} else if (value.indexOf('"') < 0) {

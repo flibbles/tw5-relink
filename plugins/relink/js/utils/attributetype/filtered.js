@@ -9,7 +9,7 @@ var filterHandler = relinkUtils.getType('filter');
 
 exports.name = 'filtered';
 
-exports.wrap = function(filter) {
+exports.wrap = function(attribute, filter) {
 	return "{{{" + filter + "}}}";
 };
 

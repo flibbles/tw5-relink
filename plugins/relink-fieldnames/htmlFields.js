@@ -30,7 +30,7 @@ exports.report = function(element, parser, callback, options) {
 				if (handler) {
 					var raw = handler.rawString(attr);
 					var innerString = utils.abridgeString(raw, 33);
-					blurb = handler.wrap(innerString);
+					blurb = handler.wrap(attr, innerString);
 				}
 				callback(results[1], element.tag + ' =' + blurb, {soft: true});
 			}

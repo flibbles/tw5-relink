@@ -9,7 +9,7 @@ var utils = require('$:/plugins/flibbles/relink/js/relinkoperations/text/wikitex
 
 exports.name = 'substituted';
 
-exports.wrap = function(rawValue) {
+exports.wrap = function(attribute, rawValue) {
 	return "`" + rawValue + "`";
 };
 
