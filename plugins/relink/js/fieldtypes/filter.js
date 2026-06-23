@@ -146,6 +146,10 @@ function assembleFilterString(parseTree, oldFilter, options) {
 						p = oldFilter.indexOf('<', p);
 						end = oldFilter.indexOf('>', p+1);
 						wrapped = '<' + operand.text + '>';
+					} else if (operand.multiValuedVariable) {
+						p = oldFilter.indexOf('(', p);
+						end = oldFilter.indexOf(')', p+1);
+						wrapped = '(' + operand.text + ')';
 					} else if (operator.regexp) {
 						p = oldFilter.indexOf('/', p);
 						end = oldFilter.indexOf('/', p+1);

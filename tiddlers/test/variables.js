@@ -419,14 +419,14 @@ it('missing operator does not list variable directive tiddlers', function() {
 	expect(wiki.filterTiddlers("[[test]relink:references:hard[]]")).toEqual(['nonexist']);
 });
 
-var attrLikeParametersAllowed = $tw.wiki.renderText(null, null, "\\procedure X(V) <<V>>\n<<X V={{{ yes }}}>>") === "yes";
-
 it('reports with mmv parameters', function() {
 	// Curiously, this will be the same
 	// even in TW version where mvv does not exist.
 	testText("Begin <<from ((text)) >> End", true, ['<< ((text))>>']);
 	testText("Begin <<from A=((text)) >> End", true, ['<< A=((text))>>']);
 });
+
+var attrLikeParametersAllowed = $tw.wiki.renderText(null, null, "\\procedure X(V) <<V>>\n<<X V={{{ yes }}}>>") === "yes";
 
 (attrLikeParametersAllowed? describe: xdescribe)
 ("attr-like parameters", function() {
@@ -436,6 +436,25 @@ it('reports attr-like parameters', function() {
 	testText("Begin <<from A={{ref}}>> End", true, ['<< A={{ref}}>>']);
 	testText("Begin <<from A={{{ filt }}}>> End", true, ['<< A={{{filt}}}>>']);
 	testText("Begin <<from A=<<macro>>>> End", true, ['<< A=<<macro>>>>']);
+});
+
+it('macros support mvv', function() {
+	testText("<<test A=((from)) >>", true, ['<<test A=(())>>']);
+	testText("<<test A=((from  )) >>", true, ['<<test A=(())>>']);
+});
+
+it('html support mvv', function() {
+	testText("<$text text=((from)) />", true, ['<$text text=(()) />']);
+	testText("<$text text=((from  )) />", true, ['<$text text=(()) />']);
+});
+
+xit('handles mvv type operators', function() {
+	var options = {from: '.from', to: 'to'};
+	testFilter("A [(from)] B", true, ['filt'], options);
+	testFilter("A [(from  )] B", true, ['filt'], options);
+	testFilter("A [(from X)] B", true, ['filt: [( X)]'], options);
+	testFilter("A [(from C:X)] B", true, ['filt: [( X)]'], options);
+	testFilter("A [tag(from)] B", true, ['filt: [tag()]'], options);
 });
 
 });

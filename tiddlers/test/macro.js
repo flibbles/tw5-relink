@@ -187,9 +187,6 @@ it("can select brackets for strings", function() {
 	         ['<<test Btitle>>'], {from: 'from', to: 'c"""\' d'});
 });
 
-xit('handles multivalue variables', function() {
-});
-
 }); /*** Attribute-like Parameters ***/
 
 it('ignores irrelevant mvv', function() {

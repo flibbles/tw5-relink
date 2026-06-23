@@ -26,11 +26,14 @@ exports.report = function(filterParseTree, callback, options) {
 					refHandler.report(operand.text, function(title, blurb, style) {
 						callback(title, (run.prefix || '') + '[' + display + '{' + (blurb || '') + '}]', style);
 					}, options);
-				} else if (operand.variable) {
+				} else if (operand.variable || operand.multiValuedVariable) {
 					var macro = $tw.utils.parseMacroInvocation("<<"+operand.text+">>", 0);
 					if (macro) {
 						macrocall.report(options.settings, macro, function(title, blurb, style) {
-							callback(title, (run.prefix || '') + '[' + display + '<' + blurb + '>]', style);
+							blurb = operand.multiValuedVariable?
+								('(' + blurb + ')'):
+								('<' + blurb + '>');
+							callback(title, (run.prefix || '') + '[' + display + blurb + ']', style);
 						}, options);
 					}
 					continue;
@@ -69,7 +72,7 @@ exports.relink = function(filterParseTree, fromTitle, toTitle, options) {
 					entry = undefined;
 				if (operand.indirect) {
 					entry = refHandler.relinkInBraces(operand.text, fromTitle, toTitle, options);
-				} else if (operand.variable) {
+				} else if (operand.variable || operand.multiValuedVariable) {
 					entry = relinkMacro(options.settings, operand.text, fromTitle, toTitle, options);
 				} else if (operand.text) {
 					var handler = fieldType(options.settings, operator, index, options)

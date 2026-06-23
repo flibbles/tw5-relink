@@ -466,4 +466,14 @@ it("prefers operator conf to field conf", function() {
 	testFilter("[relinktest[from here!!field]]", true, ['filt: [relinktest[!!field]]'], {wiki: wiki});
 });
 
+var mvvOperatorsAllowed = $tw.wiki.renderText(null, null, "\\procedure X() yes\n<$text text={{{ [(X)] }}} />") === "yes";
+
+(mvvOperatorsAllowed? it: xit)
+('handles mvv type operators', function() {
+	const wiki = new $tw.Wiki();
+	wiki.addTiddler(utils.macroConf("test", "A"));
+	var options = {from: 'from', to: 'to', wiki: wiki};
+	testFilter("A [(test A:from)] B", true, ['filt: [(test A)]'], options);
+});
+
 });
