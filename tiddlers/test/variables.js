@@ -165,7 +165,7 @@ it('macrocall wikitext bad names', function() {
 });
 
 it('macro attributes', function() {
-	//testText("<$text text=<<from>> />", true, ['<$text text=<<>> />']);
+	testText("<$text text=<<from>> />", true, ['<$text text=<<>> />']);
 	testText("<$text text=<<from   title >> />", true, ['<$text text=<< title>> />']);
 	testText("<$text text=<<from 'space title' >> />", true, ['<$text text=<< "space title">> />']);
 });
@@ -448,13 +448,13 @@ it('html support mvv', function() {
 	testText("<$text text=((from  )) />", true, ['<$text text=(()) />']);
 });
 
-xit('handles mvv type operators', function() {
-	var options = {from: '.from', to: 'to'};
-	testFilter("A [(from)] B", true, ['filt'], options);
-	testFilter("A [(from  )] B", true, ['filt'], options);
-	testFilter("A [(from X)] B", true, ['filt: [( X)]'], options);
-	testFilter("A [(from C:X)] B", true, ['filt: [( X)]'], options);
-	testFilter("A [tag(from)] B", true, ['filt: [tag()]'], options);
+it('handles mvv type operators', function() {
+	var options = {from: 'from', to: 'to'};
+	testText("{{{ A [(from)] B }}}", true, ['{{{[()]}}}'], options);
+	testText("{{{ A [(from  )] B }}}", true, ['{{{[()]}}}'], options);
+	testText("{{{ A [(from X)] B }}}", true, ['{{{[( X)]}}}'], options);
+	testText("{{{ A [(from C:X)] B }}}", true, ['{{{[( C: X)]}}}'], options);
+	testText("{{{ A [tag(from)] B }}}", true, ['{{{[tag()]}}}'], options);
 });
 
 });
