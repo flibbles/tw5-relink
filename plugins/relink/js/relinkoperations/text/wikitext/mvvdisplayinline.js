@@ -35,13 +35,14 @@ exports.report = function(text, callback, options) {
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
-	var m = this.nextMatch;
-	this.parser.pos = m.end;
-	var modified = false;
-	var nestedOptions = Object.create(options);
+	var m = this.nextMatch,
+		modified = false,
+		separator = m.separator !== ', '? '||' + m.separator: '',
+		nestedOptions = Object.create(options);
 	nestedOptions.settings = this.parser.context;
+	this.parser.pos = m.end;
 	if (m.type === "variable") {
-		var text = '((' + m.varName + '))';
+		var text = '<<' + m.varName + '>>';
 		//var macro = $tw.utils.parseMVVReferenceAsTransclusion(text, 0);
 		var macro = $tw.utils.parseMacroInvocation("<<"+m.varName+">>", 0);
 		//macro.params = macro.orderedAttributes;
@@ -49,8 +50,15 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var entry = macrocallHandler.relink(this.parser.context, macro, text, fromTitle, toTitle, nestedOptions);
 		if (entry !== undefined) {
 			if (entry.output) {
-				entry.output = macrocallHandler.reassemble(entry, text, nestedOptions);
-				modified = true;
+				var macro = macrocallHandler.reassemble(entry, text, nestedOptions);
+				var innards = macro.substring(2, macro.length-2);
+				if (innards.search(/[()|]/) >= 0) {
+					entry.output = undefined;
+					entry.impossible = true;
+				} else {
+					entry.output = '((' + innards + separator + '))';
+					modified = true;
+				}
 			}
 		}
 	} else {

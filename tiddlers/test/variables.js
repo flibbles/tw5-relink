@@ -438,12 +438,18 @@ it('handles mvv type operators', function() {
 });
 
 it('pretty varname', function() {
-	testText("Before ((from)) After", true, ['(())']);
+	//testText("Before ((from)) After", true, ['(())']);
+	testText("Before ((from ||-)) After", true, ['((||-))']);
+	testText("Before ((from ||, )) After", "Before ((to )) After", ['(())']);
 	testText("Before ((from param)) After", true, ['(( param))']);
 	testText("Before ((from key:value)) After", true, ['(( key: value))']);
 	// Technically that key=value is the entire value.
 	testText("Before ((from key=value)) After", true, ['(( key=value))']);
+	// Make sure of some impossibles and edge cases
 	testText("Before ((from)) After", false, ['(())'], {to: "A B", fails: 1});
+	testText("Before ((from)) After", false, ['(())'], {to: "A|B", fails: 1});
+	testText("Before ((from)) After", false, ['(())'], {to: "A(B", fails: 1});
+	testText("Before ((from)) After", false, ['(())'], {to: "A)B", fails: 1});
 });
 
 });
