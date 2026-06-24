@@ -28,7 +28,7 @@ exports.report = function(text, callback, options) {
 		}, nestedOptions);
 	} else {
 		filterHandler.report(m.filter, function(title, blurb, style) {
-			callback(title, '(((' + blurb + append + ')))', style);
+			callback(title, '(((' + blurb + separator + ')))', style);
 		}, nestedOptions);
 	}
 	this.parser.pos = m.end;
@@ -36,6 +36,7 @@ exports.report = function(text, callback, options) {
 
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.nextMatch,
+		entry,
 		modified = false,
 		separator = m.separator !== ', '? '||' + m.separator: '',
 		nestedOptions = Object.create(options);
@@ -47,7 +48,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var macro = $tw.utils.parseMacroInvocation("<<"+m.varName+">>", 0);
 		//macro.params = macro.orderedAttributes;
 		//macro.name = macro.attributes['$variable'].value;
-		var entry = macrocallHandler.relink(this.parser.context, macro, text, fromTitle, toTitle, nestedOptions);
+		entry = macrocallHandler.relink(this.parser.context, macro, text, fromTitle, toTitle, nestedOptions);
 		if (entry !== undefined) {
 			if (entry.output) {
 				var macro = macrocallHandler.reassemble(entry, text, nestedOptions);
@@ -62,61 +63,13 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			}
 		}
 	} else {
-		var output = this.makeFilteredtransclude(this.parser, filter, tooltip, template, style, classes);
-		if (output === undefined) {
-			entry.impossible = true;
-		} else {
+		entry = filterHandler.relink(m.filter, fromTitle, toTitle, nestedOptions);
+		if (entry && entry.output) {
 			// By copying over the ending newline of the original
 			// text if present, thisrelink method thus works for
 			// both the inline and block rule
-			entry.output = output + utils.getEndingNewline(m[0]);
+			entry.output = '(((' + entry.output + separator + ')))';
 		}
 	}
 	return entry;
-};
-
-exports.makeFilteredtransclude = function(parser, filter, tooltip, template, style, classes) {
-	if (canBePretty(filter) && canBePrettyTemplate(template)) {
-		return prettyList(filter, tooltip, template, style, classes);
-	}
-	if (classes !== undefined) {
-		classes = classes.split('.').join(' ');
-	}
-	return utils.makeWidget(parser, '$list', {
-		filter: filter,
-		tooltip: tooltip,
-		template: template,
-		style: style || undefined,
-		itemClass: classes});
-};
-
-function prettyList(filter, tooltip, template, style, classes) {
-	if (tooltip === undefined) {
-		tooltip = '';
-	} else {
-		tooltip = "|" + tooltip;
-	}
-	if (template === undefined) {
-		template = '';
-	} else {
-		template = "||" + template;
-	}
-	if (classes === undefined) {
-		classes = '';
-	} else {
-		classes = "." + classes;
-	}
-	style = style || '';
-	return "{{{"+filter+tooltip+template+"}}"+style+"}"+classes;
-};
-
-function canBePretty(filter) {
-	return filter.indexOf('|') < 0 && filter.indexOf('}}') < 0;
-};
-
-function canBePrettyTemplate(template) {
-	return !template || (
-		template.indexOf('|') < 0
-		&& template.indexOf('{') < 0
-		&& template.indexOf('}') < 0);
 };
