@@ -46,8 +46,7 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var macro = $tw.utils.parseMacroInvocation("<<"+m.varName+">>", 0);
 		//macro.params = macro.orderedAttributes;
 		//macro.name = macro.attributes['$variable'].value;
-		var entry = macrocallHandler.relink(this.parser.context, macro, text, fromTitle, toTitle, null, nestedOptions);
-		// TODO: Get rid of that mayBeWidget argument
+		var entry = macrocallHandler.relink(this.parser.context, macro, text, fromTitle, toTitle, nestedOptions);
 		if (entry !== undefined) {
 			if (entry.output) {
 				entry.output = macrocallHandler.reassemble(entry, text, nestedOptions);

@@ -137,7 +137,7 @@ function relinkMacro(context, text, fromTitle, toTitle, options) {
 	var macro = $tw.utils.parseMacroInvocation(text, 0);
 	var entry;
 	if (macro) {
-		entry = macrocall.relink(context, macro, text, fromTitle, toTitle, false, options);
+		entry = macrocall.relink(context, macro, text, fromTitle, toTitle, options);
 	}
 	if (entry && entry.output) {
 		var string = macrocall.reassemble(entry, text, options);

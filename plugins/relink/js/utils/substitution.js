@@ -51,7 +51,7 @@ exports.relink = function(string, fromTitle, toTitle, options) {
 		});
 	}
 	newValue = newValue.replace(/\$\(([^\)\$]+)\)\$/g, function(match, varname) {
-		var macroEntry = macrocallHandler.relink(options.settings, {name: varname, params: []}, string, fromTitle, toTitle, false, options);
+		var macroEntry = macrocallHandler.relink(options.settings, {name: varname, params: []}, string, fromTitle, toTitle, options);
 		if (macroEntry) {
 			entry = entry || {};
 			if (macroEntry.output) {

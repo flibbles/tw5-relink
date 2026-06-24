@@ -24,14 +24,8 @@ exports.report = function(text, callback, options) {
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var macroInfo = getInfoFromRule(this);
 	this.parser.pos = macroInfo.end;
-	var mayBeWidget = this.parser.context.allowWidgets();
 	var names = getParamNames(this.parser, macroInfo.name, macroInfo.params, options);
-	if (names === undefined) {
-		// Needed the definition, and couldn't find it. So if a single
-		// parameter doesn't work, just fail.
-		mayBeWidget = false;
-	}
-	var entry = macrocall.relink(this.parser.context, macroInfo, text, fromTitle, toTitle, mayBeWidget, options);
+	var entry = macrocall.relink(this.parser.context, macroInfo, text, fromTitle, toTitle, options);
 	if (entry && entry.output) {
 		entry.output = macrocall.reassemble(entry, text, options);
 		if (entry.output === undefined) {

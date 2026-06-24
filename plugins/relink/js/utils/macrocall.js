@@ -25,7 +25,7 @@ exports.report = function(context, macro, callback, options) {
  * Output of the returned entry isn't a string, but a macro object. It needs
  * to be converted.
  */
-exports.relink = function(context, macro, text, fromTitle, toTitle, mayBeWidget, options) {
+exports.relink = function(context, macro, text, fromTitle, toTitle, options) {
 	var entry;
 	for (var operator in macrocallOperators) {
 		var results = macrocallOperators[operator].relink(context, macro, text, fromTitle, toTitle, options);

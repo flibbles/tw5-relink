@@ -48,7 +48,7 @@ exports.relink = function(element, attribute, valueModules, text, fromTitle, toT
 	var macro = attribute.value;
 	macro.name = macro.name || macro.attributes["$variable"].value;
 	macro.params = macro.params || macro.orderedAttributes;
-	var entry = macrocall.relink(options.settings, macro, text, fromTitle, toTitle, false, options);
+	var entry = macrocall.relink(options.settings, macro, text, fromTitle, toTitle, options);
 	if (entry && entry.output) {
 		attribute.output = macrocall.reassemble(entry, text, options);
 		if (!attribute.output) {
