@@ -28,11 +28,13 @@ function testText(text, expected, expectedReport, options) {
 		wiki.addTiddler({title: 'global', tags: "$:/tags/Global", text: "\\" + defType + " " + options.from + "(Atitle Bwiki Cfilter) content\n\\relink " + options.from + " Atitle Bwiki:wikitext Cfilter:filter\n"});
 	}
 	var prefix = options.prefix || (variablePrefix + "global ");
+	utils.failures.calls.reset();
 	var report = utils.getReport('test', wiki)[prefix + options.from];
 	report && report.sort();
 	expect(report).toEqual(expectedReport);
 	wiki.renameTiddler(prefix + options.from, prefix + options.to, options);
 	expect(utils.getText('test', wiki)).toEqual(expected);
+	expect(utils.failures).toHaveBeenCalledTimes(options.fails || 0);
 };
 
 (utils.fnprocdefAllowed()?
@@ -40,6 +42,7 @@ describe: xdescribe)('variables', function() {
 
 beforeEach(function() {
 	spyOn(console, 'log');
+	utils.spyFailures(spyOn);
 });
 
 it('relinks actual definition', function() {
@@ -63,20 +66,17 @@ it('relinks actual definition', function() {
 	// Pragma can come before it. And relink as well, since there is no global
 	testText('\\relink from A\n\\define other() B\n\\define from(A) V\n', true, ['\\relink A'], options);
 	// Illegal names
-	utils.spyFailures(spyOn);
 	testText('\\define from(arg) first\nbody',
-	         false, undefined, Object.assign(options, {to: "to(this"}));
-	expect(utils.failures).toHaveBeenCalledTimes(1);
-	utils.failures.calls.reset();
+	         false, undefined,
+	         Object.assign(options, {to: "to(this", fails: 1}));
 	testText('\\define from(arg) first\nbody',
-	         false, undefined, Object.assign(options, {to: "to this"}));
-	expect(utils.failures).toHaveBeenCalledTimes(1);
+	         false, undefined,
+	         Object.assign(options, {to: "to this", fails: 1}));
 	//Mixed failure and success
-	utils.failures.calls.reset();
 	testText('\\define from(arg) <<from>>\nbody',
 	         '\\define t>>o(arg) <<from>>\nbody',
-	         ['\\define from() <<>>'], Object.assign(options, {to: "t>>o"}));
-	expect(utils.failures).toHaveBeenCalledTimes(1);
+	         ['\\define from() <<>>'],
+	         Object.assign(options, {to: "t>>o", fails: 1}));
 });
 
 (utils.spacesBeforePragmaAllowed()? it: xit)
@@ -106,7 +106,6 @@ it('fails when given illegal variable directive titles', function() {
 	const wiki = new $tw.Wiki();
 	const text =  "\\procedure from() content\nBody";
 	wiki.addTiddler({title: 'test', tags: "$:/tags/Global", text: text});
-	utils.spyFailures(spyOn);
 	var fromDirective = variablePrefix + "test from";
 	wiki.renameTiddler(fromDirective, 'to', {wiki: wiki});
 	expect(utils.getText('test', wiki)).toEqual(text);
@@ -152,11 +151,8 @@ it('macrocall wikitext', function() {
 });
 
 it('macrocall wikitext bad names', function() {
-	utils.spyFailures(spyOn);
 	function test(badName) {
-		utils.failures.calls.reset();
-		testText("<<from content>>", false, ['<< content>>'], {to: badName});
-		expect(utils.failures).toHaveBeenCalledTimes(1);
+		testText("<<from content>>", false, ['<< content>>'], {to: badName, fails: 1});
 	};
 	test("to>this");
 	test("to\"this");
@@ -232,11 +228,9 @@ it('[direct call[]]', function() {
 	// Unrelated stuff that doesn't exist doesn't crash
 	testText("{{{ [.else[]] }}}", false, undefined, {from: '.from', to: '.to'});
 	// Bad name changes
-	utils.spyFailures(spyOn);
 	function testFail(to) {
-		utils.failures.calls.reset();
-		testText("{{{ [.from[]] }}}", false, ['{{{[]}}}'], {defType: 'function', from: '.from', to: to});
-		expect(utils.failures).toHaveBeenCalledTimes(1);
+		testText("{{{ [.from[]] }}}", false, ['{{{[]}}}'],
+		         {defType: 'function', from: '.from', to: to, fails: 1});
 	};
 	testFail('to');
 	testFail('.t[o');
@@ -286,11 +280,9 @@ it('updates widgets', function() {
 	// Not actually a variable at all
 	testText("Content<$.else />After", false, undefined, {from: "$.from", to: '$.to'})
 	// Bad renames
-	utils.spyFailures(spyOn);
 	function testFail(to) {
-		utils.failures.calls.reset();
-		testText("Content<$.from />After", false, ['< />'], {defType: "widget", from: "$.from", to: to})
-		expect(utils.failures).toHaveBeenCalledTimes(1);
+		testText("Content<$.from />After", false, ['< />'],
+		         {defType: "widget", from: "$.from", to: to, fails: 1})
 	};
 	testFail("$to");
 	testFail("t.o");
@@ -301,32 +293,20 @@ it('updates widgets', function() {
 });
 
 it('updates substition attributes', function() {
-	function testFail() {
-		utils.failures.calls.reset();
-		testText.apply(this, arguments);
-		expect(utils.failures).toHaveBeenCalledTimes(1);
-	};
 	testText("Begin <$text text=`A $(from)$ B` /> End", true, ['<$text text=`$()$` />']);
-	utils.spyFailures(spyOn);
-	testFail("Begin <$text text=`A $(from)$ B` /> End", false, ['<$text text=`$()$` />'], {to: "to$there"});
-	testFail("Begin <$text text=`A $(from)$ B` /> End", false, ['<$text text=`$()$` />'], {to: "to)there"});
-	testFail("Begin <$text text=`A $(from)$ B` /> End", false, ['<$text text=`$()$` />'], {to: "to there"});
+	testText("Begin <$text text=`A $(from)$ B` /> End", false, ['<$text text=`$()$` />'], {to: "to$there", fails: 1});
+	testText("Begin <$text text=`A $(from)$ B` /> End", false, ['<$text text=`$()$` />'], {to: "to)there", fails: 1});
+	testText("Begin <$text text=`A $(from)$ B` /> End", false, ['<$text text=`$()$` />'], {to: "to there", fails: 1});
 });
 
 it("gives placeholders a chance to relink", function() {
-	function testFail() {
-		utils.failures.calls.reset();
-		testText.apply(this, arguments);
-		expect(utils.failures).toHaveBeenCalledTimes(1);
-	};
 	testText("\\define test() A-$(from)$-B", true, ['\\define test() $()$']);
 	testText("\\procedure test() A-$(from)$-B", false);
 	testText("\\define test() A-$(from)$-B <<from>>", true, ['\\define test() $()$', '\\define test() <<>>']);
 	// substitute filters don't work here
 	testText("\\define test() A-${[<from>] from }$-B", false);
-	utils.spyFailures(spyOn);
-	testFail("\\define test() A-$(from)$-B", false, ['\\define test() $()$'], {to: 't$o'});
-	testFail("\\define test() A-$(from)$-B", false, ['\\define test() $()$'], {to: 't o'});
+	testText("\\define test() A-$(from)$-B", false, ['\\define test() $()$'], {to: 't$o', fails: 1});
+	testText("\\define test() A-$(from)$-B", false, ['\\define test() $()$'], {to: 't o', fails: 1});
 });
 
 it('updates whitelist', function() {
@@ -455,6 +435,15 @@ it('handles mvv type operators', function() {
 	testText("{{{ A [(from X)] B }}}", true, ['{{{[( X)]}}}'], options);
 	testText("{{{ A [(from C:X)] B }}}", true, ['{{{[( C: X)]}}}'], options);
 	testText("{{{ A [tag(from)] B }}}", true, ['{{{[tag()]}}}'], options);
+});
+
+it('pretty varname', function() {
+	testText("Before ((from)) After", true, ['(())']);
+	testText("Before ((from param)) After", true, ['(( param))']);
+	testText("Before ((from key:value)) After", true, ['(( key: value))']);
+	// Technically that key=value is the entire value.
+	testText("Before ((from key=value)) After", true, ['(( key=value))']);
+	testText("Before ((from)) After", false, ['(())'], {to: "A B", fails: 1});
 });
 
 });
