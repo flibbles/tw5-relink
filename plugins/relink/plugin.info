@@ -3,7 +3,7 @@
 	"title": "$:/plugins/flibbles/relink",
 	"description": "Flexibility when relinking renamed tiddlers",
 	"author": "Flibbles",
-	"version": "2.5.3",
+	"version": "2.6.0",
 	"core-version": "^5.2.1",
 	"stability": "STABILITY_2_STABLE",
 	"source": "https://github.com/flibbles/tw5-relink",

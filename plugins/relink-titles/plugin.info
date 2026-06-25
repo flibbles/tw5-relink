@@ -3,7 +3,7 @@
 	"title": "$:/plugins/flibbles/relink-titles",
 	"description": "Renames tiddlers with titles derived from Relinked tiddler",
 	"author": "Flibbles",
-	"version": "2.5.3",
+	"version": "2.6.0",
 	"core-version": "^5.2.1",
 	"stability": "STABILITY_2_STABLE",
 	"parent-plugin": "$:/plugins/flibbles/relink",

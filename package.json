@@ -1,6 +1,6 @@
 {
   "name": "tw5-relink",
-  "version": "2.5.3",
+  "version": "2.6.0",
   "description": "Flexibility when relinking renamed tiddlers",
   "directories": {
     "doc": "docs"
@@ -38,9 +38,10 @@
     "flibbles/relink-variables": "./plugins/relink-variables/"
   },
   "dependencies": {
-    "tiddlywiki": "^5.1.22"
+    "tiddlywiki": "^5.2.1"
   },
   "devDependencies": {
+    "tiddlywiki": "^5.4.0",
     "tw5-uglify": "github:flibbles/tw5-uglify"
   }
 }

@@ -1,0 +1,7 @@
+created: 20260625174817647
+
+\rules except wikilink
+
+* Support for TW 5.4.0 and all of its new features.
+* Dropped support for TW 5.2.0 and below. TW 5.2.1 and up is all that's supported now.
+
