@@ -84,6 +84,16 @@ it('whitespace for multi line', function() {
 	testText("\\define macro()   \n[[from here]]\n\\end\nContent", true, report);
 	testText("\\define macro(   )\n[[from here]]\n\\end", true, report);
 	testText("\\define\n\nmacro()\n[[from here]]\n\n\\end", true, report);
+});
+
+it('whitespace indentation', function() {
+	var report;
+	if (utils.render(" \\procedure X()V\n<<X>>") === "V") {
+		report = ['\\define macro() [[from here]]'];
+	} else {
+		// This version of TW doesn't support indentation for pragma
+		report = ['[[from here]]'];
+	}
 	testText("\t\\define macro()   \n[[from here]]\n\t\\end", true, report);
 	testText("\\whitespace trim\n\t\\define macro()   \n[[from here]]\n\t\\end", true, report);
 });

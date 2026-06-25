@@ -6,7 +6,8 @@ Tests relinking in markdown tiddlers. (text/markdown)
 
 var utils = require("./utils");
 
-describe("markdown text", function() {
+(utils.atLeastVersion("5.2.6")? describe: xdescribe)
+("markdown text", function() {
 
 var ignore = false, process = true;
 
