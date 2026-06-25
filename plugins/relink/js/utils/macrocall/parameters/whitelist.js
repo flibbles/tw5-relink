@@ -12,10 +12,24 @@ exports.getHandler = function(macro, parameter, options) {
 			// could potentially tie to it, so we can't be sure
 			// we're right.
 			for (var name in managedMacro) {
-				if (!macro.attributes[name]) {
+				if (!accountedFor(name, macro)) {
 					throw new utils.CannotFindMacroDef();
 				}
 			}
 		}
 	}
+};
+
+/* This checks if a given parameter name is accounted for among a macro's
+ * resolved parameters.
+ */
+function accountedFor(paramName, macro) {
+	// We use macro params here instead of attributes because
+	// earlier versions of TW don't have attributes here.
+	for (var i = 0; i < macro.params.length; ++i) {
+		if (macro.params[i].resolvedName === paramName) {
+			return true;
+		}
+	}
+	return false;
 };

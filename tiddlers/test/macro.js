@@ -407,7 +407,10 @@ it('imported macros', function() {
 	test("<$importvariables filter='A otherTiddler B'><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>']);
 	test("<$importvariables filter={{otherRef!!pointer}}><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>']);
 	test("<$importvariables filter={{{[all[current]get[pointer]]}}}><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>'], {fields: {pointer: "otherTiddler"}});
-	test("<$importvariables filter=`A $(myVar)$ B`><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>'], {fields: {pointer: "otherTiddler"}});
+
+	if (utils.substitutionAttrsAllowed()) {
+		test("<$importvariables filter=`A $(myVar)$ B`><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>'], {fields: {pointer: "otherTiddler"}});
+	}
 	test("<$importvariables filter={{!!pointer}}><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>'], {fields: {pointer: "otherTiddler"}});
 	test("<$importvariables filter=<<ptr otherTiddler>>><<other Z [[from here]]>></$importvariables>", true, ['<<other param>>']);
 	// If macro not imported. Arguments aren't resolved
