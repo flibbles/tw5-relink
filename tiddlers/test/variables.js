@@ -94,7 +94,7 @@ it('definition does not consider its own title a placeholder', function() {
 
 it('detects and reports on javascript macros', function() {
 	const wiki = new $tw.Wiki();
-	const module = 'test/modules/macro-module.js'
+	const module = '$:/test/modules/macro-module.js'
 	wiki.addTiddlers([
 		$tw.wiki.getTiddler(module),
 		{title: 'test', text: '<<testmodulemacro>>'}]);

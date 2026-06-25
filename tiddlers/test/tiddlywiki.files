@@ -20,7 +20,7 @@
 			"fields": {
 				"title": {
 					"source": "filename",
-					"prefix": "test/modules/"
+					"prefix": "$:/test/modules/"
 				},
 				"type": "application/javascript"
 			}

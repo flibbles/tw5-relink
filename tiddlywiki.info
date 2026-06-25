@@ -35,7 +35,7 @@
 				"text/plain",
 				"",
 				"publishFilter",
-				"-[prefix[test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/flibbles/uglify -$:/config/flibbles/uglify/blacklist -[prefix[$:/UpgradeLibrary]]"
+				"-[prefix[$:/test/]] -$:/plugins/tiddlywiki/jasmine -$:/plugins/tiddlywiki/pluginlibrary -$:/plugins/flibbles/uglify -$:/config/flibbles/uglify/blacklist -[prefix[$:/UpgradeLibrary]]"
 		],
 		"bundle": [
 			"--output", "./bundle",
