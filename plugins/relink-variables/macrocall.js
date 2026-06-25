@@ -45,21 +45,19 @@ function formBlurb(macro, maxLength, truncLength) {
 	var blurb = '';
 	for (var i = 0; i < macro.params.length; i++) {
 		var param = macro.params[i];
-		var value = '';
 		if (param.name !== "$variable") {
 			var handler = attrTypeOperators[param.type];
 			if (handler) {
 				var raw = handler.rawString(param);
 				var innerString = utils.abridgeString(raw, maxLength, truncLength);
-				value = handler.wrap(param, innerString);
+				var value = handler.wrap(param, innerString);
+				blurb += ' ';
+				if (!param.isPositional && param.name) {
+					blurb += param.name;
+					blurb += (param.assignmentOperator === '=')? '=': ': ';
+				}
+				blurb += value;
 			}
-			// TODO: What does this do if value never got set?
-			blurb += ' ';
-			if (!param.isPositional && param.name) {
-				blurb += param.name;
-				blurb += (param.assignmentOperator === '=')? '=': ': ';
-			}
-			blurb += value;
 		}
 	}
 	return blurb;

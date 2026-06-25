@@ -4,7 +4,6 @@ Manages filtered attribute.
 
 \*/
 
-// TODO: This may be a problem
 var macrocall = require("$:/plugins/flibbles/relink/js/utils/macrocall.js");
 
 exports.name = 'macro';

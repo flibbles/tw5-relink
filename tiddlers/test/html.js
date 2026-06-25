@@ -147,7 +147,6 @@ it('field attributes fun with brackets', function() {
 		testText("<$link to=from/>",
 		         "<$link to=[to[[C]]/>", report,
 		         {from: "from", to: "[to[[C]]", wiki: wiki});
-		// TODO: More to do here. Make sure brackets get selected when relevant
 		testText("<$link to=from/>",
 		         "<$link to=[[to '```\"\"\"]X]]/>", report,
 		         {from: "from", to: "to '```\"\"\"]X", wiki: wiki});

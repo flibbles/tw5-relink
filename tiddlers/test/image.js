@@ -72,8 +72,6 @@ it("string attributes", function() {
 	testText("[img loadActions  =  '{{from here}}'   [s]]", true, ['[img loadActions="{{}}"]'], {wiki: wiki});
 });
 
-// TODO: Anything that comes after an image, because ptr may be corrupted
-
 it("indirect attributes", function() {
 	testText("[img width={{from here}} [s]]", true, ['[img width={{}}]']);
 	testText("[img width  =  {{from here}} [s]]", true, ['[img width={{}}]']);
