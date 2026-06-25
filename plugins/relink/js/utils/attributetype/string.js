@@ -43,7 +43,6 @@ exports.report = function(element, attribute, valueModules, callback, options) {
 			handler.report(attribute.value, function(title, blurb, style) {
 				if (operator.formBlurb) {
 					if (blurb) {
-						// TODO: Maybe I want to use the wrap, but it'll involve changing some tests
 						blurb = '"' + blurb + '"';
 					}
 					blurb  = operator.formBlurb(element, attribute, blurb, options);
