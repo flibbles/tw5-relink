@@ -37,7 +37,6 @@ exports.report = function(text, callback, options) {
 exports.relink = function(text, fromTitle, toTitle, options) {
 	var m = this.nextMatch,
 		entry,
-		modified = false,
 		separator = m.separator !== ', '? '||' + m.separator: '',
 		nestedOptions = Object.create(options);
 	nestedOptions.settings = this.parser.context;
@@ -58,7 +57,6 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 					entry.impossible = true;
 				} else {
 					entry.output = '((' + innards + separator + '))';
-					modified = true;
 				}
 			}
 		}
@@ -68,7 +66,21 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 			// By copying over the ending newline of the original
 			// text if present, thisrelink method thus works for
 			// both the inline and block rule
-			entry.output = '(((' + entry.output + separator + ')))';
+			var filter = entry.output;
+			if (filter.indexOf(')))') >= 0) {
+				entry.output = undefined;
+				entry.impossible = true;
+			} else {
+				var lastChar = filter.charAt(filter.length-1);
+				// Some tweaks to make sure the change doesn't break anything
+				if (filter.indexOf('||') >= 0 && !separator) {
+					separator = '||, ';
+				}
+				if (lastChar === ')' && !separator) {
+					filter = filter + ' ';
+				}
+				entry.output = '(((' + filter + separator + ')))';
+			}
 		}
 	}
 	return entry;
