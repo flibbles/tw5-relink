@@ -133,6 +133,11 @@ function assembleFilterString(parseTree, oldFilter, options) {
 			for (var j = 0; j < run.operators.length; j++) {
 				var operator = run.operators[j];
 				var start = p;
+				if (operator.operands.length === 0) {
+					// This can happen with regexp operands on TW <5.2.1
+					// It eschews the operands and just contains a regexp
+					operator.operands.push({regexp: operator.regexp});
+				}
 				for (var index = 0; index < operator.operands.length; index++) {
 					var operand = operator.operands[index],
 						skip = false;
