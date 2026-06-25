@@ -1,20 +1,17 @@
 /*\
 module-type: startup
 
-Replaces the relinkTiddler defined in $:/core/modules/wiki-bulkops.js
+For legacy, if we're pre-v5.4.0, we need to monkey-patch in Relink instead
+of relying on module overriding to introduce the behavior.
 
 This is a startup instead of a wikimethods module-type because it's the only
 way to ensure this runs after the old relinkTiddler method is applied.
 
 \*/
-(function(){
 
-/*jslint node: false, browser: true */
-/*global $tw: false */
 "use strict";
 
-var language = require('$:/plugins/flibbles/relink/js/language.js');
-var utils = require("$:/plugins/flibbles/relink/js/utils.js");
+var targetModule = "$:/core/modules/relinkers/tiddlers.js";
 
 exports.name = "redefine-relinkTiddler";
 exports.synchronous = true;
@@ -25,62 +22,21 @@ exports.after = ['load-modules'];
 exports.before = ['commands'];
 
 exports.startup = function() {
-	$tw.Wiki.prototype.relinkTiddler = relinkTiddler;
+	if (!$tw.wiki.getShadowSource(targetModule)) {
+		relinkers = $tw.modules.getModulesByTypeAsHashmap("relinker");
+		$tw.Wiki.prototype.relinkTiddler = relinkTiddlers;
+	}
 };
 
-/** Walks through all relinkable tiddlers and relinks them.
- *  This replaces the existing function in core Tiddlywiki.
- */
-function relinkTiddler(fromTitle, toTitle, options) {
+var relinkers;
+
+function relinkTiddlers(fromTitle, toTitle, options) {
+	fromTitle = (fromTitle || "").trim();
+	toTitle = (toTitle || "").trim();
 	options = options || {};
-	var failures = [];
-	var indexer = utils.getIndexer(this);
-	var records = indexer.relinkLookup(fromTitle, toTitle, options);
-	var changedTitles = Object.create(null);
-	for (var title in records) {
-		var entries = records[title],
-			changes = Object.create(null),
-			update = false,
-			fails = false;
-		for (var field in entries) {
-			var entry = entries[field];
-			fails = fails || entry.impossible;
-			if (entry.output !== undefined) {
-				changes[field] = entry.output;
-				update = true;
-			}
+	if (fromTitle && toTitle && fromTitle !== toTitle) {
+		for (var name in relinkers) {
+			relinkers[name].relink(this, fromTitle, toTitle, options);
 		}
-		if (fails) {
-			failures.push(title);
-		}
-		// If any fields changed, update tiddler
-		if (update) {
-			console.log("Renaming '"+fromTitle+"' to '"+toTitle+"' in '" + title + "'");
-
-			var tiddler = this.getTiddler(title);
-			var modifyField = utils.touchModifyField(this) ? this.getModificationFields() : undefined;
-			var newTiddler = new $tw.Tiddler(tiddler,changes,modifyField)
-			newTiddler = $tw.hooks.invokeHook("th-relinking-tiddler",newTiddler,tiddler);
-			this.addTiddler(newTiddler);
-			// If the title changed, we need to perform a nested rename
-			if (newTiddler.fields.title !== title) {
-				changedTitles[title] = newTiddler.fields.title;
-			}
-		}
-	};
-	// Now that the rename is complete, we must now rename any tiddlers that
-	// changed their titles, and thus repeat the process.
-	for (var title in changedTitles) {
-		this.deleteTiddler(title);
-		this.relinkTiddler(title, changedTitles[title], options);
-	}
-	if (failures.length > 0) {
-		var options = $tw.utils.extend(
-			{ variables: {to: toTitle, from: fromTitle},
-			  wiki: this},
-			options );
-		language.reportFailures(failures, options);
 	}
 };
-
-})();
