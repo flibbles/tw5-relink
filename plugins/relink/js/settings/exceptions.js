@@ -2,8 +2,9 @@
 
 Factory method for specifying system tiddlers which should not be treated
 as text/vnd.tiddlywiki types, but for whatever reason, they don't specify
-the type they really are. Sort of like how $:/DefaultTiddlers is actually
-a filter.
+the type they really are.
+
+Sort of like how $:/DefaultTiddlers is actually a filter.
 
 \*/
 
