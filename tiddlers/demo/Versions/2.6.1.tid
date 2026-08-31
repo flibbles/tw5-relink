@@ -1,0 +1,5 @@
+created: 20260831183040699
+
+\rules except wikilink
+
+* Fixed #63 where exception.js was parsing comments as fields.
