@@ -27,7 +27,10 @@ exports.getRelinkableTitles = function() {
 		if (tiddler) {
 			return wiki.compileFilter(tiddler.fields.text);
 		} else {
-			return wiki.allTitles;
+			// Build the index using both normal and shadow tiddlers (so that backlinks will find shadows).
+            return function() {
+                return wiki.allTitles().concat(wiki.allShadowTitles());
+           };
 		}
 	})();
 };
