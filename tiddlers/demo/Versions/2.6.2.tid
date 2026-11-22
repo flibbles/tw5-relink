@@ -1,0 +1,5 @@
+created: 20261122000000000
+
+\rules except wikilink
+
+* Fixed #64 where mvv's could cause a relink crash if they were malformed. Thank you, uzvg.
