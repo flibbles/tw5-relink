@@ -45,6 +45,14 @@ it('pretty varname', function() {
 	testText("B ((( [tag[from]]||-))) A", true, ['((([tag[]]||-)))'], {wiki: wiki});
 });
 
+it('ignores invalid variable names', function() {
+	// These are parsed as MVV displays, but their names cannot form a macro.
+	// Report and relink must skip them rather than dereferencing a null macro.
+	testText("B (( )) A", false, undefined);
+	testText("B ((don't)) A", false, undefined);
+	testText("B (( )) A ((( from )))", true, ['((()))']);
+});
+
 it("handles impossibles gracefully", function() {
 	testText("B ((( from ))) A", false, ['((()))'], {to: 't)))o', fails: 1});
 	// Partial failure

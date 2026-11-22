@@ -21,8 +21,13 @@ exports.report = function(text, callback, options) {
 		separator = m.separator !== ', '? '||' + m.separator: '',
 		nestedOptions = Object.create(options);
 	nestedOptions.settings = this.parser.context;
+	this.parser.pos = m.end;
 	if (m.type === "variable") {
 		var macro = $tw.utils.parseMacroInvocation("<<" + m.varName + ">>", 0);
+		if (!macro) {
+			// Not a valid macro invocation, so there is nothing to relink.
+			return;
+		}
 		macrocallHandler.report(this.parser.context, macro, function(title, blurb, style) {
 			callback(title, '((' + blurb + separator + '))', style);
 		}, nestedOptions);
@@ -31,7 +36,6 @@ exports.report = function(text, callback, options) {
 			callback(title, '(((' + blurb + separator + ')))', style);
 		}, nestedOptions);
 	}
-	this.parser.pos = m.end;
 };
 
 exports.relink = function(text, fromTitle, toTitle, options) {
@@ -45,6 +49,10 @@ exports.relink = function(text, fromTitle, toTitle, options) {
 		var text = '<<' + m.varName + '>>';
 		//var macro = $tw.utils.parseMVVReferenceAsTransclusion(text, 0);
 		var macro = $tw.utils.parseMacroInvocation("<<"+m.varName+">>", 0);
+		if (!macro) {
+			// Invalid variable names parse as null; skip only this MVV.
+			return;
+		}
 		//macro.params = macro.orderedAttributes;
 		//macro.name = macro.attributes['$variable'].value;
 		entry = macrocallHandler.relink(this.parser.context, macro, text, fromTitle, toTitle, nestedOptions);
